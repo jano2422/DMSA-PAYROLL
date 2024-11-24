@@ -17,12 +17,12 @@ Module Mod_Biometric_DTR
 
 
             Dim DTR_Time_OUT_OT As DateTime
-            Dim DTR_Sched_Time_OUT, DTR_Sched_DateTime_IN, DTR_Sched_Time_IN As DateTime
+            Dim Parsed_DTR_Sched_Time_OUT, DTR_Sched_DateTime_IN, Parsed_DTR_Sched_Time_IN As DateTime
 
             Dim No_Time_OUT As Boolean
             No_Time_OUT = False
 
-            Dim First_Time_IN, Last_Time_OUT As DateTime
+            Dim parsedFirst_Time_IN, parsedLast_Time_OUT As DateTime
             Dim Total_TimeSpan As TimeSpan
             Dim Total_Hours_Spent As Double
 
@@ -62,7 +62,7 @@ Module Mod_Biometric_DTR
                     Dim firstDate As String = .GView_DTR.Rows(i).Cells(0).Value.Split("-"c)(0).Trim() ' Get the first date and remove any leading or trailing spaces
                     Dim firstDateTime As DateTime
                     ' Convert string into Date ( Format should be same from what is being converted )
-                    If Not DateTime.TryParseExact(firstDate, "MM/dd/yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, firstDateTime) Then
+                    If Not DateTime.TryParseExact(firstDate, "M/d/yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, firstDateTime) Then
                         Throw New Exception("Invalid Date")
                     End If
 
@@ -88,14 +88,7 @@ Module Mod_Biometric_DTR
                         'j = iDTR_Day_Num - 1       ' This will help a little bit to speed up the loop , becuse j will not always start with Zero
                         If .GView_Schedule.Rows(j).Cells(0).Value = iDTR_Day_Num Then
                             sSchedule_Time_IN = .GView_Schedule.Rows(j).Cells(1).Value
-                            If DateTime.TryParseExact(sSchedule_Time_IN, "hh:mm tt", CultureInfo.InvariantCulture, DateTimeStyles.None, Nothing) Then
-                                ' If parsing succeeds, extract the TimeSpan
-                                Dim parsedSchedule_Time_IN As TimeSpan = DateTime.ParseExact(sSchedule_Time_IN, "HH:mm tt", CultureInfo.InvariantCulture).TimeOfDay
-                                parsedSchedule_DateTime_IN = firstDateTime.Add(parsedSchedule_Time_IN)
-
-                            Else Throw New Exception($"invalid schedule time format: {sSchedule_Time_IN}")
-                            End If
-
+                            Parsed_SchedStrToDate(firstDateTime, sSchedule_Time_IN, parsedSchedule_DateTime_IN)
                             ' Present on this day
                             .GView_Schedule.Rows(j).Cells(5).Value = "Present" ' j can also be the iDTR_Day_Num -1
 
@@ -115,7 +108,7 @@ Module Mod_Biometric_DTR
                     Dim parsedTime_DTR_IN As DateTime
                     Dim DtrTimeInString As String = .GView_DTR.Rows(i).Cells(2).Value
                     ' Parse the string using the exact format
-                    If DateTime.TryParseExact(DtrTimeInString, "yyyy-MM-dd hh:mm:ss tt", CultureInfo.InvariantCulture, DateTimeStyles.None, parsedTime_DTR_IN) Then
+                    If DateTime.TryParseExact(DtrTimeInString, "M/d/yyyy h:mm:ss tt", CultureInfo.InvariantCulture, DateTimeStyles.None, parsedTime_DTR_IN) Then
                         ' Successfully parsed
                         Console.WriteLine($"Parsed DateTime: {parsedTime_DTR_IN}")
                     Else
@@ -123,9 +116,10 @@ Module Mod_Biometric_DTR
                         Throw New Exception($"Invalid DateTime format: {DtrTimeInString}")
                     End If
 
+
                     'Dim DTR_militaryTime_DTR_IN As String = parsedTime_DTR_IN.ToString("HH:mm")
 
-                    Dim STR_DTR_militaryTime_DTR_IN As String = parsedTime_DTR_IN.ToString("yyyy-MM-dd HH:mm:ss", CultureInfo.InvariantCulture)
+                    Dim STR_DTR_militaryTime_DTR_IN As String = parsedTime_DTR_IN.ToString("M/d/yyyy HH:mm:ss", CultureInfo.InvariantCulture)
 
                     Console.WriteLine($"Military Time Format: {STR_DTR_militaryTime_DTR_IN}")
 
@@ -134,7 +128,7 @@ Module Mod_Biometric_DTR
                     'Dim DTR_Time_IN As DateTime = DateTime.Parse(STR_DTR_militaryTime_DTR_IN)
 
                     ' Parse the military time string into a DateTime object
-                    If DateTime.TryParseExact(STR_DTR_militaryTime_DTR_IN, "yyyy-MM-dd HH:mm:ss", CultureInfo.InvariantCulture, DateTimeStyles.None, parsedTime_DTR_IN) Then
+                    If DateTime.TryParseExact(STR_DTR_militaryTime_DTR_IN, "M/d/yyyy HH:mm:ss", CultureInfo.InvariantCulture, DateTimeStyles.None, parsedTime_DTR_IN) Then
                         Console.WriteLine($"Parsed DateTime: {parsedTime_DTR_IN}")
                     Else
                         ' Handle parsing errors
@@ -176,7 +170,7 @@ Module Mod_Biometric_DTR
             ' ==================================Calculate Total Break ======================================
 
             '============================ OVer Break Calculation: 1st Break ================================
-
+#Region "Over Break 1"
             ' Cell 9 = cell 4 - cell 3
 
             ' Condition:
@@ -194,19 +188,30 @@ Module Mod_Biometric_DTR
                 minutesDifference_Break2 = 0 ' 2nd Break
 
                 ' Next is to calculate the Over Break ( convert to military first )
-                Dim parsedTime_Break1_IN As DateTime = DateTime.ParseExact(.GView_DTR.Rows(i).Cells(4).Value, "h:mm tt", Nothing) ' Time IN
-                Dim DTR_militaryTime_Break1_IN As String = parsedTime_Break1_IN.ToString("HH:mm")
-                Dim parsedTime_Break1_OUT As DateTime = DateTime.ParseExact(.GView_DTR.Rows(i).Cells(3).Value, "h:mm tt", Nothing) ' Time OUT
-                Dim DTR_militaryTime_Break1_OUT As String = parsedTime_Break1_OUT.ToString("HH:mm")
+                'Dim parsedTime_Break1_IN As DateTime = DateTime.ParseExact(.GView_DTR.Rows(i).Cells(4).Value, "h:mm tt", Nothing) ' Time IN
+                Dim parsedTime_Break1_IN As DateTime
+                Dim DtrBreak1TimeInString As String = .GView_DTR.Rows(i).Cells(4).Value
+                Parsed_StrToDate(DtrBreak1TimeInString, parsedTime_Break1_IN)
+
+                'Dim DTR_militaryTime_Break1_IN As String = parsedTime_Break1_IN.ToString("HH:mm")
+                'Dim parsedTime_Break1_OUT As DateTime = DateTime.ParseExact(.GView_DTR.Rows(i).Cells(3).Value, "h:mm tt", Nothing) ' Time OUT
+                Dim parsedTime_Break1_OUT As DateTime
+                Dim DtrBreak1TimeOutString As String = .GView_DTR.Rows(i).Cells(3).Value
+                Parsed_StrToDate(DtrBreak1TimeOutString, parsedTime_Break1_OUT)
+
+                'Dim DTR_militaryTime_Break1_OUT As String = parsedTime_Break1_OUT.ToString("HH:mm")
 
                 ' Subtract the DTR against Schedule
-                Dim DTR_Break1_IN As DateTime = DateTime.Parse(DTR_militaryTime_Break1_IN) ' Time IN
-                Dim DTR_Break1_OUT As DateTime = DateTime.Parse(DTR_militaryTime_Break1_OUT) ' TimeUT
+                'Dim DTR_Break1_IN As DateTime = DateTime.Parse(DTR_militaryTime_Break1_IN) ' Time IN
+                'Dim DTR_Break1_OUT As DateTime = DateTime.Parse(DTR_militaryTime_Break1_OUT) ' TimeUT
 
+                Dim DTR_Break1_IN As DateTime = parsedTime_Break1_IN
+                Dim DTR_Break1_OUT As DateTime = parsedTime_Break1_OUT
 
                 Dim difference_Break1 As TimeSpan = DTR_Break1_IN - DTR_Break1_OUT
                 minutesDifference_Break1 = CInt(difference_Break1.TotalMinutes)
-
+#End Region
+#Region "Over Break 2"
                 ' minutesDifference_Break1 will be summed up with Break 2
 
 
@@ -218,20 +223,29 @@ Module Mod_Biometric_DTR
 
                 Try
                     ' Next is to calculate the Over Break
-                    Dim parsedTime_Break2_IN As DateTime = DateTime.ParseExact(.GView_DTR.Rows(i).Cells(6).Value, "h:mm tt", Nothing) ' Time IN
-                    Dim DTR_militaryTime_Break2_IN As String = parsedTime_Break2_IN.ToString("HH:mm")
-                    Dim parsedTime_Break2_OUT As DateTime = DateTime.ParseExact(.GView_DTR.Rows(i).Cells(5).Value, "h:mm tt", Nothing) ' Time OUT
-                    Dim DTR_militaryTime_Break2_OUT As String = parsedTime_Break2_OUT.ToString("HH:mm")
+                    'Dim parsedTime_Break2_IN As DateTime = DateTime.ParseExact(.GView_DTR.Rows(i).Cells(6).Value, "h:mm tt", Nothing) ' Time IN
+                    Dim parsedTime_Break2_IN As DateTime
+                    Dim DtrBreak2TimeInString As String = .GView_DTR.Rows(i).Cells(6).Value
+
+                    Parsed_StrToDate(DtrBreak2TimeInString, parsedTime_Break2_IN)
+                    'Dim DTR_militaryTime_Break2_IN As String = parsedTime_Break2_IN.ToString("HH:mm")
+
+                    'Dim parsedTime_Break2_OUT As DateTime = DateTime.ParseExact(.GView_DTR.Rows(i).Cells(5).Value, "h:mm tt", Nothing) ' Time OUT
+                    Dim parsedTime_Break2_OUT As DateTime
+                    Dim DtrBreak2TimeOutString As String = .GView_DTR.Rows(i).Cells(5).Value
+
+                    Parsed_StrToDate(DtrBreak2TimeOutString, parsedTime_Break2_OUT)
+                    'Dim DTR_militaryTime_Break2_OUT As String = parsedTime_Break2_OUT.ToString("HH:mm")
 
                     ' Subtract the DTR against Schedule
-                    Dim DTR_Break_IN2 As DateTime = DateTime.Parse(DTR_militaryTime_Break2_IN) ' Time IN
-                    Dim DTR_Break_OUT2 As DateTime = DateTime.Parse(DTR_militaryTime_Break2_OUT) ' TimeUT
+                    Dim DTR_Break_IN2 As DateTime = parsedTime_Break2_IN
+                    Dim DTR_Break_OUT2 As DateTime = parsedTime_Break2_OUT
 
 
                     Dim difference_Break2 As TimeSpan = DTR_Break_IN2 - DTR_Break_OUT2
                     minutesDifference_Break2 = CInt(difference_Break2.TotalMinutes)
 
-
+#End Region
 
                 Catch ex As Exception
 
@@ -259,225 +273,129 @@ Module Mod_Biometric_DTR
             ' ===================== Calculate Over Time / Under Time / Total Hours ====================================
 
 
-            For i = 0 To 18
+            For i = 0 To 16
 
-                DTR_Time_OUT_OT = DTR_Sched_Time_OUT
-
-                ' Just to stop if there are no more records (DTR)
-                If .GView_DTR.Rows(i).Cells(0).Value = "" Then
-                    Exit For ' Skip empty cells
+                ' Skip empty cells
+                If .GView_DTR.Rows(i) IsNot Nothing AndAlso .GView_DTR.Rows(i).Cells(0) IsNot Nothing Then
+                    If String.IsNullOrEmpty(.GView_DTR.Rows(i).Cells(0).Value?.ToString()) Then
+                        Exit For
+                    End If
                 End If
 
-                ' ===================================== Identify the Day Num as Row for the schedule table ==============================================
-
-                ' This is to get the actual; DTR day to be used as the Day value for the Schedule
+                ' Get the Day from DTR
                 dDTR_Date = .GView_DTR.Rows(i).Cells(0).Value
+                Dim firstDate As String = dDTR_Date.Split("-"c)(0).Trim()
+                Dim firstDateTime As DateTime
 
-                ' Convert string into Date ( Format should be same from what is being converted )
-                Dim format As String = "MM/dd/yyyy"
-                Dim dateObject As DateTime = DateTime.ParseExact(.GView_DTR.Rows(i).Cells(0).Value, format, System.Globalization.CultureInfo.InvariantCulture)
-
-                'dDTR_Date = dDTR_Date.ToString("MM-dd-yyyy")
-                iDTR_Day_Num = dateObject.Day ' This is the Day Num from DTR
-
-                ' =========================================================================================================================================
-
-
-
-
-                First_Time_IN = DateTime.Parse(.GView_DTR.Rows(i).Cells(2).Value).ToString("HH:mm")
-
-                If .GView_DTR.Rows(i).Cells(7).Value <> "" Then ' 3rd Time OUT
-
-                    Dim parsedTime_OT As DateTime = DateTime.ParseExact(.GView_DTR.Rows(i).Cells(7).Value, "h:mm tt", Nothing)
-                    Dim DTR_militaryTime_OT As String = parsedTime_OT.ToString("HH:mm")
-
-                    ' Subtract the DTR against Schedule
-                    DTR_Time_OUT_OT = DateTime.Parse(DTR_militaryTime_OT)
-                    DTR_Sched_Time_OUT = DateTime.Parse(.GView_Schedule.Rows(iDTR_Day_Num - 1).Cells(2).Value) ' Schedule Table
-                    DTR_Sched_Time_IN = DateTime.Parse(.GView_Schedule.Rows(iDTR_Day_Num - 1).Cells(1).Value) ' Schedule Table
-
-                    ' Will assign this as the Last Time OUT
-                    Last_Time_OUT = DTR_militaryTime_OT
-                    'Total_TimeSpan = CDate(Last_Time_OUT.ToString("HH:mm")) - CDate(First_Time_IN.ToString("HH:mm")) ' Actual Time OUT - Actual Time IN
-                    Total_TimeSpan = CDate(Last_Time_OUT.ToString("HH:mm")) - CDate(DTR_Sched_Time_IN.ToString("HH:mm")) ' Actual Time OUT - Actual Time IN
-                    Total_Hours_Spent = Total_TimeSpan.TotalHours
-
-
-                    ' Time Out ( identify if undertime or overtime )
-                    OUT_Over_Under_Time = CDate(Last_Time_OUT.ToString("HH:mm")) - CDate(DTR_Sched_Time_OUT.ToString("HH:mm"))
-
-                    If OUT_Over_Under_Time >= TimeSpan.Zero Then ' Overtime
-                        'ignore excess time
-                        OUT_Over_Under_Time = OUT_Over_Under_Time
-
-                    Else ' Undertime
-                        'Actual Time OUT 
-                        OUT_Over_Under_Time = OUT_Over_Under_Time
-                    End If
-
-                    ' Time IN ( identify if late or early )
-                    IN_early_late_Time = CDate(First_Time_IN.ToString("HH:mm")) - CDate(DTR_Sched_Time_IN.ToString("HH:mm"))
-
-                    If IN_early_late_Time >= TimeSpan.Zero Then ' Late
-
-                        IN_early_late_Time = IN_early_late_Time.Negate
-                    Else ' Early
-
-                        IN_early_late_Time = TimeSpan.Zero ' Since time-IN is earlier than schedule, it will not be deducted from Total Hours Spent
-
-                    End If
-
-
-
-                ElseIf .GView_DTR.Rows(i).Cells(5).Value <> "" Then ' 2nd Time OUT
-
-                    Dim parsedTime_OT As DateTime = DateTime.ParseExact(.GView_DTR.Rows(i).Cells(5).Value, "h:mm tt", Nothing)
-                    Dim DTR_militaryTime_OT As String = parsedTime_OT.ToString("HH:mm")
-
-
-                    ' Subtract the DTR against Schedule
-                    DTR_Time_OUT_OT = DateTime.Parse(DTR_militaryTime_OT)
-                    DTR_Sched_Time_OUT = DateTime.Parse(.GView_Schedule.Rows(iDTR_Day_Num - 1).Cells(2).Value) ' Schedule Table
-                    DTR_Sched_Time_IN = DateTime.Parse(.GView_Schedule.Rows(iDTR_Day_Num - 1).Cells(1).Value) ' Schedule Table
-
-                    ' Will assign this as the Last Time OUT
-                    Last_Time_OUT = DTR_militaryTime_OT
-                    'Total_TimeSpan = CDate(Last_Time_OUT.ToString("HH:mm")) - CDate(First_Time_IN.ToString("HH:mm")) ' Actual Time OUT - Actual Time IN
-                    Total_TimeSpan = CDate(Last_Time_OUT.ToString("HH:mm")) - CDate(DTR_Sched_Time_IN.ToString("HH:mm")) ' Actual Time OUT - Actual Time IN
-                    Total_Hours_Spent = Total_TimeSpan.TotalHours
-
-
-                    ' Time Out ( identify if undertime or overtime )
-                    OUT_Over_Under_Time = CDate(Last_Time_OUT.ToString("HH:mm")) - CDate(DTR_Sched_Time_OUT.ToString("HH:mm"))
-
-                    If OUT_Over_Under_Time >= TimeSpan.Zero Then ' Overtime
-                        'ignore excess time
-                        OUT_Over_Under_Time = OUT_Over_Under_Time
-
-                    Else ' Undertime
-                        'Actual Time OUT 
-                        OUT_Over_Under_Time = OUT_Over_Under_Time
-                    End If
-
-                    ' Time IN ( identify if late or early )
-                    IN_early_late_Time = CDate(First_Time_IN.ToString("HH:mm")) - CDate(DTR_Sched_Time_IN.ToString("HH:mm"))
-
-                    If IN_early_late_Time >= TimeSpan.Zero Then ' Late
-
-                        IN_early_late_Time = IN_early_late_Time.Negate
-                    Else ' Early
-
-                        IN_early_late_Time = TimeSpan.Zero ' Since time-IN is earlier than schedule, it will not be deducted from Total Hours Spent
-
-                    End If
-
-                ElseIf .GView_DTR.Rows(i).Cells(3).Value <> "" Then ' This one is when Night shift ( they don't have multiple Time in and out ) ' 1st Time OUT
-
-                    Dim parsedTime_OT As DateTime = DateTime.ParseExact(.GView_DTR.Rows(i).Cells(3).Value, "h:mm tt", Nothing)
-                    Dim DTR_militaryTime_OT As String = parsedTime_OT.ToString("HH:mm")
-
-                    ' Subtract the DTR against Schedule
-                    DTR_Time_OUT_OT = DateTime.Parse(DTR_militaryTime_OT)
-                    DTR_Sched_Time_OUT = DateTime.Parse(.GView_Schedule.Rows(iDTR_Day_Num - 1).Cells(2).Value) ' Schedule Table
-                    DTR_Sched_Time_IN = DateTime.Parse(.GView_Schedule.Rows(iDTR_Day_Num - 1).Cells(1).Value) ' Schedule Table
-
-                    ' Will assign this as the Last Time OUT
-                    Last_Time_OUT = DTR_militaryTime_OT
-                    'Total_TimeSpan = CDate(Last_Time_OUT.ToString("HH:mm")) - CDate(First_Time_IN.ToString("HH:mm")) ' Actual Time OUT - Actual Time IN
-                    Total_TimeSpan = CDate(Last_Time_OUT.ToString("HH:mm")) - CDate(DTR_Sched_Time_IN.ToString("HH:mm")) ' Actual Time OUT - Actual Time IN
-                    Total_Hours_Spent = Total_TimeSpan.TotalHours
-
-
-                    ' Time Out ( identify if undertime or overtime )
-                    OUT_Over_Under_Time = CDate(Last_Time_OUT.ToString("HH:mm")) - CDate(DTR_Sched_Time_OUT.ToString("HH:mm"))
-
-                    If OUT_Over_Under_Time >= TimeSpan.Zero Then ' Overtime
-                        'ignore excess time
-                        OUT_Over_Under_Time = OUT_Over_Under_Time
-
-                    Else ' Undertime
-                        'Actual Time OUT 
-                        OUT_Over_Under_Time = OUT_Over_Under_Time
-                    End If
-
-                    ' Time IN ( identify if late or early )
-                    IN_early_late_Time = CDate(First_Time_IN.ToString("HH:mm")) - CDate(DTR_Sched_Time_IN.ToString("HH:mm"))
-
-                    If IN_early_late_Time >= TimeSpan.Zero Then ' Late
-
-                        IN_early_late_Time = IN_early_late_Time.Negate
-                    Else ' Early
-
-                        IN_early_late_Time = TimeSpan.Zero ' Since time-IN is earlier than schedule, it will not be deducted from Total Hours Spent
-
-                    End If
-
-                ElseIf .GView_DTR.Rows(i).Cells(3).Value = "" Then
-                    ' Column 11 refers to Over Time, calculated outside this If Else
-                    ' No Time OUT from the 3 Time OUT Cells from grid view
-                    No_Time_OUT = True
-                    .GView_DTR.Rows(i).Cells(11).Value = 0 ' this will be over written by the code below
+                ' Try parsing the date
+                If Not DateTime.TryParseExact(firstDate, "M/d/yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, firstDateTime) Then
+                    Throw New Exception("Invalid Date")
                 End If
 
-                Dim difference_OT As TimeSpan = DTR_Time_OUT_OT - DTR_Sched_Time_OUT
+                iDTR_Day_Num = firstDateTime.Day ' This is the Day Num from DTR
+
+                ' Parse Time IN
+                Dim parsedFirstTime_DTR_IN As DateTime
+                Parsed_StrToDate(.GView_DTR.Rows(i).Cells(2).Value, parsedFirstTime_DTR_IN)
+                parsedFirst_Time_IN = parsedFirstTime_DTR_IN
+
+                ' Determine the correct Time OUT (First, Second, or Night Shift)
+                Dim parsedTimeOut_OT As DateTime
+                Dim DtrTimeOTOutString As String
+
+
+
+                ' Check which Time OUT is available and calculate
+                If Not String.IsNullOrEmpty(.GView_DTR.Rows(i).Cells(7).Value.ToString()) Then
+                    ' 3rd Time OUT (Overtime)
+                    DtrTimeOTOutString = .GView_DTR.Rows(i).Cells(7).Value
+                    Parsed_SchedStrToDate(firstDateTime, .GView_Schedule.Rows(iDTR_Day_Num - 1).Cells(2).Value, Parsed_DTR_Sched_Time_OUT)
+                    Parsed_SchedStrToDate(firstDateTime, .GView_Schedule.Rows(iDTR_Day_Num - 1).Cells(1).Value, Parsed_DTR_Sched_Time_IN)
+                ElseIf Not String.IsNullOrEmpty(.GView_DTR.Rows(i).Cells(5).Value.ToString()) Then
+                    ' 2nd Time OUT (Overtime)
+                    DtrTimeOTOutString = .GView_DTR.Rows(i).Cells(5).Value
+                    Parsed_SchedStrToDate(firstDateTime, .GView_Schedule.Rows(iDTR_Day_Num - 1).Cells(2).Value, Parsed_DTR_Sched_Time_OUT)
+                    Parsed_SchedStrToDate(firstDateTime, .GView_Schedule.Rows(iDTR_Day_Num - 1).Cells(1).Value, Parsed_DTR_Sched_Time_IN)
+                ElseIf Not String.IsNullOrEmpty(.GView_DTR.Rows(i).Cells(3).Value.ToString()) Then
+                    ' 1st Time OUT (Night Shift)
+                    DtrTimeOTOutString = .GView_DTR.Rows(i).Cells(3).Value
+                    Parsed_NsSchedStrToDate(firstDateTime, .GView_Schedule.Rows(iDTR_Day_Num - 1).Cells(2).Value, Parsed_DTR_Sched_Time_OUT)
+                    Parsed_SchedStrToDate(firstDateTime, .GView_Schedule.Rows(iDTR_Day_Num - 1).Cells(1).Value, Parsed_DTR_Sched_Time_IN)
+                Else
+                    ' No Time OUT
+                    No_Time_OUT = True
+                    .GView_DTR.Rows(i).Cells(11).Value = 0 ' this will be overwritten
+                    Continue For
+                End If
+
+
+                Parsed_StrToDate(DtrTimeOTOutString, parsedTimeOut_OT)
+
+                parsedLast_Time_OUT = parsedTimeOut_OT
+
+                ' Total Time Span and Hours Spent
+                Total_TimeSpan = parsedLast_Time_OUT - Parsed_DTR_Sched_Time_IN
+                Total_Hours_Spent = Total_TimeSpan.TotalHours
+
+                ' Time Out: Overtime or Undertime
+                OUT_Over_Under_Time = parsedLast_Time_OUT - Parsed_DTR_Sched_Time_OUT
+
+                If OUT_Over_Under_Time >= TimeSpan.Zero Then
+                    ' Overtime
+                    OUT_Over_Under_Time = OUT_Over_Under_Time
+                Else
+                    ' Undertime
+                    OUT_Over_Under_Time = OUT_Over_Under_Time
+                End If
+
+                ' Time IN: Late or Early
+                IN_early_late_Time = parsedFirst_Time_IN - Parsed_DTR_Sched_Time_IN
+
+                If IN_early_late_Time >= TimeSpan.Zero Then
+                    IN_early_late_Time = IN_early_late_Time.Negate() ' Late
+                Else
+                    IN_early_late_Time = TimeSpan.Zero ' Early
+                End If
+
+                ' Calculate Late and Overtime
+                Dim difference_OT As TimeSpan = parsedLast_Time_OUT - Parsed_DTR_Sched_Time_OUT
                 Dim minutesDifference_OT As Integer = CInt(difference_OT.TotalMinutes)
 
-                ' If value is NEGATIVE, then employee is early. No Deduction or Over Time
-                ' If the value is Positive, the employee is Late! the value needs to be deducted from the expected total hours.
-
-                If minutesDifference_OT >= 0 Then ' LATE!
+                Dim difference_LATE As TimeSpan = parsedFirst_Time_IN - Parsed_DTR_Sched_Time_IN
+                Dim minutesDifference_LATE As Integer = CInt(difference_LATE.TotalMinutes)
+                'overtime_calc
+                If minutesDifference_OT >= 0 Then
                     .GView_DTR.Rows(i).Cells(11).Value = minutesDifference_OT
-                Else ' Not Late then should just be 0
+                Else
                     .GView_DTR.Rows(i).Cells(11).Value = 0
                 End If
-
-                ' ======================== Total Hours ===============================
-
-                Dim iLate, iOB, iOT As Double
-                Dim Total_hours As Double
-
-
-
-                iLate = CInt(.GView_DTR.Rows(i).Cells(8).Value)
-                iOB = CInt(.GView_DTR.Rows(i).Cells(10).Value)
-                'iOT = CInt(.GView_DTR.Rows(i).Cells(11).Value)
-
-                If iOT < 60 Then
-                    iOT = 0 ' because only >= 1 hour OT will be paid and if has certification/approval
+                'late_cal
+                If minutesDifference_LATE >= 0 Then
+                    .GView_DTR.Rows(i).Cells(8).Value = minutesDifference_LATE
                 Else
-
+                    .GView_DTR.Rows(i).Cells(8).Value = 0
                 End If
 
                 ' Compute Total Hours
-                Total_hours = Total_Hours_Spent + IN_early_late_Time.TotalHours - OUT_Over_Under_Time.TotalHours
-
-                If No_Time_OUT = True Then
-                    Total_hours = 0 ' No Time OUT
-                Else
-
-
-                End If
-
-                ' what is this for? is this a reset value? check later
-                No_Time_OUT = False
+                Dim Total_hours As Double = Total_Hours_Spent + IN_early_late_Time.TotalHours - OUT_Over_Under_Time.TotalHours
+                If No_Time_OUT Then Total_hours = 0 ' No Time OUT
 
                 .GView_DTR.Rows(i).Cells(12).Value = Total_hours.ToString("F2")
-                '.GView_DTR.Refresh()
 
-                ' Transfer to Global Variable for the computaion of DTR
+                ' Update global variable
                 GlobalVariables.iHours_Rendered(i) = .GView_DTR.Rows(i).Cells(12).Value
 
             Next
 
-            Dim Overall_Hours As Double
-
+            ' Calculate Overall Hours
+            Dim Overall_Hours As Double = 0
             For i = 0 To 16
-                Overall_Hours = Overall_Hours + CDbl(.GView_DTR.Rows(i).Cells(12).Value)
+                Overall_Hours += CDbl(.GView_DTR.Rows(i).Cells(12).Value)
             Next
 
             .GView_DTR.Rows(17).Cells(11).Value = "Total:"
             .GView_DTR.Rows(17).Cells(12).Value = Overall_Hours
+
 #End Region
 
         End With
@@ -660,6 +578,34 @@ Module Mod_Biometric_DTR
 
 
 
+    Private Sub Parsed_StrToDate(DateTimeStr As String, ByRef ParsedDateTime As DateTime)
+        ' Parse the string using the exact format
+        If DateTime.TryParseExact(DateTimeStr, "M/d/yyyy h:mm:ss tt", CultureInfo.InvariantCulture, DateTimeStyles.None, ParsedDateTime) Then
+            ' Successfully parsed
+            Console.WriteLine($"Parsed DateTime: {ParsedDateTime}")
+        Else
+            ' Handle invalid format
+            Throw New Exception($"Invalid DateTime format: {DateTimeStr}")
+        End If
+    End Sub
 
+    Private Sub Parsed_SchedStrToDate(RefDate As DateTime, sScheduleDateTimeStr As String, ByRef parsedSchedule_DateTime As DateTime)
+        If DateTime.TryParseExact(sScheduleDateTimeStr, "H:m", CultureInfo.InvariantCulture, DateTimeStyles.None, Nothing) Then
+            ' If parsing succeeds, extract the TimeSpan
+            Dim parsedSchedule_Time As TimeSpan = DateTime.ParseExact(sScheduleDateTimeStr, "H:m", CultureInfo.InvariantCulture).TimeOfDay
+            parsedSchedule_DateTime = RefDate.Add(parsedSchedule_Time)
+
+        Else Throw New Exception($"invalid schedule time format: {sScheduleDateTimeStr}")
+        End If
+    End Sub
+    Private Sub Parsed_NsSchedStrToDate(RefDate As DateTime, sScheduleDateTimeStr As String, ByRef parsedSchedule_DateTime As DateTime)
+        If DateTime.TryParseExact(sScheduleDateTimeStr, "H:m", CultureInfo.InvariantCulture, DateTimeStyles.None, Nothing) Then
+            ' If parsing succeeds, extract the TimeSpan
+            Dim parsedSchedule_Time As TimeSpan = DateTime.ParseExact(sScheduleDateTimeStr, "H:m", CultureInfo.InvariantCulture).TimeOfDay
+            parsedSchedule_DateTime = RefDate.Add(parsedSchedule_Time).AddDays(1)
+
+        Else Throw New Exception($"invalid schedule time format: {sScheduleDateTimeStr}")
+        End If
+    End Sub
 
 End Module

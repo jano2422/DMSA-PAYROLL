@@ -39,46 +39,8 @@ Module Mod_Excel
                     End If
                 Next
 
-                If .Chk_NighShift.Checked = True Then
 
-                    Rearrange_Excel_NS_DTR(excelApp, workbook, worksheet, iCol_Date)
-
-                Else
-
-                    'Populate DatagridView DTR Columns (1 to 2)
-                    If worksheet.Cells(9, iCol_Date).Value = "Date" Then
-
-                        For iRow = 10 To 26 ' Number of Days in Cut-Off
-                            For iCol = iCol_Date To iCol_Date + 1 ' First 2 Column from DTR Excel
-
-                                .GView_DTR.Rows(iRow - 10).Cells(iCol - iCol_Date).Value = worksheet.Cells(iRow, iCol).Value
-
-                            Next
-                        Next
-
-                        ' Time In and Out
-                        Dim Col_Y As Integer
-
-                        'Col_Y ref column for time in and out of excel file
-                        Col_Y = iCol_Date + 1
-
-                        'iRow = rows of date time values
-                        For iRow = 10 To 26
-                            For iCol = iCol_Date + 2 To 30 Step 2
-                                Col_Y = Col_Y + 1 ' Represents the incrementing Col for Gridview since I can't use the iCol due to FOR with Step 2
-                                .GView_DTR.Rows(iRow - 10).Cells(Col_Y - iCol_Date).Value = worksheet.Cells(iRow, iCol).Value
-
-                            Next
-                            Col_Y = iCol_Date + 1
-
-                        Next
-
-
-                    End If
-
-                End If
-
-
+                Rearrange_Excel_NS_DTR(.Chk_NighShift.Checked, excelApp, workbook, worksheet, iCol_Date)
 
             End With
 
@@ -112,7 +74,7 @@ Module Mod_Excel
 
     End Sub
 
-    Private Sub Rearrange_Excel_NS_DTR(excelApp As Application, workbook As Workbook, worksheet As Worksheet, refDateTimeCol As Integer)
+    Private Sub Rearrange_Excel_NS_DTR(NightShiftCheckBoxState As Boolean, excelApp As Application, workbook As Workbook, worksheet As Worksheet, refDateTimeCol As Integer)
 
 
 
@@ -175,41 +137,73 @@ Module Mod_Excel
                 Dim day = entry.Item2
                 Dim time = entry.Item1
 
-                If windowStart Is Nothing OrElse entryDate > windowEnd Then
-                    ' Save the current window
-                    If windowStart IsNot Nothing Then
-                        processedData.Add(New With {
-                        .DateRange = $"{windowStart:MM/dd/yyyy} - {windowEnd:MM/dd/yyyy}",
-                        .Days = String.Join("-", days),
-                        .TimeInOut = timeInOutData
-                        })
-                    End If
+                If NightShiftCheckBoxState Then
+                    ' Night shift logic
+                    If windowStart Is Nothing OrElse entryDate > windowEnd Then
+                        ' Save the current window
+                        If windowStart IsNot Nothing Then
+                            processedData.Add(New With {
+                            .DateRange = $"{windowStart:MM/dd/yyyy} - {windowEnd:MM/dd/yyyy}",
+                            .Days = String.Join("-", days),
+                            .TimeInOut = timeInOutData
+                            })
 
-                    ' Start a new window
-                    windowStart = entryDate.Date.AddHours(12)
-                    If entryDate.TimeOfDay < TimeSpan.FromHours(12) Then
-                        windowStart = windowStart.Value.AddDays(-1) ' Ensure .Value is accessed properly
-                    End If
-                    If windowStart.HasValue Then
+                        End If
+
+                        ' Start a new window (night shift: 12 PM to 12 PM the next day)
+                        windowStart = entryDate.Date.AddHours(12)
+                        If entryDate.TimeOfDay < TimeSpan.FromHours(12) Then
+                            windowStart = windowStart.Value.AddDays(-1) ' Adjust for night shift
+                        End If
                         windowEnd = windowStart.Value.AddDays(1).AddSeconds(-1)
+
+                        days = New List(Of String) From {day}
+                        timeInOutData = New List(Of String) From {time}
+                    Else
+                        ' Add to the current window
+                        If Not days.Contains(day) Then days.Add(day)
+                        timeInOutData.Add(time)
                     End If
-                    days = New List(Of String) From {day}
-                    timeInOutData = New List(Of String) From {time}
                 Else
-                    ' Add to the current window
-                    If Not days.Contains(day) Then days.Add(day)
-                    timeInOutData.Add(time)
+                    ' Day shift logic (00:00 to 24:00 of the same day)
+                    If windowStart Is Nothing OrElse entryDate.Date > windowStart.Value.Date Then
+                        ' Save the current window
+                        If windowStart IsNot Nothing Then
+                            processedData.Add(New With {
+                            .DateRange = If(windowStart.Value.Date = windowEnd.Value.Date,
+                                    $"{windowStart:MM/dd/yyyy}", ' Single date
+                                    $"{windowStart:MM/dd/yyyy} - {windowEnd:MM/dd/yyyy}"), ' Range for night shift
+                            .Days = String.Join("-", days),
+                            .TimeInOut = timeInOutData
+                            })
+
+                        End If
+
+                        ' Start a new window (day shift: 00:00 to 24:00 of the same day)
+                        windowStart = entryDate.Date ' Start at 00:00 of the current day
+                        windowEnd = windowStart.Value.AddDays(1).AddSeconds(-1) ' End at 23:59:59 of the same day
+
+                        days = New List(Of String) From {day}
+                        timeInOutData = New List(Of String) From {time}
+                    Else
+                        ' Add to the current window
+                        If Not days.Contains(day) Then days.Add(day)
+                        timeInOutData.Add(time)
+                    End If
                 End If
             Next
 
             ' Add the last time window
             If windowStart IsNot Nothing Then
                 processedData.Add(New With {
-                .DateRange = $"{windowStart:MM/dd/yyyy} - {windowEnd:MM/dd/yyyy}",
+                .DateRange = If(windowStart.Value.Date = windowEnd.Value.Date,
+                        $"{windowStart:MM/dd/yyyy}", ' Single date
+                        $"{windowStart:MM/dd/yyyy} - {windowEnd:MM/dd/yyyy}"), ' Range for night shift
                 .Days = String.Join("-", days),
                 .TimeInOut = timeInOutData
-            })
+                })
             End If
+
 
             Dim existingRowIndex As Integer = 0
             For Each entry In processedData

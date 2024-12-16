@@ -9,15 +9,27 @@ Public Class FRM_DTR_EXPORTS
 
         ' Format Cut-off, Month and Year ( e.g 3_1st_2024 )
 
+        If Lbl_ClientID.Text = "" Then
+            MsgBox("Please select a client first!", vbExclamation, "Client ID")
+            Exit Sub
+        ElseIf Cmb_CutOff.SelectedIndex < 0 Then
+            MsgBox("Please select a cutoff first!", vbExclamation, "Cut Off")
+            Exit Sub
+        ElseIf Cmb_Month.SelectedIndex < 0 Then
+            MsgBox("Please select a month first!", vbExclamation, "Month")
+            Exit Sub
+        ElseIf Cmb_Year.SelectedIndex < 0 Then
+            MsgBox("Please select a year first!", vbExclamation, "Year")
+            Exit Sub
+        End If
+
+
         Dim sCut_Off As String
         Dim monthNumber As Integer = DateTime.ParseExact(Cmb_Month.Text.Trim.ToUpper, "MMM", CultureInfo.InvariantCulture).Month
         sCut_Off = monthNumber & "_" & Mid(Cmb_CutOff.Text, 1, 3) & "_" & Cmb_Year.Text
 
 
-        If Lbl_ClientID.Text = "" Then
-            MsgBox("Please select a client first!", vbExclamation, "Client ID")
-            Exit Sub
-        End If
+
 
         Call Get_DTR_Per_Client(CInt(Lbl_ClientID.Text), sCut_Off)
 

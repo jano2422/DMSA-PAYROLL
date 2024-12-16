@@ -27,7 +27,6 @@ Partial Class FRM_DTR_EXPORTS
         Me.TabPage1 = New System.Windows.Forms.TabPage()
         Me.LV_DTR_Per_Client_List = New System.Windows.Forms.ListView()
         Me.Item = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
-        Me.PictureBox1 = New System.Windows.Forms.PictureBox()
         Me.Employee_Name = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
         Me.Total_Days = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
         Me.Total_Hours = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
@@ -43,6 +42,8 @@ Partial Class FRM_DTR_EXPORTS
         Me.ND_LH = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
         Me.ND_RD_SUN_SH = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
         Me.ND_RD_SUN_LH = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
+        Me.OT_REG = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
+        Me.PictureBox1 = New System.Windows.Forms.PictureBox()
         Me.Label1 = New System.Windows.Forms.Label()
         Me.Label2 = New System.Windows.Forms.Label()
         Me.Btn_Client = New System.Windows.Forms.Button()
@@ -59,7 +60,6 @@ Partial Class FRM_DTR_EXPORTS
         Me.Lbl_Client_Address = New System.Windows.Forms.Label()
         Me.Lbl_ClientID = New System.Windows.Forms.Label()
         Me.Label7 = New System.Windows.Forms.Label()
-        Me.OT_REG = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
         Me.TabControl1.SuspendLayout()
         Me.TabPage1.SuspendLayout()
         CType(Me.PictureBox1, System.ComponentModel.ISupportInitialize).BeginInit()
@@ -114,15 +114,6 @@ Partial Class FRM_DTR_EXPORTS
         '
         Me.Item.Text = "Item"
         Me.Item.Width = 50
-        '
-        'PictureBox1
-        '
-        Me.PictureBox1.BackColor = System.Drawing.Color.Teal
-        Me.PictureBox1.Location = New System.Drawing.Point(29, 167)
-        Me.PictureBox1.Name = "PictureBox1"
-        Me.PictureBox1.Size = New System.Drawing.Size(1395, 106)
-        Me.PictureBox1.TabIndex = 8
-        Me.PictureBox1.TabStop = False
         '
         'Employee_Name
         '
@@ -195,6 +186,20 @@ Partial Class FRM_DTR_EXPORTS
         '
         Me.ND_RD_SUN_LH.Text = "ND RD SUN LH"
         Me.ND_RD_SUN_LH.Width = 110
+        '
+        'OT_REG
+        '
+        Me.OT_REG.Text = "OT REG"
+        Me.OT_REG.Width = 90
+        '
+        'PictureBox1
+        '
+        Me.PictureBox1.BackColor = System.Drawing.Color.Teal
+        Me.PictureBox1.Location = New System.Drawing.Point(29, 167)
+        Me.PictureBox1.Name = "PictureBox1"
+        Me.PictureBox1.Size = New System.Drawing.Size(1395, 106)
+        Me.PictureBox1.TabIndex = 8
+        Me.PictureBox1.TabStop = False
         '
         'Label1
         '
@@ -345,9 +350,8 @@ Partial Class FRM_DTR_EXPORTS
         Me.Lbl_Client_Name.ForeColor = System.Drawing.Color.White
         Me.Lbl_Client_Name.Location = New System.Drawing.Point(229, 194)
         Me.Lbl_Client_Name.Name = "Lbl_Client_Name"
-        Me.Lbl_Client_Name.Size = New System.Drawing.Size(135, 23)
+        Me.Lbl_Client_Name.Size = New System.Drawing.Size(0, 23)
         Me.Lbl_Client_Name.TabIndex = 608
-        Me.Lbl_Client_Name.Text = "Client Name:"
         '
         'Lbl_Client_Address
         '
@@ -357,9 +361,8 @@ Partial Class FRM_DTR_EXPORTS
         Me.Lbl_Client_Address.ForeColor = System.Drawing.Color.White
         Me.Lbl_Client_Address.Location = New System.Drawing.Point(229, 230)
         Me.Lbl_Client_Address.Name = "Lbl_Client_Address"
-        Me.Lbl_Client_Address.Size = New System.Drawing.Size(86, 23)
+        Me.Lbl_Client_Address.Size = New System.Drawing.Size(0, 23)
         Me.Lbl_Client_Address.TabIndex = 609
-        Me.Lbl_Client_Address.Text = "Address"
         '
         'Lbl_ClientID
         '
@@ -369,9 +372,8 @@ Partial Class FRM_DTR_EXPORTS
         Me.Lbl_ClientID.ForeColor = System.Drawing.Color.White
         Me.Lbl_ClientID.Location = New System.Drawing.Point(911, 230)
         Me.Lbl_ClientID.Name = "Lbl_ClientID"
-        Me.Lbl_ClientID.Size = New System.Drawing.Size(95, 23)
+        Me.Lbl_ClientID.Size = New System.Drawing.Size(0, 23)
         Me.Lbl_ClientID.TabIndex = 611
-        Me.Lbl_ClientID.Text = "Client ID"
         '
         'Label7
         '
@@ -384,11 +386,6 @@ Partial Class FRM_DTR_EXPORTS
         Me.Label7.Size = New System.Drawing.Size(104, 23)
         Me.Label7.TabIndex = 610
         Me.Label7.Text = "Client ID:"
-        '
-        'OT_REG
-        '
-        Me.OT_REG.Text = "OT REG"
-        Me.OT_REG.Width = 90
         '
         'FRM_DTR_EXPORTS
         '

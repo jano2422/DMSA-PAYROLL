@@ -21,11 +21,11 @@ Module Mod_Excel
 
 
             With FRM_DTR_BIOMETRIC
-
+                .GView_DTR.Rows.Clear()
                 For i = 1 To 17
                     .GView_DTR.Rows.Add()
                 Next
-
+                .Lbl_IDNumber.Text = GlobalVariables.DTR_Selected_Employee_ID
                 .Lbl_Name.Text = worksheet.Cells(10, 3).Value
                 .Lbl_Period.Text = Mid(worksheet.Cells(6, 3).Value, 8, 20)
 
@@ -39,8 +39,8 @@ Module Mod_Excel
                     End If
                 Next
 
+                Rearrange_Excel_NS_DTR(excelApp, workbook, worksheet, iCol_Date)
 
-                Rearrange_Excel_NS_DTR(.Chk_NighShift.Checked, excelApp, workbook, worksheet, iCol_Date)
 
             End With
 
@@ -74,7 +74,7 @@ Module Mod_Excel
 
     End Sub
 
-    Private Sub Rearrange_Excel_NS_DTR(NightShiftCheckBoxState As Boolean, excelApp As Application, workbook As Workbook, worksheet As Worksheet, refDateTimeCol As Integer)
+    Private Sub Rearrange_Excel_NS_DTR(excelApp As Application, workbook As Workbook, worksheet As Worksheet, refDateTimeCol As Integer)
 
 
 
@@ -125,6 +125,22 @@ Module Mod_Excel
             End While
 
 
+            Dim firstRawDataItem As Tuple(Of DateTime, String, String) = rawData.OrderBy(Function(x) x.Item1).FirstOrDefault()
+            Dim sFlagShift As String
+            If firstRawDataItem IsNot Nothing Then
+                ' Extract the day number from the DateTime value (e.g., "10" from "12/10/2024")
+                Dim dayNumber As Integer = firstRawDataItem.Item1.Day
+                sFlagShift = Check_All_FlagShift_IfSame_Values(.GView_Schedule, dayNumber)
+                Console.WriteLine($"First DateTime: {firstRawDataItem.Item1}")
+                Console.WriteLine($"Extracted Day Number: {dayNumber}")
+            Else
+                MessageBox.Show("Error: No initial date found in DTR file.",
+                    "No Data Found", MessageBoxButtons.OK, MessageBoxIcon.Error)
+                Exit Sub
+            End If
+
+
+
             ' Process data into time windows
             Dim processedData As New List(Of Object)()
             Dim windowStart As DateTime? = Nothing
@@ -137,7 +153,7 @@ Module Mod_Excel
                 Dim day = entry.Item2
                 Dim time = entry.Item1
 
-                If NightShiftCheckBoxState Then
+                If sFlagShift = "NS" Then
                     ' Night shift logic
                     If windowStart Is Nothing OrElse entryDate > windowEnd Then
                         ' Save the current window
@@ -224,7 +240,55 @@ Module Mod_Excel
                 existingRowIndex += 1
             Next
 
+
         End With
     End Sub
+    Private Function Check_All_FlagShift_IfSame_Values(DGVIEW_DTR_BIOMETRIC_SCHED As DataGridView, FirstDayNum As Integer) As String
+        Dim allMatch As Boolean = True ' Variable to check if all are the same
+        Dim flagShifts As New List(Of String)() ' Store all matched cell(4) values
+
+        ' Determine range to check in DGVIEW_DTR_BIOMETRIC_SCHED based on DayNum
+        Dim validRange As IEnumerable(Of DataGridViewRow) = Nothing
+
+        If FirstDayNum >= 1 AndAlso FirstDayNum <= 15 Then
+            ' If DayNum is between 1-15, check rows with cells(0) between 0-14
+            validRange = DGVIEW_DTR_BIOMETRIC_SCHED.Rows.Cast(Of DataGridViewRow)().Where(Function(r) Not r.IsNewRow AndAlso Integer.TryParse(r.Cells(0)?.Value?.ToString(), New Integer()) AndAlso Integer.Parse(r.Cells(0)?.Value?.ToString()) >= 0 AndAlso Integer.Parse(r.Cells(0)?.Value?.ToString()) <= 14)
+        ElseIf FirstDayNum >= 16 AndAlso FirstDayNum <= 31 Then
+            ' If DayNum is between 16-31, check rows with cells(0) between 16-31
+            validRange = DGVIEW_DTR_BIOMETRIC_SCHED.Rows.Cast(Of DataGridViewRow)().Where(Function(r) Not r.IsNewRow AndAlso Integer.TryParse(r.Cells(0)?.Value?.ToString(), New Integer()) AndAlso Integer.Parse(r.Cells(0)?.Value?.ToString()) >= 16 AndAlso Integer.Parse(r.Cells(0)?.Value?.ToString()) <= 31)
+        Else
+            ' DayNum is out of expected range
+            Return Nothing
+        End If
+
+        ' Loop through each valid range row
+        For Each row In validRange
+            Dim schedDayNum As String = row.Cells(0)?.Value?.ToString()
+            If Not String.IsNullOrWhiteSpace(schedDayNum) Then
+                Dim cell4Value = row.Cells(4)?.Value?.ToString()
+                If Not String.IsNullOrWhiteSpace(cell4Value) Then
+                    flagShifts.Add(cell4Value) ' Store matched value
+                Else
+                    allMatch = False
+                    Exit For
+                End If
+            Else
+                allMatch = False
+                Exit For
+            End If
+        Next
+
+        ' Verify if all values in flagShifts are the same
+        If flagShifts.Count > 0 AndAlso allMatch Then
+            Dim uniqueValues = flagShifts.Distinct().ToList()
+            If uniqueValues.Count = 1 Then
+                Return uniqueValues(0) ' Return the matched value
+            Else
+                Return Nothing ' If values are not the same
+            End If
+        Else
+            Return Nothing
+        End If
+    End Function
 
 End Module

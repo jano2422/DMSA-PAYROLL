@@ -4,55 +4,122 @@ Imports Spire.Pdf.Conversion
 Public Class FRM_DTR_BIOMETRIC
 
     Private Sub Btn_DTR_Click(sender As Object, e As EventArgs) Handles Btn_DTR.Click
-
         If Now.Year = 2026 Then
             MsgBox("Trial Period Ends")
             End
         End If
+        Call Show_Employee_Schedule(GlobalVariables.DTR_Selected_Employee_ID, "No", 0) 'Temporary - Should be from the selected Employee 
 
+        Dim szSelectedEmpName As String = GlobalVariables.DTR_Selected_Employee_Name
 
-        Try
-            OpenFileDialog1.Title = "Upload scanned Security Guard License ID"
+        ' Split the full name into last name and first name
+        Dim nameParts() As String = szSelectedEmpName.Split(","c)
+        Dim lastName As String = nameParts(0).Trim()
+        Dim firstName As String = If(nameParts.Length > 1, nameParts(1).Trim(), "")
 
-            ' Set the file filter to allow only PDF and JPEG files
-            OpenFileDialog1.Filter = "PDF Files (*.pdf)|*.pdf|All Files (*.*)|*.*"
+        ' Prompt user to select a directory
+        Using folderBrowser As New FolderBrowserDialog()
+            folderBrowser.Description = "Select a directory containing the files"
+            folderBrowser.SelectedPath = "C:\Users\johnc\Downloads\Software Projects\Project 1\DTR"
 
+            If folderBrowser.ShowDialog() = DialogResult.OK Then
+                Dim selectedDirectory As String = folderBrowser.SelectedPath
 
-        Catch ex As Exception
-            MsgBox(ex.Message, vbCritical, "Check Map Drive")
-        End Try
+                ' Filter files in the selected directory
+                Dim filteredFiles As List(Of String) = Directory.GetFiles(selectedDirectory, "*.pdf") _
+                .Where(Function(file) Path.GetFileName(file).IndexOf(lastName, StringComparison.OrdinalIgnoreCase) >= 0 _
+                    OrElse Path.GetFileName(file).IndexOf(firstName, StringComparison.OrdinalIgnoreCase) >= 0).ToList()
 
-        GView_DTR.Rows.Clear()
+                ' If no matching files are found, notify the user
+                If filteredFiles.Count = 0 Then
+                    MsgBox("No files found containing the selected employee's name.", vbExclamation, "No Files Found")
+                    Exit Sub
+                End If
 
-
-        Dim result As DialogResult = OpenFileDialog1.ShowDialog()
-
-
-        If result = 1 Then
-
-            'Initialize an instance of PdfDocument class
-            Dim pdf As PdfDocument = New PdfDocument()
-            'Load the PDF document
-            pdf.LoadFromFile(OpenFileDialog1.FileName)
-
-            'Save the PDF document to XLSX
-            'pdf.SaveToFile("D:\01 - Software Development\Delta Maroon Security Agency\DMSA_System\bin\Debug\PdfToExcel.xlsx", FileFormat.XLSX)
-            Dim filePath As String = "C:\Users\johnc\Downloads\Software Projects\Project 1\DMSA_System\bin\Debug\PdfToExcel.xlsx"
-
-            pdf.SaveToFile(filePath, FileFormat.XLSX)
-            'pdf.SaveToFile("Z:\DMSA_SYSTEM\Reports\PdfToExcel.xlsx", FileFormat.XLSX)
-
-            ' Connect with created excel file PdfToExcel.xlsx
-            Call Connect_to_Excel_DTR()
-
-
-        Else
-
-            MsgBox("Please Select a valid .pdf or .jpg file.", vbCritical, "Nothing was selected")
-            Exit Sub
-        End If
-
+                ' Create and show the custom file selection dialog
+                ShowModernFileSelectionForm(filteredFiles)
+            End If
+        End Using
     End Sub
+
+
+    Private Sub ShowModernFileSelectionForm(filteredFiles As List(Of String))
+        Dim fileSelectionForm As New Form()
+
+        ' Set basic properties of the form
+        With fileSelectionForm
+            .Text = "Select a File"
+            .Size = New Size(600, 400)
+            .StartPosition = FormStartPosition.CenterScreen
+            .FormBorderStyle = FormBorderStyle.FixedDialog
+            .MaximizeBox = False
+            .MinimizeBox = False
+            .ShowInTaskbar = False
+        End With
+
+        ' Create a ListBox to show filtered files
+        Dim fileListBox As New ListBox() With {
+        .Dock = DockStyle.Top,
+        .Height = 250
+    }
+
+        fileListBox.Items.AddRange(filteredFiles.Select(Function(f) Path.GetFileName(f)).ToArray())
+
+        ' Create a Select button
+        Dim selectButton As New Button() With {
+        .Text = "Select",
+        .Dock = DockStyle.Bottom,
+        .Height = 40
+    }
+
+        ' Create a Cancel button
+        Dim cancelButton As New Button() With {
+        .Text = "Cancel",
+        .Dock = DockStyle.Bottom,
+        .Height = 40
+    }
+
+        ' Add controls to the form
+        fileSelectionForm.Controls.Add(fileListBox)
+        fileSelectionForm.Controls.Add(selectButton)
+        fileSelectionForm.Controls.Add(cancelButton)
+
+        ' Handle Select button click
+        AddHandler selectButton.Click, Sub()
+                                           If fileListBox.SelectedIndex >= 0 Then
+                                               Dim selectedFile As String = filteredFiles(fileListBox.SelectedIndex)
+
+                                               ' Process the selected file
+                                               Dim pdf As PdfDocument = New PdfDocument()
+                                               pdf.LoadFromFile(selectedFile)
+
+                                               Dim filePath As String = "C:\Users\johnc\Downloads\Software Projects\Project 1\DMSA_System\bin\Debug\PdfToExcel.xlsx"
+                                               pdf.SaveToFile(filePath, FileFormat.XLSX)
+
+
+                                               fileSelectionForm.Close()
+
+                                               Call Connect_to_Excel_DTR()
+                                               Call Calculate_DTR()
+                                               Call ProcessHoursBreakdown()
+
+                                           Else
+                                               MsgBox("Please select a file.", vbExclamation, "No File Selected")
+                                           End If
+                                       End Sub
+
+        ' Handle Cancel button click
+        AddHandler cancelButton.Click, Sub()
+                                           fileSelectionForm.Close()
+                                       End Sub
+
+        ' Show the custom file selection dialog
+        fileSelectionForm.ShowDialog()
+    End Sub
+
+
+
+
 
     Private Sub FRM_BIOMETRIC_DTR_Load(sender As Object, e As EventArgs) Handles MyBase.Load
 
@@ -83,17 +150,13 @@ Public Class FRM_DTR_BIOMETRIC
         End Try
     End Function
 
-    Private Sub Btn_Calculate_Click(sender As Object, e As EventArgs) Handles Btn_Calculate.Click
-
-        If Chk_NighShift.Checked = True Then
-            Call Calculate_DTR("night shift")
-        Else
-            Call Calculate_DTR("morning shift")
-        End If
-
-
+    Private Sub Btn_Calculate_Click(sender As Object, e As EventArgs)
 
     End Sub
+
+
+
+
 
 
 
@@ -122,432 +185,155 @@ Public Class FRM_DTR_BIOMETRIC
 
     End Sub
 
-    Private Sub Btn_Hours_Breakdown_Click(sender As Object, e As EventArgs) Handles Btn_Hours_Breakdown.Click
-
-
+    Private Sub Btn_Hours_Breakdown_Click(sender As Object, e As EventArgs)
+        ProcessHoursBreakdown()
+    End Sub
+    Private Sub ProcessHoursBreakdown()
+        ' Loop through rows in GView_DTR
         For iRow = 0 To GView_DTR.Rows.Count - 3
-
+            ' Exit if cell(1) is empty
             If GView_DTR.Rows(iRow).Cells(1).Value = "" Then
                 Exit For
             End If
 
-            ' Regular Days
-            If GView_DTR.Rows(iRow).Cells(1).Value = "Sunday" Then
+            ' Parse time and extract values
+            Dim parsedTime_DTR_IN As DateTime
+            Parsed_StrToDate(GView_DTR.Rows(iRow).Cells(2).Value, parsedTime_DTR_IN)
+            Dim reportedTime As Integer = parsedTime_DTR_IN.Hour
+            Dim totalHours As Double = CDbl(GView_DTR.Rows(iRow).Cells(12).Value)
 
-                If GView_DTR.Rows(iRow).DefaultCellStyle.BackColor = Color.LightGreen Then ' Sunday Legal Holiday 
-                    ' Check if AM or PM
-                    ' Common Code for all conditions, just changing the alloction to cells
-                    ' ========================================================================================================================================================
+            Dim regHours As Double = 8 ' Standard regular hours
+            Dim otHours As Double = 0
+            Dim isMorningShift As Boolean = 22 - reportedTime > 10 ' Morning shift logic (before 12 PM)
 
-                    ' Parsed DTR Time IN
-                    Dim parsedTime_DTR_IN As DateTime = DateTime.ParseExact(GView_DTR.Rows(iRow).Cells(2).Value, "h:mm tt", Nothing)
-                    Dim DTR_militaryTime_DTR_IN As String = parsedTime_DTR_IN.ToString("HH")
+            ' Reset all current row columns (13 to 24) to 0
+            ResetCells(GView_DTR.Rows(iRow), 13, 24)
 
-                    If 22 - CInt(DTR_militaryTime_DTR_IN) > 10 Then ' Morning Shift ( Meaning reported to work on or before 12PM ) 
-                        If GView_DTR.Rows(iRow).Cells(12).Value >= 8 Then ' For regular days
+            ' Process regular hours and OT logic
+            ProcessRegularAndOTHours(GView_DTR.Rows(iRow), totalHours, regHours, otHours, isMorningShift)
 
-                            GView_DTR.Rows(iRow).Cells(13).Value = 0 ' Reg Hours
-                            GView_DTR.Rows(iRow).Cells(14).Value = 0 ' Reg Sunday
-                            GView_DTR.Rows(iRow).Cells(15).Value = 0 ' Reg SH
-                            GView_DTR.Rows(iRow).Cells(16).Value = 0 ' Reg LH
-                            GView_DTR.Rows(iRow).Cells(17).Value = 0 ' Reg RD SUN SH
-                            GView_DTR.Rows(iRow).Cells(18).Value = 8 ' Reg RD SUN LH
-                            GView_DTR.Rows(iRow).Cells(19).Value = 0 ' ND
-                            GView_DTR.Rows(iRow).Cells(20).Value = 0 ' ND
-                            GView_DTR.Rows(iRow).Cells(21).Value = 0 ' ND
-                            GView_DTR.Rows(iRow).Cells(22).Value = 0 ' ND
-                            GView_DTR.Rows(iRow).Cells(23).Value = 0 ' ND
-                            GView_DTR.Rows(iRow).Cells(24).Value = 0 ' ND
+            ' Set OT value in the last column
+            GView_DTR.Rows(iRow).Cells(25).Value = otHours
+        Next
 
+        ' Array to store column indices for each hour type
+        Dim columns As Integer() = {13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25}
+        Dim totals(12) As Double ' Initialize totals array
 
+        ' Sum values for rows 0 to 16
+        For i = 0 To 16
+            For j = 0 To columns.Length - 1
+                totals(j) += CDbl(GView_DTR.Rows(i).Cells(columns(j)).Value)
+            Next
+        Next
 
+        ' Assign totals to row 17
+        For j = 0 To columns.Length - 1
+            GView_DTR.Rows(17).Cells(columns(j)).Value = totals(j)
+        Next
+    End Sub
 
-                            ' Get OT ( As Puregold is just providing FIX allowance for the OT, hours exceeding 8 hours will just be a regular OT, even if Sunday or Holiday )
-                            GView_DTR.Rows(iRow).Cells(25).Value = CDbl(GView_DTR.Rows(iRow).Cells(12).Value) - CDbl(GView_DTR.Rows(iRow).Cells(18).Value)
+    ' Helper function to handle regular hours and OT calculation
+    Private Sub ProcessRegularAndOTHours(row As DataGridViewRow, totalHours As Double, regHours As Double, ByRef otHours As Double, isMorningShift As Boolean)
+        ' Extract first day from the cell value (e.g., "Sunday - Monday" or "Saturday - Sunday")
+        Dim firstDay As String = String.Empty
+        Dim secondDay As String = String.Empty
 
-                        Else ' If below 8 hours rendered, just get the value of Total_Hours
+        If row.Cells(1).Value IsNot Nothing AndAlso row.Cells(1).Value.ToString().Contains("-") Then
+            ' Split only if the "-" exists
+            Dim parts As String() = row.Cells(1).Value.ToString().Split("-"c)
+            If parts.Length >= 2 Then
+                firstDay = parts(0).Trim()
+                secondDay = parts(1).Trim()
+            Else
+                ' Handle unexpected split results if somehow there's only one part
+                firstDay = parts(0).Trim()
+                secondDay = String.Empty ' or handle the default logic for only one part
+            End If
+        Else
+            ' Handle the case where there's no "-" at all
+            firstDay = row.Cells(1).Value.ToString().Trim()
+            secondDay = String.Empty
+        End If
 
-                            GView_DTR.Rows(iRow).Cells(13).Value = 0
-                            GView_DTR.Rows(iRow).Cells(14).Value = 0
-                            GView_DTR.Rows(iRow).Cells(15).Value = 0
-                            GView_DTR.Rows(iRow).Cells(16).Value = 0
-                            GView_DTR.Rows(iRow).Cells(17).Value = 0 ' Reg RD SUN SH
-                            GView_DTR.Rows(iRow).Cells(18).Value = GView_DTR.Rows(iRow).Cells(12).Value  ' Reg RD SUN LH
-                            GView_DTR.Rows(iRow).Cells(19).Value = 0 ' ND
-                            GView_DTR.Rows(iRow).Cells(20).Value = 0 ' ND
-                            GView_DTR.Rows(iRow).Cells(21).Value = 0 ' ND
-                            GView_DTR.Rows(iRow).Cells(22).Value = 0 ' ND
-                            GView_DTR.Rows(iRow).Cells(23).Value = 0 ' ND
-                            GView_DTR.Rows(iRow).Cells(24).Value = 0 ' NDfy
+        ' Determine where to assign the regular and OT hours
+        If firstDay = "Sunday" Or secondDay = "Sunday" Then
+            Select Case row.DefaultCellStyle.BackColor
+                Case Color.LightGreen ' Sunday Legal Holiday
+                    AssignHours(row, totalHours, regHours, 18, otHours, isMorningShift)
+                Case Color.Yellow ' Sunday Special Holiday
+                    AssignHours(row, totalHours, regHours, 17, otHours, isMorningShift)
+                Case Else ' Sunday (Non-Holiday)
+                    AssignHours(row, totalHours, regHours, 14, otHours, isMorningShift)
+            End Select
+        Else ' Not Sunday
+            Select Case row.DefaultCellStyle.BackColor
+                Case Color.LightGreen ' Legal Holiday
+                    AssignHours(row, totalHours, regHours, 16, otHours, isMorningShift)
+                Case Color.Yellow ' Special Holiday
+                    AssignHours(row, totalHours, regHours, 15, otHours, isMorningShift)
+                Case Else ' Regular Day
+                    AssignHours(row, totalHours, regHours, 13, otHours, isMorningShift)
+            End Select
+        End If
+    End Sub
 
-
-                            ' No OT since rendered time < 8 hours
-                            GView_DTR.Rows(iRow).Cells(25).Value = 0
-
-                        End If
-                    Else ' Night Shift ( with Night Diff )
-
-                        ' only 10PM onwards for ND
-                        ' Below 10PM will just be regular hours
-
-                    End If
-                    ' ========================================================================================================================================================
-
-                ElseIf GView_DTR.Rows(iRow).DefaultCellStyle.BackColor = Color.Yellow Then ' Sunday Special Holiday
-                    ' Check if AM or PM
-
-                    ' Common Code for all conditions, just changing the alloction to cells
-                    ' ========================================================================================================================================================
-
-                    ' Parsed DTR Time IN
-                    Dim parsedTime_DTR_IN As DateTime = DateTime.ParseExact(GView_DTR.Rows(iRow).Cells(2).Value, "h:mm tt", Nothing)
-                    Dim DTR_militaryTime_DTR_IN As String = parsedTime_DTR_IN.ToString("HH")
-
-                    If 22 - CInt(DTR_militaryTime_DTR_IN) > 10 Then ' Morning Shift ( Meaning reported to work on or before 12PM ) 
-                        If GView_DTR.Rows(iRow).Cells(12).Value >= 8 Then ' For regular days
-
-                            GView_DTR.Rows(iRow).Cells(13).Value = 0 ' Reg Hours
-                            GView_DTR.Rows(iRow).Cells(14).Value = 0 ' Reg Sunday
-                            GView_DTR.Rows(iRow).Cells(15).Value = 0 ' Reg SH
-                            GView_DTR.Rows(iRow).Cells(16).Value = 0 ' Reg LH
-                            GView_DTR.Rows(iRow).Cells(17).Value = 8 ' Reg RD SUN SH
-                            GView_DTR.Rows(iRow).Cells(18).Value = 0 ' Reg RD SUN LH
-                            GView_DTR.Rows(iRow).Cells(19).Value = 0 ' ND
-                            GView_DTR.Rows(iRow).Cells(20).Value = 0 ' ND
-                            GView_DTR.Rows(iRow).Cells(21).Value = 0 ' ND
-                            GView_DTR.Rows(iRow).Cells(22).Value = 0 ' ND
-                            GView_DTR.Rows(iRow).Cells(23).Value = 0 ' ND
-                            GView_DTR.Rows(iRow).Cells(24).Value = 0 ' ND
-
-
-
-                            ' Get OT ( As Puregold is just providing FIX allowance for the OT, hours exceeding 8 hours will just be a regular OT, even if Sunday or Holiday )
-                            GView_DTR.Rows(iRow).Cells(25).Value = CDbl(GView_DTR.Rows(iRow).Cells(12).Value) - CDbl(GView_DTR.Rows(iRow).Cells(17).Value)
-
-                        Else ' If below 8 hours rendered, just get the value of Total_Hours
-
-                            GView_DTR.Rows(iRow).Cells(13).Value = 0
-                            GView_DTR.Rows(iRow).Cells(14).Value = 0
-                            GView_DTR.Rows(iRow).Cells(15).Value = 0
-                            GView_DTR.Rows(iRow).Cells(16).Value = 0
-                            GView_DTR.Rows(iRow).Cells(17).Value = GView_DTR.Rows(iRow).Cells(12).Value  ' Reg RD SUN SH
-                            GView_DTR.Rows(iRow).Cells(18).Value = 0
-                            GView_DTR.Rows(iRow).Cells(19).Value = 0 ' ND
-                            GView_DTR.Rows(iRow).Cells(20).Value = 0 ' ND
-                            GView_DTR.Rows(iRow).Cells(21).Value = 0 ' ND
-                            GView_DTR.Rows(iRow).Cells(22).Value = 0 ' ND
-                            GView_DTR.Rows(iRow).Cells(23).Value = 0 ' ND
-                            GView_DTR.Rows(iRow).Cells(24).Value = 0 ' ND
-
-
-                            ' No OT since rendered time < 8 hours
-                            GView_DTR.Rows(iRow).Cells(25).Value = 0
-
-                        End If
-                    Else ' Night Shift ( with Night Diff )
-
-                        ' only 10PM onwards for ND
-                        ' Below 10PM will just be regular hours
-
-                    End If
-                    ' ========================================================================================================================================================
-
-                ElseIf GView_DTR.Rows(iRow).DefaultCellStyle.BackColor = Color.Empty Or GView_DTR.Rows(GView_DTR.CurrentCell.RowIndex).DefaultCellStyle.BackColor = Color.LightBlue Then ' Sunday (Non Holday)
-                    ' Check if AM or PM
-
-                    ' Common Code for all conditions, just changing the alloction to cells
-                    ' ========================================================================================================================================================
-
-                    ' Parsed DTR Time IN
-                    Dim parsedTime_DTR_IN As DateTime = DateTime.ParseExact(GView_DTR.Rows(iRow).Cells(2).Value, "h:mm tt", Nothing)
-                    Dim DTR_militaryTime_DTR_IN As String = parsedTime_DTR_IN.ToString("HH")
-
-                    If 22 - CInt(DTR_militaryTime_DTR_IN) > 10 Then ' Morning Shift ( Meaning reported to work on or before 12PM ) 
-                        If GView_DTR.Rows(iRow).Cells(12).Value >= 8 Then ' For regular days
-
-                            GView_DTR.Rows(iRow).Cells(13).Value = 0 ' Reg Hours
-                            GView_DTR.Rows(iRow).Cells(14).Value = 8 ' Reg Sunday
-                            GView_DTR.Rows(iRow).Cells(15).Value = 0 ' Reg SH
-                            GView_DTR.Rows(iRow).Cells(16).Value = 0 ' Reg LH
-                            GView_DTR.Rows(iRow).Cells(17).Value = 0 ' Reg RD SUN SH
-                            GView_DTR.Rows(iRow).Cells(18).Value = 0 ' Reg RD SUN LH
-                            GView_DTR.Rows(iRow).Cells(19).Value = 0 ' ND
-                            GView_DTR.Rows(iRow).Cells(20).Value = 0 ' ND
-                            GView_DTR.Rows(iRow).Cells(21).Value = 0 ' ND
-                            GView_DTR.Rows(iRow).Cells(22).Value = 0 ' ND
-                            GView_DTR.Rows(iRow).Cells(23).Value = 0 ' ND
-                            GView_DTR.Rows(iRow).Cells(24).Value = 0 ' ND
-
-
-
-                            ' Get OT ( As Puregold is just providing FIX allowance for the OT, hours exceeding 8 hours will just be a regular OT, even if Sunday or Holiday )
-                            GView_DTR.Rows(iRow).Cells(25).Value = CDbl(GView_DTR.Rows(iRow).Cells(12).Value) - CDbl(GView_DTR.Rows(iRow).Cells(14).Value)
-
-                        Else ' If below 8 hours rendered, just get the value of Total_Hours
-
-                            GView_DTR.Rows(iRow).Cells(13).Value = 0
-                            GView_DTR.Rows(iRow).Cells(14).Value = GView_DTR.Rows(iRow).Cells(12).Value ' Sunday
-                            GView_DTR.Rows(iRow).Cells(15).Value = 0
-                            GView_DTR.Rows(iRow).Cells(16).Value = 0
-                            GView_DTR.Rows(iRow).Cells(17).Value = 0  ' Reg RD SUN SH
-                            GView_DTR.Rows(iRow).Cells(18).Value = 0
-                            GView_DTR.Rows(iRow).Cells(19).Value = 0 ' ND
-                            GView_DTR.Rows(iRow).Cells(20).Value = 0 ' ND
-                            GView_DTR.Rows(iRow).Cells(21).Value = 0 ' ND
-                            GView_DTR.Rows(iRow).Cells(22).Value = 0 ' ND
-                            GView_DTR.Rows(iRow).Cells(23).Value = 0 ' ND
-                            GView_DTR.Rows(iRow).Cells(24).Value = 0 ' ND
-
-
-                            ' No OT since rendered time < 8 hours
-                            GView_DTR.Rows(iRow).Cells(25).Value = 0
-
-                        End If
-                    Else ' Night Shift ( with Night Diff )
-
-                        ' only 10PM onwards for ND
-                        ' Below 10PM will just be regular hours
-
-                    End If
-                    ' ========================================================================================================================================================
-
-
-
+    ' Helper function to assign hours
+    Private Sub AssignHours(row As DataGridViewRow, totalHours As Double, regHours As Double, cellIndex As Integer, ByRef otHours As Double, isMorningShift As Boolean)
+        If isMorningShift Then
+            If totalHours >= regHours Then
+                row.Cells(cellIndex).Value = regHours 'Set cellIndex to reg hours
+                otHours = totalHours - regHours 'Set the otHours
+            Else
+                row.Cells(cellIndex).Value = totalHours
+                otHours = 0
+            End If
+        Else
+            ' Draft NightShift
+            ' Extract first day from the cell value (e.g., "Sunday - Monday" or "Saturday - Sunday")
+            Dim firstDay As String = row.Cells(1).Value.Split("-"c)(0).Trim()
+            Dim secondDay As String = row.Cells(1).Value.Split("-"c)(1).Trim()
+            ' Determine where to assign the regular and OT hours
+            If firstDay = "Sunday" Then
+                If totalHours >= regHours Then
+                    row.Cells(cellIndex).Value = regHours 'Set cellIndex to reg hours
+                    otHours = totalHours - regHours 'Set the otHours
+                Else
+                    row.Cells(cellIndex).Value = totalHours
+                    otHours = 0
                 End If
 
-            ElseIf GView_DTR.Rows(iRow).Cells(1).Value <> "Sunday" Then ' Not Sunday
+            ElseIf secondDay = "Sunday" Then
 
-                If GView_DTR.Rows(iRow).DefaultCellStyle.BackColor = Color.LightGreen Then ' Legal Holiday 
-                    ' Check if AM or PM
+                If totalHours >= regHours Then
+                    row.Cells(cellIndex).Value = regHours 'Set cellIndex to reg hours
+                    otHours = totalHours - regHours 'Set the otHours
+                Else
+                    row.Cells(cellIndex).Value = totalHours
+                    otHours = 0
+                End If
 
-                    ' Common Code for all conditions, just changing the alloction to cells
-                    ' ========================================================================================================================================================
-
-                    ' Parsed DTR Time IN
-                    Dim parsedTime_DTR_IN As DateTime = DateTime.ParseExact(GView_DTR.Rows(iRow).Cells(2).Value, "h:mm tt", Nothing)
-                    Dim DTR_militaryTime_DTR_IN As String = parsedTime_DTR_IN.ToString("HH")
-
-                    If 22 - CInt(DTR_militaryTime_DTR_IN) > 10 Then ' Morning Shift ( Meaning reported to work on or before 12PM ) 
-                        If GView_DTR.Rows(iRow).Cells(12).Value >= 8 Then ' For regular days
-
-                            GView_DTR.Rows(iRow).Cells(13).Value = 0 ' Reg Hours
-                            GView_DTR.Rows(iRow).Cells(14).Value = 0 ' Reg Sunday
-                            GView_DTR.Rows(iRow).Cells(15).Value = 0 ' Reg SH
-                            GView_DTR.Rows(iRow).Cells(16).Value = 8 ' Reg LH
-                            GView_DTR.Rows(iRow).Cells(17).Value = 0 ' Reg RD SUN SH
-                            GView_DTR.Rows(iRow).Cells(18).Value = 0 ' Reg RD SUN LH
-                            GView_DTR.Rows(iRow).Cells(19).Value = 0 ' ND
-                            GView_DTR.Rows(iRow).Cells(20).Value = 0 ' ND
-                            GView_DTR.Rows(iRow).Cells(21).Value = 0 ' ND
-                            GView_DTR.Rows(iRow).Cells(22).Value = 0 ' ND
-                            GView_DTR.Rows(iRow).Cells(23).Value = 0 ' ND
-                            GView_DTR.Rows(iRow).Cells(24).Value = 0 ' ND
-
-
-
-                            ' Get OT ( As Puregold is just providing FIX allowance for the OT, hours exceeding 8 hours will just be a regular OT, even if Sunday or Holiday )
-                            GView_DTR.Rows(iRow).Cells(25).Value = CDbl(GView_DTR.Rows(iRow).Cells(12).Value) - CDbl(GView_DTR.Rows(iRow).Cells(16).Value)
-
-                        Else ' If below 8 hours rendered, just get the value of Total_Hours
-
-                            GView_DTR.Rows(iRow).Cells(13).Value = 0 'Reg Hours
-                            GView_DTR.Rows(iRow).Cells(14).Value = 0 'Reg Sunday
-                            GView_DTR.Rows(iRow).Cells(15).Value = 0 'Reg SH
-                            GView_DTR.Rows(iRow).Cells(16).Value = GView_DTR.Rows(iRow).Cells(12).Value ' Reg LH
-                            GView_DTR.Rows(iRow).Cells(17).Value = 0 ' Reg RD SUN SH
-                            GView_DTR.Rows(iRow).Cells(18).Value = 0 ' Reg RD SUN LH
-                            GView_DTR.Rows(iRow).Cells(19).Value = 0 ' ND
-                            GView_DTR.Rows(iRow).Cells(20).Value = 0 ' ND
-                            GView_DTR.Rows(iRow).Cells(21).Value = 0 ' ND
-                            GView_DTR.Rows(iRow).Cells(22).Value = 0 ' ND
-                            GView_DTR.Rows(iRow).Cells(23).Value = 0 ' ND
-                            GView_DTR.Rows(iRow).Cells(24).Value = 0 ' ND
-
-
-                            ' No OT since rendered time < 8 hours
-                            GView_DTR.Rows(iRow).Cells(25).Value = 0
-
-                        End If
-                    Else ' Night Shift ( with Night Diff )
-
-                        ' only 10PM onwards for ND
-                        ' Below 10PM will just be regular hours
-
-                    End If
-                    ' ========================================================================================================================================================
-
-                ElseIf GView_DTR.Rows(iRow).DefaultCellStyle.BackColor = Color.Yellow Then ' Special Holiday
-
-                    ' Check if AM or PM
-
-                    ' Common Code for all conditions, just changing the alloction to cells
-                    ' ========================================================================================================================================================
-
-                    ' Parsed DTR Time IN
-                    Dim parsedTime_DTR_IN As DateTime = DateTime.ParseExact(GView_DTR.Rows(iRow).Cells(2).Value, "h:mm tt", Nothing)
-                    Dim DTR_militaryTime_DTR_IN As String = parsedTime_DTR_IN.ToString("HH")
-
-                    If 22 - CInt(DTR_militaryTime_DTR_IN) > 10 Then ' Morning Shift ( Meaning reported to work on or before 12PM ) 
-                        If GView_DTR.Rows(iRow).Cells(12).Value >= 8 Then ' For regular days
-
-                            GView_DTR.Rows(iRow).Cells(13).Value = 0 ' Reg Hours
-                            GView_DTR.Rows(iRow).Cells(14).Value = 0 ' Reg Sunday
-                            GView_DTR.Rows(iRow).Cells(15).Value = 8 ' Reg SH
-                            GView_DTR.Rows(iRow).Cells(16).Value = 0 ' Reg LH
-                            GView_DTR.Rows(iRow).Cells(17).Value = 0 ' Reg RD SUN SH
-                            GView_DTR.Rows(iRow).Cells(18).Value = 0 ' Reg RD SUN LH
-                            GView_DTR.Rows(iRow).Cells(19).Value = 0 ' ND
-                            GView_DTR.Rows(iRow).Cells(20).Value = 0 ' ND
-                            GView_DTR.Rows(iRow).Cells(21).Value = 0 ' ND
-                            GView_DTR.Rows(iRow).Cells(22).Value = 0 ' ND
-                            GView_DTR.Rows(iRow).Cells(23).Value = 0 ' ND
-                            GView_DTR.Rows(iRow).Cells(24).Value = 0 ' ND
-
-
-
-                            ' Get OT ( As Puregold is just providing FIX allowance for the OT, hours exceeding 8 hours will just be a regular OT, even if Sunday or Holiday )
-                            GView_DTR.Rows(iRow).Cells(25).Value = CDbl(GView_DTR.Rows(iRow).Cells(12).Value) - CDbl(GView_DTR.Rows(iRow).Cells(15).Value)
-
-                        Else ' If below 8 hours rendered, just get the value of Total_Hours
-
-                            GView_DTR.Rows(iRow).Cells(13).Value = 0 'Reg Hours
-                            GView_DTR.Rows(iRow).Cells(14).Value = 0 'Reg Sunday
-                            GView_DTR.Rows(iRow).Cells(15).Value = GView_DTR.Rows(iRow).Cells(12).Value 'Reg SH
-                            GView_DTR.Rows(iRow).Cells(16).Value = 0 ' Reg LH
-                            GView_DTR.Rows(iRow).Cells(17).Value = 0 ' Reg RD SUN SH
-                            GView_DTR.Rows(iRow).Cells(18).Value = 0 ' Reg RD SUN LH
-                            GView_DTR.Rows(iRow).Cells(19).Value = 0 ' ND
-                            GView_DTR.Rows(iRow).Cells(20).Value = 0 ' ND
-                            GView_DTR.Rows(iRow).Cells(21).Value = 0 ' ND
-                            GView_DTR.Rows(iRow).Cells(22).Value = 0 ' ND
-                            GView_DTR.Rows(iRow).Cells(23).Value = 0 ' ND
-                            GView_DTR.Rows(iRow).Cells(24).Value = 0 ' ND
-
-
-                            ' No OT since rendered time < 8 hours
-                            GView_DTR.Rows(iRow).Cells(25).Value = 0
-
-                        End If
-                    Else ' Night Shift ( with Night Diff )
-
-                        ' only 10PM onwards for ND
-                        ' Below 10PM will just be regular hours
-
-                    End If
-                    ' ========================================================================================================================================================
-
-
-                ElseIf GView_DTR.Rows(iRow).DefaultCellStyle.BackColor = Color.Empty Then ' Regular Day
-                    ' Check if AM or PM
-
-                    ' Common Code for all conditions, just changing the alloction to cells
-                    ' ========================================================================================================================================================
-
-                    ' Parsed DTR Time IN
-                    Dim parsedTime_DTR_IN As DateTime = DateTime.ParseExact(GView_DTR.Rows(iRow).Cells(2).Value, "h:mm tt", Nothing)
-                    Dim DTR_militaryTime_DTR_IN As String = parsedTime_DTR_IN.ToString("HH")
-
-
-                    If 22 - CInt(DTR_militaryTime_DTR_IN) > 10 Then ' Morning Shift ( Meaning reported to work on or before 12PM ) 
-                        If GView_DTR.Rows(iRow).Cells(12).Value >= 8 Then ' For regular days
-
-                            GView_DTR.Rows(iRow).Cells(13).Value = 8 ' Reg Hours
-                            GView_DTR.Rows(iRow).Cells(14).Value = 0 ' Reg Sunday
-                            GView_DTR.Rows(iRow).Cells(15).Value = 0 ' Reg SH
-                            GView_DTR.Rows(iRow).Cells(16).Value = 0 ' Reg LH
-                            GView_DTR.Rows(iRow).Cells(17).Value = 0 ' Reg RD SUN SH
-                            GView_DTR.Rows(iRow).Cells(18).Value = 0 ' Reg RD SUN LH
-                            GView_DTR.Rows(iRow).Cells(19).Value = 0 ' ND
-                            GView_DTR.Rows(iRow).Cells(20).Value = 0 ' ND
-                            GView_DTR.Rows(iRow).Cells(21).Value = 0 ' ND
-                            GView_DTR.Rows(iRow).Cells(22).Value = 0 ' ND
-                            GView_DTR.Rows(iRow).Cells(23).Value = 0 ' ND
-                            GView_DTR.Rows(iRow).Cells(24).Value = 0 ' ND
-
-
-
-                            ' Get OT ( As Puregold is just providing FIX allowance for the OT, hours exceeding 8 hours will just be a regular OT, even if Sunday or Holiday )
-                            GView_DTR.Rows(iRow).Cells(25).Value = CDbl(GView_DTR.Rows(iRow).Cells(12).Value) - CDbl(GView_DTR.Rows(iRow).Cells(13).Value)
-
-                        Else   ' If below 8 hours rendered, just get the value of Total_Hours
-
-                            If 22 - CInt(DTR_militaryTime_DTR_IN) = 0 Then
-                                ' No need to write the Zero values in grid view if Total hours is ZERO
-                            Else
-                                GView_DTR.Rows(iRow).Cells(13).Value = GView_DTR.Rows(iRow).Cells(12).Value 'Reg Hours
-                                GView_DTR.Rows(iRow).Cells(14).Value = 0 'Reg Sunday
-                                GView_DTR.Rows(iRow).Cells(15).Value = 0 'Reg SH
-                                GView_DTR.Rows(iRow).Cells(16).Value = 0 ' Reg LH
-                                GView_DTR.Rows(iRow).Cells(17).Value = 0 ' Reg RD SUN SH
-                                GView_DTR.Rows(iRow).Cells(18).Value = 0 ' Reg RD SUN LH
-                                GView_DTR.Rows(iRow).Cells(19).Value = 0 ' ND
-                                GView_DTR.Rows(iRow).Cells(20).Value = 0 ' ND
-                                GView_DTR.Rows(iRow).Cells(21).Value = 0 ' ND
-                                GView_DTR.Rows(iRow).Cells(22).Value = 0 ' ND
-                                GView_DTR.Rows(iRow).Cells(23).Value = 0 ' ND
-                                GView_DTR.Rows(iRow).Cells(24).Value = 0 ' ND
-
-
-                                ' No OT since rendered time < 8 hours
-                                GView_DTR.Rows(iRow).Cells(25).Value = 0
-                            End If
-                        End If
-                    Else ' Night Shift ( with Night Diff )
-
-                        ' only 10PM onwards for ND
-                        ' Below 10PM will just be regular hours
-
-                    End If
-                    ' ========================================================================================================================================================
-
+            Else
+                If totalHours >= regHours Then
+                    row.Cells(cellIndex).Value = regHours 'Set cellIndex to reg hours
+                    otHours = totalHours - regHours 'Set the otHours
+                Else
+                    row.Cells(cellIndex).Value = totalHours
+                    otHours = 0
                 End If
 
             End If
 
 
-        Next
-
-
-        ' Calculate Total Hours
-
-        Dim dReg_Hours, dSun_Hours, dSH_Hours, dLH_Hours, dRD_Sun_SH_Hours, dRD_Sun_LH_Hours, dND_Reg_Hours, dND_Sun_Hours, dND_SH_Hours, dND_LH_Hours, dOT_Reg As Double
-        Dim dND_RD_Sun_SH_Hours, dND_RD_Sun_LH_Hours As Double
-
-
-
-        For i = 0 To 16
-            dReg_Hours = dReg_Hours + CDbl(GView_DTR.Rows(i).Cells(13).Value)
-            dSun_Hours = dSun_Hours + CDbl(GView_DTR.Rows(i).Cells(14).Value)
-            dSH_Hours = dSH_Hours + CDbl(GView_DTR.Rows(i).Cells(15).Value)
-            dLH_Hours = dLH_Hours + CDbl(GView_DTR.Rows(i).Cells(16).Value)
-            dRD_Sun_SH_Hours = dRD_Sun_SH_Hours + CDbl(GView_DTR.Rows(i).Cells(17).Value)
-            dRD_Sun_LH_Hours = dRD_Sun_LH_Hours + CDbl(GView_DTR.Rows(i).Cells(18).Value)
-            dND_Reg_Hours = dND_Reg_Hours + CDbl(GView_DTR.Rows(i).Cells(19).Value)
-            dND_Sun_Hours = dND_Sun_Hours + CDbl(GView_DTR.Rows(i).Cells(20).Value)
-            dND_SH_Hours = dND_SH_Hours + CDbl(GView_DTR.Rows(i).Cells(21).Value)
-            dND_LH_Hours = dND_LH_Hours + CDbl(GView_DTR.Rows(i).Cells(22).Value)
-            dND_RD_Sun_SH_Hours = dND_RD_Sun_SH_Hours + CDbl(GView_DTR.Rows(i).Cells(23).Value)
-            dND_RD_Sun_LH_Hours = dND_RD_Sun_LH_Hours + CDbl(GView_DTR.Rows(i).Cells(24).Value)
-            dOT_Reg = dOT_Reg + CDbl(GView_DTR.Rows(i).Cells(25).Value)
-        Next
-
-        GView_DTR.Rows(17).Cells(13).Value = dReg_Hours
-        GView_DTR.Rows(17).Cells(14).Value = dSun_Hours
-        GView_DTR.Rows(17).Cells(15).Value = dSH_Hours
-        GView_DTR.Rows(17).Cells(16).Value = dLH_Hours
-        GView_DTR.Rows(17).Cells(17).Value = dRD_Sun_SH_Hours
-        GView_DTR.Rows(17).Cells(18).Value = dRD_Sun_LH_Hours
-        GView_DTR.Rows(17).Cells(19).Value = dND_Reg_Hours
-        GView_DTR.Rows(17).Cells(20).Value = dND_Sun_Hours
-        GView_DTR.Rows(17).Cells(21).Value = dND_SH_Hours
-        GView_DTR.Rows(17).Cells(22).Value = dND_LH_Hours
-        GView_DTR.Rows(17).Cells(23).Value = dND_RD_Sun_SH_Hours
-        GView_DTR.Rows(17).Cells(24).Value = dND_RD_Sun_LH_Hours
-        GView_DTR.Rows(17).Cells(25).Value = dOT_Reg
-
-
+        End If
     End Sub
 
+    ' Helper function to reset cells
+    Sub ResetCells(row As DataGridViewRow, startIndex As Integer, endIndex As Integer)
+        For idx As Integer = startIndex To endIndex
+            row.Cells(idx).Value = 0
+        Next
+    End Sub
     Private Sub Chk_Sunday_CheckedChanged(sender As Object, e As EventArgs) Handles Chk_Sunday.CheckedChanged
         If Chk_Sunday.Checked = True Then
             For iRow = 1 To 16 ' Number of Days in Cut-Off

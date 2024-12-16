@@ -1,9 +1,9 @@
-﻿<Global.Microsoft.VisualBasic.CompilerServices.DesignerGenerated()> _
+﻿<Global.Microsoft.VisualBasic.CompilerServices.DesignerGenerated()>
 Partial Class FRM_DTR_BIOMETRIC
     Inherits System.Windows.Forms.Form
 
     'Form overrides dispose to clean up the component list.
-    <System.Diagnostics.DebuggerNonUserCode()> _
+    <System.Diagnostics.DebuggerNonUserCode()>
     Protected Overrides Sub Dispose(ByVal disposing As Boolean)
         Try
             If disposing AndAlso components IsNot Nothing Then
@@ -20,7 +20,7 @@ Partial Class FRM_DTR_BIOMETRIC
     'NOTE: The following procedure is required by the Windows Form Designer
     'It can be modified using the Windows Form Designer.  
     'Do not modify it using the code editor.
-    <System.Diagnostics.DebuggerStepThrough()> _
+    <System.Diagnostics.DebuggerStepThrough()>
     Private Sub InitializeComponent()
         Dim DataGridViewCellStyle19 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
         Dim DataGridViewCellStyle1 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
@@ -43,11 +43,9 @@ Partial Class FRM_DTR_BIOMETRIC
         Dim DataGridViewCellStyle18 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
         Dim DataGridViewCellStyle20 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
         Me.Panel1 = New System.Windows.Forms.Panel()
-        Me.Btn_Calculate = New System.Windows.Forms.Button()
         Me.Btn_DTR = New System.Windows.Forms.Button()
         Me.TabControl1 = New System.Windows.Forms.TabControl()
         Me.TabPage1 = New System.Windows.Forms.TabPage()
-        Me.Chk_NighShift = New System.Windows.Forms.CheckBox()
         Me.BtnSH = New System.Windows.Forms.Button()
         Me.BtnLH = New System.Windows.Forms.Button()
         Me.Chk_Sunday = New System.Windows.Forms.CheckBox()
@@ -97,17 +95,17 @@ Partial Class FRM_DTR_BIOMETRIC
         Me.Label9 = New System.Windows.Forms.Label()
         Me.Label4 = New System.Windows.Forms.Label()
         Me.GView_Schedule = New System.Windows.Forms.DataGridView()
+        Me.OpenFileDialog1 = New System.Windows.Forms.OpenFileDialog()
+        Me.PictureBox2 = New System.Windows.Forms.PictureBox()
+        Me.Label8 = New System.Windows.Forms.Label()
+        Me.Btn_Save_DTR = New System.Windows.Forms.Button()
         Me.Col_DayNum = New System.Windows.Forms.DataGridViewTextBoxColumn()
         Me.Col_Sched_in = New System.Windows.Forms.DataGridViewTextBoxColumn()
         Me.Col_Sched_Out = New System.Windows.Forms.DataGridViewTextBoxColumn()
         Me.Col_Sched_TotalHours = New System.Windows.Forms.DataGridViewTextBoxColumn()
+        Me.Col_FlagShift = New System.Windows.Forms.DataGridViewTextBoxColumn()
         Me.Col_ID = New System.Windows.Forms.DataGridViewTextBoxColumn()
         Me.Col_Attendance = New System.Windows.Forms.DataGridViewTextBoxColumn()
-        Me.OpenFileDialog1 = New System.Windows.Forms.OpenFileDialog()
-        Me.PictureBox2 = New System.Windows.Forms.PictureBox()
-        Me.Btn_Hours_Breakdown = New System.Windows.Forms.Button()
-        Me.Label8 = New System.Windows.Forms.Label()
-        Me.Btn_Save_DTR = New System.Windows.Forms.Button()
         Me.TabControl1.SuspendLayout()
         Me.TabPage1.SuspendLayout()
         CType(Me.PictureBox3, System.ComponentModel.ISupportInitialize).BeginInit()
@@ -126,16 +124,6 @@ Partial Class FRM_DTR_BIOMETRIC
         Me.Panel1.Name = "Panel1"
         Me.Panel1.Size = New System.Drawing.Size(1919, 32)
         Me.Panel1.TabIndex = 4
-        '
-        'Btn_Calculate
-        '
-        Me.Btn_Calculate.Font = New System.Drawing.Font("Microsoft Sans Serif", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.Btn_Calculate.Location = New System.Drawing.Point(229, 851)
-        Me.Btn_Calculate.Name = "Btn_Calculate"
-        Me.Btn_Calculate.Size = New System.Drawing.Size(173, 51)
-        Me.Btn_Calculate.TabIndex = 63
-        Me.Btn_Calculate.Text = "Calculate DTR"
-        Me.Btn_Calculate.UseVisualStyleBackColor = True
         '
         'Btn_DTR
         '
@@ -162,7 +150,6 @@ Partial Class FRM_DTR_BIOMETRIC
         'TabPage1
         '
         Me.TabPage1.BackColor = System.Drawing.Color.FromArgb(CType(CType(255, Byte), Integer), CType(CType(192, Byte), Integer), CType(CType(128, Byte), Integer))
-        Me.TabPage1.Controls.Add(Me.Chk_NighShift)
         Me.TabPage1.Controls.Add(Me.BtnSH)
         Me.TabPage1.Controls.Add(Me.BtnLH)
         Me.TabPage1.Controls.Add(Me.Chk_Sunday)
@@ -184,16 +171,6 @@ Partial Class FRM_DTR_BIOMETRIC
         Me.TabPage1.Size = New System.Drawing.Size(1852, 737)
         Me.TabPage1.TabIndex = 0
         Me.TabPage1.Text = "     DTR        "
-        '
-        'Chk_NighShift
-        '
-        Me.Chk_NighShift.AutoSize = True
-        Me.Chk_NighShift.Location = New System.Drawing.Point(407, 60)
-        Me.Chk_NighShift.Name = "Chk_NighShift"
-        Me.Chk_NighShift.Size = New System.Drawing.Size(97, 24)
-        Me.Chk_NighShift.TabIndex = 16
-        Me.Chk_NighShift.Text = "Nigh Shift"
-        Me.Chk_NighShift.UseVisualStyleBackColor = True
         '
         'BtnSH
         '
@@ -328,7 +305,6 @@ Partial Class FRM_DTR_BIOMETRIC
         '
         'GView_DTR
         '
-        Me.GView_DTR.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.DisplayedCells
         Me.GView_DTR.BorderStyle = System.Windows.Forms.BorderStyle.None
         Me.GView_DTR.ColumnHeadersBorderStyle = System.Windows.Forms.DataGridViewHeaderBorderStyle.[Single]
         Me.GView_DTR.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize
@@ -688,50 +664,13 @@ Partial Class FRM_DTR_BIOMETRIC
         '
         'GView_Schedule
         '
+        Me.GView_Schedule.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill
         Me.GView_Schedule.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize
-        Me.GView_Schedule.Columns.AddRange(New System.Windows.Forms.DataGridViewColumn() {Me.Col_DayNum, Me.Col_Sched_in, Me.Col_Sched_Out, Me.Col_Sched_TotalHours, Me.Col_ID, Me.Col_Attendance})
+        Me.GView_Schedule.Columns.AddRange(New System.Windows.Forms.DataGridViewColumn() {Me.Col_DayNum, Me.Col_Sched_in, Me.Col_Sched_Out, Me.Col_Sched_TotalHours, Me.Col_FlagShift, Me.Col_ID, Me.Col_Attendance})
         Me.GView_Schedule.Location = New System.Drawing.Point(27, 57)
         Me.GView_Schedule.Name = "GView_Schedule"
         Me.GView_Schedule.Size = New System.Drawing.Size(727, 637)
         Me.GView_Schedule.TabIndex = 2
-        '
-        'Col_DayNum
-        '
-        Me.Col_DayNum.HeaderText = "Day"
-        Me.Col_DayNum.Name = "Col_DayNum"
-        Me.Col_DayNum.Width = 140
-        '
-        'Col_Sched_in
-        '
-        Me.Col_Sched_in.HeaderText = "Sched IN"
-        Me.Col_Sched_in.Name = "Col_Sched_in"
-        Me.Col_Sched_in.Width = 120
-        '
-        'Col_Sched_Out
-        '
-        Me.Col_Sched_Out.HeaderText = "Sched OUT"
-        Me.Col_Sched_Out.Name = "Col_Sched_Out"
-        Me.Col_Sched_Out.Width = 120
-        '
-        'Col_Sched_TotalHours
-        '
-        Me.Col_Sched_TotalHours.HeaderText = "Total Hours"
-        Me.Col_Sched_TotalHours.Name = "Col_Sched_TotalHours"
-        Me.Col_Sched_TotalHours.Width = 120
-        '
-        'Col_ID
-        '
-        Me.Col_ID.HeaderText = "ID"
-        Me.Col_ID.Name = "Col_ID"
-        Me.Col_ID.Visible = False
-        '
-        'Col_Attendance
-        '
-        DataGridViewCellStyle20.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter
-        Me.Col_Attendance.DefaultCellStyle = DataGridViewCellStyle20
-        Me.Col_Attendance.HeaderText = "Attendance"
-        Me.Col_Attendance.Name = "Col_Attendance"
-        Me.Col_Attendance.Width = 120
         '
         'OpenFileDialog1
         '
@@ -745,16 +684,6 @@ Partial Class FRM_DTR_BIOMETRIC
         Me.PictureBox2.Size = New System.Drawing.Size(1860, 78)
         Me.PictureBox2.TabIndex = 64
         Me.PictureBox2.TabStop = False
-        '
-        'Btn_Hours_Breakdown
-        '
-        Me.Btn_Hours_Breakdown.Font = New System.Drawing.Font("Microsoft Sans Serif", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.Btn_Hours_Breakdown.Location = New System.Drawing.Point(417, 851)
-        Me.Btn_Hours_Breakdown.Name = "Btn_Hours_Breakdown"
-        Me.Btn_Hours_Breakdown.Size = New System.Drawing.Size(173, 51)
-        Me.Btn_Hours_Breakdown.TabIndex = 67
-        Me.Btn_Hours_Breakdown.Text = "Breakdown of Hours"
-        Me.Btn_Hours_Breakdown.UseVisualStyleBackColor = True
         '
         'Label8
         '
@@ -777,6 +706,44 @@ Partial Class FRM_DTR_BIOMETRIC
         Me.Btn_Save_DTR.Text = "Save"
         Me.Btn_Save_DTR.UseVisualStyleBackColor = True
         '
+        'Col_DayNum
+        '
+        Me.Col_DayNum.HeaderText = "Day"
+        Me.Col_DayNum.Name = "Col_DayNum"
+        '
+        'Col_Sched_in
+        '
+        Me.Col_Sched_in.HeaderText = "Sched IN"
+        Me.Col_Sched_in.Name = "Col_Sched_in"
+        '
+        'Col_Sched_Out
+        '
+        Me.Col_Sched_Out.HeaderText = "Sched OUT"
+        Me.Col_Sched_Out.Name = "Col_Sched_Out"
+        '
+        'Col_Sched_TotalHours
+        '
+        Me.Col_Sched_TotalHours.HeaderText = "Total Hours"
+        Me.Col_Sched_TotalHours.Name = "Col_Sched_TotalHours"
+        '
+        'Col_FlagShift
+        '
+        Me.Col_FlagShift.HeaderText = "Shift"
+        Me.Col_FlagShift.Name = "Col_FlagShift"
+        '
+        'Col_ID
+        '
+        Me.Col_ID.HeaderText = "ID"
+        Me.Col_ID.Name = "Col_ID"
+        Me.Col_ID.Visible = False
+        '
+        'Col_Attendance
+        '
+        DataGridViewCellStyle20.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter
+        Me.Col_Attendance.DefaultCellStyle = DataGridViewCellStyle20
+        Me.Col_Attendance.HeaderText = "Attendance"
+        Me.Col_Attendance.Name = "Col_Attendance"
+        '
         'FRM_DTR_BIOMETRIC
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
@@ -785,9 +752,7 @@ Partial Class FRM_DTR_BIOMETRIC
         Me.ClientSize = New System.Drawing.Size(1919, 931)
         Me.Controls.Add(Me.Btn_Save_DTR)
         Me.Controls.Add(Me.Label8)
-        Me.Controls.Add(Me.Btn_Hours_Breakdown)
         Me.Controls.Add(Me.TabControl1)
-        Me.Controls.Add(Me.Btn_Calculate)
         Me.Controls.Add(Me.Btn_DTR)
         Me.Controls.Add(Me.PictureBox2)
         Me.Controls.Add(Me.Panel1)
@@ -810,7 +775,6 @@ Partial Class FRM_DTR_BIOMETRIC
     End Sub
 
     Friend WithEvents Panel1 As Panel
-    Friend WithEvents Btn_Calculate As Button
     Friend WithEvents Btn_DTR As Button
     Friend WithEvents PictureBox2 As PictureBox
     Friend WithEvents TabControl1 As TabControl
@@ -826,19 +790,12 @@ Partial Class FRM_DTR_BIOMETRIC
     Friend WithEvents GView_Schedule As DataGridView
     Friend WithEvents OpenFileDialog1 As OpenFileDialog
     Friend WithEvents Lbl_IDNumber As Label
-    Friend WithEvents Btn_Hours_Breakdown As Button
     Friend WithEvents Label7 As Label
     Friend WithEvents Label6 As Label
     Friend WithEvents PictureBox3 As PictureBox
     Friend WithEvents PictureBox1 As PictureBox
     Friend WithEvents Chk_Sunday As CheckBox
     Friend WithEvents Label8 As Label
-    Friend WithEvents Col_DayNum As DataGridViewTextBoxColumn
-    Friend WithEvents Col_Sched_in As DataGridViewTextBoxColumn
-    Friend WithEvents Col_Sched_Out As DataGridViewTextBoxColumn
-    Friend WithEvents Col_Sched_TotalHours As DataGridViewTextBoxColumn
-    Friend WithEvents Col_ID As DataGridViewTextBoxColumn
-    Friend WithEvents Col_Attendance As DataGridViewTextBoxColumn
     Friend WithEvents DataGridViewTextBoxColumn1 As DataGridViewTextBoxColumn
     Friend WithEvents DataGridViewTextBoxColumn2 As DataGridViewTextBoxColumn
     Friend WithEvents DataGridViewTextBoxColumn3 As DataGridViewTextBoxColumn
@@ -874,5 +831,11 @@ Partial Class FRM_DTR_BIOMETRIC
     Friend WithEvents Btn_Save_DTR As Button
     Friend WithEvents BtnSH As Button
     Friend WithEvents BtnLH As Button
-    Friend WithEvents Chk_NighShift As CheckBox
+    Friend WithEvents Col_DayNum As DataGridViewTextBoxColumn
+    Friend WithEvents Col_Sched_in As DataGridViewTextBoxColumn
+    Friend WithEvents Col_Sched_Out As DataGridViewTextBoxColumn
+    Friend WithEvents Col_Sched_TotalHours As DataGridViewTextBoxColumn
+    Friend WithEvents Col_FlagShift As DataGridViewTextBoxColumn
+    Friend WithEvents Col_ID As DataGridViewTextBoxColumn
+    Friend WithEvents Col_Attendance As DataGridViewTextBoxColumn
 End Class

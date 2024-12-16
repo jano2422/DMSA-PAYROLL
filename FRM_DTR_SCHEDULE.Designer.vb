@@ -32,17 +32,13 @@ Partial Class FRM_DTR_SCHEDULE
         Dim DataGridViewCellStyle8 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
         Me.Panel1 = New System.Windows.Forms.Panel()
         Me.GView_Schedule1_15 = New System.Windows.Forms.DataGridView()
-        Me.Col_Day = New System.Windows.Forms.DataGridViewTextBoxColumn()
-        Me.Col_Time_IN = New System.Windows.Forms.DataGridViewTextBoxColumn()
-        Me.Col_TimeOut = New System.Windows.Forms.DataGridViewTextBoxColumn()
-        Me.Col_TotalHours = New System.Windows.Forms.DataGridViewTextBoxColumn()
         Me.Panel2 = New System.Windows.Forms.Panel()
         Me.Btn_Save = New FontAwesome.Sharp.IconButton()
         Me.Btn_UpdateCells_First = New FontAwesome.Sharp.IconButton()
         Me.PictureBox1 = New System.Windows.Forms.PictureBox()
-        Me.Lbl_IDNumber = New System.Windows.Forms.Label()
+        Me.Lbl_IDNumber_Sched = New System.Windows.Forms.Label()
         Me.Lbl_SubClient_ID = New System.Windows.Forms.Label()
-        Me.Lbl_Name = New System.Windows.Forms.Label()
+        Me.Lbl_Name_Sched = New System.Windows.Forms.Label()
         Me.Label3 = New System.Windows.Forms.Label()
         Me.Label2 = New System.Windows.Forms.Label()
         Me.Label1 = New System.Windows.Forms.Label()
@@ -62,13 +58,19 @@ Partial Class FRM_DTR_SCHEDULE
         Me.Opt_2nd_AM = New System.Windows.Forms.RadioButton()
         Me.Opt_2nd_PM = New System.Windows.Forms.RadioButton()
         Me.GView_Schedule16_30 = New System.Windows.Forms.DataGridView()
+        Me.ProgressBar_Save = New System.Windows.Forms.ProgressBar()
+        Me.Label8 = New System.Windows.Forms.Label()
+        Me.Lbl_SubClient_Name = New System.Windows.Forms.Label()
+        Me.Col_Day = New System.Windows.Forms.DataGridViewTextBoxColumn()
+        Me.Col_Time_IN = New System.Windows.Forms.DataGridViewTextBoxColumn()
+        Me.Col_TimeOut = New System.Windows.Forms.DataGridViewTextBoxColumn()
+        Me.Col_TotalHours = New System.Windows.Forms.DataGridViewTextBoxColumn()
+        Me.Col_FlagShift = New System.Windows.Forms.DataGridViewTextBoxColumn()
         Me.DataGridViewTextBoxColumn5 = New System.Windows.Forms.DataGridViewTextBoxColumn()
         Me.DataGridViewTextBoxColumn6 = New System.Windows.Forms.DataGridViewTextBoxColumn()
         Me.DataGridViewTextBoxColumn7 = New System.Windows.Forms.DataGridViewTextBoxColumn()
         Me.DataGridViewTextBoxColumn8 = New System.Windows.Forms.DataGridViewTextBoxColumn()
-        Me.ProgressBar_Save = New System.Windows.Forms.ProgressBar()
-        Me.Label8 = New System.Windows.Forms.Label()
-        Me.Lbl_SubClient_Name = New System.Windows.Forms.Label()
+        Me.DataGridViewTextBoxColumn1 = New System.Windows.Forms.DataGridViewTextBoxColumn()
         CType(Me.GView_Schedule1_15, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.Panel2.SuspendLayout()
         CType(Me.PictureBox1, System.ComponentModel.ISupportInitialize).BeginInit()
@@ -88,49 +90,15 @@ Partial Class FRM_DTR_SCHEDULE
         '
         'GView_Schedule1_15
         '
+        Me.GView_Schedule1_15.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill
         Me.GView_Schedule1_15.ClipboardCopyMode = System.Windows.Forms.DataGridViewClipboardCopyMode.EnableWithoutHeaderText
         Me.GView_Schedule1_15.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize
-        Me.GView_Schedule1_15.Columns.AddRange(New System.Windows.Forms.DataGridViewColumn() {Me.Col_Day, Me.Col_Time_IN, Me.Col_TimeOut, Me.Col_TotalHours})
+        Me.GView_Schedule1_15.Columns.AddRange(New System.Windows.Forms.DataGridViewColumn() {Me.Col_Day, Me.Col_Time_IN, Me.Col_TimeOut, Me.Col_TotalHours, Me.Col_FlagShift})
         Me.GView_Schedule1_15.GridColor = System.Drawing.Color.FromArgb(CType(CType(255, Byte), Integer), CType(CType(224, Byte), Integer), CType(CType(192, Byte), Integer))
         Me.GView_Schedule1_15.Location = New System.Drawing.Point(218, 291)
         Me.GView_Schedule1_15.Name = "GView_Schedule1_15"
         Me.GView_Schedule1_15.Size = New System.Drawing.Size(466, 439)
         Me.GView_Schedule1_15.TabIndex = 6
-        '
-        'Col_Day
-        '
-        DataGridViewCellStyle1.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter
-        DataGridViewCellStyle1.Font = New System.Drawing.Font("Verdana", 9.75!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        DataGridViewCellStyle1.ForeColor = System.Drawing.Color.Black
-        Me.Col_Day.DefaultCellStyle = DataGridViewCellStyle1
-        Me.Col_Day.HeaderText = "Day"
-        Me.Col_Day.Name = "Col_Day"
-        Me.Col_Day.ReadOnly = True
-        '
-        'Col_Time_IN
-        '
-        DataGridViewCellStyle2.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter
-        DataGridViewCellStyle2.Font = New System.Drawing.Font("Verdana", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.Col_Time_IN.DefaultCellStyle = DataGridViewCellStyle2
-        Me.Col_Time_IN.HeaderText = "Time-IN"
-        Me.Col_Time_IN.Name = "Col_Time_IN"
-        '
-        'Col_TimeOut
-        '
-        DataGridViewCellStyle3.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter
-        DataGridViewCellStyle3.Font = New System.Drawing.Font("Verdana", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.Col_TimeOut.DefaultCellStyle = DataGridViewCellStyle3
-        Me.Col_TimeOut.HeaderText = "Time-OUT"
-        Me.Col_TimeOut.Name = "Col_TimeOut"
-        '
-        'Col_TotalHours
-        '
-        DataGridViewCellStyle4.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter
-        DataGridViewCellStyle4.Font = New System.Drawing.Font("Verdana", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.Col_TotalHours.DefaultCellStyle = DataGridViewCellStyle4
-        Me.Col_TotalHours.HeaderText = "Total Hours"
-        Me.Col_TotalHours.Name = "Col_TotalHours"
-        Me.Col_TotalHours.ReadOnly = True
         '
         'Panel2
         '
@@ -179,17 +147,17 @@ Partial Class FRM_DTR_SCHEDULE
         Me.PictureBox1.TabIndex = 15
         Me.PictureBox1.TabStop = False
         '
-        'Lbl_IDNumber
+        'Lbl_IDNumber_Sched
         '
-        Me.Lbl_IDNumber.AutoSize = True
-        Me.Lbl_IDNumber.BackColor = System.Drawing.Color.FromArgb(CType(CType(255, Byte), Integer), CType(CType(224, Byte), Integer), CType(CType(192, Byte), Integer))
-        Me.Lbl_IDNumber.Font = New System.Drawing.Font("Microsoft Sans Serif", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.Lbl_IDNumber.ForeColor = System.Drawing.Color.Blue
-        Me.Lbl_IDNumber.Location = New System.Drawing.Point(373, 67)
-        Me.Lbl_IDNumber.Name = "Lbl_IDNumber"
-        Me.Lbl_IDNumber.Size = New System.Drawing.Size(86, 20)
-        Me.Lbl_IDNumber.TabIndex = 21
-        Me.Lbl_IDNumber.Text = "ID Number"
+        Me.Lbl_IDNumber_Sched.AutoSize = True
+        Me.Lbl_IDNumber_Sched.BackColor = System.Drawing.Color.FromArgb(CType(CType(255, Byte), Integer), CType(CType(224, Byte), Integer), CType(CType(192, Byte), Integer))
+        Me.Lbl_IDNumber_Sched.Font = New System.Drawing.Font("Microsoft Sans Serif", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.Lbl_IDNumber_Sched.ForeColor = System.Drawing.Color.Blue
+        Me.Lbl_IDNumber_Sched.Location = New System.Drawing.Point(373, 67)
+        Me.Lbl_IDNumber_Sched.Name = "Lbl_IDNumber_Sched"
+        Me.Lbl_IDNumber_Sched.Size = New System.Drawing.Size(86, 20)
+        Me.Lbl_IDNumber_Sched.TabIndex = 21
+        Me.Lbl_IDNumber_Sched.Text = "ID Number"
         '
         'Lbl_SubClient_ID
         '
@@ -203,17 +171,17 @@ Partial Class FRM_DTR_SCHEDULE
         Me.Lbl_SubClient_ID.TabIndex = 20
         Me.Lbl_SubClient_ID.Text = "Detachment"
         '
-        'Lbl_Name
+        'Lbl_Name_Sched
         '
-        Me.Lbl_Name.AutoSize = True
-        Me.Lbl_Name.BackColor = System.Drawing.Color.FromArgb(CType(CType(255, Byte), Integer), CType(CType(224, Byte), Integer), CType(CType(192, Byte), Integer))
-        Me.Lbl_Name.Font = New System.Drawing.Font("Microsoft Sans Serif", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.Lbl_Name.ForeColor = System.Drawing.Color.Blue
-        Me.Lbl_Name.Location = New System.Drawing.Point(373, 99)
-        Me.Lbl_Name.Name = "Lbl_Name"
-        Me.Lbl_Name.Size = New System.Drawing.Size(118, 20)
-        Me.Lbl_Name.TabIndex = 19
-        Me.Lbl_Name.Text = "Juan Dela Cruz"
+        Me.Lbl_Name_Sched.AutoSize = True
+        Me.Lbl_Name_Sched.BackColor = System.Drawing.Color.FromArgb(CType(CType(255, Byte), Integer), CType(CType(224, Byte), Integer), CType(CType(192, Byte), Integer))
+        Me.Lbl_Name_Sched.Font = New System.Drawing.Font("Microsoft Sans Serif", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.Lbl_Name_Sched.ForeColor = System.Drawing.Color.Blue
+        Me.Lbl_Name_Sched.Location = New System.Drawing.Point(373, 99)
+        Me.Lbl_Name_Sched.Name = "Lbl_Name_Sched"
+        Me.Lbl_Name_Sched.Size = New System.Drawing.Size(118, 20)
+        Me.Lbl_Name_Sched.TabIndex = 19
+        Me.Lbl_Name_Sched.Text = "Juan Dela Cruz"
         '
         'Label3
         '
@@ -443,14 +411,87 @@ Partial Class FRM_DTR_SCHEDULE
         '
         'GView_Schedule16_30
         '
+        Me.GView_Schedule16_30.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill
         Me.GView_Schedule16_30.ClipboardCopyMode = System.Windows.Forms.DataGridViewClipboardCopyMode.EnableWithoutHeaderText
         Me.GView_Schedule16_30.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize
-        Me.GView_Schedule16_30.Columns.AddRange(New System.Windows.Forms.DataGridViewColumn() {Me.DataGridViewTextBoxColumn5, Me.DataGridViewTextBoxColumn6, Me.DataGridViewTextBoxColumn7, Me.DataGridViewTextBoxColumn8})
+        Me.GView_Schedule16_30.Columns.AddRange(New System.Windows.Forms.DataGridViewColumn() {Me.DataGridViewTextBoxColumn5, Me.DataGridViewTextBoxColumn6, Me.DataGridViewTextBoxColumn7, Me.DataGridViewTextBoxColumn8, Me.DataGridViewTextBoxColumn1})
         Me.GView_Schedule16_30.GridColor = System.Drawing.Color.FromArgb(CType(CType(255, Byte), Integer), CType(CType(224, Byte), Integer), CType(CType(192, Byte), Integer))
         Me.GView_Schedule16_30.Location = New System.Drawing.Point(691, 291)
         Me.GView_Schedule16_30.Name = "GView_Schedule16_30"
         Me.GView_Schedule16_30.Size = New System.Drawing.Size(466, 439)
         Me.GView_Schedule16_30.TabIndex = 29
+        '
+        'ProgressBar_Save
+        '
+        Me.ProgressBar_Save.Location = New System.Drawing.Point(218, 742)
+        Me.ProgressBar_Save.Name = "ProgressBar_Save"
+        Me.ProgressBar_Save.Size = New System.Drawing.Size(939, 23)
+        Me.ProgressBar_Save.TabIndex = 1
+        Me.ProgressBar_Save.Visible = False
+        '
+        'Label8
+        '
+        Me.Label8.AutoSize = True
+        Me.Label8.BackColor = System.Drawing.Color.FromArgb(CType(CType(255, Byte), Integer), CType(CType(224, Byte), Integer), CType(CType(192, Byte), Integer))
+        Me.Label8.Font = New System.Drawing.Font("Microsoft Sans Serif", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.Label8.ForeColor = System.Drawing.Color.Black
+        Me.Label8.Location = New System.Drawing.Point(682, 99)
+        Me.Label8.Name = "Label8"
+        Me.Label8.Size = New System.Drawing.Size(86, 20)
+        Me.Label8.TabIndex = 30
+        Me.Label8.Text = "Sub Client:"
+        '
+        'Lbl_SubClient_Name
+        '
+        Me.Lbl_SubClient_Name.AutoSize = True
+        Me.Lbl_SubClient_Name.BackColor = System.Drawing.Color.FromArgb(CType(CType(255, Byte), Integer), CType(CType(224, Byte), Integer), CType(CType(192, Byte), Integer))
+        Me.Lbl_SubClient_Name.Font = New System.Drawing.Font("Microsoft Sans Serif", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.Lbl_SubClient_Name.ForeColor = System.Drawing.Color.Blue
+        Me.Lbl_SubClient_Name.Location = New System.Drawing.Point(778, 99)
+        Me.Lbl_SubClient_Name.Name = "Lbl_SubClient_Name"
+        Me.Lbl_SubClient_Name.Size = New System.Drawing.Size(97, 20)
+        Me.Lbl_SubClient_Name.TabIndex = 31
+        Me.Lbl_SubClient_Name.Text = "Detachment"
+        '
+        'Col_Day
+        '
+        DataGridViewCellStyle1.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter
+        DataGridViewCellStyle1.Font = New System.Drawing.Font("Verdana", 9.75!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        DataGridViewCellStyle1.ForeColor = System.Drawing.Color.Black
+        Me.Col_Day.DefaultCellStyle = DataGridViewCellStyle1
+        Me.Col_Day.HeaderText = "Day"
+        Me.Col_Day.Name = "Col_Day"
+        Me.Col_Day.ReadOnly = True
+        '
+        'Col_Time_IN
+        '
+        DataGridViewCellStyle2.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter
+        DataGridViewCellStyle2.Font = New System.Drawing.Font("Verdana", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.Col_Time_IN.DefaultCellStyle = DataGridViewCellStyle2
+        Me.Col_Time_IN.HeaderText = "Time-IN"
+        Me.Col_Time_IN.Name = "Col_Time_IN"
+        '
+        'Col_TimeOut
+        '
+        DataGridViewCellStyle3.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter
+        DataGridViewCellStyle3.Font = New System.Drawing.Font("Verdana", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.Col_TimeOut.DefaultCellStyle = DataGridViewCellStyle3
+        Me.Col_TimeOut.HeaderText = "Time-OUT"
+        Me.Col_TimeOut.Name = "Col_TimeOut"
+        '
+        'Col_TotalHours
+        '
+        DataGridViewCellStyle4.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter
+        DataGridViewCellStyle4.Font = New System.Drawing.Font("Verdana", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.Col_TotalHours.DefaultCellStyle = DataGridViewCellStyle4
+        Me.Col_TotalHours.HeaderText = "Total Hours"
+        Me.Col_TotalHours.Name = "Col_TotalHours"
+        Me.Col_TotalHours.ReadOnly = True
+        '
+        'Col_FlagShift
+        '
+        Me.Col_FlagShift.HeaderText = "Shift"
+        Me.Col_FlagShift.Name = "Col_FlagShift"
         '
         'DataGridViewTextBoxColumn5
         '
@@ -487,37 +528,10 @@ Partial Class FRM_DTR_SCHEDULE
         Me.DataGridViewTextBoxColumn8.Name = "DataGridViewTextBoxColumn8"
         Me.DataGridViewTextBoxColumn8.ReadOnly = True
         '
-        'ProgressBar_Save
+        'DataGridViewTextBoxColumn1
         '
-        Me.ProgressBar_Save.Location = New System.Drawing.Point(218, 742)
-        Me.ProgressBar_Save.Name = "ProgressBar_Save"
-        Me.ProgressBar_Save.Size = New System.Drawing.Size(939, 23)
-        Me.ProgressBar_Save.TabIndex = 1
-        Me.ProgressBar_Save.Visible = False
-        '
-        'Label8
-        '
-        Me.Label8.AutoSize = True
-        Me.Label8.BackColor = System.Drawing.Color.FromArgb(CType(CType(255, Byte), Integer), CType(CType(224, Byte), Integer), CType(CType(192, Byte), Integer))
-        Me.Label8.Font = New System.Drawing.Font("Microsoft Sans Serif", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.Label8.ForeColor = System.Drawing.Color.Black
-        Me.Label8.Location = New System.Drawing.Point(682, 99)
-        Me.Label8.Name = "Label8"
-        Me.Label8.Size = New System.Drawing.Size(86, 20)
-        Me.Label8.TabIndex = 30
-        Me.Label8.Text = "Sub Client:"
-        '
-        'Lbl_SubClient_Name
-        '
-        Me.Lbl_SubClient_Name.AutoSize = True
-        Me.Lbl_SubClient_Name.BackColor = System.Drawing.Color.FromArgb(CType(CType(255, Byte), Integer), CType(CType(224, Byte), Integer), CType(CType(192, Byte), Integer))
-        Me.Lbl_SubClient_Name.Font = New System.Drawing.Font("Microsoft Sans Serif", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.Lbl_SubClient_Name.ForeColor = System.Drawing.Color.Blue
-        Me.Lbl_SubClient_Name.Location = New System.Drawing.Point(778, 99)
-        Me.Lbl_SubClient_Name.Name = "Lbl_SubClient_Name"
-        Me.Lbl_SubClient_Name.Size = New System.Drawing.Size(97, 20)
-        Me.Lbl_SubClient_Name.TabIndex = 31
-        Me.Lbl_SubClient_Name.Text = "Detachment"
+        Me.DataGridViewTextBoxColumn1.HeaderText = "Shift"
+        Me.DataGridViewTextBoxColumn1.Name = "DataGridViewTextBoxColumn1"
         '
         'FRM_DTR_SCHEDULE
         '
@@ -531,9 +545,9 @@ Partial Class FRM_DTR_SCHEDULE
         Me.Controls.Add(Me.GView_Schedule16_30)
         Me.Controls.Add(Me.GroupBox2)
         Me.Controls.Add(Me.GroupBox1)
-        Me.Controls.Add(Me.Lbl_IDNumber)
+        Me.Controls.Add(Me.Lbl_IDNumber_Sched)
         Me.Controls.Add(Me.Lbl_SubClient_ID)
-        Me.Controls.Add(Me.Lbl_Name)
+        Me.Controls.Add(Me.Lbl_Name_Sched)
         Me.Controls.Add(Me.Label3)
         Me.Controls.Add(Me.Label2)
         Me.Controls.Add(Me.Label1)
@@ -563,9 +577,9 @@ Partial Class FRM_DTR_SCHEDULE
     Friend WithEvents Btn_UpdateCells_First As IconButton
     Friend WithEvents Btn_Save As IconButton
     Friend WithEvents PictureBox1 As PictureBox
-    Friend WithEvents Lbl_IDNumber As Label
+    Friend WithEvents Lbl_IDNumber_Sched As Label
     Friend WithEvents Lbl_SubClient_ID As Label
-    Friend WithEvents Lbl_Name As Label
+    Friend WithEvents Lbl_Name_Sched As Label
     Friend WithEvents Label3 As Label
     Friend WithEvents Label2 As Label
     Friend WithEvents Label1 As Label
@@ -577,15 +591,7 @@ Partial Class FRM_DTR_SCHEDULE
     Friend WithEvents Cmb_1st_TimeOUT As ComboBox
     Friend WithEvents Label4 As Label
     Friend WithEvents Cmb_1st_TimeIN As ComboBox
-    Friend WithEvents Col_Day As DataGridViewTextBoxColumn
-    Friend WithEvents Col_Time_IN As DataGridViewTextBoxColumn
-    Friend WithEvents Col_TimeOut As DataGridViewTextBoxColumn
-    Friend WithEvents Col_TotalHours As DataGridViewTextBoxColumn
     Friend WithEvents GView_Schedule16_30 As DataGridView
-    Friend WithEvents DataGridViewTextBoxColumn5 As DataGridViewTextBoxColumn
-    Friend WithEvents DataGridViewTextBoxColumn6 As DataGridViewTextBoxColumn
-    Friend WithEvents DataGridViewTextBoxColumn7 As DataGridViewTextBoxColumn
-    Friend WithEvents DataGridViewTextBoxColumn8 As DataGridViewTextBoxColumn
     Friend WithEvents Btn_UpdateCells_Second As IconButton
     Friend WithEvents Label6 As Label
     Friend WithEvents Cmb_2nd_TimeOUT As ComboBox
@@ -596,4 +602,14 @@ Partial Class FRM_DTR_SCHEDULE
     Friend WithEvents ProgressBar_Save As ProgressBar
     Friend WithEvents Label8 As Label
     Friend WithEvents Lbl_SubClient_Name As Label
+    Friend WithEvents Col_Day As DataGridViewTextBoxColumn
+    Friend WithEvents Col_Time_IN As DataGridViewTextBoxColumn
+    Friend WithEvents Col_TimeOut As DataGridViewTextBoxColumn
+    Friend WithEvents Col_TotalHours As DataGridViewTextBoxColumn
+    Friend WithEvents Col_FlagShift As DataGridViewTextBoxColumn
+    Friend WithEvents DataGridViewTextBoxColumn5 As DataGridViewTextBoxColumn
+    Friend WithEvents DataGridViewTextBoxColumn6 As DataGridViewTextBoxColumn
+    Friend WithEvents DataGridViewTextBoxColumn7 As DataGridViewTextBoxColumn
+    Friend WithEvents DataGridViewTextBoxColumn8 As DataGridViewTextBoxColumn
+    Friend WithEvents DataGridViewTextBoxColumn1 As DataGridViewTextBoxColumn
 End Class

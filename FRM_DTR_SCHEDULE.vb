@@ -1,16 +1,18 @@
 ﻿Public Class FRM_DTR_SCHEDULE
+    Dim Opt_1st_CutOff_FLag_Shift As String
+    Dim Opt_2nd_CutOff_FLag_Shift As String
     Private Sub FRM_DTR_SCHEDULE_Load(sender As Object, e As EventArgs) Handles MyBase.Load
 
-        Lbl_IDNumber.Text = GlobalVariables.DTR_Selected_Employee_ID
-        Lbl_Name.Text = GlobalVariables.DTR_Selected_Employee_Name
+        Lbl_IDNumber_Sched.Text = GlobalVariables.DTR_Selected_Employee_ID
+        Lbl_Name_Sched.Text = GlobalVariables.DTR_Selected_Employee_Name
         Lbl_SubClient_ID.Text = GlobalVariables.DTR_Selected_SubClient_ID
         Lbl_SubClient_Name.Text = GlobalVariables.DTR_Selected_SubClient_Name
 
         GView_Schedule1_15.Rows.Clear()
         GView_Schedule16_30.Rows.Clear()
 
-        Call Show_Employee_Schedule("240603", "Yes", 1) 'Temporary - Should be from the selected Employee
-        Call Show_Employee_Schedule("240603", "Yes", 2) 'Temporary - Should be from the selected Employee
+        Call Show_Employee_Schedule(GlobalVariables.DTR_Selected_Employee_ID, "Yes", 1) 'Temporary - Should be from the selected Employee
+        Call Show_Employee_Schedule(GlobalVariables.DTR_Selected_Employee_ID, "Yes", 2) 'Temporary - Should be from the selected Employee
     End Sub
 
     Private Sub Btn_Save_Click(sender As Object, e As EventArgs) Handles Btn_Save.Click
@@ -46,7 +48,7 @@
                         Exit For
                     End If
 
-                    Call Update_SecGuard_Schedule("240603", GView_Schedule1_15.Rows(iRow).Cells(0).Value, GView_Schedule1_15.Rows(iRow).Cells(1).Value, GView_Schedule1_15.Rows(iRow).Cells(2).Value, GView_Schedule1_15.Rows(iRow).Cells(3).Value.ToString)
+                    Call Update_SecGuard_Schedule(GlobalVariables.DTR_Selected_Employee_ID, Opt_1st_CutOff_FLag_Shift, GView_Schedule1_15.Rows(iRow).Cells(0).Value, GView_Schedule1_15.Rows(iRow).Cells(1).Value, GView_Schedule1_15.Rows(iRow).Cells(2).Value, GView_Schedule1_15.Rows(iRow).Cells(3).Value.ToString)
 
                 Next
                 ProgressBar_Save.Value = ProgressBar_Save.Value + 1
@@ -64,7 +66,7 @@
                         Exit For
                     End If
 
-                    Call Update_SecGuard_Schedule("240603", GView_Schedule16_30.Rows(iRow).Cells(0).Value, GView_Schedule16_30.Rows(iRow).Cells(1).Value, GView_Schedule16_30.Rows(iRow).Cells(2).Value, GView_Schedule16_30.Rows(iRow).Cells(3).Value.ToString)
+                    Call Update_SecGuard_Schedule(GlobalVariables.DTR_Selected_Employee_ID, Opt_2nd_CutOff_FLag_Shift, GView_Schedule16_30.Rows(iRow).Cells(0).Value, GView_Schedule16_30.Rows(iRow).Cells(1).Value, GView_Schedule16_30.Rows(iRow).Cells(2).Value, GView_Schedule16_30.Rows(iRow).Cells(3).Value.ToString)
 
                 Next
                 ProgressBar_Save.Value = ProgressBar_Save.Value + 1
@@ -89,6 +91,7 @@
         Cmb_1st_TimeOUT.SelectedIndex = -1
 
         If Opt_1st_AM.Checked = True Then
+            Opt_1st_CutOff_FLag_Shift = "MS"
             Cmb_1st_TimeIN.Items.Clear()
             Cmb_1st_TimeIN.Items.Add("5:00")
             Cmb_1st_TimeIN.Items.Add("5:30")
@@ -106,6 +109,7 @@
             Cmb_1st_TimeOUT.Items.Add("19:30")
             Cmb_1st_TimeOUT.Items.Add("20:00")
         Else ' Night shift
+            Opt_1st_CutOff_FLag_Shift = "NS"
             Cmb_1st_TimeIN.Items.Clear()
             Cmb_1st_TimeIN.Items.Add("17:00")
             Cmb_1st_TimeIN.Items.Add("17:30")
@@ -127,6 +131,7 @@
         Cmb_1st_TimeOUT.SelectedIndex = -1
 
         If Opt_1st_AM.Checked = True Then
+            Opt_1st_CutOff_FLag_Shift = "MS"
             Cmb_1st_TimeIN.Items.Clear()
             Cmb_1st_TimeIN.Items.Add("5:00")
             Cmb_1st_TimeIN.Items.Add("5:30")
@@ -144,6 +149,7 @@
             Cmb_1st_TimeOUT.Items.Add("19:30")
             Cmb_1st_TimeOUT.Items.Add("20:00")
         Else ' Night shift
+            Opt_1st_CutOff_FLag_Shift = "NS"
             Cmb_1st_TimeIN.Items.Clear()
             Cmb_1st_TimeIN.Items.Add("17:00")
             Cmb_1st_TimeIN.Items.Add("17:30")
@@ -161,6 +167,7 @@
 
     Private Sub Opt_2nd_PM_CheckedChanged(sender As Object, e As EventArgs) Handles Opt_2nd_PM.CheckedChanged
         If Opt_2nd_AM.Checked = True Then
+            Opt_2nd_CutOff_FLag_Shift = "MS"
             Cmb_2nd_TimeIN.Items.Clear()
             Cmb_2nd_TimeIN.Items.Add("5:00")
             Cmb_2nd_TimeIN.Items.Add("5:30")
@@ -174,6 +181,7 @@
             Cmb_2nd_TimeOUT.Items.Add("18:30")
             Cmb_2nd_TimeOUT.Items.Add("19:00")
         Else ' Night shift
+            Opt_2nd_CutOff_FLag_Shift = "NS"
             Cmb_2nd_TimeIN.Items.Clear()
             Cmb_2nd_TimeIN.Items.Add("17:00")
             Cmb_2nd_TimeIN.Items.Add("17:30")
@@ -191,6 +199,7 @@
 
     Private Sub Opt_2nd_AM_CheckedChanged(sender As Object, e As EventArgs) Handles Opt_2nd_AM.CheckedChanged
         If Opt_2nd_AM.Checked = True Then
+            Opt_2nd_CutOff_FLag_Shift = "MS"
             Cmb_2nd_TimeIN.Items.Clear()
             Cmb_2nd_TimeIN.Items.Add("5:00")
             Cmb_2nd_TimeIN.Items.Add("5:30")
@@ -204,6 +213,7 @@
             Cmb_2nd_TimeOUT.Items.Add("18:30")
             Cmb_2nd_TimeOUT.Items.Add("19:00")
         Else ' Night shift
+            Opt_2nd_CutOff_FLag_Shift = "NS"
             Cmb_2nd_TimeIN.Items.Clear()
             Cmb_2nd_TimeIN.Items.Add("17:00")
             Cmb_2nd_TimeIN.Items.Add("17:30")
@@ -226,7 +236,8 @@
             Exit Sub
         End If
 
-        Call Update_1stCutoff_Cells(Cmb_1st_TimeIN.Text, Cmb_1st_TimeOUT.Text)
+        Call Update_1stCutoff_Cells(Cmb_1st_TimeIN.Text, Cmb_1st_TimeOUT.Text, Opt_1st_CutOff_FLag_Shift)
+        Auto_Compute_total_Hours_Shedule()
     End Sub
 
     Private Sub Btn_UpdateCells_Second_Click(sender As Object, e As EventArgs) Handles Btn_UpdateCells_Second.Click
@@ -237,7 +248,8 @@
             Exit Sub
         End If
 
-        Call Update_2ndCutoff_Cells(Cmb_2nd_TimeIN.Text, Cmb_2nd_TimeOUT.Text)
+        Call Update_2ndCutoff_Cells(Cmb_2nd_TimeIN.Text, Cmb_2nd_TimeOUT.Text, Opt_2nd_CutOff_FLag_Shift)
+        Auto_Compute_total_Hours_Shedule()
     End Sub
 
 

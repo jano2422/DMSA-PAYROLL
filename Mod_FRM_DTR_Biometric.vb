@@ -2,19 +2,17 @@
 Imports Microsoft.Office.Interop
 Imports System.Configuration
 Imports System.Globalization
+Imports System.Text
 
 Module Mod_Biometric_DTR
 
-    Public Sub Calculate_DTR(sShift As String) ' 0 morning ; 1 night shift ( because I used checkbox )
+    Public Sub Calculate_DTR() ' 0 morning ; 1 night shift ( because I used checkbox )
 
         With FRM_DTR_BIOMETRIC
 
 
             ' Computation of Late, Over Break and Over Time after loading the schedule and DTR
             ' Temporary. This should be on a separate function
-
-            Call Show_Employee_Schedule("240603", "No", 0) 'Temporary - Should be from the selected Employee 
-
 
             Dim DTR_Time_OUT_OT As DateTime
             Dim Parsed_DTR_Sched_Time_OUT, DTR_Sched_DateTime_IN, Parsed_DTR_Sched_Time_IN As DateTime
@@ -44,6 +42,82 @@ Module Mod_Biometric_DTR
 
 
             Try
+                Dim invalidRows As New StringBuilder() ' Use StringBuilder for better performance with concatenations
+
+                ' Loop over each row in GView_DTR to map corresponding index to GView_Schedule
+                For i = 0 To .GView_DTR.Rows.Count - 1
+                    Dim cellValue As Object = .GView_DTR.Rows(i).Cells(0)?.Value
+
+                    ' Skip the iteration if no value is found
+                    If cellValue Is Nothing OrElse String.IsNullOrWhiteSpace(cellValue.ToString()) Then
+                        Continue For
+                    End If
+
+                    Dim szfirstDate As String
+                    Dim valueStr As String = cellValue.ToString()
+
+                    ' Process only if the value contains the "-" character
+                    If valueStr.Contains("-"c) Then
+                        szfirstDate = valueStr.Split("-"c)(0).Trim()
+                        ' Continue processing with szfirstDate...
+                    Else
+                        ' Skip trimming and handle the case where "-" is not present
+                        szfirstDate = valueStr
+                        ' Optional: Additional handling for cases without "-"
+                    End If
+
+                    Dim DTfirstDateTime As DateTime
+                    ' Convert string into Date ( Format should be same from what is being converted )
+                    If Not DateTime.TryParseExact(szfirstDate, "M/d/yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, DTfirstDateTime) Then
+                        Continue For
+                    End If
+
+                    Dim DtrDayNumber = DTfirstDateTime.Day
+                    ' Skip rows where DtrDayNumber is empty or invalid
+                    If String.IsNullOrWhiteSpace(DtrDayNumber) Then
+                        Continue For
+                    End If
+
+                    Dim isDayNumberFound As Boolean = False ' Track if the day number is found in GView_Schedule
+
+                    ' Search GView_Schedule to check if DtrDayNumber exists
+                    For Each schedRow In .GView_Schedule.Rows
+                        If schedRow.Cells(0)?.Value?.ToString() = DtrDayNumber Then
+                            isDayNumberFound = True
+
+                            Dim schedTimeIn = schedRow.Cells(1)?.Value?.ToString() ' Scheduled Time In
+                            Dim schedTimeOut = schedRow.Cells(2)?.Value?.ToString() ' Scheduled Time Out
+
+                            ' Check for invalid or empty fields in Sched Time In or Sched Time Out
+                            Dim errors As List(Of String) = New List(Of String)()
+
+                            If String.IsNullOrWhiteSpace(schedTimeIn) Then
+                                errors.Add("Time In is invalid")
+                            End If
+
+                            If String.IsNullOrWhiteSpace(schedTimeOut) Then
+                                errors.Add("Time Out is invalid")
+                            End If
+
+                            If errors.Count > 0 Then
+                                invalidRows.AppendLine($"Day {DtrDayNumber}: {String.Join(", ", errors)}")
+                            End If
+                            Exit For ' Exit loop as we've found the corresponding day number
+                        End If
+                    Next
+
+                    ' If the day number was not found in GView_Schedule
+                    If Not isDayNumberFound Then
+                        invalidRows.AppendLine($"Day {DtrDayNumber} has no corresponding schedule row")
+                    End If
+                Next
+
+                ' If invalid rows exist, display them in a MessageBox
+                If invalidRows.Length > 0 Then
+                    MsgBox("The following issues were found in the Schedule:" & vbCrLf & invalidRows.ToString(), vbCritical, "Schedule Error")
+                    Exit Sub
+                End If
+
                 For i = 0 To 16 ' DTR DataGridView ( Number of days in a shift )
 
                     If .GView_DTR.Rows(i).Cells(0).Value = "" Then
@@ -90,7 +164,7 @@ Module Mod_Biometric_DTR
                             sSchedule_Time_IN = .GView_Schedule.Rows(j).Cells(1).Value
                             Parsed_SchedStrToDate(firstDateTime, sSchedule_Time_IN, parsedSchedule_DateTime_IN)
                             ' Present on this day
-                            .GView_Schedule.Rows(j).Cells(5).Value = "Present" ' j can also be the iDTR_Day_Num -1
+                            .GView_Schedule.Rows(j).Cells(6).Value = "Present" ' j can also be the iDTR_Day_Num -1
 
                             Present_Ctr = Present_Ctr + 1
                             Absent_Count = (j - Present_Ctr) + 1
@@ -504,11 +578,11 @@ Module Mod_Biometric_DTR
 
         Try
             If iCutOff = 1 Then
-                SQL = "Select DAY_NUM, SCHED_IN, SCHED_OUT,TOTAL_HOURS  from PRL_EMPLOYEE_SCHEDULE where EMPLOYEE_ID = '" & iEmployee_ID & "' and DAY_NUM <= 15"
+                SQL = "Select DAY_NUM, SCHED_IN, SCHED_OUT,TOTAL_HOURS, FLAG_SHIFT  from PRL_EMPLOYEE_SCHEDULE where EMPLOYEE_ID = '" & iEmployee_ID & "' and DAY_NUM <= 15"
             ElseIf iCutOff = 2 Then
-                SQL = "Select DAY_NUM, SCHED_IN, SCHED_OUT,TOTAL_HOURS  from PRL_EMPLOYEE_SCHEDULE where EMPLOYEE_ID = '" & iEmployee_ID & "' and DAY_NUM > 15"
+                SQL = "Select DAY_NUM, SCHED_IN, SCHED_OUT,TOTAL_HOURS, FLAG_SHIFT  from PRL_EMPLOYEE_SCHEDULE where EMPLOYEE_ID = '" & iEmployee_ID & "' and DAY_NUM > 15"
             ElseIf iCutOff = 0 Then
-                SQL = "Select DAY_NUM, SCHED_IN, SCHED_OUT,TOTAL_HOURS  from PRL_EMPLOYEE_SCHEDULE where EMPLOYEE_ID = '" & iEmployee_ID & "' "
+                SQL = "Select DAY_NUM, SCHED_IN, SCHED_OUT,TOTAL_HOURS, FLAG_SHIFT  from PRL_EMPLOYEE_SCHEDULE where EMPLOYEE_ID = '" & iEmployee_ID & "' "
             End If
 
             da = New OleDbDataAdapter(SQL, Mod_GlobalVariables.GlobalVariables.GlobalCon)
@@ -519,7 +593,7 @@ Module Mod_Biometric_DTR
 
                 If sScheduler = "No" Then
 
-
+                    FRM_DTR_BIOMETRIC.GView_Schedule.Rows.Clear()
                     For Each row As DataRow In dt.Rows
                         Dim newRow As Integer = FRM_DTR_BIOMETRIC.GView_Schedule.Rows.Add()
                         For i As Integer = 0 To dt.Columns.Count - 1
@@ -531,7 +605,7 @@ Module Mod_Biometric_DTR
                 ElseIf sScheduler = "Yes" Then
 
                     If iCutOff = 1 Then
-
+                        FRM_DTR_SCHEDULE.GView_Schedule1_15.Rows.Clear()
                         For Each row As DataRow In dt.Rows
 
                             Dim newRow As Integer = FRM_DTR_SCHEDULE.GView_Schedule1_15.Rows.Add()
@@ -544,7 +618,7 @@ Module Mod_Biometric_DTR
 
                         Next
                     ElseIf iCutOff = 2 Then
-
+                        FRM_DTR_SCHEDULE.GView_Schedule16_30.Rows.Clear()
                         For Each row As DataRow In dt.Rows
 
                             Dim newRow As Integer = FRM_DTR_SCHEDULE.GView_Schedule16_30.Rows.Add()
@@ -578,7 +652,7 @@ Module Mod_Biometric_DTR
 
 
 
-    Private Sub Parsed_StrToDate(DateTimeStr As String, ByRef ParsedDateTime As DateTime)
+    Public Sub Parsed_StrToDate(DateTimeStr As String, ByRef ParsedDateTime As DateTime)
         ' Parse the string using the exact format
         If DateTime.TryParseExact(DateTimeStr, "M/d/yyyy h:mm:ss tt", CultureInfo.InvariantCulture, DateTimeStyles.None, ParsedDateTime) Then
             ' Successfully parsed

@@ -22,16 +22,21 @@ Partial Class FRM_DTR_SCHEDULE
     'Do not modify it using the code editor.
     <System.Diagnostics.DebuggerStepThrough()>
     Private Sub InitializeComponent()
-        Dim DataGridViewCellStyle1 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
-        Dim DataGridViewCellStyle2 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
-        Dim DataGridViewCellStyle3 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
-        Dim DataGridViewCellStyle4 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
-        Dim DataGridViewCellStyle5 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
-        Dim DataGridViewCellStyle6 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
-        Dim DataGridViewCellStyle7 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
-        Dim DataGridViewCellStyle8 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
+        Dim DataGridViewCellStyle25 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
+        Dim DataGridViewCellStyle26 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
+        Dim DataGridViewCellStyle27 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
+        Dim DataGridViewCellStyle28 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
+        Dim DataGridViewCellStyle29 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
+        Dim DataGridViewCellStyle30 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
+        Dim DataGridViewCellStyle31 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
+        Dim DataGridViewCellStyle32 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
         Me.Panel1 = New System.Windows.Forms.Panel()
         Me.GView_Schedule1_15 = New System.Windows.Forms.DataGridView()
+        Me.Col_Day = New System.Windows.Forms.DataGridViewTextBoxColumn()
+        Me.Col_Time_IN = New System.Windows.Forms.DataGridViewTextBoxColumn()
+        Me.Col_TimeOut = New System.Windows.Forms.DataGridViewTextBoxColumn()
+        Me.Col_TotalHours = New System.Windows.Forms.DataGridViewTextBoxColumn()
+        Me.Col_FlagShift = New System.Windows.Forms.DataGridViewTextBoxColumn()
         Me.Panel2 = New System.Windows.Forms.Panel()
         Me.Btn_Save = New FontAwesome.Sharp.IconButton()
         Me.Btn_UpdateCells_First = New FontAwesome.Sharp.IconButton()
@@ -58,19 +63,14 @@ Partial Class FRM_DTR_SCHEDULE
         Me.Opt_2nd_AM = New System.Windows.Forms.RadioButton()
         Me.Opt_2nd_PM = New System.Windows.Forms.RadioButton()
         Me.GView_Schedule16_30 = New System.Windows.Forms.DataGridView()
-        Me.ProgressBar_Save = New System.Windows.Forms.ProgressBar()
-        Me.Label8 = New System.Windows.Forms.Label()
-        Me.Lbl_SubClient_Name = New System.Windows.Forms.Label()
-        Me.Col_Day = New System.Windows.Forms.DataGridViewTextBoxColumn()
-        Me.Col_Time_IN = New System.Windows.Forms.DataGridViewTextBoxColumn()
-        Me.Col_TimeOut = New System.Windows.Forms.DataGridViewTextBoxColumn()
-        Me.Col_TotalHours = New System.Windows.Forms.DataGridViewTextBoxColumn()
-        Me.Col_FlagShift = New System.Windows.Forms.DataGridViewTextBoxColumn()
         Me.DataGridViewTextBoxColumn5 = New System.Windows.Forms.DataGridViewTextBoxColumn()
         Me.DataGridViewTextBoxColumn6 = New System.Windows.Forms.DataGridViewTextBoxColumn()
         Me.DataGridViewTextBoxColumn7 = New System.Windows.Forms.DataGridViewTextBoxColumn()
         Me.DataGridViewTextBoxColumn8 = New System.Windows.Forms.DataGridViewTextBoxColumn()
         Me.DataGridViewTextBoxColumn1 = New System.Windows.Forms.DataGridViewTextBoxColumn()
+        Me.ProgressBar_Save = New System.Windows.Forms.ProgressBar()
+        Me.Label8 = New System.Windows.Forms.Label()
+        Me.Lbl_SubClient_Name = New System.Windows.Forms.Label()
         CType(Me.GView_Schedule1_15, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.Panel2.SuspendLayout()
         CType(Me.PictureBox1, System.ComponentModel.ISupportInitialize).BeginInit()
@@ -99,6 +99,46 @@ Partial Class FRM_DTR_SCHEDULE
         Me.GView_Schedule1_15.Name = "GView_Schedule1_15"
         Me.GView_Schedule1_15.Size = New System.Drawing.Size(466, 439)
         Me.GView_Schedule1_15.TabIndex = 6
+        '
+        'Col_Day
+        '
+        DataGridViewCellStyle25.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter
+        DataGridViewCellStyle25.Font = New System.Drawing.Font("Verdana", 9.75!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        DataGridViewCellStyle25.ForeColor = System.Drawing.Color.Black
+        Me.Col_Day.DefaultCellStyle = DataGridViewCellStyle25
+        Me.Col_Day.HeaderText = "Day"
+        Me.Col_Day.Name = "Col_Day"
+        Me.Col_Day.ReadOnly = True
+        '
+        'Col_Time_IN
+        '
+        DataGridViewCellStyle26.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter
+        DataGridViewCellStyle26.Font = New System.Drawing.Font("Verdana", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.Col_Time_IN.DefaultCellStyle = DataGridViewCellStyle26
+        Me.Col_Time_IN.HeaderText = "Time-IN"
+        Me.Col_Time_IN.Name = "Col_Time_IN"
+        '
+        'Col_TimeOut
+        '
+        DataGridViewCellStyle27.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter
+        DataGridViewCellStyle27.Font = New System.Drawing.Font("Verdana", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.Col_TimeOut.DefaultCellStyle = DataGridViewCellStyle27
+        Me.Col_TimeOut.HeaderText = "Time-OUT"
+        Me.Col_TimeOut.Name = "Col_TimeOut"
+        '
+        'Col_TotalHours
+        '
+        DataGridViewCellStyle28.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter
+        DataGridViewCellStyle28.Font = New System.Drawing.Font("Verdana", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.Col_TotalHours.DefaultCellStyle = DataGridViewCellStyle28
+        Me.Col_TotalHours.HeaderText = "Total Hours"
+        Me.Col_TotalHours.Name = "Col_TotalHours"
+        Me.Col_TotalHours.ReadOnly = True
+        '
+        'Col_FlagShift
+        '
+        Me.Col_FlagShift.HeaderText = "Shift"
+        Me.Col_FlagShift.Name = "Col_FlagShift"
         '
         'Panel2
         '
@@ -131,9 +171,9 @@ Partial Class FRM_DTR_SCHEDULE
         Me.Btn_UpdateCells_First.IconChar = FontAwesome.Sharp.IconChar.None
         Me.Btn_UpdateCells_First.IconColor = System.Drawing.Color.Black
         Me.Btn_UpdateCells_First.IconFont = FontAwesome.Sharp.IconFont.[Auto]
-        Me.Btn_UpdateCells_First.Location = New System.Drawing.Point(265, 100)
+        Me.Btn_UpdateCells_First.Location = New System.Drawing.Point(219, 100)
         Me.Btn_UpdateCells_First.Name = "Btn_UpdateCells_First"
-        Me.Btn_UpdateCells_First.Size = New System.Drawing.Size(130, 26)
+        Me.Btn_UpdateCells_First.Size = New System.Drawing.Size(176, 26)
         Me.Btn_UpdateCells_First.TabIndex = 1
         Me.Btn_UpdateCells_First.Text = "Update all cells"
         Me.Btn_UpdateCells_First.UseVisualStyleBackColor = True
@@ -144,6 +184,7 @@ Partial Class FRM_DTR_SCHEDULE
         Me.PictureBox1.Location = New System.Drawing.Point(218, 51)
         Me.PictureBox1.Name = "PictureBox1"
         Me.PictureBox1.Size = New System.Drawing.Size(938, 85)
+        Me.PictureBox1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.AutoSize
         Me.PictureBox1.TabIndex = 15
         Me.PictureBox1.TabStop = False
         '
@@ -332,9 +373,9 @@ Partial Class FRM_DTR_SCHEDULE
         Me.Btn_UpdateCells_Second.IconChar = FontAwesome.Sharp.IconChar.None
         Me.Btn_UpdateCells_Second.IconColor = System.Drawing.Color.Black
         Me.Btn_UpdateCells_Second.IconFont = FontAwesome.Sharp.IconFont.[Auto]
-        Me.Btn_UpdateCells_Second.Location = New System.Drawing.Point(265, 98)
+        Me.Btn_UpdateCells_Second.Location = New System.Drawing.Point(223, 98)
         Me.Btn_UpdateCells_Second.Name = "Btn_UpdateCells_Second"
-        Me.Btn_UpdateCells_Second.Size = New System.Drawing.Size(134, 28)
+        Me.Btn_UpdateCells_Second.Size = New System.Drawing.Size(176, 28)
         Me.Btn_UpdateCells_Second.TabIndex = 32
         Me.Btn_UpdateCells_Second.Text = "Update all cells"
         Me.Btn_UpdateCells_Second.UseVisualStyleBackColor = True
@@ -421,6 +462,46 @@ Partial Class FRM_DTR_SCHEDULE
         Me.GView_Schedule16_30.Size = New System.Drawing.Size(466, 439)
         Me.GView_Schedule16_30.TabIndex = 29
         '
+        'DataGridViewTextBoxColumn5
+        '
+        DataGridViewCellStyle29.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter
+        DataGridViewCellStyle29.Font = New System.Drawing.Font("Verdana", 9.75!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        DataGridViewCellStyle29.ForeColor = System.Drawing.Color.Black
+        Me.DataGridViewTextBoxColumn5.DefaultCellStyle = DataGridViewCellStyle29
+        Me.DataGridViewTextBoxColumn5.HeaderText = "Day"
+        Me.DataGridViewTextBoxColumn5.Name = "DataGridViewTextBoxColumn5"
+        Me.DataGridViewTextBoxColumn5.ReadOnly = True
+        '
+        'DataGridViewTextBoxColumn6
+        '
+        DataGridViewCellStyle30.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter
+        DataGridViewCellStyle30.Font = New System.Drawing.Font("Verdana", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.DataGridViewTextBoxColumn6.DefaultCellStyle = DataGridViewCellStyle30
+        Me.DataGridViewTextBoxColumn6.HeaderText = "Time-IN"
+        Me.DataGridViewTextBoxColumn6.Name = "DataGridViewTextBoxColumn6"
+        '
+        'DataGridViewTextBoxColumn7
+        '
+        DataGridViewCellStyle31.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter
+        DataGridViewCellStyle31.Font = New System.Drawing.Font("Verdana", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.DataGridViewTextBoxColumn7.DefaultCellStyle = DataGridViewCellStyle31
+        Me.DataGridViewTextBoxColumn7.HeaderText = "Time-OUT"
+        Me.DataGridViewTextBoxColumn7.Name = "DataGridViewTextBoxColumn7"
+        '
+        'DataGridViewTextBoxColumn8
+        '
+        DataGridViewCellStyle32.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter
+        DataGridViewCellStyle32.Font = New System.Drawing.Font("Verdana", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.DataGridViewTextBoxColumn8.DefaultCellStyle = DataGridViewCellStyle32
+        Me.DataGridViewTextBoxColumn8.HeaderText = "Total Hours"
+        Me.DataGridViewTextBoxColumn8.Name = "DataGridViewTextBoxColumn8"
+        Me.DataGridViewTextBoxColumn8.ReadOnly = True
+        '
+        'DataGridViewTextBoxColumn1
+        '
+        Me.DataGridViewTextBoxColumn1.HeaderText = "Shift"
+        Me.DataGridViewTextBoxColumn1.Name = "DataGridViewTextBoxColumn1"
+        '
         'ProgressBar_Save
         '
         Me.ProgressBar_Save.Location = New System.Drawing.Point(218, 742)
@@ -453,90 +534,11 @@ Partial Class FRM_DTR_SCHEDULE
         Me.Lbl_SubClient_Name.TabIndex = 31
         Me.Lbl_SubClient_Name.Text = "Detachment"
         '
-        'Col_Day
-        '
-        DataGridViewCellStyle1.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter
-        DataGridViewCellStyle1.Font = New System.Drawing.Font("Verdana", 9.75!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        DataGridViewCellStyle1.ForeColor = System.Drawing.Color.Black
-        Me.Col_Day.DefaultCellStyle = DataGridViewCellStyle1
-        Me.Col_Day.HeaderText = "Day"
-        Me.Col_Day.Name = "Col_Day"
-        Me.Col_Day.ReadOnly = True
-        '
-        'Col_Time_IN
-        '
-        DataGridViewCellStyle2.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter
-        DataGridViewCellStyle2.Font = New System.Drawing.Font("Verdana", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.Col_Time_IN.DefaultCellStyle = DataGridViewCellStyle2
-        Me.Col_Time_IN.HeaderText = "Time-IN"
-        Me.Col_Time_IN.Name = "Col_Time_IN"
-        '
-        'Col_TimeOut
-        '
-        DataGridViewCellStyle3.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter
-        DataGridViewCellStyle3.Font = New System.Drawing.Font("Verdana", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.Col_TimeOut.DefaultCellStyle = DataGridViewCellStyle3
-        Me.Col_TimeOut.HeaderText = "Time-OUT"
-        Me.Col_TimeOut.Name = "Col_TimeOut"
-        '
-        'Col_TotalHours
-        '
-        DataGridViewCellStyle4.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter
-        DataGridViewCellStyle4.Font = New System.Drawing.Font("Verdana", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.Col_TotalHours.DefaultCellStyle = DataGridViewCellStyle4
-        Me.Col_TotalHours.HeaderText = "Total Hours"
-        Me.Col_TotalHours.Name = "Col_TotalHours"
-        Me.Col_TotalHours.ReadOnly = True
-        '
-        'Col_FlagShift
-        '
-        Me.Col_FlagShift.HeaderText = "Shift"
-        Me.Col_FlagShift.Name = "Col_FlagShift"
-        '
-        'DataGridViewTextBoxColumn5
-        '
-        DataGridViewCellStyle5.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter
-        DataGridViewCellStyle5.Font = New System.Drawing.Font("Verdana", 9.75!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        DataGridViewCellStyle5.ForeColor = System.Drawing.Color.Black
-        Me.DataGridViewTextBoxColumn5.DefaultCellStyle = DataGridViewCellStyle5
-        Me.DataGridViewTextBoxColumn5.HeaderText = "Day"
-        Me.DataGridViewTextBoxColumn5.Name = "DataGridViewTextBoxColumn5"
-        Me.DataGridViewTextBoxColumn5.ReadOnly = True
-        '
-        'DataGridViewTextBoxColumn6
-        '
-        DataGridViewCellStyle6.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter
-        DataGridViewCellStyle6.Font = New System.Drawing.Font("Verdana", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.DataGridViewTextBoxColumn6.DefaultCellStyle = DataGridViewCellStyle6
-        Me.DataGridViewTextBoxColumn6.HeaderText = "Time-IN"
-        Me.DataGridViewTextBoxColumn6.Name = "DataGridViewTextBoxColumn6"
-        '
-        'DataGridViewTextBoxColumn7
-        '
-        DataGridViewCellStyle7.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter
-        DataGridViewCellStyle7.Font = New System.Drawing.Font("Verdana", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.DataGridViewTextBoxColumn7.DefaultCellStyle = DataGridViewCellStyle7
-        Me.DataGridViewTextBoxColumn7.HeaderText = "Time-OUT"
-        Me.DataGridViewTextBoxColumn7.Name = "DataGridViewTextBoxColumn7"
-        '
-        'DataGridViewTextBoxColumn8
-        '
-        DataGridViewCellStyle8.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter
-        DataGridViewCellStyle8.Font = New System.Drawing.Font("Verdana", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.DataGridViewTextBoxColumn8.DefaultCellStyle = DataGridViewCellStyle8
-        Me.DataGridViewTextBoxColumn8.HeaderText = "Total Hours"
-        Me.DataGridViewTextBoxColumn8.Name = "DataGridViewTextBoxColumn8"
-        Me.DataGridViewTextBoxColumn8.ReadOnly = True
-        '
-        'DataGridViewTextBoxColumn1
-        '
-        Me.DataGridViewTextBoxColumn1.HeaderText = "Shift"
-        Me.DataGridViewTextBoxColumn1.Name = "DataGridViewTextBoxColumn1"
-        '
         'FRM_DTR_SCHEDULE
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
+        Me.AutoSize = True
         Me.BackColor = System.Drawing.Color.Black
         Me.ClientSize = New System.Drawing.Size(1175, 777)
         Me.Controls.Add(Me.Lbl_SubClient_Name)

@@ -376,9 +376,19 @@ Public Class FRM_DTR_BIOMETRIC
 
     Private Sub BtnSH_Click(sender As Object, e As EventArgs) Handles BtnSH.Click
         GView_DTR.Rows(GView_DTR.CurrentCell.RowIndex).DefaultCellStyle.BackColor = Color.Yellow
+        ProcessHoursBreakdown()
+
     End Sub
 
     Private Sub BtnLH_Click(sender As Object, e As EventArgs) Handles BtnLH.Click
         GView_DTR.Rows(GView_DTR.CurrentCell.RowIndex).DefaultCellStyle.BackColor = Color.LightGreen
+        ProcessHoursBreakdown()
+
+    End Sub
+
+
+    Private Sub GetTimeInOut(row As DataGridViewRow)
+
+
     End Sub
 End Class

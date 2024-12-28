@@ -421,22 +421,24 @@ Module Mod_Biometric_DTR
                     ' Undertime
                     OUT_Over_Under_Time = OUT_Over_Under_Time
                 End If
+                'Calculate Overtime
+                Dim minutesDifference_OT As Integer = CInt(OUT_Over_Under_Time.TotalMinutes)
 
                 ' Time IN: Late or Early
                 IN_early_late_Time = parsedFirst_Time_IN - Parsed_DTR_Sched_Time_IN
-
+                Dim FirstTimeIn As String = String.Empty
                 If IN_early_late_Time >= TimeSpan.Zero Then
                     IN_early_late_Time = IN_early_late_Time.Negate() ' Late
+                    FirstTimeIn = parsedFirst_Time_IN
                 Else
                     IN_early_late_Time = TimeSpan.Zero ' Early
+                    FirstTimeIn = Parsed_DTR_Sched_Time_IN
                 End If
+                'Calculate Late 
+                Dim minutesDifference_LATE As Integer = CInt(IN_early_late_Time.TotalMinutes)
 
-                ' Calculate Late and Overtime
-                Dim difference_OT As TimeSpan = parsedLast_Time_OUT - Parsed_DTR_Sched_Time_OUT
-                Dim minutesDifference_OT As Integer = CInt(difference_OT.TotalMinutes)
 
-                Dim difference_LATE As TimeSpan = parsedFirst_Time_IN - Parsed_DTR_Sched_Time_IN
-                Dim minutesDifference_LATE As Integer = CInt(difference_LATE.TotalMinutes)
+
                 'overtime_calc
                 If minutesDifference_OT >= 0 Then
                     .GView_DTR.Rows(i).Cells(11).Value = minutesDifference_OT
@@ -455,6 +457,10 @@ Module Mod_Biometric_DTR
                 If No_Time_OUT Then Total_hours = 0 ' No Time OUT
 
                 .GView_DTR.Rows(i).Cells(12).Value = Total_hours.ToString("F2")
+
+                'First Time In and Last Time Out
+                .GView_DTR.Rows(i).Cells(26).Value = FirstTimeIn
+                .GView_DTR.Rows(i).Cells(27).Value = DtrTimeOTOutString
 
                 ' Update global variable
                 GlobalVariables.iHours_Rendered(i) = .GView_DTR.Rows(i).Cells(12).Value
@@ -663,7 +669,7 @@ Module Mod_Biometric_DTR
         End If
     End Sub
 
-    Private Sub Parsed_SchedStrToDate(RefDate As DateTime, sScheduleDateTimeStr As String, ByRef parsedSchedule_DateTime As DateTime)
+    Public Sub Parsed_SchedStrToDate(RefDate As DateTime, sScheduleDateTimeStr As String, ByRef parsedSchedule_DateTime As DateTime)
         If DateTime.TryParseExact(sScheduleDateTimeStr, "H:m", CultureInfo.InvariantCulture, DateTimeStyles.None, Nothing) Then
             ' If parsing succeeds, extract the TimeSpan
             Dim parsedSchedule_Time As TimeSpan = DateTime.ParseExact(sScheduleDateTimeStr, "H:m", CultureInfo.InvariantCulture).TimeOfDay

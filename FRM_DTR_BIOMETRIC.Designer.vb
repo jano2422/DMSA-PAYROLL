@@ -23,6 +23,7 @@ Partial Class FRM_DTR_BIOMETRIC
     <System.Diagnostics.DebuggerStepThrough()>
     Private Sub InitializeComponent()
         Dim DataGridViewCellStyle19 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
+        Dim DataGridViewCellStyle20 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
         Dim DataGridViewCellStyle1 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
         Dim DataGridViewCellStyle2 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
         Dim DataGridViewCellStyle3 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
@@ -41,7 +42,6 @@ Partial Class FRM_DTR_BIOMETRIC
         Dim DataGridViewCellStyle16 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
         Dim DataGridViewCellStyle17 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
         Dim DataGridViewCellStyle18 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
-        Dim DataGridViewCellStyle20 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
         Me.Panel1 = New System.Windows.Forms.Panel()
         Me.Btn_DTR = New System.Windows.Forms.Button()
         Me.TabControl1 = New System.Windows.Forms.TabControl()
@@ -60,6 +60,26 @@ Partial Class FRM_DTR_BIOMETRIC
         Me.Label2 = New System.Windows.Forms.Label()
         Me.Label1 = New System.Windows.Forms.Label()
         Me.GView_DTR = New System.Windows.Forms.DataGridView()
+        Me.TabPage2 = New System.Windows.Forms.TabPage()
+        Me.Lbl_Num_of_Reporting_Days = New System.Windows.Forms.Label()
+        Me.Label11 = New System.Windows.Forms.Label()
+        Me.Label10 = New System.Windows.Forms.Label()
+        Me.Label5 = New System.Windows.Forms.Label()
+        Me.Lbl_Absent_Count = New System.Windows.Forms.Label()
+        Me.Label9 = New System.Windows.Forms.Label()
+        Me.Label4 = New System.Windows.Forms.Label()
+        Me.GView_Schedule = New System.Windows.Forms.DataGridView()
+        Me.Col_DayNum = New System.Windows.Forms.DataGridViewTextBoxColumn()
+        Me.Col_Sched_in = New System.Windows.Forms.DataGridViewTextBoxColumn()
+        Me.Col_Sched_Out = New System.Windows.Forms.DataGridViewTextBoxColumn()
+        Me.Col_Sched_TotalHours = New System.Windows.Forms.DataGridViewTextBoxColumn()
+        Me.Col_FlagShift = New System.Windows.Forms.DataGridViewTextBoxColumn()
+        Me.Col_ID = New System.Windows.Forms.DataGridViewTextBoxColumn()
+        Me.Col_Attendance = New System.Windows.Forms.DataGridViewTextBoxColumn()
+        Me.OpenFileDialog1 = New System.Windows.Forms.OpenFileDialog()
+        Me.PictureBox2 = New System.Windows.Forms.PictureBox()
+        Me.Label8 = New System.Windows.Forms.Label()
+        Me.Btn_Save_DTR = New System.Windows.Forms.Button()
         Me.DataGridViewTextBoxColumn1 = New System.Windows.Forms.DataGridViewTextBoxColumn()
         Me.DataGridViewTextBoxColumn2 = New System.Windows.Forms.DataGridViewTextBoxColumn()
         Me.DataGridViewTextBoxColumn3 = New System.Windows.Forms.DataGridViewTextBoxColumn()
@@ -86,26 +106,8 @@ Partial Class FRM_DTR_BIOMETRIC
         Me.ND_RD_SUN_SH = New System.Windows.Forms.DataGridViewTextBoxColumn()
         Me.ND_RD_SUN_LH = New System.Windows.Forms.DataGridViewTextBoxColumn()
         Me.OT_REG = New System.Windows.Forms.DataGridViewTextBoxColumn()
-        Me.TabPage2 = New System.Windows.Forms.TabPage()
-        Me.Lbl_Num_of_Reporting_Days = New System.Windows.Forms.Label()
-        Me.Label11 = New System.Windows.Forms.Label()
-        Me.Label10 = New System.Windows.Forms.Label()
-        Me.Label5 = New System.Windows.Forms.Label()
-        Me.Lbl_Absent_Count = New System.Windows.Forms.Label()
-        Me.Label9 = New System.Windows.Forms.Label()
-        Me.Label4 = New System.Windows.Forms.Label()
-        Me.GView_Schedule = New System.Windows.Forms.DataGridView()
-        Me.OpenFileDialog1 = New System.Windows.Forms.OpenFileDialog()
-        Me.PictureBox2 = New System.Windows.Forms.PictureBox()
-        Me.Label8 = New System.Windows.Forms.Label()
-        Me.Btn_Save_DTR = New System.Windows.Forms.Button()
-        Me.Col_DayNum = New System.Windows.Forms.DataGridViewTextBoxColumn()
-        Me.Col_Sched_in = New System.Windows.Forms.DataGridViewTextBoxColumn()
-        Me.Col_Sched_Out = New System.Windows.Forms.DataGridViewTextBoxColumn()
-        Me.Col_Sched_TotalHours = New System.Windows.Forms.DataGridViewTextBoxColumn()
-        Me.Col_FlagShift = New System.Windows.Forms.DataGridViewTextBoxColumn()
-        Me.Col_ID = New System.Windows.Forms.DataGridViewTextBoxColumn()
-        Me.Col_Attendance = New System.Windows.Forms.DataGridViewTextBoxColumn()
+        Me.FirstTimeIn = New System.Windows.Forms.DataGridViewTextBoxColumn()
+        Me.LastTimeOut = New System.Windows.Forms.DataGridViewTextBoxColumn()
         Me.TabControl1.SuspendLayout()
         Me.TabPage1.SuspendLayout()
         CType(Me.PictureBox3, System.ComponentModel.ISupportInitialize).BeginInit()
@@ -308,7 +310,7 @@ Partial Class FRM_DTR_BIOMETRIC
         Me.GView_DTR.BorderStyle = System.Windows.Forms.BorderStyle.None
         Me.GView_DTR.ColumnHeadersBorderStyle = System.Windows.Forms.DataGridViewHeaderBorderStyle.[Single]
         Me.GView_DTR.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize
-        Me.GView_DTR.Columns.AddRange(New System.Windows.Forms.DataGridViewColumn() {Me.DataGridViewTextBoxColumn1, Me.DataGridViewTextBoxColumn2, Me.DataGridViewTextBoxColumn3, Me.DataGridViewTextBoxColumn4, Me.DataGridViewTextBoxColumn5, Me.DataGridViewTextBoxColumn6, Me.DataGridViewTextBoxColumn7, Me.DataGridViewTextBoxColumn8, Me.DataGridViewTextBoxColumn9, Me.DataGridViewTextBoxColumn10, Me.DataGridViewTextBoxColumn11, Me.DataGridViewTextBoxColumn12, Me.DataGridViewTextBoxColumn13, Me.REG_REG, Me.REG_SUN, Me.REG_SH, Me.REG_LH, Me.RD_SUN_SH, Me.RD_SUN_LH, Me.ND_REG, Me.ND_SUN, Me.ND_SH, Me.ND_LH, Me.ND_RD_SUN_SH, Me.ND_RD_SUN_LH, Me.OT_REG})
+        Me.GView_DTR.Columns.AddRange(New System.Windows.Forms.DataGridViewColumn() {Me.DataGridViewTextBoxColumn1, Me.DataGridViewTextBoxColumn2, Me.DataGridViewTextBoxColumn3, Me.DataGridViewTextBoxColumn4, Me.DataGridViewTextBoxColumn5, Me.DataGridViewTextBoxColumn6, Me.DataGridViewTextBoxColumn7, Me.DataGridViewTextBoxColumn8, Me.DataGridViewTextBoxColumn9, Me.DataGridViewTextBoxColumn10, Me.DataGridViewTextBoxColumn11, Me.DataGridViewTextBoxColumn12, Me.DataGridViewTextBoxColumn13, Me.REG_REG, Me.REG_SUN, Me.REG_SH, Me.REG_LH, Me.RD_SUN_SH, Me.RD_SUN_LH, Me.ND_REG, Me.ND_SUN, Me.ND_SH, Me.ND_LH, Me.ND_RD_SUN_SH, Me.ND_RD_SUN_LH, Me.OT_REG, Me.FirstTimeIn, Me.LastTimeOut})
         DataGridViewCellStyle19.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft
         DataGridViewCellStyle19.BackColor = System.Drawing.Color.White
         DataGridViewCellStyle19.Font = New System.Drawing.Font("Microsoft Sans Serif", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
@@ -323,6 +325,180 @@ Partial Class FRM_DTR_BIOMETRIC
         Me.GView_DTR.Name = "GView_DTR"
         Me.GView_DTR.Size = New System.Drawing.Size(1765, 535)
         Me.GView_DTR.TabIndex = 1
+        '
+        'TabPage2
+        '
+        Me.TabPage2.BackColor = System.Drawing.Color.FromArgb(CType(CType(255, Byte), Integer), CType(CType(192, Byte), Integer), CType(CType(128, Byte), Integer))
+        Me.TabPage2.Controls.Add(Me.Lbl_Num_of_Reporting_Days)
+        Me.TabPage2.Controls.Add(Me.Label11)
+        Me.TabPage2.Controls.Add(Me.Label10)
+        Me.TabPage2.Controls.Add(Me.Label5)
+        Me.TabPage2.Controls.Add(Me.Lbl_Absent_Count)
+        Me.TabPage2.Controls.Add(Me.Label9)
+        Me.TabPage2.Controls.Add(Me.Label4)
+        Me.TabPage2.Controls.Add(Me.GView_Schedule)
+        Me.TabPage2.Font = New System.Drawing.Font("Microsoft Sans Serif", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.TabPage2.Location = New System.Drawing.Point(4, 29)
+        Me.TabPage2.Name = "TabPage2"
+        Me.TabPage2.Padding = New System.Windows.Forms.Padding(3)
+        Me.TabPage2.Size = New System.Drawing.Size(1852, 737)
+        Me.TabPage2.TabIndex = 1
+        Me.TabPage2.Text = "   Schedule   "
+        '
+        'Lbl_Num_of_Reporting_Days
+        '
+        Me.Lbl_Num_of_Reporting_Days.AutoSize = True
+        Me.Lbl_Num_of_Reporting_Days.Font = New System.Drawing.Font("Microsoft Sans Serif", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.Lbl_Num_of_Reporting_Days.ForeColor = System.Drawing.Color.FromArgb(CType(CType(0, Byte), Integer), CType(CType(0, Byte), Integer), CType(CType(192, Byte), Integer))
+        Me.Lbl_Num_of_Reporting_Days.Location = New System.Drawing.Point(947, 108)
+        Me.Lbl_Num_of_Reporting_Days.Name = "Lbl_Num_of_Reporting_Days"
+        Me.Lbl_Num_of_Reporting_Days.Size = New System.Drawing.Size(52, 20)
+        Me.Lbl_Num_of_Reporting_Days.TabIndex = 13
+        Me.Lbl_Num_of_Reporting_Days.Text = "Count"
+        '
+        'Label11
+        '
+        Me.Label11.AutoSize = True
+        Me.Label11.Font = New System.Drawing.Font("Microsoft Sans Serif", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.Label11.ForeColor = System.Drawing.Color.FromArgb(CType(CType(0, Byte), Integer), CType(CType(0, Byte), Integer), CType(CType(192, Byte), Integer))
+        Me.Label11.Location = New System.Drawing.Point(979, 76)
+        Me.Label11.Name = "Label11"
+        Me.Label11.Size = New System.Drawing.Size(52, 20)
+        Me.Label11.TabIndex = 12
+        Me.Label11.Text = "Count"
+        '
+        'Label10
+        '
+        Me.Label10.AutoSize = True
+        Me.Label10.Font = New System.Drawing.Font("Microsoft Sans Serif", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.Label10.Location = New System.Drawing.Point(772, 108)
+        Me.Label10.Name = "Label10"
+        Me.Label10.Size = New System.Drawing.Size(169, 20)
+        Me.Label10.TabIndex = 11
+        Me.Label10.Text = "Actual Reported Days:"
+        '
+        'Label5
+        '
+        Me.Label5.AutoSize = True
+        Me.Label5.Font = New System.Drawing.Font("Microsoft Sans Serif", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.Label5.Location = New System.Drawing.Point(772, 76)
+        Me.Label5.Name = "Label5"
+        Me.Label5.Size = New System.Drawing.Size(201, 20)
+        Me.Label5.TabIndex = 10
+        Me.Label5.Text = "Number of Reporting Days:"
+        '
+        'Lbl_Absent_Count
+        '
+        Me.Lbl_Absent_Count.AutoSize = True
+        Me.Lbl_Absent_Count.Font = New System.Drawing.Font("Microsoft Sans Serif", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.Lbl_Absent_Count.ForeColor = System.Drawing.Color.FromArgb(CType(CType(0, Byte), Integer), CType(CType(0, Byte), Integer), CType(CType(192, Byte), Integer))
+        Me.Lbl_Absent_Count.Location = New System.Drawing.Point(863, 143)
+        Me.Lbl_Absent_Count.Name = "Lbl_Absent_Count"
+        Me.Lbl_Absent_Count.Size = New System.Drawing.Size(52, 20)
+        Me.Lbl_Absent_Count.TabIndex = 9
+        Me.Lbl_Absent_Count.Text = "Count"
+        '
+        'Label9
+        '
+        Me.Label9.AutoSize = True
+        Me.Label9.Font = New System.Drawing.Font("Microsoft Sans Serif", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.Label9.Location = New System.Drawing.Point(772, 143)
+        Me.Label9.Name = "Label9"
+        Me.Label9.Size = New System.Drawing.Size(76, 20)
+        Me.Label9.TabIndex = 8
+        Me.Label9.Text = "Absence:"
+        '
+        'Label4
+        '
+        Me.Label4.AutoSize = True
+        Me.Label4.Font = New System.Drawing.Font("Microsoft Sans Serif", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.Label4.Location = New System.Drawing.Point(23, 23)
+        Me.Label4.Name = "Label4"
+        Me.Label4.Size = New System.Drawing.Size(76, 20)
+        Me.Label4.TabIndex = 4
+        Me.Label4.Text = "Schedule"
+        '
+        'GView_Schedule
+        '
+        Me.GView_Schedule.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill
+        Me.GView_Schedule.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize
+        Me.GView_Schedule.Columns.AddRange(New System.Windows.Forms.DataGridViewColumn() {Me.Col_DayNum, Me.Col_Sched_in, Me.Col_Sched_Out, Me.Col_Sched_TotalHours, Me.Col_FlagShift, Me.Col_ID, Me.Col_Attendance})
+        Me.GView_Schedule.Location = New System.Drawing.Point(27, 57)
+        Me.GView_Schedule.Name = "GView_Schedule"
+        Me.GView_Schedule.Size = New System.Drawing.Size(727, 637)
+        Me.GView_Schedule.TabIndex = 2
+        '
+        'Col_DayNum
+        '
+        Me.Col_DayNum.HeaderText = "Day"
+        Me.Col_DayNum.Name = "Col_DayNum"
+        '
+        'Col_Sched_in
+        '
+        Me.Col_Sched_in.HeaderText = "Sched IN"
+        Me.Col_Sched_in.Name = "Col_Sched_in"
+        '
+        'Col_Sched_Out
+        '
+        Me.Col_Sched_Out.HeaderText = "Sched OUT"
+        Me.Col_Sched_Out.Name = "Col_Sched_Out"
+        '
+        'Col_Sched_TotalHours
+        '
+        Me.Col_Sched_TotalHours.HeaderText = "Total Hours"
+        Me.Col_Sched_TotalHours.Name = "Col_Sched_TotalHours"
+        '
+        'Col_FlagShift
+        '
+        Me.Col_FlagShift.HeaderText = "Shift"
+        Me.Col_FlagShift.Name = "Col_FlagShift"
+        '
+        'Col_ID
+        '
+        Me.Col_ID.HeaderText = "ID"
+        Me.Col_ID.Name = "Col_ID"
+        Me.Col_ID.Visible = False
+        '
+        'Col_Attendance
+        '
+        DataGridViewCellStyle20.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter
+        Me.Col_Attendance.DefaultCellStyle = DataGridViewCellStyle20
+        Me.Col_Attendance.HeaderText = "Attendance"
+        Me.Col_Attendance.Name = "Col_Attendance"
+        '
+        'OpenFileDialog1
+        '
+        Me.OpenFileDialog1.FileName = "OpenFileDialog1"
+        '
+        'PictureBox2
+        '
+        Me.PictureBox2.BackColor = System.Drawing.Color.FromArgb(CType(CType(64, Byte), Integer), CType(CType(64, Byte), Integer), CType(CType(64, Byte), Integer))
+        Me.PictureBox2.Location = New System.Drawing.Point(22, 837)
+        Me.PictureBox2.Name = "PictureBox2"
+        Me.PictureBox2.Size = New System.Drawing.Size(1860, 78)
+        Me.PictureBox2.TabIndex = 64
+        Me.PictureBox2.TabStop = False
+        '
+        'Label8
+        '
+        Me.Label8.AutoSize = True
+        Me.Label8.Font = New System.Drawing.Font("Microsoft Sans Serif", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.Label8.ForeColor = System.Drawing.Color.Yellow
+        Me.Label8.Location = New System.Drawing.Point(1802, 42)
+        Me.Label8.Name = "Label8"
+        Me.Label8.Size = New System.Drawing.Size(80, 20)
+        Me.Label8.TabIndex = 68
+        Me.Label8.Text = "Pure Gold"
+        '
+        'Btn_Save_DTR
+        '
+        Me.Btn_Save_DTR.Font = New System.Drawing.Font("Microsoft Sans Serif", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.Btn_Save_DTR.Location = New System.Drawing.Point(1650, 851)
+        Me.Btn_Save_DTR.Name = "Btn_Save_DTR"
+        Me.Btn_Save_DTR.Size = New System.Drawing.Size(173, 51)
+        Me.Btn_Save_DTR.TabIndex = 69
+        Me.Btn_Save_DTR.Text = "Save"
+        Me.Btn_Save_DTR.UseVisualStyleBackColor = True
         '
         'DataGridViewTextBoxColumn1
         '
@@ -570,179 +746,17 @@ Partial Class FRM_DTR_BIOMETRIC
         Me.OT_REG.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable
         Me.OT_REG.Width = 63
         '
-        'TabPage2
+        'FirstTimeIn
         '
-        Me.TabPage2.BackColor = System.Drawing.Color.FromArgb(CType(CType(255, Byte), Integer), CType(CType(192, Byte), Integer), CType(CType(128, Byte), Integer))
-        Me.TabPage2.Controls.Add(Me.Lbl_Num_of_Reporting_Days)
-        Me.TabPage2.Controls.Add(Me.Label11)
-        Me.TabPage2.Controls.Add(Me.Label10)
-        Me.TabPage2.Controls.Add(Me.Label5)
-        Me.TabPage2.Controls.Add(Me.Lbl_Absent_Count)
-        Me.TabPage2.Controls.Add(Me.Label9)
-        Me.TabPage2.Controls.Add(Me.Label4)
-        Me.TabPage2.Controls.Add(Me.GView_Schedule)
-        Me.TabPage2.Font = New System.Drawing.Font("Microsoft Sans Serif", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.TabPage2.Location = New System.Drawing.Point(4, 29)
-        Me.TabPage2.Name = "TabPage2"
-        Me.TabPage2.Padding = New System.Windows.Forms.Padding(3)
-        Me.TabPage2.Size = New System.Drawing.Size(1852, 737)
-        Me.TabPage2.TabIndex = 1
-        Me.TabPage2.Text = "   Schedule   "
+        Me.FirstTimeIn.HeaderText = "First Time In"
+        Me.FirstTimeIn.Name = "FirstTimeIn"
+        Me.FirstTimeIn.Visible = False
         '
-        'Lbl_Num_of_Reporting_Days
+        'LastTimeOut
         '
-        Me.Lbl_Num_of_Reporting_Days.AutoSize = True
-        Me.Lbl_Num_of_Reporting_Days.Font = New System.Drawing.Font("Microsoft Sans Serif", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.Lbl_Num_of_Reporting_Days.ForeColor = System.Drawing.Color.FromArgb(CType(CType(0, Byte), Integer), CType(CType(0, Byte), Integer), CType(CType(192, Byte), Integer))
-        Me.Lbl_Num_of_Reporting_Days.Location = New System.Drawing.Point(947, 108)
-        Me.Lbl_Num_of_Reporting_Days.Name = "Lbl_Num_of_Reporting_Days"
-        Me.Lbl_Num_of_Reporting_Days.Size = New System.Drawing.Size(52, 20)
-        Me.Lbl_Num_of_Reporting_Days.TabIndex = 13
-        Me.Lbl_Num_of_Reporting_Days.Text = "Count"
-        '
-        'Label11
-        '
-        Me.Label11.AutoSize = True
-        Me.Label11.Font = New System.Drawing.Font("Microsoft Sans Serif", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.Label11.ForeColor = System.Drawing.Color.FromArgb(CType(CType(0, Byte), Integer), CType(CType(0, Byte), Integer), CType(CType(192, Byte), Integer))
-        Me.Label11.Location = New System.Drawing.Point(979, 76)
-        Me.Label11.Name = "Label11"
-        Me.Label11.Size = New System.Drawing.Size(52, 20)
-        Me.Label11.TabIndex = 12
-        Me.Label11.Text = "Count"
-        '
-        'Label10
-        '
-        Me.Label10.AutoSize = True
-        Me.Label10.Font = New System.Drawing.Font("Microsoft Sans Serif", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.Label10.Location = New System.Drawing.Point(772, 108)
-        Me.Label10.Name = "Label10"
-        Me.Label10.Size = New System.Drawing.Size(169, 20)
-        Me.Label10.TabIndex = 11
-        Me.Label10.Text = "Actual Reported Days:"
-        '
-        'Label5
-        '
-        Me.Label5.AutoSize = True
-        Me.Label5.Font = New System.Drawing.Font("Microsoft Sans Serif", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.Label5.Location = New System.Drawing.Point(772, 76)
-        Me.Label5.Name = "Label5"
-        Me.Label5.Size = New System.Drawing.Size(201, 20)
-        Me.Label5.TabIndex = 10
-        Me.Label5.Text = "Number of Reporting Days:"
-        '
-        'Lbl_Absent_Count
-        '
-        Me.Lbl_Absent_Count.AutoSize = True
-        Me.Lbl_Absent_Count.Font = New System.Drawing.Font("Microsoft Sans Serif", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.Lbl_Absent_Count.ForeColor = System.Drawing.Color.FromArgb(CType(CType(0, Byte), Integer), CType(CType(0, Byte), Integer), CType(CType(192, Byte), Integer))
-        Me.Lbl_Absent_Count.Location = New System.Drawing.Point(863, 143)
-        Me.Lbl_Absent_Count.Name = "Lbl_Absent_Count"
-        Me.Lbl_Absent_Count.Size = New System.Drawing.Size(52, 20)
-        Me.Lbl_Absent_Count.TabIndex = 9
-        Me.Lbl_Absent_Count.Text = "Count"
-        '
-        'Label9
-        '
-        Me.Label9.AutoSize = True
-        Me.Label9.Font = New System.Drawing.Font("Microsoft Sans Serif", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.Label9.Location = New System.Drawing.Point(772, 143)
-        Me.Label9.Name = "Label9"
-        Me.Label9.Size = New System.Drawing.Size(76, 20)
-        Me.Label9.TabIndex = 8
-        Me.Label9.Text = "Absence:"
-        '
-        'Label4
-        '
-        Me.Label4.AutoSize = True
-        Me.Label4.Font = New System.Drawing.Font("Microsoft Sans Serif", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.Label4.Location = New System.Drawing.Point(23, 23)
-        Me.Label4.Name = "Label4"
-        Me.Label4.Size = New System.Drawing.Size(76, 20)
-        Me.Label4.TabIndex = 4
-        Me.Label4.Text = "Schedule"
-        '
-        'GView_Schedule
-        '
-        Me.GView_Schedule.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill
-        Me.GView_Schedule.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize
-        Me.GView_Schedule.Columns.AddRange(New System.Windows.Forms.DataGridViewColumn() {Me.Col_DayNum, Me.Col_Sched_in, Me.Col_Sched_Out, Me.Col_Sched_TotalHours, Me.Col_FlagShift, Me.Col_ID, Me.Col_Attendance})
-        Me.GView_Schedule.Location = New System.Drawing.Point(27, 57)
-        Me.GView_Schedule.Name = "GView_Schedule"
-        Me.GView_Schedule.Size = New System.Drawing.Size(727, 637)
-        Me.GView_Schedule.TabIndex = 2
-        '
-        'OpenFileDialog1
-        '
-        Me.OpenFileDialog1.FileName = "OpenFileDialog1"
-        '
-        'PictureBox2
-        '
-        Me.PictureBox2.BackColor = System.Drawing.Color.FromArgb(CType(CType(64, Byte), Integer), CType(CType(64, Byte), Integer), CType(CType(64, Byte), Integer))
-        Me.PictureBox2.Location = New System.Drawing.Point(22, 837)
-        Me.PictureBox2.Name = "PictureBox2"
-        Me.PictureBox2.Size = New System.Drawing.Size(1860, 78)
-        Me.PictureBox2.TabIndex = 64
-        Me.PictureBox2.TabStop = False
-        '
-        'Label8
-        '
-        Me.Label8.AutoSize = True
-        Me.Label8.Font = New System.Drawing.Font("Microsoft Sans Serif", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.Label8.ForeColor = System.Drawing.Color.Yellow
-        Me.Label8.Location = New System.Drawing.Point(1802, 42)
-        Me.Label8.Name = "Label8"
-        Me.Label8.Size = New System.Drawing.Size(80, 20)
-        Me.Label8.TabIndex = 68
-        Me.Label8.Text = "Pure Gold"
-        '
-        'Btn_Save_DTR
-        '
-        Me.Btn_Save_DTR.Font = New System.Drawing.Font("Microsoft Sans Serif", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.Btn_Save_DTR.Location = New System.Drawing.Point(1650, 851)
-        Me.Btn_Save_DTR.Name = "Btn_Save_DTR"
-        Me.Btn_Save_DTR.Size = New System.Drawing.Size(173, 51)
-        Me.Btn_Save_DTR.TabIndex = 69
-        Me.Btn_Save_DTR.Text = "Save"
-        Me.Btn_Save_DTR.UseVisualStyleBackColor = True
-        '
-        'Col_DayNum
-        '
-        Me.Col_DayNum.HeaderText = "Day"
-        Me.Col_DayNum.Name = "Col_DayNum"
-        '
-        'Col_Sched_in
-        '
-        Me.Col_Sched_in.HeaderText = "Sched IN"
-        Me.Col_Sched_in.Name = "Col_Sched_in"
-        '
-        'Col_Sched_Out
-        '
-        Me.Col_Sched_Out.HeaderText = "Sched OUT"
-        Me.Col_Sched_Out.Name = "Col_Sched_Out"
-        '
-        'Col_Sched_TotalHours
-        '
-        Me.Col_Sched_TotalHours.HeaderText = "Total Hours"
-        Me.Col_Sched_TotalHours.Name = "Col_Sched_TotalHours"
-        '
-        'Col_FlagShift
-        '
-        Me.Col_FlagShift.HeaderText = "Shift"
-        Me.Col_FlagShift.Name = "Col_FlagShift"
-        '
-        'Col_ID
-        '
-        Me.Col_ID.HeaderText = "ID"
-        Me.Col_ID.Name = "Col_ID"
-        Me.Col_ID.Visible = False
-        '
-        'Col_Attendance
-        '
-        DataGridViewCellStyle20.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter
-        Me.Col_Attendance.DefaultCellStyle = DataGridViewCellStyle20
-        Me.Col_Attendance.HeaderText = "Attendance"
-        Me.Col_Attendance.Name = "Col_Attendance"
+        Me.LastTimeOut.HeaderText = "Last Time Out"
+        Me.LastTimeOut.Name = "LastTimeOut"
+        Me.LastTimeOut.Visible = False
         '
         'FRM_DTR_BIOMETRIC
         '
@@ -796,6 +810,22 @@ Partial Class FRM_DTR_BIOMETRIC
     Friend WithEvents PictureBox1 As PictureBox
     Friend WithEvents Chk_Sunday As CheckBox
     Friend WithEvents Label8 As Label
+    Friend WithEvents Lbl_Absent_Count As Label
+    Friend WithEvents Label9 As Label
+    Friend WithEvents Label5 As Label
+    Friend WithEvents Lbl_Num_of_Reporting_Days As Label
+    Friend WithEvents Label11 As Label
+    Friend WithEvents Label10 As Label
+    Friend WithEvents Btn_Save_DTR As Button
+    Friend WithEvents BtnSH As Button
+    Friend WithEvents BtnLH As Button
+    Friend WithEvents Col_DayNum As DataGridViewTextBoxColumn
+    Friend WithEvents Col_Sched_in As DataGridViewTextBoxColumn
+    Friend WithEvents Col_Sched_Out As DataGridViewTextBoxColumn
+    Friend WithEvents Col_Sched_TotalHours As DataGridViewTextBoxColumn
+    Friend WithEvents Col_FlagShift As DataGridViewTextBoxColumn
+    Friend WithEvents Col_ID As DataGridViewTextBoxColumn
+    Friend WithEvents Col_Attendance As DataGridViewTextBoxColumn
     Friend WithEvents DataGridViewTextBoxColumn1 As DataGridViewTextBoxColumn
     Friend WithEvents DataGridViewTextBoxColumn2 As DataGridViewTextBoxColumn
     Friend WithEvents DataGridViewTextBoxColumn3 As DataGridViewTextBoxColumn
@@ -822,20 +852,6 @@ Partial Class FRM_DTR_BIOMETRIC
     Friend WithEvents ND_RD_SUN_SH As DataGridViewTextBoxColumn
     Friend WithEvents ND_RD_SUN_LH As DataGridViewTextBoxColumn
     Friend WithEvents OT_REG As DataGridViewTextBoxColumn
-    Friend WithEvents Lbl_Absent_Count As Label
-    Friend WithEvents Label9 As Label
-    Friend WithEvents Label5 As Label
-    Friend WithEvents Lbl_Num_of_Reporting_Days As Label
-    Friend WithEvents Label11 As Label
-    Friend WithEvents Label10 As Label
-    Friend WithEvents Btn_Save_DTR As Button
-    Friend WithEvents BtnSH As Button
-    Friend WithEvents BtnLH As Button
-    Friend WithEvents Col_DayNum As DataGridViewTextBoxColumn
-    Friend WithEvents Col_Sched_in As DataGridViewTextBoxColumn
-    Friend WithEvents Col_Sched_Out As DataGridViewTextBoxColumn
-    Friend WithEvents Col_Sched_TotalHours As DataGridViewTextBoxColumn
-    Friend WithEvents Col_FlagShift As DataGridViewTextBoxColumn
-    Friend WithEvents Col_ID As DataGridViewTextBoxColumn
-    Friend WithEvents Col_Attendance As DataGridViewTextBoxColumn
+    Friend WithEvents FirstTimeIn As DataGridViewTextBoxColumn
+    Friend WithEvents LastTimeOut As DataGridViewTextBoxColumn
 End Class

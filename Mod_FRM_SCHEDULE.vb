@@ -95,63 +95,61 @@ Module Mod_FRM_SCHEDULE
 
     End Sub
 
-    Public Function Verify_Schedule_Validity()
+    Public Function Verify_Schedule_Validity() As Integer
 
         Dim First_Cut_Off_Time_IN As String
-        Dim First_Cut_Off_Time_OUT As String
-
-
 
         With FRM_DTR_SCHEDULE
 
+            ' Loop through columns and rows
             For iCol = 1 To 2
                 For iRow = 0 To .GView_Schedule1_15.Rows.Count - 2
 
                     First_Cut_Off_Time_IN = .GView_Schedule1_15.Rows(iRow).Cells(iCol).Value
 
-                    ' Get the colon
-                    If First_Cut_Off_Time_IN.Length = 5 Then
-
-                        If IsNumeric(Mid(First_Cut_Off_Time_IN, 1, 2)) = False Then
-                            Return -1
-                        End If
-
-                        If Mid(First_Cut_Off_Time_IN, 3, 1) <> ":" Then
-                            Return -1
-                        End If
-
-                        If IsNumeric(Mid(First_Cut_Off_Time_IN, 4, 2)) = False Then
-                            Return -1
-                        End If
-
-
-                    ElseIf First_Cut_Off_Time_IN.Length = 4 Then
-
-                        If IsNumeric(Mid(First_Cut_Off_Time_IN, 1, 1)) = False Then
-                            Return -1
-                        End If
-
-                        If Mid(First_Cut_Off_Time_IN, 2, 1) <> ":" Then
-                            Return -1
-                        End If
-
-                        If IsNumeric(Mid(First_Cut_Off_Time_IN, 3, 2)) = False Then
-                            Return -1
-                        End If
-
+                    ' Check if the value is in the correct time format HH:mm or H:mm
+                    If Not IsValidTimeFormat(First_Cut_Off_Time_IN) Then
+                        Return -1
                     End If
-
-
 
                 Next
             Next
 
+            ' If all rows and columns are valid, return success
             Return 0
 
         End With
 
-
     End Function
+
+    ' Helper function to validate time format
+    Private Function IsValidTimeFormat(timeString As String) As Boolean
+        Dim timeParts() As String
+
+        ' Check if the string contains a colon
+        If Not timeString.Contains(":") Then
+            Return False
+        End If
+
+        ' Split the string into parts
+        timeParts = timeString.Split(":"c)
+        If timeParts.Length <> 2 Then
+            Return False
+        End If
+
+        ' Check if both parts are numeric and within valid ranges
+        Dim hours As Integer
+        Dim minutes As Integer
+
+        If Integer.TryParse(timeParts(0), hours) AndAlso Integer.TryParse(timeParts(1), minutes) Then
+            If hours >= 0 AndAlso hours <= 23 AndAlso minutes >= 0 AndAlso minutes <= 59 Then
+                Return True
+            End If
+        End If
+
+        Return False
+    End Function
+
 
 
 

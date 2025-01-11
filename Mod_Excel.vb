@@ -11,7 +11,13 @@ Module Mod_Excel
 
         ' Open the Excel file
         'Dim workbook As Workbook = excelApp.Workbooks.Open("D:\01 - Software Development\Delta Maroon Security Agency\DMSA_System\bin\Debug\PdfToExcel.xlsx")
-        Dim workbook As Workbook = excelApp.Workbooks.Open("C:\Users\johnc\Downloads\Software Projects\Project 1\DMSA_System\bin\Debug\PdfToExcel.xlsx")
+
+        'Dim workbook As Workbook = excelApp.Workbooks.Open("C:\Users\johnc\Downloads\Software Projects\Project 1\DMSA_System\bin\Debug\PdfToExcel.xlsx") - original
+        Dim exeDirectory As String = AppDomain.CurrentDomain.BaseDirectory
+        Dim pdfToExcelPath As String = System.IO.Path.Combine(exeDirectory, "PdfToExcel.xlsx")
+
+        Dim workbook As Workbook = excelApp.Workbooks.Open(pdfToExcelPath)
+
         'Dim workbook As Workbook = excelApp.Workbooks.Open("Z:\DMSA_SYSTEM\Reports\PdfToExcel.xlsx")
 
         ' Assuming data is in the first worksheet, you can change this according to your need
@@ -22,7 +28,7 @@ Module Mod_Excel
 
             With FRM_DTR_BIOMETRIC
                 .GView_DTR.Rows.Clear()
-                For i = 1 To 17
+                For i = 1 To 18
                     .GView_DTR.Rows.Add()
                 Next
                 .Lbl_IDNumber.Text = GlobalVariables.DTR_Selected_Employee_ID
@@ -32,7 +38,7 @@ Module Mod_Excel
                 ' Find the location of "Date" in cells
                 Dim iCol_Date As Integer
 
-                For iCol = 12 To 14
+                For iCol = 12 To 40
                     If worksheet.Cells(9, iCol).Value = "Date" Then ' This is the start reference
                         iCol_Date = iCol ' Column where "Date" is located 
                         Exit For
@@ -180,7 +186,7 @@ Module Mod_Excel
                         If Not days.Contains(day) Then days.Add(day)
                         timeInOutData.Add(time)
                     End If
-                Else
+                ElseIf sFlagShift = "MS" Then
                     ' Day shift logic (00:00 to 24:00 of the same day)
                     If windowStart Is Nothing OrElse entryDate.Date > windowStart.Value.Date Then
                         ' Save the current window
@@ -206,6 +212,11 @@ Module Mod_Excel
                         If Not days.Contains(day) Then days.Add(day)
                         timeInOutData.Add(time)
                     End If
+
+                Else
+                    MessageBox.Show("Error: Flag Shift Schedule Found.",
+                    "No MS/NS Found on Schedule Table", MessageBoxButtons.OK, MessageBoxIcon.Error)
+                    Exit Sub
                 End If
             Next
 

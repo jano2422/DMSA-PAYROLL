@@ -220,11 +220,11 @@ Module Mod_Biometric_DTR
 
                     If minutesDifference_Late >= 0 Then ' LATE!
 
-                        .GView_DTR.Rows(i).Cells(8).Value = minutesDifference_Late
+                        .GView_DTR.Rows(i).Cells(10).Value = minutesDifference_Late
 
                     Else ' Not Late then should just be 0
 
-                        .GView_DTR.Rows(i).Cells(8).Value = 0
+                        .GView_DTR.Rows(i).Cells(10).Value = 0
 
                     End If
 
@@ -327,15 +327,15 @@ Module Mod_Biometric_DTR
 
                 ' ===================== Combine Over Break 1 and Over Break 2 =====================
 
-                .GView_DTR.Rows(i).Cells(9).Value = minutesDifference_Break1 + minutesDifference_Break2
+                .GView_DTR.Rows(i).Cells(11).Value = minutesDifference_Break1 + minutesDifference_Break2
 
-                If CInt(.GView_DTR.Rows(i).Cells(9).Value) > 60 Then ' Over Break if greater then 60 minutes
+                If CInt(.GView_DTR.Rows(i).Cells(11).Value) > 60 Then ' Over Break if greater then 60 minutes
 
-                    .GView_DTR.Rows(i).Cells(10).Value = CInt(.GView_DTR.Rows(i).Cells(9).Value) - 60
+                    .GView_DTR.Rows(i).Cells(12).Value = CInt(.GView_DTR.Rows(i).Cells(11).Value) - 60
 
                 Else
 
-                    .GView_DTR.Rows(i).Cells(10).Value = 0
+                    .GView_DTR.Rows(i).Cells(12).Value = 0
 
                 End If
 
@@ -441,40 +441,50 @@ Module Mod_Biometric_DTR
 
                 'overtime_calc
                 If minutesDifference_OT >= 0 Then
-                    .GView_DTR.Rows(i).Cells(11).Value = minutesDifference_OT
+                    .GView_DTR.Rows(i).Cells(13).Value = minutesDifference_OT
                 Else
-                    .GView_DTR.Rows(i).Cells(11).Value = 0
+                    .GView_DTR.Rows(i).Cells(13).Value = 0
                 End If
                 'late_cal
                 If minutesDifference_LATE >= 0 Then
-                    .GView_DTR.Rows(i).Cells(8).Value = minutesDifference_LATE
+                    .GView_DTR.Rows(i).Cells(10).Value = minutesDifference_LATE
                 Else
-                    .GView_DTR.Rows(i).Cells(8).Value = 0
+                    .GView_DTR.Rows(i).Cells(10).Value = 0
                 End If
 
                 ' Compute Total Hours
                 Dim Total_hours As Double = Total_Hours_Spent + IN_early_late_Time.TotalHours - OUT_Over_Under_Time.TotalHours
                 If No_Time_OUT Then Total_hours = 0 ' No Time OUT
 
-                .GView_DTR.Rows(i).Cells(12).Value = Total_hours.ToString("F2")
+                .GView_DTR.Rows(i).Cells(14).Value = Total_hours.ToString("F2")
 
                 'First Time In and Last Time Out
-                .GView_DTR.Rows(i).Cells(26).Value = FirstTimeIn
-                .GView_DTR.Rows(i).Cells(27).Value = DtrTimeOTOutString
+                .GView_DTR.Rows(i).Cells(28).Value = FirstTimeIn
+                .GView_DTR.Rows(i).Cells(29).Value = DtrTimeOTOutString
 
                 ' Update global variable
-                GlobalVariables.iHours_Rendered(i) = .GView_DTR.Rows(i).Cells(12).Value
+                GlobalVariables.iHours_Rendered(i) = .GView_DTR.Rows(i).Cells(14).Value
 
             Next
 
-            ' Calculate Overall Hours
-            Dim Overall_Hours As Double = 0
-            For i = 0 To 16
-                Overall_Hours += CDbl(.GView_DTR.Rows(i).Cells(12).Value)
-            Next
+            Try
+                Dim chkcellValue As Object = .GView_DTR.Rows(0).Cells(14).Value
+                ' Check for null or invalid data before converting to double
+                If chkcellValue Is Nothing OrElse Not IsNumeric(chkcellValue) Then
+                    Throw New InvalidCastException($"Invalid data")
+                End If
+                ' Calculate Overall Hours
+                Dim Overall_Hours As Double = 0
+                For i = 0 To 16
+                    Overall_Hours += CDbl(.GView_DTR.Rows(i).Cells(14).Value)
+                Next
+                .GView_DTR.Rows(.GView_DTR.Rows.Count - 2).Cells(13).Value = "Total:"
+                .GView_DTR.Rows(.GView_DTR.Rows.Count - 2).Cells(14).Value = Overall_Hours
+            Catch ex As Exception
+                MessageBox.Show($"An error occurred: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
+            End Try
 
-            .GView_DTR.Rows(17).Cells(11).Value = "Total:"
-            .GView_DTR.Rows(17).Cells(12).Value = Overall_Hours
+
 
 #End Region
 
@@ -492,10 +502,10 @@ Module Mod_Biometric_DTR
 
 
                 SQL = "INSERT INTO PRL_DTR_TOTAL_HOURS (EMPLOYEE_ID, SUB_CLIENT_ID, CUTOFF_PERIOD, NUM_OF_DAYS ,TOTAL_HOURS, REG, SUN, SH, LH,RD_SUN_SH, RD_SUN_LH, ND_REG, ND_SUN, ND_SH, ND_LH,ND_RD_SUN_SH,ND_RD_SUN_LH, OT_REG)"
-                SQL = SQL & " VALUES ('" & sEmployee_ID & "', " & iSub_Client_ID & ", '" & sCutOff_Period & "', " & iNumber_of_Days & ",'" & .Rows(17).Cells(12).Value & "', '" & .Rows(17).Cells(13).Value & "'"
-                SQL = SQL & " ,'" & .Rows(17).Cells(14).Value & "','" & .Rows(17).Cells(15).Value & "','" & .Rows(17).Cells(16).Value & "','" & .Rows(17).Cells(17).Value & "'"
-                SQL = SQL & " ,'" & .Rows(17).Cells(18).Value & "','" & .Rows(17).Cells(19).Value & "','" & .Rows(17).Cells(20).Value & "','" & .Rows(17).Cells(21).Value & "'"
-                SQL = SQL & " ,'" & .Rows(17).Cells(22).Value & "','" & .Rows(17).Cells(23).Value & "','" & .Rows(17).Cells(24).Value & "','" & .Rows(17).Cells(25).Value & "')"
+                SQL = SQL & " VALUES ('" & sEmployee_ID & "', " & iSub_Client_ID & ", '" & sCutOff_Period & "', " & iNumber_of_Days & ",'" & .Rows(17).Cells(14).Value & "', '" & .Rows(17).Cells(15).Value & "'"
+                SQL = SQL & " ,'" & .Rows(17).Cells(16).Value & "','" & .Rows(17).Cells(17).Value & "','" & .Rows(17).Cells(18).Value & "','" & .Rows(17).Cells(19).Value & "'"
+                SQL = SQL & " ,'" & .Rows(17).Cells(20).Value & "','" & .Rows(17).Cells(21).Value & "','" & .Rows(17).Cells(22).Value & "','" & .Rows(17).Cells(23).Value & "'"
+                SQL = SQL & " ,'" & .Rows(17).Cells(24).Value & "','" & .Rows(17).Cells(25).Value & "','" & .Rows(17).Cells(26).Value & "','" & .Rows(17).Cells(27).Value & "')"
 
                 Dim SQLcmd As OleDbCommand = New OleDbCommand(SQL, GlobalVariables.GlobalCon)
                 SQLcmd.ExecuteNonQuery()

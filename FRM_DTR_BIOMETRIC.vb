@@ -435,7 +435,7 @@ Public Class FRM_DTR_BIOMETRIC
             Dim firstDay As String = row.Cells(1).Value.Split("-"c)(0).Trim()
             Dim secondDay As String = row.Cells(1).Value.Split("-"c)(1).Trim()
             ' Determine where to assign the regular and OT hours
-            If firstDay = "Sunday" And CInt(Me.Lbl_Num_of_Reporting_Days.Text) = 15 Then
+            If firstDay = "Sunday" Then
                 If totalHours >= regHours Then
                     row.Cells(cellIndex).Value = regHours 'Set cellIndex to reg hours
                     otHours = totalHours - regHours 'Set the otHours
@@ -444,7 +444,7 @@ Public Class FRM_DTR_BIOMETRIC
                     otHours = 0
                 End If
 
-            ElseIf secondDay = "Sunday" And CInt(Me.Lbl_Num_of_Reporting_Days.Text) = 15 Then
+            ElseIf secondDay = "Sunday" Then
 
                 If totalHours >= regHours Then
                     row.Cells(cellIndex).Value = regHours 'Set cellIndex to reg hours

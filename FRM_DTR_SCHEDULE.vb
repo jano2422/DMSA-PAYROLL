@@ -231,7 +231,7 @@
 
     Private Sub Btn_UpdateCells_First_Click(sender As Object, e As EventArgs) Handles Btn_UpdateCells_First.Click
 
-        If Cmb_1st_TimeIN.SelectedIndex = -1 Or Cmb_1st_TimeOUT.SelectedIndex = -1 Then
+        If String.IsNullOrEmpty(Cmb_1st_TimeIN.Text) Or String.IsNullOrEmpty(Cmb_1st_TimeOUT.Text) Then
             MsgBox("Please input both Time IN and Time Out.", vbExclamation, "Invalid")
             Exit Sub
         End If
@@ -242,8 +242,7 @@
 
     Private Sub Btn_UpdateCells_Second_Click(sender As Object, e As EventArgs) Handles Btn_UpdateCells_Second.Click
 
-
-        If Cmb_2nd_TimeIN.SelectedIndex = -1 Or Cmb_2nd_TimeOUT.SelectedIndex = -1 Then
+        If String.IsNullOrEmpty(Cmb_2nd_TimeIN.Text) Or String.IsNullOrEmpty(Cmb_2nd_TimeOUT.Text) Then
             MsgBox("Please input both Time IN and Time Out.", vbExclamation, "Invalid")
             Exit Sub
         End If

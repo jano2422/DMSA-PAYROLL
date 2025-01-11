@@ -435,7 +435,7 @@ Module Mod_Biometric_DTR
                     FirstTimeIn = Parsed_DTR_Sched_Time_IN
                 End If
                 'Calculate Late 
-                Dim minutesDifference_LATE As Integer = CInt(IN_early_late_Time.TotalMinutes)
+                Dim minutesDifference_LATE As Integer = Math.Abs(CInt(IN_early_late_Time.TotalMinutes))
 
 
 

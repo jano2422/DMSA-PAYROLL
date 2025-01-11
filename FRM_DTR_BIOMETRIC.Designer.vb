@@ -326,7 +326,7 @@ Partial Class FRM_DTR_BIOMETRIC
         Me.GView_DTR.Location = New System.Drawing.Point(32, 104)
         Me.GView_DTR.MultiSelect = False
         Me.GView_DTR.Name = "GView_DTR"
-        Me.GView_DTR.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect
+        Me.GView_DTR.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.CellSelect
         Me.GView_DTR.Size = New System.Drawing.Size(1765, 535)
         Me.GView_DTR.TabIndex = 1
         '

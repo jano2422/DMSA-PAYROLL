@@ -123,7 +123,7 @@ Public Class FRM_DTR_BIOMETRIC
     Private Sub Btn_Calc_DTR_Click(sender As Object, e As EventArgs) Handles Btn_Calc_DTR.Click
 
 
-        ' Define the name of the specific DataGridView you want to remove
+        '' Define the name of the specific DataGridView you want to remove
         Dim targetDataGridViewName As String = "Duplicate_DGV" ' Example name for the duplicate DataGridView
 
         ' Loop through each TabPage in the TabControl
@@ -330,7 +330,7 @@ Public Class FRM_DTR_BIOMETRIC
             Dim otHours As Double = 0
             Dim isMorningShift As Boolean = 22 - reportedTime > 10 ' Morning shift logic (before 12 PM)
 
-            ' Reset all current row columns (15 to 24) to 0
+            ' Reset all current row columns (15 to 26) to 0
             ResetCells(GView_DTR.Rows(iRow), 15, 26)
 
             ' Process regular hours and OT logic

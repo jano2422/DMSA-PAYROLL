@@ -3,13 +3,28 @@ Imports Spire.Pdf
 Imports Spire.Pdf.Conversion
 Public Class FRM_DTR_BIOMETRIC
 
+    ' Variable to store the selected directory
+    Private selectedDirectory As String = String.Empty
+
     Private Sub Btn_DTR_Click(sender As Object, e As EventArgs) Handles Btn_DTR.Click
+        ' Check if the trial period has ended
         If Now.Year = 2026 Then
             MsgBox("Trial Period Ends")
-            End
+            Exit Sub ' Exit the subroutine if the trial period has ended
         End If
-        Call Show_Employee_Schedule(GlobalVariables.DTR_Selected_Employee_ID, "No", 0) 'Temporary - Should be from the selected Employee 
 
+        ' Call the subroutine to ensure a directory is selected
+        If Not PromptForDirectorySelection(selectedDirectory) Then
+            Exit Sub ' Exit the main subroutine if no directory is selected
+        End If
+
+        ' Show the employee list form
+        FRM_DTR_EMPLOYEE_LIST.ShowDialog()
+
+        ' Retrieve and show the employee schedule
+        Call Show_Employee_Schedule(GlobalVariables.DTR_Selected_Employee_ID, "No", 0)
+
+        ' Extract selected employee's name
         Dim szSelectedEmpName As String = GlobalVariables.DTR_Selected_Employee_Name
 
         ' Split the full name into last name and first name
@@ -17,162 +32,238 @@ Public Class FRM_DTR_BIOMETRIC
         Dim lastName As String = nameParts(0).Trim()
         Dim firstName As String = If(nameParts.Length > 1, nameParts(1).Trim(), "")
 
-        ' Prompt user to select a directory
-        Using folderBrowser As New FolderBrowserDialog()
-            Dim exeDirectory As String = AppDomain.CurrentDomain.BaseDirectory
-            Dim DtrPath As String = System.IO.Path.Combine(exeDirectory, "DTR")
-            folderBrowser.Description = "Select a directory containing the files"
-            folderBrowser.SelectedPath = DtrPath
+        ' Filter files in the selected directory
+        Dim filteredFiles As List(Of String) = Directory.GetFiles(selectedDirectory, "*.pdf") _
+        .Where(Function(file) Path.GetFileName(file).IndexOf(lastName, StringComparison.OrdinalIgnoreCase) >= 0 _
+            OrElse Path.GetFileName(file).IndexOf(firstName, StringComparison.OrdinalIgnoreCase) >= 0).ToList()
 
-            If folderBrowser.ShowDialog() = DialogResult.OK Then
-                Dim selectedDirectory As String = folderBrowser.SelectedPath
+        ' Notify the user if no matching files are found
+        If filteredFiles.Count = 0 Then
+            MsgBox("No files found containing the selected employee's name.", vbExclamation, "No Files Found")
+        End If
 
-                ' Filter files in the selected directory
-                Dim filteredFiles As List(Of String) = Directory.GetFiles(selectedDirectory, "*.pdf") _
-                .Where(Function(file) Path.GetFileName(file).IndexOf(lastName, StringComparison.OrdinalIgnoreCase) >= 0 _
-                    OrElse Path.GetFileName(file).IndexOf(firstName, StringComparison.OrdinalIgnoreCase) >= 0).ToList()
-
-                ' If no matching files are found, notify the user
-                If filteredFiles.Count = 0 Then
-                    MsgBox("No files found containing the selected employee's name.", vbExclamation, "No Files Found")
-                    Exit Sub
-                End If
-
-                ' Create and show the custom file selection dialog
-                ShowModernFileSelectionForm(filteredFiles)
-            End If
-        End Using
+        ' Create and show the custom file selection dialog
+        ShowModernFileSelectionForm(filteredFiles)
     End Sub
+
+    Private Function PromptForDirectorySelection(ByRef selectedDirectory As String) As Boolean
+        ' Check if a directory has already been selected
+        If String.IsNullOrEmpty(selectedDirectory) Then
+            Using folderBrowser As New FolderBrowserDialog()
+                ' Get the application's base directory and set the default path to the "DTR" folder
+                Dim exeDirectory As String = AppDomain.CurrentDomain.BaseDirectory
+                Dim dtrPath As String = Path.Combine(exeDirectory, "DTR")
+                folderBrowser.Description = "Select a directory containing the files"
+                folderBrowser.SelectedPath = dtrPath
+
+                ' Show the folder browser dialog to the user
+                If folderBrowser.ShowDialog() = DialogResult.OK Then
+                    ' Update the selected directory with the user's choice
+                    selectedDirectory = folderBrowser.SelectedPath
+                    Return True ' Directory selected successfully
+                Else
+                    ' Notify the user if no directory is selected
+                    MsgBox("No directory selected. Operation cancelled.", vbExclamation, "Directory Selection")
+                    Return False ' Indicate that no directory was selected
+                End If
+            End Using
+        End If
+
+        Return True ' Directory already selected
+    End Function
 
 
     Private Sub ShowModernFileSelectionForm(filteredFiles As List(Of String))
         Dim fileSelectionForm As New Form()
 
-        ' Set basic properties of the form
-        With fileSelectionForm
-            .Text = "Select a File"
-            .Size = New Size(600, 400)
-            .StartPosition = FormStartPosition.CenterScreen
-            .FormBorderStyle = FormBorderStyle.FixedDialog
-            .MaximizeBox = False
-            .MinimizeBox = False
-            .ShowInTaskbar = False
-        End With
+        Try
+            ' Set basic properties of the form
+            With fileSelectionForm
+                .Text = "Select DTR File"
+                .Size = New Size(700, 500) ' Increased size for modern look
+                .StartPosition = FormStartPosition.CenterScreen
+                .FormBorderStyle = FormBorderStyle.FixedDialog
+                .MaximizeBox = False
+                .MinimizeBox = False
+                .ShowInTaskbar = False
+                .Font = New Font("Segoe UI", 12, FontStyle.Regular) ' Modern font and larger size
+                .BackColor = Color.White ' Clean white background for the form
+            End With
 
-        ' Create a ListBox to show filtered files
-        Dim fileListBox As New ListBox() With {
-        .Dock = DockStyle.Top,
-        .Height = 250
-    }
+            ' Create a ListBox to show filtered files
+            Dim fileListBox As New ListBox() With {
+    .Dock = DockStyle.Top,
+    .Height = 250,
+    .Font = New Font("Segoe UI", 12, FontStyle.Regular), ' Larger font for list box items
+    .ItemHeight = 30, ' Adjust item height for better readability
+    .BackColor = Color.LightYellow, ' Light yellow background for the list box
+    .ForeColor = Color.Black ' Black text color for readability
+}
+            fileListBox.Items.AddRange(filteredFiles.Select(Function(f) Path.GetFileName(f)).ToArray())
 
-        fileListBox.Items.AddRange(filteredFiles.Select(Function(f) Path.GetFileName(f)).ToArray())
+            ' Create a Reselect Folder button
+            Dim reselectFolderButton As New Button() With {
+    .Text = "Reselect DTR Folder Path",
+    .Dock = DockStyle.Bottom,
+    .Height = 50, ' Increased button height for a modern touch
+    .Font = New Font("Segoe UI", 14, FontStyle.Bold), ' Modern font and bold style
+    .FlatStyle = FlatStyle.Flat, ' Flat style for modern look
+    .BackColor = Color.Maroon, ' Maroon background for the button
+    .ForeColor = Color.White ' White text color for contrast
+}
 
-        ' Create a Select button
-        Dim selectButton As New Button() With {
-        .Text = "Select",
-        .Dock = DockStyle.Bottom,
-        .Height = 40
-    }
+            ' Create a Cancel button
+            Dim cancelButton As New Button() With {
+    .Text = "Cancel",
+    .Dock = DockStyle.Bottom,
+    .Height = 50, ' Increased button height for consistency
+    .Font = New Font("Segoe UI", 14, FontStyle.Bold), ' Modern font and bold style
+    .FlatStyle = FlatStyle.Flat, ' Flat style for modern look
+    .BackColor = Color.Black, ' Black background for the button
+    .ForeColor = Color.Yellow ' Yellow text color for contrast
+}
 
-        ' Create a Cancel button
-        Dim cancelButton As New Button() With {
-        .Text = "Cancel",
-        .Dock = DockStyle.Bottom,
-        .Height = 40
-    }
+            ' Add controls to the form
+            fileSelectionForm.Controls.Add(fileListBox)
+            fileSelectionForm.Controls.Add(reselectFolderButton)
+            fileSelectionForm.Controls.Add(cancelButton)
 
-        ' Add controls to the form
-        fileSelectionForm.Controls.Add(fileListBox)
-        fileSelectionForm.Controls.Add(selectButton)
-        fileSelectionForm.Controls.Add(cancelButton)
+            ' Handle Reselect Folder button click
+            AddHandler reselectFolderButton.Click, Sub()
+                                                       Try
+                                                           Using folderBrowser As New FolderBrowserDialog()
+                                                               folderBrowser.Description = "Select a new directory"
+                                                               folderBrowser.SelectedPath = selectedDirectory
 
-        ' Handle Select button click
-        AddHandler selectButton.Click, Sub()
-                                           If fileListBox.SelectedIndex >= 0 Then
-                                               Dim selectedFile As String = filteredFiles(fileListBox.SelectedIndex)
+                                                               If folderBrowser.ShowDialog() = DialogResult.OK Then
+                                                                   selectedDirectory = folderBrowser.SelectedPath
+                                                                   fileSelectionForm.Close()
+                                                               End If
+                                                           End Using
+                                                       Catch ex As Exception
+                                                           ' Log and display error if folder selection fails
+                                                           Debug.WriteLine($"Error selecting folder: {ex.Message}")
+                                                           MsgBox("An error occurred while selecting a folder.", vbExclamation, "Error")
+                                                       End Try
+                                                   End Sub
 
-                                               ' Process the selected file
-                                               Dim pdf As PdfDocument = New PdfDocument()
-                                               pdf.LoadFromFile(selectedFile)
+            ' Handle ListBox item double-click
+            AddHandler fileListBox.MouseDoubleClick, Sub(sender As Object, e As MouseEventArgs)
+                                                         Try
+                                                             Dim index As Integer = fileListBox.IndexFromPoint(e.Location)
+                                                             If index <> ListBox.NoMatches Then
+                                                                 Dim selectedFile As String = filteredFiles(index)
 
-                                               'Dim filePath As String = "C:\Users\johnc\Downloads\Software Projects\Project 1\DMSA_System\bin\Debug\PdfToExcel.xlsx" - original
-                                               Dim exeDirectory As String = AppDomain.CurrentDomain.BaseDirectory
-                                               Dim filePath As String = System.IO.Path.Combine(exeDirectory, "PdfToExcel.xlsx")
+                                                                 ' Process the selected file
+                                                                 Dim pdf As New PdfDocument()
+                                                                 Try
+                                                                     pdf.LoadFromFile(selectedFile)
+                                                                 Catch ex As Exception
+                                                                     ' Log and display error if file cannot be loaded
+                                                                     Debug.WriteLine($"Error loading PDF file: {ex.Message}")
+                                                                     MsgBox("Failed to load the selected PDF file.", vbExclamation, "Error")
+                                                                     Return
+                                                                 End Try
 
-                                               pdf.SaveToFile(filePath, FileFormat.XLSX)
+                                                                 Dim exeDirectory As String = AppDomain.CurrentDomain.BaseDirectory
+                                                                 Dim filePath As String = System.IO.Path.Combine(exeDirectory, "PdfToExcel.xlsx")
 
+                                                                 Try
+                                                                     pdf.SaveToFile(filePath, FileFormat.XLSX)
+                                                                 Catch ex As Exception
+                                                                     ' Log and display error if file cannot be saved
+                                                                     Debug.WriteLine($"Error saving PDF to Excel: {ex.Message}")
+                                                                     MsgBox("Failed to save PDF as Excel.", vbExclamation, "Error")
+                                                                     Return
+                                                                 End Try
 
-                                               fileSelectionForm.Close()
+                                                                 RemoveDataGridViewByName(DTR_TimeCalculationPanel, "Duplicate_DGV")
+                                                                 fileSelectionForm.Close()
 
-                                               Call Connect_to_Excel_DTR()
+                                                                 Connect_to_Excel_DTR()
+                                                                 RemoveDataGridViewByName(DTR_TimeCalculationPanel, "Duplicate_DGV")
+                                                                 ShowOriginalDataGridViewColumns(GView_DTR)
+                                                                 Calculate_DTR()
+                                                                 ProcessHoursBreakdown()
+                                                                 DuplicateAndHideDtrDGView()
 
+                                                                 SetButtonState(True, Btn_Save_DTR)
+                                                             End If
+                                                         Catch ex As Exception
+                                                             ' Log and display error if any other error occurs
+                                                             Debug.WriteLine($"Error processing ListBox item: {ex.Message}")
+                                                             MsgBox("An error occurred while processing the selected file.", vbExclamation, "Error")
+                                                         End Try
+                                                     End Sub
 
-                                           Else
-                                               MsgBox("Please select a file.", vbExclamation, "No File Selected")
-                                           End If
-                                       End Sub
+            ' Handle Cancel button click
+            AddHandler cancelButton.Click, Sub()
+                                               Try
+                                                   fileSelectionForm.Close()
+                                               Catch ex As Exception
+                                                   ' Log and display error if closing the form fails
+                                                   Debug.WriteLine($"Error closing file selection form: {ex.Message}")
+                                                   MsgBox("An error occurred while closing the form.", vbExclamation, "Error")
+                                               End Try
+                                           End Sub
 
-        ' Handle Cancel button click
-        AddHandler cancelButton.Click, Sub()
-                                           fileSelectionForm.Close()
-                                       End Sub
-
-        ' Show the custom file selection dialog
-        fileSelectionForm.ShowDialog()
+            ' Show the custom file selection dialog
+            fileSelectionForm.ShowDialog()
+        Catch ex As Exception
+            ' Catch any other errors that may occur during form creation or initialization
+            Debug.WriteLine($"Error initializing the file selection form: {ex.Message}")
+            MsgBox("An error occurred while setting up the file selection form.", vbExclamation, "Error")
+        End Try
     End Sub
+
+
+
     Private Sub Btn_Calc_DTR_Click(sender As Object, e As EventArgs) Handles Btn_Calc_DTR.Click
-
-
-        '' Define the name of the specific DataGridView you want to remove
-        Dim targetDataGridViewName As String = "Duplicate_DGV" ' Example name for the duplicate DataGridView
-
-        ' Loop through each TabPage in the TabControl
-        For Each tabPage As TabPage In TabControl1.TabPages
-            '    ' Loop through each control in the TabPage
-            For Each ctrl As Control In tabPage.Controls
-                ' Check if the control is a DataGridView and if its name matches the target name
-                If TypeOf ctrl Is DataGridView AndAlso ctrl.Name = targetDataGridViewName Then
-                    ' Remove the specific DataGridView by name
-                    tabPage.Controls.Remove(ctrl)
-                    ctrl.Dispose() ' Dispose of the DataGridView to free resources
-                End If
-            Next
-        Next
-
-
-        Dim OriginalDGviewcolumnsToHide As New List(Of String) From {"DataGridViewTextBoxColumn9", "DataGridViewTextBoxColumn10", "DataGridViewTextBoxColumn11", "DataGridViewTextBoxColumn12", "DataGridViewTextBoxColumn13", "REG_REG", "REG_SUN", "REG_SH", "REG_LH", "RD_SUN_SH", "REG_REG", "RD_SUN_LH", "ND_REG", "ND_SUN", "ND_SH", "ND_LH", "ND_RD_SUN_SH", "ND_RD_SUN_LH", "OT_REG"}
-        Call ShowOriginalDataGridViewColumns(GView_DTR, OriginalDGviewcolumnsToHide)
-
-
-        Call Calculate_DTR()
-        Call ProcessHoursBreakdown()
-        Call DuplicateAndHideDtrDGView()
+        RemoveDataGridViewByName(DTR_TimeCalculationPanel, "Duplicate_DGV")
+        ShowOriginalDataGridViewColumns(GView_DTR)
+        Calculate_DTR()
+        ProcessHoursBreakdown()
+        DuplicateAndHideDtrDGView()
     End Sub
+
     Private Sub DuplicateAndHideDtrDGView()
         Dim columnsToHide As New List(Of String) From {"DataGridViewTextBoxColumn3", "DataGridViewTextBoxColumn4", "DataGridViewTextBoxColumn5", "DataGridViewTextBoxColumn6", "DataGridViewTextBoxColumn7", "DataGridViewTextBoxColumn8", "ExtraTimeIn1", "ExtraTimeOut1"}
         Dim OriginalDGviewcolumnsToHide As New List(Of String) From {"DataGridViewTextBoxColumn9", "DataGridViewTextBoxColumn10", "DataGridViewTextBoxColumn11", "DataGridViewTextBoxColumn12", "DataGridViewTextBoxColumn13", "REG_REG", "REG_SUN", "REG_SH", "REG_LH", "RD_SUN_SH", "REG_REG", "RD_SUN_LH", "ND_REG", "ND_SUN", "ND_SH", "ND_LH", "ND_RD_SUN_SH", "ND_RD_SUN_LH", "OT_REG"}
 
-        DuplicateAndModifyDataGridView(GView_DTR, columnsToHide)
+        DuplicateAndModifyDataGridView(GView_DTR, columnsToHide, DTR_TimeCalculationPanel)
         HideOriginalDataGridViewColumns(GView_DTR, OriginalDGviewcolumnsToHide)
 
     End Sub
-    Private Sub DuplicateAndModifyDataGridView(originalDataGridView As DataGridView, hiddenColumns As List(Of String))
-        ' Create a new DataGridView
-        Dim newDataGridView As New DataGridView()
-        With newDataGridView
-            newDataGridView.Name = "Duplicate_DGV" ' Set this to your desired name
-            ' Add the new DataGridView to the same TabPage as the original
-            originalDataGridView.Parent.Controls.Add(newDataGridView)
+    Private Sub DuplicateAndModifyDataGridView(originalDataGridView As DataGridView, hiddenColumns As List(Of String), targetPanel As Panel)
+        ' Check if a DataGridView with the desired name already exists
+        Dim existingDataGridView As DataGridView = Nothing
 
-            ' Position it relative to the original DataGridView
-            .Location = New Point(originalDataGridView.Left, originalDataGridView.Bottom + 10)
-            .Size = originalDataGridView.Size
-            .AllowUserToAddRows = originalDataGridView.AllowUserToAddRows
-            .AllowUserToDeleteRows = originalDataGridView.AllowUserToDeleteRows
-            .ReadOnly = originalDataGridView.ReadOnly
-            .AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.DisplayedCells ' Auto-size columns based on cells
-            .ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize ' Auto-size header height
-        End With
+        For Each ctrl As Control In targetPanel.Controls
+            If TypeOf ctrl Is DataGridView AndAlso ctrl.Name = "Duplicate_DGV" Then
+                existingDataGridView = DirectCast(ctrl, DataGridView)
+                Exit For
+            End If
+        Next
+
+        ' If it exists, clear it; otherwise, create a new one
+        Dim newDataGridView As DataGridView
+        If existingDataGridView IsNot Nothing Then
+            newDataGridView = existingDataGridView
+            newDataGridView.Rows.Clear()
+            newDataGridView.Columns.Clear()
+        Else
+            newDataGridView = New DataGridView() With {
+            .Name = "Duplicate_DGV",
+            .Location = New Point(10, 10),
+            .Size = originalDataGridView.Size,
+            .AllowUserToAddRows = originalDataGridView.AllowUserToAddRows,
+            .AllowUserToDeleteRows = originalDataGridView.AllowUserToDeleteRows,
+            .ReadOnly = originalDataGridView.ReadOnly,
+            .AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.DisplayedCells,
+            .ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize
+        }
+            targetPanel.Controls.Add(newDataGridView)
+        End If
 
         ' Copy columns from the original DataGridView
         For Each col As DataGridViewColumn In originalDataGridView.Columns
@@ -212,8 +303,11 @@ Public Class FRM_DTR_BIOMETRIC
         Next
     End Sub
 
-    Private Sub ShowOriginalDataGridViewColumns(originalDataGridView As DataGridView, hiddenColumns As List(Of String))
-        For Each columnName As String In hiddenColumns
+    Private Sub ShowOriginalDataGridViewColumns(originalDataGridView As DataGridView)
+
+        Dim showColumns As New List(Of String) From {"DataGridViewTextBoxColumn9", "DataGridViewTextBoxColumn10", "DataGridViewTextBoxColumn11", "DataGridViewTextBoxColumn12", "DataGridViewTextBoxColumn13", "REG_REG", "REG_SUN", "REG_SH", "REG_LH", "RD_SUN_SH", "REG_REG", "RD_SUN_LH", "ND_REG", "ND_SUN", "ND_SH", "ND_LH", "ND_RD_SUN_SH", "ND_RD_SUN_LH", "OT_REG"}
+
+        For Each columnName As String In showColumns
             If originalDataGridView.Columns.Contains(columnName) Then
                 originalDataGridView.Columns(columnName).Visible = True
             End If
@@ -221,97 +315,237 @@ Public Class FRM_DTR_BIOMETRIC
     End Sub
 
     Private Sub BIOMETRICForm_FormClosing(sender As Object, e As EventArgs) Handles MyBase.Closing
-        ' Define the name of the specific DataGridView you want to remove
-        Dim targetDataGridViewName As String = "Duplicate_DGV" ' Example name for the duplicate DataGridView
-
-        ' Loop through each TabPage in the TabControl
-        For Each tabPage As TabPage In TabControl1.TabPages
-            ' Loop through each control in the TabPage
-            For Each ctrl As Control In tabPage.Controls
-                ' Check if the control is a DataGridView and if its name matches the target name
-                If TypeOf ctrl Is DataGridView AndAlso ctrl.Name = targetDataGridViewName Then
-                    ' Remove the specific DataGridView by name
-                    tabPage.Controls.Remove(ctrl)
-                    ctrl.Dispose() ' Dispose of the DataGridView to free resources
-                End If
-            Next
-        Next
-
-        Dim OriginalDGviewcolumnsToHide As New List(Of String) From {"DataGridViewTextBoxColumn9", "DataGridViewTextBoxColumn10", "DataGridViewTextBoxColumn11", "DataGridViewTextBoxColumn12", "DataGridViewTextBoxColumn13", "REG_REG", "REG_SUN", "REG_SH", "REG_LH", "RD_SUN_SH", "REG_REG", "RD_SUN_LH", "ND_REG", "ND_SUN", "ND_SH", "ND_LH", "ND_RD_SUN_SH", "ND_RD_SUN_LH", "OT_REG"}
-        ShowOriginalDataGridViewColumns(GView_DTR, OriginalDGviewcolumnsToHide)
-
+        RemoveDataGridViewByName(DTR_TimeCalculationPanel, "Duplicate_DGV")
+        ShowOriginalDataGridViewColumns(GView_DTR)
     End Sub
 
+    Private Sub RemoveDataGridViewByName(targetPanel As Panel, dataGridViewName As String)
 
-
-
-    Private Sub FRM_BIOMETRIC_DTR_Load(sender As Object, e As EventArgs) Handles MyBase.Load
-
-
-        ' Connect to MDB
-        MDB_Connection_Init()
-        Connect_to_MDB()
-
-        GView_DTR.Rows.Clear()
-
-        Dim processes As Process() = Process.GetProcessesByName("EXCEL")
-
-        For Each process As Process In processes
-            Dim processFileName As String = GetProcessFileName(process)
-
-            If processFileName.EndsWith("PdfToExcel.xlsx", StringComparison.OrdinalIgnoreCase) Then
-                process.Kill()
+        ' Loop through each control in the TabPage
+        For Each ctrl As Control In targetPanel.Controls
+            ' Check if the control is a DataGridView and if its name matches the target name
+            If TypeOf ctrl Is DataGridView AndAlso ctrl.Name = dataGridViewName Then
+                ' Remove the specific DataGridView by name
+                targetPanel.Controls.Remove(ctrl)
+                ctrl.Dispose() ' Dispose of the DataGridView to free resources
+                Exit Sub ' Exit after removing the first match
             End If
         Next
-
     End Sub
 
+    Private Sub FRM_BIOMETRIC_DTR_Load(sender As Object, e As EventArgs) Handles MyBase.Load
+        Try
+            ' Disable buttons at form load
+            SetButtonState(False, Btn_Save_DTR)
+
+            ' Initialize and connect to the MDB database
+            MDB_Connection_Init()
+            Connect_to_MDB()
+
+            ' Clear any existing rows in the GView_DTR grid view
+            GView_DTR.Rows.Clear()
+
+            ' Terminate any running instances of Excel that are using "PdfToExcel.xlsx"
+            TerminateExcelProcesses("PdfToExcel.xlsx")
+        Catch ex As Exception
+            ' Log or display the error
+            MsgBox($"An error occurred during form load: {ex.Message}", vbExclamation, "Error")
+        End Try
+    End Sub
+
+
+
+    ''' <summary>
+    ''' Terminates Excel processes that have a specific file open.
+    ''' </summary>
+    ''' <param name="fileName">The name of the file to check for in running Excel processes.</param>
+    Private Sub TerminateExcelProcesses(fileName As String)
+        Try
+            ' Get all running Excel processes
+            Dim processes As Process() = Process.GetProcessesByName("EXCEL")
+
+            ' Iterate through each process
+            For Each process As Process In processes
+                Dim processFileName As String = GetProcessFileName(process)
+
+                ' Terminate the process if it matches the specified file name
+                If processFileName.EndsWith(fileName, StringComparison.OrdinalIgnoreCase) Then
+                    process.Kill()
+                End If
+            Next
+        Catch ex As Exception
+            ' Handle any errors during process termination
+            MsgBox($"An error occurred while terminating Excel processes: {ex.Message}", vbExclamation, "Error")
+        End Try
+    End Sub
+
+    ''' <summary>
+    ''' Enables or disables specific buttons and visually changes their appearance based on the action.
+    ''' </summary>
+    ''' <param name="enable">If True, enables the buttons. If False, disables the buttons.</param>
+    ''' <param name="buttons">Array of buttons to enable/disable.</param>
+    Private Sub SetButtonState(enable As Boolean, ParamArray buttons() As Button)
+        Try
+            ' Loop through each button and enable/disable it based on the 'enable' flag
+            For Each btn As Button In buttons
+                If enable Then
+                    ' Enable button, restore appearance, and set cursor to default
+                    btn.Enabled = True
+                    btn.BackColor = Color.White ' Default background color
+                    btn.ForeColor = SystemColors.ControlText ' Default text color
+                    btn.Cursor = Cursors.Hand ' Change cursor to Hand when enabled (for better UX)
+                Else
+                    ' Disable button, visually gray it out, and set cursor to Arrow
+                    btn.Enabled = False
+                    btn.BackColor = Color.LightGray
+                    btn.ForeColor = Color.DarkGray
+                    btn.Cursor = Cursors.Arrow ' Set cursor to default Arrow when disabled
+                End If
+            Next
+        Catch ex As Exception
+            ' Log or display an error if any issue occurs
+            Debug.WriteLine($"Error setting button state: {ex.Message}")
+            MsgBox("An error occurred while setting the button state.", vbExclamation, "Error")
+        End Try
+    End Sub
+
+    Public Sub SetSelectedTabPage(tabControl As TabControl, tabPage As TabPage)
+        If tabControl.TabPages.Contains(tabPage) Then
+            tabControl.SelectedTab = tabPage
+        Else
+            MsgBox("TabPage not found.", vbExclamation, "Error")
+        End If
+    End Sub
+
+
+
+    ''' <summary>
+    ''' Retrieves the file name of the main module of a given process.
+    ''' </summary>
+    ''' <param name="process">The process to retrieve the file name from.</param>
+    ''' <returns>The file name of the process's main module, or an empty string if inaccessible.</returns>
     Private Function GetProcessFileName(ByVal process As Process) As String
         Try
             Return process.MainModule.FileName
         Catch ex As Exception
-            Return ""
+            ' Log the error for debugging purposes (optional)
+            Debug.WriteLine($"Error retrieving file name for process {process.Id}: {ex.Message}")
+
+            ' Return an empty string if unable to retrieve the file name
+            Return String.Empty
         End Try
     End Function
 
-    Private Sub Btn_Calculate_Click(sender As Object, e As EventArgs)
+    Private Sub btn_Breakdown_Click(sender As Object, e As EventArgs) Handles btn_Breakdown.Click
+        ShowOriginalDataGridViewColumns(GView_DTR)
+        Dim columns As Integer() = {14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27}
+        ' Copy data to original DataGridView if Duplicate_DGV exists
+        Dim duplicateDataGridView As DataGridView = FindDuplicateDataGridView("Duplicate_DGV")
+        If duplicateDataGridView IsNot Nothing Then
+            CopyAndCalculateTotals(duplicateDataGridView, GView_DTR, columns)
+        End If
 
+        DuplicateAndHideDtrDGView()
+    End Sub
+
+
+    ' Helper function to find the duplicate DataGridView by name
+    Private Function FindDuplicateDataGridView(name As String) As DataGridView
+        For Each ctrl As Control In DTR_TimeCalculationPanel.Controls
+            If TypeOf ctrl Is DataGridView AndAlso ctrl.Name = name Then
+                Return DirectCast(ctrl, DataGridView)
+            End If
+        Next
+
+        ' Display error message if DataGridView is not found
+        MessageBox.Show($"The DataGridView '{name}' was not found on the breakdown page. Please contact the administrator.",
+                    "Error",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Error)
+        Return Nothing
+    End Function
+    Private Sub CopyAndCalculateTotals(duplicateDataGridView As DataGridView, originalDataGridView As DataGridView, columnIndices As Integer())
+        Dim totals(columnIndices.Length - 1) As Double ' Initialize totals array
+        Dim invalidCells As New List(Of DataGridViewCell) ' Track invalid cells
+        Dim errorMessages As New List(Of String) ' Collect error messages for all invalid cells
+
+        Try
+            ' Copy values from the duplicate DataGridView to the original DataGridView
+            For rowIndex As Integer = 0 To Math.Min(duplicateDataGridView.Rows.Count - 1, originalDataGridView.Rows.Count - 1)
+                For Each columnIndex In columnIndices
+                    Dim cellValue As Object = duplicateDataGridView.Rows(rowIndex).Cells(columnIndex).Value
+                    If cellValue IsNot Nothing Then
+                        originalDataGridView.Rows(rowIndex).Cells(columnIndex).Value = cellValue
+                    End If
+                Next
+            Next
+
+            ' Sum values for rows 0 to 16 in the original DataGridView
+            For i = 0 To Math.Min(originalDataGridView.Rows.Count - 1, 16)
+                For j = 0 To columnIndices.Length - 1
+                    Dim cellValue As Object = originalDataGridView.Rows(i).Cells(columnIndices(j)).Value
+                    If cellValue IsNot Nothing Then
+                        ' Check if value is numeric
+                        If IsNumeric(cellValue) Then
+                            totals(j) += CDbl(cellValue)
+                        Else
+                            ' Highlight the invalid cell and record error
+                            Dim invalidCell = originalDataGridView.Rows(i).Cells(columnIndices(j))
+                            HighlightCell(invalidCell)
+
+                            invalidCells.Add(invalidCell)
+
+                            ' Get the column name (header text)
+                            Dim columnName As String = originalDataGridView.Columns(columnIndices(j)).HeaderText
+
+                            ' Add detailed error message with column name
+                            errorMessages.Add($"Invalid value at Row {i + 1}, Column '{columnName}'.")
+                        End If
+                    End If
+                Next
+            Next
+
+            ' Assign totals to the second-to-last row of the original DataGridView
+            Dim targetRowIndex As Integer = originalDataGridView.Rows.Count - 2
+            If targetRowIndex >= 0 Then
+                For j = 0 To columnIndices.Length - 1
+                    originalDataGridView.Rows(targetRowIndex).Cells(columnIndices(j)).Value = totals(j)
+                Next
+            Else
+                Throw New IndexOutOfRangeException("Target row index is invalid.")
+            End If
+
+            ' Display all error messages if there are invalid cells
+            If errorMessages.Count > 0 Then
+                Throw New InvalidCastException(String.Join(Environment.NewLine, errorMessages))
+            End If
+
+        Catch ex As Exception
+            MessageBox.Show($"An error occurred: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
+        Finally
+            ' Reset the highlights for invalid cells after a delay
+            If invalidCells.Count > 0 Then
+                Dim resetTimer As New Timer With {.Interval = 3000} ' Highlight for 3 seconds
+                AddHandler resetTimer.Tick, Sub()
+                                                For Each cell In invalidCells
+                                                    cell.Style.BackColor = Color.White ' Reset to default
+                                                Next
+                                                resetTimer.Stop()
+                                                resetTimer.Dispose()
+                                            End Sub
+                resetTimer.Start()
+            End If
+        End Try
+    End Sub
+
+    ' Helper Method to Highlight a Cell
+    Private Sub HighlightCell(cell As DataGridViewCell)
+        cell.Style.BackColor = Color.LightCoral ' Use light red (LightCoral) for highlighting
+        cell.DataGridView.CurrentCell = cell ' Optionally focus on the first invalid cell
     End Sub
 
 
 
-
-
-
-
-    Private Sub Btn_Payslip_Click(sender As Object, e As EventArgs)
-
-    End Sub
-
-    Private Sub GView_DTR_CellContentClick(sender As Object, e As DataGridViewCellEventArgs) Handles GView_DTR.CellContentClick
-
-    End Sub
-
-    Private Sub GView_DTR_DoubleClick(sender As Object, e As EventArgs) Handles GView_DTR.DoubleClick
-
-
-
-        'If GView_DTR.Rows(GView_DTR.CurrentCell.RowIndex).DefaultCellStyle.BackColor = Color.LightGreen Then
-        '    GView_DTR.Rows(GView_DTR.CurrentCell.RowIndex).DefaultCellStyle.BackColor = Color.Yellow
-        'ElseIf GView_DTR.Rows(GView_DTR.CurrentCell.RowIndex).DefaultCellStyle.BackColor = Color.Yellow Then
-        '    GView_DTR.Rows(GView_DTR.CurrentCell.RowIndex).DefaultCellStyle.BackColor = Color.Empty
-        'ElseIf GView_DTR.Rows(GView_DTR.CurrentCell.RowIndex).DefaultCellStyle.BackColor = Color.Empty Then
-        '    GView_DTR.Rows(GView_DTR.CurrentCell.RowIndex).DefaultCellStyle.BackColor = Color.LightGreen
-        'ElseIf GView_DTR.Rows(GView_DTR.CurrentCell.RowIndex).DefaultCellStyle.BackColor = Color.LightBlue Then
-        '    GView_DTR.Rows(GView_DTR.CurrentCell.RowIndex).DefaultCellStyle.BackColor = Color.LightGreen
-        'End If
-
-
-    End Sub
-
-    Private Sub Btn_Hours_Breakdown_Click(sender As Object, e As EventArgs)
-        ProcessHoursBreakdown()
-    End Sub
     Private Sub ProcessHoursBreakdown()
         ' Loop through rows in GView_DTR
         For iRow = 0 To GView_DTR.Rows.Count - 3
@@ -341,8 +575,8 @@ Public Class FRM_DTR_BIOMETRIC
         Next
 
         ' Array to store column indices for each hour type
-        Dim columns As Integer() = {15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27}
-        Dim totals(12) As Double ' Initialize totals array
+        Dim columns As Integer() = {14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27}
+        Dim totals(13) As Double ' Initialize totals array
 
 
         Try
@@ -367,10 +601,6 @@ Public Class FRM_DTR_BIOMETRIC
         Catch ex As Exception
             MessageBox.Show($"An error occurred: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
         End Try
-
-
-
-        ' GView_DTR.Rows(17).Cells(14).Value = "Total:"
 
     End Sub
 
@@ -499,39 +729,17 @@ Public Class FRM_DTR_BIOMETRIC
 
         End If
     End Sub
-
-    Private Sub Label9_Click(sender As Object, e As EventArgs) Handles Label9.Click
-
-    End Sub
-
-    Private Sub Lbl_Absent_Count_Click(sender As Object, e As EventArgs) Handles Lbl_Absent_Count.Click
-
-    End Sub
-
     Private Sub Btn_Save_DTR_Click(sender As Object, e As EventArgs) Handles Btn_Save_DTR.Click
-
         ' Get cut off period from Lbl_Period
         Call Save_DTR_Total_Hours(GlobalVariables.DTR_Selected_SubClient_ID, GlobalVariables.DTR_Selected_Employee_ID, GlobalVariables.sPayroll_Cutoff, CInt(Me.Lbl_Num_of_Reporting_Days.Text))
-
     End Sub
-
     Private Sub BtnSH_Click(sender As Object, e As EventArgs) Handles BtnSH.Click
         GView_DTR.Rows(GView_DTR.CurrentCell.RowIndex).DefaultCellStyle.BackColor = Color.Yellow
         ProcessHoursBreakdown()
-
     End Sub
-
     Private Sub BtnLH_Click(sender As Object, e As EventArgs) Handles BtnLH.Click
         GView_DTR.Rows(GView_DTR.CurrentCell.RowIndex).DefaultCellStyle.BackColor = Color.LightGreen
         ProcessHoursBreakdown()
-
     End Sub
-
-
-    Private Sub GetTimeInOut(row As DataGridViewRow)
-
-
-    End Sub
-
 
 End Class

@@ -14,11 +14,11 @@
 
         If GlobalVariables.sDTR_or_Schedule_Process = "SCHEDULE" Then
             FRM_DTR_SCHEDULE.ShowDialog()
-        ElseIf GlobalVariables.sDTR_or_Schedule_Process = "DTR" Then
-            With FRM_DTR_BIOMETRIC
-                .GView_Schedule.Rows.Clear() ' Clear all rows in the DataGridView
-            End With
-            FRM_DTR_BIOMETRIC.ShowDialog()
+            'ElseIf GlobalVariables.sDTR_or_Schedule_Process = "DTR" Then
+            '    With FRM_DTR_BIOMETRIC
+            '        .GView_Schedule.Rows.Clear() ' Clear all rows in the DataGridView
+            '    End With
+            '    ' FRM_DTR_BIOMETRIC.ShowDialog()
         End If
 
         Me.Close()

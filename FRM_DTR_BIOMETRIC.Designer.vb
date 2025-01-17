@@ -22,43 +22,32 @@ Partial Class FRM_DTR_BIOMETRIC
     'Do not modify it using the code editor.
     <System.Diagnostics.DebuggerStepThrough()>
     Private Sub InitializeComponent()
-        Dim DataGridViewCellStyle19 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
-        Dim DataGridViewCellStyle1 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
-        Dim DataGridViewCellStyle2 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
-        Dim DataGridViewCellStyle3 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
-        Dim DataGridViewCellStyle4 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
-        Dim DataGridViewCellStyle5 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
-        Dim DataGridViewCellStyle6 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
-        Dim DataGridViewCellStyle7 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
-        Dim DataGridViewCellStyle8 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
-        Dim DataGridViewCellStyle9 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
-        Dim DataGridViewCellStyle10 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
-        Dim DataGridViewCellStyle11 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
-        Dim DataGridViewCellStyle12 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
-        Dim DataGridViewCellStyle13 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
-        Dim DataGridViewCellStyle14 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
-        Dim DataGridViewCellStyle15 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
-        Dim DataGridViewCellStyle16 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
-        Dim DataGridViewCellStyle17 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
-        Dim DataGridViewCellStyle18 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
-        Dim DataGridViewCellStyle20 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
+        Dim DataGridViewCellStyle59 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
+        Dim DataGridViewCellStyle41 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
+        Dim DataGridViewCellStyle42 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
+        Dim DataGridViewCellStyle43 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
+        Dim DataGridViewCellStyle44 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
+        Dim DataGridViewCellStyle45 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
+        Dim DataGridViewCellStyle46 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
+        Dim DataGridViewCellStyle47 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
+        Dim DataGridViewCellStyle48 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
+        Dim DataGridViewCellStyle49 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
+        Dim DataGridViewCellStyle50 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
+        Dim DataGridViewCellStyle51 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
+        Dim DataGridViewCellStyle52 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
+        Dim DataGridViewCellStyle53 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
+        Dim DataGridViewCellStyle54 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
+        Dim DataGridViewCellStyle55 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
+        Dim DataGridViewCellStyle56 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
+        Dim DataGridViewCellStyle57 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
+        Dim DataGridViewCellStyle58 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
+        Dim DataGridViewCellStyle60 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
         Me.Panel1 = New System.Windows.Forms.Panel()
         Me.Btn_DTR = New System.Windows.Forms.Button()
         Me.TabControl1 = New System.Windows.Forms.TabControl()
         Me.TabPage1 = New System.Windows.Forms.TabPage()
-        Me.BtnSH = New System.Windows.Forms.Button()
-        Me.BtnLH = New System.Windows.Forms.Button()
-        Me.Chk_Sunday = New System.Windows.Forms.CheckBox()
-        Me.Label7 = New System.Windows.Forms.Label()
-        Me.Label6 = New System.Windows.Forms.Label()
-        Me.PictureBox3 = New System.Windows.Forms.PictureBox()
-        Me.PictureBox1 = New System.Windows.Forms.PictureBox()
-        Me.Lbl_IDNumber = New System.Windows.Forms.Label()
-        Me.Lbl_Period = New System.Windows.Forms.Label()
-        Me.Lbl_Name = New System.Windows.Forms.Label()
-        Me.Label3 = New System.Windows.Forms.Label()
-        Me.Label2 = New System.Windows.Forms.Label()
-        Me.Label1 = New System.Windows.Forms.Label()
+        Me.TabControl2 = New System.Windows.Forms.TabControl()
+        Me.actualDtrPage = New System.Windows.Forms.TabPage()
         Me.GView_DTR = New System.Windows.Forms.DataGridView()
         Me.DataGridViewTextBoxColumn1 = New System.Windows.Forms.DataGridViewTextBoxColumn()
         Me.DataGridViewTextBoxColumn2 = New System.Windows.Forms.DataGridViewTextBoxColumn()
@@ -90,6 +79,21 @@ Partial Class FRM_DTR_BIOMETRIC
         Me.OT_REG = New System.Windows.Forms.DataGridViewTextBoxColumn()
         Me.FirstTimeIn = New System.Windows.Forms.DataGridViewTextBoxColumn()
         Me.LastTimeOut = New System.Windows.Forms.DataGridViewTextBoxColumn()
+        Me.BtnSH = New System.Windows.Forms.Button()
+        Me.Chk_Sunday = New System.Windows.Forms.CheckBox()
+        Me.BtnLH = New System.Windows.Forms.Button()
+        Me.Label7 = New System.Windows.Forms.Label()
+        Me.Label6 = New System.Windows.Forms.Label()
+        Me.dtrBreakDownPage = New System.Windows.Forms.TabPage()
+        Me.Btn_Save_DTR = New System.Windows.Forms.Button()
+        Me.DTR_TimeCalculationPanel = New System.Windows.Forms.Panel()
+        Me.btn_Breakdown = New System.Windows.Forms.Button()
+        Me.Btn_Calc_DTR = New System.Windows.Forms.Button()
+        Me.Lbl_IDNumber = New System.Windows.Forms.Label()
+        Me.Lbl_Name = New System.Windows.Forms.Label()
+        Me.Label3 = New System.Windows.Forms.Label()
+        Me.Label2 = New System.Windows.Forms.Label()
+        Me.Label1 = New System.Windows.Forms.Label()
         Me.TabPage2 = New System.Windows.Forms.TabPage()
         Me.Lbl_Num_of_Reporting_Days = New System.Windows.Forms.Label()
         Me.Label11 = New System.Windows.Forms.Label()
@@ -107,18 +111,16 @@ Partial Class FRM_DTR_BIOMETRIC
         Me.Col_ID = New System.Windows.Forms.DataGridViewTextBoxColumn()
         Me.Col_Attendance = New System.Windows.Forms.DataGridViewTextBoxColumn()
         Me.OpenFileDialog1 = New System.Windows.Forms.OpenFileDialog()
-        Me.PictureBox2 = New System.Windows.Forms.PictureBox()
         Me.Label8 = New System.Windows.Forms.Label()
-        Me.Btn_Save_DTR = New System.Windows.Forms.Button()
-        Me.Btn_Calc_DTR = New System.Windows.Forms.Button()
+        Me.DTR_Lbl_Period = New System.Windows.Forms.Label()
         Me.TabControl1.SuspendLayout()
         Me.TabPage1.SuspendLayout()
-        CType(Me.PictureBox3, System.ComponentModel.ISupportInitialize).BeginInit()
-        CType(Me.PictureBox1, System.ComponentModel.ISupportInitialize).BeginInit()
+        Me.TabControl2.SuspendLayout()
+        Me.actualDtrPage.SuspendLayout()
         CType(Me.GView_DTR, System.ComponentModel.ISupportInitialize).BeginInit()
+        Me.dtrBreakDownPage.SuspendLayout()
         Me.TabPage2.SuspendLayout()
         CType(Me.GView_Schedule, System.ComponentModel.ISupportInitialize).BeginInit()
-        CType(Me.PictureBox2, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.SuspendLayout()
         '
         'Panel1
@@ -132,10 +134,11 @@ Partial Class FRM_DTR_BIOMETRIC
         '
         'Btn_DTR
         '
+        Me.Btn_DTR.Cursor = System.Windows.Forms.Cursors.Hand
         Me.Btn_DTR.Font = New System.Drawing.Font("Microsoft Sans Serif", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.Btn_DTR.Location = New System.Drawing.Point(36, 851)
+        Me.Btn_DTR.Location = New System.Drawing.Point(6, 651)
         Me.Btn_DTR.Name = "Btn_DTR"
-        Me.Btn_DTR.Size = New System.Drawing.Size(173, 51)
+        Me.Btn_DTR.Size = New System.Drawing.Size(1782, 51)
         Me.Btn_DTR.TabIndex = 62
         Me.Btn_DTR.Text = "Upload DTR"
         Me.Btn_DTR.UseVisualStyleBackColor = True
@@ -149,185 +152,74 @@ Partial Class FRM_DTR_BIOMETRIC
         Me.TabControl1.Location = New System.Drawing.Point(22, 65)
         Me.TabControl1.Name = "TabControl1"
         Me.TabControl1.SelectedIndex = 0
-        Me.TabControl1.Size = New System.Drawing.Size(1860, 770)
+        Me.TabControl1.Size = New System.Drawing.Size(1860, 854)
         Me.TabControl1.TabIndex = 65
         '
         'TabPage1
         '
         Me.TabPage1.AutoScroll = True
         Me.TabPage1.BackColor = System.Drawing.Color.FromArgb(CType(CType(255, Byte), Integer), CType(CType(192, Byte), Integer), CType(CType(128, Byte), Integer))
-        Me.TabPage1.Controls.Add(Me.BtnSH)
-        Me.TabPage1.Controls.Add(Me.BtnLH)
-        Me.TabPage1.Controls.Add(Me.Chk_Sunday)
-        Me.TabPage1.Controls.Add(Me.Label7)
-        Me.TabPage1.Controls.Add(Me.Label6)
-        Me.TabPage1.Controls.Add(Me.PictureBox3)
-        Me.TabPage1.Controls.Add(Me.PictureBox1)
+        Me.TabPage1.Controls.Add(Me.DTR_Lbl_Period)
+        Me.TabPage1.Controls.Add(Me.TabControl2)
         Me.TabPage1.Controls.Add(Me.Lbl_IDNumber)
-        Me.TabPage1.Controls.Add(Me.Lbl_Period)
         Me.TabPage1.Controls.Add(Me.Lbl_Name)
         Me.TabPage1.Controls.Add(Me.Label3)
         Me.TabPage1.Controls.Add(Me.Label2)
         Me.TabPage1.Controls.Add(Me.Label1)
-        Me.TabPage1.Controls.Add(Me.GView_DTR)
         Me.TabPage1.Font = New System.Drawing.Font("Microsoft Sans Serif", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.TabPage1.Location = New System.Drawing.Point(4, 29)
         Me.TabPage1.Name = "TabPage1"
         Me.TabPage1.Padding = New System.Windows.Forms.Padding(3)
-        Me.TabPage1.Size = New System.Drawing.Size(1852, 737)
+        Me.TabPage1.Size = New System.Drawing.Size(1852, 821)
         Me.TabPage1.TabIndex = 0
         Me.TabPage1.Text = "     DTR        "
         '
-        'BtnSH
+        'TabControl2
         '
-        Me.BtnSH.BackColor = System.Drawing.Color.Yellow
-        Me.BtnSH.Location = New System.Drawing.Point(658, 52)
-        Me.BtnSH.Name = "BtnSH"
-        Me.BtnSH.Size = New System.Drawing.Size(47, 31)
-        Me.BtnSH.TabIndex = 14
-        Me.BtnSH.Text = "SH"
-        Me.BtnSH.UseVisualStyleBackColor = False
+        Me.TabControl2.Controls.Add(Me.actualDtrPage)
+        Me.TabControl2.Controls.Add(Me.dtrBreakDownPage)
+        Me.TabControl2.Location = New System.Drawing.Point(32, 67)
+        Me.TabControl2.Name = "TabControl2"
+        Me.TabControl2.SelectedIndex = 0
+        Me.TabControl2.Size = New System.Drawing.Size(1802, 741)
+        Me.TabControl2.TabIndex = 15
         '
-        'BtnLH
+        'actualDtrPage
         '
-        Me.BtnLH.BackColor = System.Drawing.Color.LightGreen
-        Me.BtnLH.Location = New System.Drawing.Point(658, 23)
-        Me.BtnLH.Name = "BtnLH"
-        Me.BtnLH.Size = New System.Drawing.Size(47, 31)
-        Me.BtnLH.TabIndex = 13
-        Me.BtnLH.Text = "LH"
-        Me.BtnLH.UseVisualStyleBackColor = False
-        '
-        'Chk_Sunday
-        '
-        Me.Chk_Sunday.AutoSize = True
-        Me.Chk_Sunday.Location = New System.Drawing.Point(1641, 74)
-        Me.Chk_Sunday.Name = "Chk_Sunday"
-        Me.Chk_Sunday.Size = New System.Drawing.Size(156, 24)
-        Me.Chk_Sunday.TabIndex = 12
-        Me.Chk_Sunday.Text = "Highlight Sundays"
-        Me.Chk_Sunday.UseVisualStyleBackColor = True
-        '
-        'Label7
-        '
-        Me.Label7.AutoSize = True
-        Me.Label7.Font = New System.Drawing.Font("Microsoft Sans Serif", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.Label7.Location = New System.Drawing.Point(711, 57)
-        Me.Label7.Name = "Label7"
-        Me.Label7.Size = New System.Drawing.Size(117, 20)
-        Me.Label7.TabIndex = 11
-        Me.Label7.Text = "Special Holiday"
-        '
-        'Label6
-        '
-        Me.Label6.AutoSize = True
-        Me.Label6.Font = New System.Drawing.Font("Microsoft Sans Serif", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.Label6.Location = New System.Drawing.Point(711, 28)
-        Me.Label6.Name = "Label6"
-        Me.Label6.Size = New System.Drawing.Size(104, 20)
-        Me.Label6.TabIndex = 10
-        Me.Label6.Text = "Legal Holiday"
-        '
-        'PictureBox3
-        '
-        Me.PictureBox3.BackColor = System.Drawing.Color.Yellow
-        Me.PictureBox3.Location = New System.Drawing.Point(658, 56)
-        Me.PictureBox3.Name = "PictureBox3"
-        Me.PictureBox3.Size = New System.Drawing.Size(28, 27)
-        Me.PictureBox3.TabIndex = 9
-        Me.PictureBox3.TabStop = False
-        '
-        'PictureBox1
-        '
-        Me.PictureBox1.BackColor = System.Drawing.Color.LightGreen
-        Me.PictureBox1.Location = New System.Drawing.Point(658, 23)
-        Me.PictureBox1.Name = "PictureBox1"
-        Me.PictureBox1.Size = New System.Drawing.Size(28, 27)
-        Me.PictureBox1.TabIndex = 8
-        Me.PictureBox1.TabStop = False
-        '
-        'Lbl_IDNumber
-        '
-        Me.Lbl_IDNumber.AutoSize = True
-        Me.Lbl_IDNumber.Font = New System.Drawing.Font("Microsoft Sans Serif", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.Lbl_IDNumber.ForeColor = System.Drawing.Color.FromArgb(CType(CType(0, Byte), Integer), CType(CType(0, Byte), Integer), CType(CType(192, Byte), Integer))
-        Me.Lbl_IDNumber.Location = New System.Drawing.Point(163, 28)
-        Me.Lbl_IDNumber.Name = "Lbl_IDNumber"
-        Me.Lbl_IDNumber.Size = New System.Drawing.Size(86, 20)
-        Me.Lbl_IDNumber.TabIndex = 7
-        Me.Lbl_IDNumber.Text = "ID Number"
-        '
-        'Lbl_Period
-        '
-        Me.Lbl_Period.AutoSize = True
-        Me.Lbl_Period.Font = New System.Drawing.Font("Microsoft Sans Serif", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.Lbl_Period.ForeColor = System.Drawing.Color.FromArgb(CType(CType(0, Byte), Integer), CType(CType(0, Byte), Integer), CType(CType(192, Byte), Integer))
-        Me.Lbl_Period.Location = New System.Drawing.Point(504, 28)
-        Me.Lbl_Period.Name = "Lbl_Period"
-        Me.Lbl_Period.Size = New System.Drawing.Size(110, 20)
-        Me.Lbl_Period.TabIndex = 6
-        Me.Lbl_Period.Text = "Cut-Off Period"
-        '
-        'Lbl_Name
-        '
-        Me.Lbl_Name.AutoSize = True
-        Me.Lbl_Name.Font = New System.Drawing.Font("Microsoft Sans Serif", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.Lbl_Name.ForeColor = System.Drawing.Color.FromArgb(CType(CType(0, Byte), Integer), CType(CType(0, Byte), Integer), CType(CType(192, Byte), Integer))
-        Me.Lbl_Name.Location = New System.Drawing.Point(163, 60)
-        Me.Lbl_Name.Name = "Lbl_Name"
-        Me.Lbl_Name.Size = New System.Drawing.Size(118, 20)
-        Me.Lbl_Name.TabIndex = 5
-        Me.Lbl_Name.Text = "Juan Dela Cruz"
-        '
-        'Label3
-        '
-        Me.Label3.AutoSize = True
-        Me.Label3.Font = New System.Drawing.Font("Microsoft Sans Serif", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.Label3.Location = New System.Drawing.Point(403, 28)
-        Me.Label3.Name = "Label3"
-        Me.Label3.Size = New System.Drawing.Size(95, 20)
-        Me.Label3.TabIndex = 4
-        Me.Label3.Text = "DTR Period:"
-        '
-        'Label2
-        '
-        Me.Label2.AutoSize = True
-        Me.Label2.Font = New System.Drawing.Font("Microsoft Sans Serif", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.Label2.Location = New System.Drawing.Point(28, 28)
-        Me.Label2.Name = "Label2"
-        Me.Label2.Size = New System.Drawing.Size(104, 20)
-        Me.Label2.TabIndex = 3
-        Me.Label2.Text = "Employee ID:"
-        '
-        'Label1
-        '
-        Me.Label1.AutoSize = True
-        Me.Label1.Font = New System.Drawing.Font("Microsoft Sans Serif", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.Label1.Location = New System.Drawing.Point(28, 60)
-        Me.Label1.Name = "Label1"
-        Me.Label1.Size = New System.Drawing.Size(129, 20)
-        Me.Label1.TabIndex = 2
-        Me.Label1.Text = "Employee Name:"
+        Me.actualDtrPage.Controls.Add(Me.GView_DTR)
+        Me.actualDtrPage.Controls.Add(Me.BtnSH)
+        Me.actualDtrPage.Controls.Add(Me.Chk_Sunday)
+        Me.actualDtrPage.Controls.Add(Me.Btn_DTR)
+        Me.actualDtrPage.Controls.Add(Me.BtnLH)
+        Me.actualDtrPage.Controls.Add(Me.Label7)
+        Me.actualDtrPage.Controls.Add(Me.Label6)
+        Me.actualDtrPage.Location = New System.Drawing.Point(4, 29)
+        Me.actualDtrPage.Name = "actualDtrPage"
+        Me.actualDtrPage.Padding = New System.Windows.Forms.Padding(3)
+        Me.actualDtrPage.Size = New System.Drawing.Size(1794, 708)
+        Me.actualDtrPage.TabIndex = 0
+        Me.actualDtrPage.Text = "Time Details"
+        Me.actualDtrPage.UseVisualStyleBackColor = True
         '
         'GView_DTR
         '
         Me.GView_DTR.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.DisplayedCells
         Me.GView_DTR.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize
         Me.GView_DTR.Columns.AddRange(New System.Windows.Forms.DataGridViewColumn() {Me.DataGridViewTextBoxColumn1, Me.DataGridViewTextBoxColumn2, Me.DataGridViewTextBoxColumn3, Me.DataGridViewTextBoxColumn4, Me.DataGridViewTextBoxColumn5, Me.DataGridViewTextBoxColumn6, Me.DataGridViewTextBoxColumn7, Me.DataGridViewTextBoxColumn8, Me.ExtraTimeIn1, Me.ExtraTimeOut1, Me.DataGridViewTextBoxColumn9, Me.DataGridViewTextBoxColumn10, Me.DataGridViewTextBoxColumn11, Me.DataGridViewTextBoxColumn12, Me.DataGridViewTextBoxColumn13, Me.REG_REG, Me.REG_SUN, Me.REG_SH, Me.REG_LH, Me.RD_SUN_SH, Me.RD_SUN_LH, Me.ND_REG, Me.ND_SUN, Me.ND_SH, Me.ND_LH, Me.ND_RD_SUN_SH, Me.ND_RD_SUN_LH, Me.OT_REG, Me.FirstTimeIn, Me.LastTimeOut})
-        DataGridViewCellStyle19.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft
-        DataGridViewCellStyle19.BackColor = System.Drawing.Color.White
-        DataGridViewCellStyle19.Font = New System.Drawing.Font("Microsoft Sans Serif", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        DataGridViewCellStyle19.ForeColor = System.Drawing.SystemColors.ControlText
-        DataGridViewCellStyle19.SelectionBackColor = System.Drawing.SystemColors.Highlight
-        DataGridViewCellStyle19.SelectionForeColor = System.Drawing.SystemColors.HighlightText
-        DataGridViewCellStyle19.WrapMode = System.Windows.Forms.DataGridViewTriState.[False]
-        Me.GView_DTR.DefaultCellStyle = DataGridViewCellStyle19
+        DataGridViewCellStyle59.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft
+        DataGridViewCellStyle59.BackColor = System.Drawing.Color.White
+        DataGridViewCellStyle59.Font = New System.Drawing.Font("Microsoft Sans Serif", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        DataGridViewCellStyle59.ForeColor = System.Drawing.SystemColors.ControlText
+        DataGridViewCellStyle59.SelectionBackColor = System.Drawing.SystemColors.Highlight
+        DataGridViewCellStyle59.SelectionForeColor = System.Drawing.SystemColors.HighlightText
+        DataGridViewCellStyle59.WrapMode = System.Windows.Forms.DataGridViewTriState.[False]
+        Me.GView_DTR.DefaultCellStyle = DataGridViewCellStyle59
         Me.GView_DTR.GridColor = System.Drawing.SystemColors.ActiveCaptionText
-        Me.GView_DTR.Location = New System.Drawing.Point(32, 104)
+        Me.GView_DTR.Location = New System.Drawing.Point(6, 84)
         Me.GView_DTR.MultiSelect = False
         Me.GView_DTR.Name = "GView_DTR"
         Me.GView_DTR.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.CellSelect
-        Me.GView_DTR.Size = New System.Drawing.Size(1765, 535)
+        Me.GView_DTR.Size = New System.Drawing.Size(1782, 544)
         Me.GView_DTR.TabIndex = 1
         '
         'DataGridViewTextBoxColumn1
@@ -410,8 +302,8 @@ Partial Class FRM_DTR_BIOMETRIC
         '
         'DataGridViewTextBoxColumn9
         '
-        DataGridViewCellStyle1.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight
-        Me.DataGridViewTextBoxColumn9.DefaultCellStyle = DataGridViewCellStyle1
+        DataGridViewCellStyle41.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight
+        Me.DataGridViewTextBoxColumn9.DefaultCellStyle = DataGridViewCellStyle41
         Me.DataGridViewTextBoxColumn9.Frozen = True
         Me.DataGridViewTextBoxColumn9.HeaderText = "Late"
         Me.DataGridViewTextBoxColumn9.Name = "DataGridViewTextBoxColumn9"
@@ -421,8 +313,8 @@ Partial Class FRM_DTR_BIOMETRIC
         '
         'DataGridViewTextBoxColumn10
         '
-        DataGridViewCellStyle2.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight
-        Me.DataGridViewTextBoxColumn10.DefaultCellStyle = DataGridViewCellStyle2
+        DataGridViewCellStyle42.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight
+        Me.DataGridViewTextBoxColumn10.DefaultCellStyle = DataGridViewCellStyle42
         Me.DataGridViewTextBoxColumn10.Frozen = True
         Me.DataGridViewTextBoxColumn10.HeaderText = "Total Break"
         Me.DataGridViewTextBoxColumn10.Name = "DataGridViewTextBoxColumn10"
@@ -431,8 +323,8 @@ Partial Class FRM_DTR_BIOMETRIC
         '
         'DataGridViewTextBoxColumn11
         '
-        DataGridViewCellStyle3.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight
-        Me.DataGridViewTextBoxColumn11.DefaultCellStyle = DataGridViewCellStyle3
+        DataGridViewCellStyle43.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight
+        Me.DataGridViewTextBoxColumn11.DefaultCellStyle = DataGridViewCellStyle43
         Me.DataGridViewTextBoxColumn11.Frozen = True
         Me.DataGridViewTextBoxColumn11.HeaderText = "Over Break"
         Me.DataGridViewTextBoxColumn11.Name = "DataGridViewTextBoxColumn11"
@@ -441,8 +333,8 @@ Partial Class FRM_DTR_BIOMETRIC
         '
         'DataGridViewTextBoxColumn12
         '
-        DataGridViewCellStyle4.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight
-        Me.DataGridViewTextBoxColumn12.DefaultCellStyle = DataGridViewCellStyle4
+        DataGridViewCellStyle44.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight
+        Me.DataGridViewTextBoxColumn12.DefaultCellStyle = DataGridViewCellStyle44
         Me.DataGridViewTextBoxColumn12.Frozen = True
         Me.DataGridViewTextBoxColumn12.HeaderText = "Over Time"
         Me.DataGridViewTextBoxColumn12.Name = "DataGridViewTextBoxColumn12"
@@ -451,8 +343,8 @@ Partial Class FRM_DTR_BIOMETRIC
         '
         'DataGridViewTextBoxColumn13
         '
-        DataGridViewCellStyle5.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter
-        Me.DataGridViewTextBoxColumn13.DefaultCellStyle = DataGridViewCellStyle5
+        DataGridViewCellStyle45.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter
+        Me.DataGridViewTextBoxColumn13.DefaultCellStyle = DataGridViewCellStyle45
         Me.DataGridViewTextBoxColumn13.Frozen = True
         Me.DataGridViewTextBoxColumn13.HeaderText = "Total Hours"
         Me.DataGridViewTextBoxColumn13.Name = "DataGridViewTextBoxColumn13"
@@ -461,8 +353,8 @@ Partial Class FRM_DTR_BIOMETRIC
         '
         'REG_REG
         '
-        DataGridViewCellStyle6.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight
-        Me.REG_REG.DefaultCellStyle = DataGridViewCellStyle6
+        DataGridViewCellStyle46.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight
+        Me.REG_REG.DefaultCellStyle = DataGridViewCellStyle46
         Me.REG_REG.Frozen = True
         Me.REG_REG.HeaderText = "Reg"
         Me.REG_REG.Name = "REG_REG"
@@ -471,8 +363,8 @@ Partial Class FRM_DTR_BIOMETRIC
         '
         'REG_SUN
         '
-        DataGridViewCellStyle7.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight
-        Me.REG_SUN.DefaultCellStyle = DataGridViewCellStyle7
+        DataGridViewCellStyle47.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight
+        Me.REG_SUN.DefaultCellStyle = DataGridViewCellStyle47
         Me.REG_SUN.Frozen = True
         Me.REG_SUN.HeaderText = "Sun"
         Me.REG_SUN.Name = "REG_SUN"
@@ -481,8 +373,8 @@ Partial Class FRM_DTR_BIOMETRIC
         '
         'REG_SH
         '
-        DataGridViewCellStyle8.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight
-        Me.REG_SH.DefaultCellStyle = DataGridViewCellStyle8
+        DataGridViewCellStyle48.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight
+        Me.REG_SH.DefaultCellStyle = DataGridViewCellStyle48
         Me.REG_SH.Frozen = True
         Me.REG_SH.HeaderText = "SH"
         Me.REG_SH.Name = "REG_SH"
@@ -491,8 +383,8 @@ Partial Class FRM_DTR_BIOMETRIC
         '
         'REG_LH
         '
-        DataGridViewCellStyle9.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight
-        Me.REG_LH.DefaultCellStyle = DataGridViewCellStyle9
+        DataGridViewCellStyle49.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight
+        Me.REG_LH.DefaultCellStyle = DataGridViewCellStyle49
         Me.REG_LH.Frozen = True
         Me.REG_LH.HeaderText = "LH"
         Me.REG_LH.Name = "REG_LH"
@@ -501,8 +393,8 @@ Partial Class FRM_DTR_BIOMETRIC
         '
         'RD_SUN_SH
         '
-        DataGridViewCellStyle10.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight
-        Me.RD_SUN_SH.DefaultCellStyle = DataGridViewCellStyle10
+        DataGridViewCellStyle50.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight
+        Me.RD_SUN_SH.DefaultCellStyle = DataGridViewCellStyle50
         Me.RD_SUN_SH.Frozen = True
         Me.RD_SUN_SH.HeaderText = "RD SUN SH"
         Me.RD_SUN_SH.Name = "RD_SUN_SH"
@@ -511,8 +403,8 @@ Partial Class FRM_DTR_BIOMETRIC
         '
         'RD_SUN_LH
         '
-        DataGridViewCellStyle11.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight
-        Me.RD_SUN_LH.DefaultCellStyle = DataGridViewCellStyle11
+        DataGridViewCellStyle51.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight
+        Me.RD_SUN_LH.DefaultCellStyle = DataGridViewCellStyle51
         Me.RD_SUN_LH.Frozen = True
         Me.RD_SUN_LH.HeaderText = "RD SUN LH"
         Me.RD_SUN_LH.Name = "RD_SUN_LH"
@@ -521,8 +413,8 @@ Partial Class FRM_DTR_BIOMETRIC
         '
         'ND_REG
         '
-        DataGridViewCellStyle12.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight
-        Me.ND_REG.DefaultCellStyle = DataGridViewCellStyle12
+        DataGridViewCellStyle52.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight
+        Me.ND_REG.DefaultCellStyle = DataGridViewCellStyle52
         Me.ND_REG.Frozen = True
         Me.ND_REG.HeaderText = "ND Reg"
         Me.ND_REG.Name = "ND_REG"
@@ -531,8 +423,8 @@ Partial Class FRM_DTR_BIOMETRIC
         '
         'ND_SUN
         '
-        DataGridViewCellStyle13.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight
-        Me.ND_SUN.DefaultCellStyle = DataGridViewCellStyle13
+        DataGridViewCellStyle53.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight
+        Me.ND_SUN.DefaultCellStyle = DataGridViewCellStyle53
         Me.ND_SUN.Frozen = True
         Me.ND_SUN.HeaderText = "ND Sun"
         Me.ND_SUN.Name = "ND_SUN"
@@ -541,8 +433,8 @@ Partial Class FRM_DTR_BIOMETRIC
         '
         'ND_SH
         '
-        DataGridViewCellStyle14.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight
-        Me.ND_SH.DefaultCellStyle = DataGridViewCellStyle14
+        DataGridViewCellStyle54.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight
+        Me.ND_SH.DefaultCellStyle = DataGridViewCellStyle54
         Me.ND_SH.Frozen = True
         Me.ND_SH.HeaderText = "ND SH"
         Me.ND_SH.Name = "ND_SH"
@@ -551,8 +443,8 @@ Partial Class FRM_DTR_BIOMETRIC
         '
         'ND_LH
         '
-        DataGridViewCellStyle15.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight
-        Me.ND_LH.DefaultCellStyle = DataGridViewCellStyle15
+        DataGridViewCellStyle55.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight
+        Me.ND_LH.DefaultCellStyle = DataGridViewCellStyle55
         Me.ND_LH.Frozen = True
         Me.ND_LH.HeaderText = "ND LH"
         Me.ND_LH.Name = "ND_LH"
@@ -561,8 +453,8 @@ Partial Class FRM_DTR_BIOMETRIC
         '
         'ND_RD_SUN_SH
         '
-        DataGridViewCellStyle16.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight
-        Me.ND_RD_SUN_SH.DefaultCellStyle = DataGridViewCellStyle16
+        DataGridViewCellStyle56.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight
+        Me.ND_RD_SUN_SH.DefaultCellStyle = DataGridViewCellStyle56
         Me.ND_RD_SUN_SH.Frozen = True
         Me.ND_RD_SUN_SH.HeaderText = "ND RD SUN SH"
         Me.ND_RD_SUN_SH.Name = "ND_RD_SUN_SH"
@@ -571,8 +463,8 @@ Partial Class FRM_DTR_BIOMETRIC
         '
         'ND_RD_SUN_LH
         '
-        DataGridViewCellStyle17.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight
-        Me.ND_RD_SUN_LH.DefaultCellStyle = DataGridViewCellStyle17
+        DataGridViewCellStyle57.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight
+        Me.ND_RD_SUN_LH.DefaultCellStyle = DataGridViewCellStyle57
         Me.ND_RD_SUN_LH.Frozen = True
         Me.ND_RD_SUN_LH.HeaderText = "ND RD SUN LH"
         Me.ND_RD_SUN_LH.Name = "ND_RD_SUN_LH"
@@ -581,8 +473,8 @@ Partial Class FRM_DTR_BIOMETRIC
         '
         'OT_REG
         '
-        DataGridViewCellStyle18.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight
-        Me.OT_REG.DefaultCellStyle = DataGridViewCellStyle18
+        DataGridViewCellStyle58.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight
+        Me.OT_REG.DefaultCellStyle = DataGridViewCellStyle58
         Me.OT_REG.Frozen = True
         Me.OT_REG.HeaderText = "OT Reg"
         Me.OT_REG.Name = "OT_REG"
@@ -604,6 +496,160 @@ Partial Class FRM_DTR_BIOMETRIC
         Me.LastTimeOut.Visible = False
         Me.LastTimeOut.Width = 98
         '
+        'BtnSH
+        '
+        Me.BtnSH.BackColor = System.Drawing.Color.Yellow
+        Me.BtnSH.Location = New System.Drawing.Point(1341, 42)
+        Me.BtnSH.Name = "BtnSH"
+        Me.BtnSH.Size = New System.Drawing.Size(47, 31)
+        Me.BtnSH.TabIndex = 14
+        Me.BtnSH.Text = "SH"
+        Me.BtnSH.UseVisualStyleBackColor = False
+        '
+        'Chk_Sunday
+        '
+        Me.Chk_Sunday.AutoSize = True
+        Me.Chk_Sunday.Location = New System.Drawing.Point(1618, 18)
+        Me.Chk_Sunday.Name = "Chk_Sunday"
+        Me.Chk_Sunday.Size = New System.Drawing.Size(156, 24)
+        Me.Chk_Sunday.TabIndex = 12
+        Me.Chk_Sunday.Text = "Highlight Sundays"
+        Me.Chk_Sunday.UseVisualStyleBackColor = True
+        '
+        'BtnLH
+        '
+        Me.BtnLH.BackColor = System.Drawing.Color.LightGreen
+        Me.BtnLH.Location = New System.Drawing.Point(1341, 13)
+        Me.BtnLH.Name = "BtnLH"
+        Me.BtnLH.Size = New System.Drawing.Size(47, 31)
+        Me.BtnLH.TabIndex = 13
+        Me.BtnLH.Text = "LH"
+        Me.BtnLH.UseVisualStyleBackColor = False
+        '
+        'Label7
+        '
+        Me.Label7.AutoSize = True
+        Me.Label7.Font = New System.Drawing.Font("Microsoft Sans Serif", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.Label7.Location = New System.Drawing.Point(1394, 47)
+        Me.Label7.Name = "Label7"
+        Me.Label7.Size = New System.Drawing.Size(117, 20)
+        Me.Label7.TabIndex = 11
+        Me.Label7.Text = "Special Holiday"
+        '
+        'Label6
+        '
+        Me.Label6.AutoSize = True
+        Me.Label6.Font = New System.Drawing.Font("Microsoft Sans Serif", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.Label6.Location = New System.Drawing.Point(1394, 18)
+        Me.Label6.Name = "Label6"
+        Me.Label6.Size = New System.Drawing.Size(104, 20)
+        Me.Label6.TabIndex = 10
+        Me.Label6.Text = "Legal Holiday"
+        '
+        'dtrBreakDownPage
+        '
+        Me.dtrBreakDownPage.Controls.Add(Me.Btn_Save_DTR)
+        Me.dtrBreakDownPage.Controls.Add(Me.DTR_TimeCalculationPanel)
+        Me.dtrBreakDownPage.Controls.Add(Me.btn_Breakdown)
+        Me.dtrBreakDownPage.Controls.Add(Me.Btn_Calc_DTR)
+        Me.dtrBreakDownPage.Location = New System.Drawing.Point(4, 29)
+        Me.dtrBreakDownPage.Name = "dtrBreakDownPage"
+        Me.dtrBreakDownPage.Padding = New System.Windows.Forms.Padding(3)
+        Me.dtrBreakDownPage.Size = New System.Drawing.Size(1794, 708)
+        Me.dtrBreakDownPage.TabIndex = 1
+        Me.dtrBreakDownPage.Text = "Time Calculation"
+        Me.dtrBreakDownPage.UseVisualStyleBackColor = True
+        '
+        'Btn_Save_DTR
+        '
+        Me.Btn_Save_DTR.Font = New System.Drawing.Font("Microsoft Sans Serif", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.Btn_Save_DTR.Location = New System.Drawing.Point(1612, 651)
+        Me.Btn_Save_DTR.Name = "Btn_Save_DTR"
+        Me.Btn_Save_DTR.Size = New System.Drawing.Size(173, 51)
+        Me.Btn_Save_DTR.TabIndex = 69
+        Me.Btn_Save_DTR.Text = "Save"
+        Me.Btn_Save_DTR.UseVisualStyleBackColor = True
+        '
+        'DTR_TimeCalculationPanel
+        '
+        Me.DTR_TimeCalculationPanel.AutoScroll = True
+        Me.DTR_TimeCalculationPanel.Location = New System.Drawing.Point(6, 6)
+        Me.DTR_TimeCalculationPanel.Name = "DTR_TimeCalculationPanel"
+        Me.DTR_TimeCalculationPanel.Size = New System.Drawing.Size(1779, 504)
+        Me.DTR_TimeCalculationPanel.TabIndex = 72
+        '
+        'btn_Breakdown
+        '
+        Me.btn_Breakdown.Cursor = System.Windows.Forms.Cursors.Hand
+        Me.btn_Breakdown.Font = New System.Drawing.Font("Microsoft Sans Serif", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.btn_Breakdown.Location = New System.Drawing.Point(6, 574)
+        Me.btn_Breakdown.Name = "btn_Breakdown"
+        Me.btn_Breakdown.Size = New System.Drawing.Size(1779, 51)
+        Me.btn_Breakdown.TabIndex = 71
+        Me.btn_Breakdown.Text = "Recalculate Totals"
+        Me.btn_Breakdown.UseVisualStyleBackColor = True
+        '
+        'Btn_Calc_DTR
+        '
+        Me.Btn_Calc_DTR.Cursor = System.Windows.Forms.Cursors.Hand
+        Me.Btn_Calc_DTR.Font = New System.Drawing.Font("Microsoft Sans Serif", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.Btn_Calc_DTR.Location = New System.Drawing.Point(6, 516)
+        Me.Btn_Calc_DTR.Name = "Btn_Calc_DTR"
+        Me.Btn_Calc_DTR.Size = New System.Drawing.Size(1779, 52)
+        Me.Btn_Calc_DTR.TabIndex = 70
+        Me.Btn_Calc_DTR.Text = "Recalculate Hours && Totals"
+        Me.Btn_Calc_DTR.UseVisualStyleBackColor = True
+        '
+        'Lbl_IDNumber
+        '
+        Me.Lbl_IDNumber.Font = New System.Drawing.Font("Microsoft Sans Serif", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.Lbl_IDNumber.ForeColor = System.Drawing.Color.FromArgb(CType(CType(0, Byte), Integer), CType(CType(0, Byte), Integer), CType(CType(192, Byte), Integer))
+        Me.Lbl_IDNumber.Location = New System.Drawing.Point(163, 12)
+        Me.Lbl_IDNumber.Name = "Lbl_IDNumber"
+        Me.Lbl_IDNumber.Size = New System.Drawing.Size(240, 20)
+        Me.Lbl_IDNumber.TabIndex = 7
+        Me.Lbl_IDNumber.Text = "ID Number                       "
+        '
+        'Lbl_Name
+        '
+        Me.Lbl_Name.Font = New System.Drawing.Font("Microsoft Sans Serif", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.Lbl_Name.ForeColor = System.Drawing.Color.FromArgb(CType(CType(0, Byte), Integer), CType(CType(0, Byte), Integer), CType(CType(192, Byte), Integer))
+        Me.Lbl_Name.Location = New System.Drawing.Point(163, 44)
+        Me.Lbl_Name.Name = "Lbl_Name"
+        Me.Lbl_Name.Size = New System.Drawing.Size(240, 20)
+        Me.Lbl_Name.TabIndex = 5
+        Me.Lbl_Name.Text = "Juan Dela Cruz                        "
+        '
+        'Label3
+        '
+        Me.Label3.AutoSize = True
+        Me.Label3.Font = New System.Drawing.Font("Microsoft Sans Serif", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.Label3.Location = New System.Drawing.Point(451, 12)
+        Me.Label3.Name = "Label3"
+        Me.Label3.Size = New System.Drawing.Size(95, 20)
+        Me.Label3.TabIndex = 4
+        Me.Label3.Text = "DTR Period:"
+        '
+        'Label2
+        '
+        Me.Label2.AutoSize = True
+        Me.Label2.Font = New System.Drawing.Font("Microsoft Sans Serif", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.Label2.Location = New System.Drawing.Point(28, 12)
+        Me.Label2.Name = "Label2"
+        Me.Label2.Size = New System.Drawing.Size(104, 20)
+        Me.Label2.TabIndex = 3
+        Me.Label2.Text = "Employee ID:"
+        '
+        'Label1
+        '
+        Me.Label1.AutoSize = True
+        Me.Label1.Font = New System.Drawing.Font("Microsoft Sans Serif", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.Label1.Location = New System.Drawing.Point(28, 44)
+        Me.Label1.Name = "Label1"
+        Me.Label1.Size = New System.Drawing.Size(129, 20)
+        Me.Label1.TabIndex = 2
+        Me.Label1.Text = "Employee Name:"
+        '
         'TabPage2
         '
         Me.TabPage2.BackColor = System.Drawing.Color.FromArgb(CType(CType(255, Byte), Integer), CType(CType(192, Byte), Integer), CType(CType(128, Byte), Integer))
@@ -619,7 +665,7 @@ Partial Class FRM_DTR_BIOMETRIC
         Me.TabPage2.Location = New System.Drawing.Point(4, 29)
         Me.TabPage2.Name = "TabPage2"
         Me.TabPage2.Padding = New System.Windows.Forms.Padding(3)
-        Me.TabPage2.Size = New System.Drawing.Size(1852, 737)
+        Me.TabPage2.Size = New System.Drawing.Size(1852, 821)
         Me.TabPage2.TabIndex = 1
         Me.TabPage2.Text = "   Schedule   "
         '
@@ -739,23 +785,14 @@ Partial Class FRM_DTR_BIOMETRIC
         '
         'Col_Attendance
         '
-        DataGridViewCellStyle20.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter
-        Me.Col_Attendance.DefaultCellStyle = DataGridViewCellStyle20
+        DataGridViewCellStyle60.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter
+        Me.Col_Attendance.DefaultCellStyle = DataGridViewCellStyle60
         Me.Col_Attendance.HeaderText = "Attendance"
         Me.Col_Attendance.Name = "Col_Attendance"
         '
         'OpenFileDialog1
         '
         Me.OpenFileDialog1.FileName = "OpenFileDialog1"
-        '
-        'PictureBox2
-        '
-        Me.PictureBox2.BackColor = System.Drawing.Color.FromArgb(CType(CType(64, Byte), Integer), CType(CType(64, Byte), Integer), CType(CType(64, Byte), Integer))
-        Me.PictureBox2.Location = New System.Drawing.Point(22, 837)
-        Me.PictureBox2.Name = "PictureBox2"
-        Me.PictureBox2.Size = New System.Drawing.Size(1860, 78)
-        Me.PictureBox2.TabIndex = 64
-        Me.PictureBox2.TabStop = False
         '
         'Label8
         '
@@ -768,25 +805,15 @@ Partial Class FRM_DTR_BIOMETRIC
         Me.Label8.TabIndex = 68
         Me.Label8.Text = "Pure Gold"
         '
-        'Btn_Save_DTR
+        'DTR_Lbl_Period
         '
-        Me.Btn_Save_DTR.Font = New System.Drawing.Font("Microsoft Sans Serif", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.Btn_Save_DTR.Location = New System.Drawing.Point(1650, 851)
-        Me.Btn_Save_DTR.Name = "Btn_Save_DTR"
-        Me.Btn_Save_DTR.Size = New System.Drawing.Size(173, 51)
-        Me.Btn_Save_DTR.TabIndex = 69
-        Me.Btn_Save_DTR.Text = "Save"
-        Me.Btn_Save_DTR.UseVisualStyleBackColor = True
-        '
-        'Btn_Calc_DTR
-        '
-        Me.Btn_Calc_DTR.Font = New System.Drawing.Font("Microsoft Sans Serif", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.Btn_Calc_DTR.Location = New System.Drawing.Point(235, 851)
-        Me.Btn_Calc_DTR.Name = "Btn_Calc_DTR"
-        Me.Btn_Calc_DTR.Size = New System.Drawing.Size(173, 51)
-        Me.Btn_Calc_DTR.TabIndex = 70
-        Me.Btn_Calc_DTR.Text = "Calculate"
-        Me.Btn_Calc_DTR.UseVisualStyleBackColor = True
+        Me.DTR_Lbl_Period.AutoSize = True
+        Me.DTR_Lbl_Period.ForeColor = System.Drawing.Color.FromArgb(CType(CType(0, Byte), Integer), CType(CType(0, Byte), Integer), CType(CType(192, Byte), Integer))
+        Me.DTR_Lbl_Period.Location = New System.Drawing.Point(552, 12)
+        Me.DTR_Lbl_Period.Name = "DTR_Lbl_Period"
+        Me.DTR_Lbl_Period.Size = New System.Drawing.Size(111, 20)
+        Me.DTR_Lbl_Period.TabIndex = 16
+        Me.DTR_Lbl_Period.Text = "Cutoff - Period"
         '
         'FRM_DTR_BIOMETRIC
         '
@@ -794,12 +821,8 @@ Partial Class FRM_DTR_BIOMETRIC
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
         Me.BackColor = System.Drawing.Color.Black
         Me.ClientSize = New System.Drawing.Size(1919, 931)
-        Me.Controls.Add(Me.Btn_Calc_DTR)
-        Me.Controls.Add(Me.Btn_Save_DTR)
         Me.Controls.Add(Me.Label8)
         Me.Controls.Add(Me.TabControl1)
-        Me.Controls.Add(Me.Btn_DTR)
-        Me.Controls.Add(Me.PictureBox2)
         Me.Controls.Add(Me.Panel1)
         Me.Name = "FRM_DTR_BIOMETRIC"
         Me.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen
@@ -807,13 +830,14 @@ Partial Class FRM_DTR_BIOMETRIC
         Me.TabControl1.ResumeLayout(False)
         Me.TabPage1.ResumeLayout(False)
         Me.TabPage1.PerformLayout()
-        CType(Me.PictureBox3, System.ComponentModel.ISupportInitialize).EndInit()
-        CType(Me.PictureBox1, System.ComponentModel.ISupportInitialize).EndInit()
+        Me.TabControl2.ResumeLayout(False)
+        Me.actualDtrPage.ResumeLayout(False)
+        Me.actualDtrPage.PerformLayout()
         CType(Me.GView_DTR, System.ComponentModel.ISupportInitialize).EndInit()
+        Me.dtrBreakDownPage.ResumeLayout(False)
         Me.TabPage2.ResumeLayout(False)
         Me.TabPage2.PerformLayout()
         CType(Me.GView_Schedule, System.ComponentModel.ISupportInitialize).EndInit()
-        CType(Me.PictureBox2, System.ComponentModel.ISupportInitialize).EndInit()
         Me.ResumeLayout(False)
         Me.PerformLayout()
 
@@ -821,10 +845,8 @@ Partial Class FRM_DTR_BIOMETRIC
 
     Friend WithEvents Panel1 As Panel
     Friend WithEvents Btn_DTR As Button
-    Friend WithEvents PictureBox2 As PictureBox
     Friend WithEvents TabControl1 As TabControl
     Friend WithEvents TabPage1 As TabPage
-    Friend WithEvents Lbl_Period As Label
     Friend WithEvents Lbl_Name As Label
     Friend WithEvents Label3 As Label
     Friend WithEvents Label2 As Label
@@ -837,8 +859,6 @@ Partial Class FRM_DTR_BIOMETRIC
     Friend WithEvents Lbl_IDNumber As Label
     Friend WithEvents Label7 As Label
     Friend WithEvents Label6 As Label
-    Friend WithEvents PictureBox3 As PictureBox
-    Friend WithEvents PictureBox1 As PictureBox
     Friend WithEvents Chk_Sunday As CheckBox
     Friend WithEvents Label8 As Label
     Friend WithEvents Lbl_Absent_Count As Label
@@ -888,4 +908,10 @@ Partial Class FRM_DTR_BIOMETRIC
     Friend WithEvents OT_REG As DataGridViewTextBoxColumn
     Friend WithEvents FirstTimeIn As DataGridViewTextBoxColumn
     Friend WithEvents LastTimeOut As DataGridViewTextBoxColumn
+    Friend WithEvents TabControl2 As TabControl
+    Friend WithEvents actualDtrPage As TabPage
+    Friend WithEvents dtrBreakDownPage As TabPage
+    Friend WithEvents btn_Breakdown As Button
+    Friend WithEvents DTR_TimeCalculationPanel As Panel
+    Friend WithEvents DTR_Lbl_Period As Label
 End Class

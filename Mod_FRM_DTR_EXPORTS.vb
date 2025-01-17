@@ -88,8 +88,14 @@ Module Mod_FRM_DTR_EXPORTS
 
         Try
 
-            SQL = "select LAST_NAME, FIRST_NAME, MIDDLE_NAME, NUM_OF_DAYS, TOTAL_HOURS, REG, SUN,SH,LH, RD_SUN_SH, RD_SUN_LH, ND_REG, ND_SUN, ND_SH, ND_LH, ND_RD_SUN_SH, ND_RD_SUN_LH, OT_REG from VIEW_DTR_PER_SUB_CLIENT"
-            SQL = SQL & " where A.SUB_CLIENT_ID = " & iClient_ID & " and CUTOFF_PERIOD = '" & sCut_Off & "'"
+            'SQL = "select LAST_NAME, FIRST_NAME, MIDDLE_NAME, NUM_OF_DAYS, TOTAL_HOURS, REG, SUN,SH,LH, RD_SUN_SH, RD_SUN_LH, ND_REG, ND_SUN, ND_SH, ND_LH, ND_RD_SUN_SH, ND_RD_SUN_LH, OT_REG from VIEW_DTR_PER_SUB_CLIENT"
+            'SQL = SQL & " where A.SUB_CLIENT_ID = " & iClient_ID & " and CUTOFF_PERIOD = '" & sCut_Off & "'"
+
+            SQL = "SELECT LAST_NAME, FIRST_NAME, MIDDLE_NAME, NUM_OF_DAYS, TOTAL_HOURS, REG, SUN, SH, LH, RD_SUN_SH, RD_SUN_LH, ND_REG, ND_SUN, ND_SH, ND_LH, ND_RD_SUN_SH, ND_RD_SUN_LH, OT_REG "
+            SQL = SQL & "FROM VIEW_DTR_PER_SUB_CLIENT A "
+            SQL = SQL & "WHERE A.A.SUB_CLIENT_ID = " & iClient_ID & " AND A.CUTOFF_PERIOD = '" & sCut_Off & "' "
+            SQL = SQL & "AND A.D.ID = (SELECT MAX(D.ID) FROM PRL_DTR_TOTAL_HOURS D WHERE D.EMPLOYEE_ID = A.A.EMPLOYEE_ID AND D.CUTOFF_PERIOD = A.CUTOFF_PERIOD)"
+
 
             da = New OleDbDataAdapter(SQL, Mod_GlobalVariables.GlobalVariables.GlobalCon)
             da.Fill(dt)
@@ -102,8 +108,7 @@ Module Mod_FRM_DTR_EXPORTS
 
                     .Items.Clear()
                     For Each myRow In dt.Rows
-
-                        .Items.Add(iRow) ' item count
+                        .Items.Add(iRow.ToString()) ' item count
                         .Items(.Items.Count - 1).SubItems.Add(myRow.Item("LAST_NAME") & ", " & myRow.Item("FIRST_NAME"))
                         .Items(.Items.Count - 1).SubItems.Add(myRow.Item("NUM_OF_DAYS"))
                         .Items(.Items.Count - 1).SubItems.Add(myRow.Item("TOTAL_HOURS"))
@@ -121,11 +126,13 @@ Module Mod_FRM_DTR_EXPORTS
                         .Items(.Items.Count - 1).SubItems.Add(myRow.Item("ND_RD_SUN_LH"))
                         .Items(.Items.Count - 1).SubItems.Add(myRow.Item("OT_REG"))
 
+                        iRow += 1 ' Increment the row counter
                     Next
                 End With
             Else
-
+                ' Handle cases where no rows exist in dt
             End If
+
 
         Catch ex As Exception
             MsgBox(ex.ToString, vbCritical, "Check VIEW_DTR_PER_SUB_CLIENT")

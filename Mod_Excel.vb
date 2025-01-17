@@ -31,9 +31,11 @@ Module Mod_Excel
                 For i = 1 To 18
                     .GView_DTR.Rows.Add()
                 Next
+
+                .DTR_Lbl_Period.Text = worksheet.Cells(6, 3).Value
                 .Lbl_IDNumber.Text = GlobalVariables.DTR_Selected_Employee_ID
                 .Lbl_Name.Text = worksheet.Cells(10, 3).Value
-                .Lbl_Period.Text = Mid(worksheet.Cells(6, 3).Value, 8, 20)
+
 
                 ' Find the location of "Date" in cells
                 Dim iCol_Date As Integer
@@ -136,6 +138,16 @@ Module Mod_Excel
             If firstRawDataItem IsNot Nothing Then
                 ' Extract the day number from the DateTime value (e.g., "10" from "12/10/2024")
                 Dim dayNumber As Integer = firstRawDataItem.Item1.Day
+                Dim iDTR_Month_Num As Integer = firstRawDataItem.Item1.Month
+                Dim iDTR_Year_Num As Integer = firstRawDataItem.Item1.Year
+
+                If dayNumber <= 15 Then
+                    GlobalVariables.sPayroll_Cutoff = iDTR_Month_Num & "_" & "1st_" & iDTR_Year_Num
+                ElseIf dayNumber >= 16 Then
+                    GlobalVariables.sPayroll_Cutoff = iDTR_Month_Num & "_" & "2nd_" & iDTR_Year_Num
+
+                End If
+
                 sFlagShift = Check_All_FlagShift_IfSame_Values(.GView_Schedule, dayNumber)
                 Console.WriteLine($"First DateTime: {firstRawDataItem.Item1}")
                 Console.WriteLine($"Extracted Day Number: {dayNumber}")
@@ -254,7 +266,7 @@ Module Mod_Excel
 
         End With
     End Sub
-    Private Function Check_All_FlagShift_IfSame_Values(DGVIEW_DTR_BIOMETRIC_SCHED As DataGridView, FirstDayNum As Integer) As String
+    Public Function Check_All_FlagShift_IfSame_Values(DGVIEW_DTR_BIOMETRIC_SCHED As DataGridView, FirstDayNum As Integer) As String
         Dim allMatch As Boolean = True ' Variable to check if all are the same
         Dim flagShifts As New List(Of String)() ' Store all matched cell(4) values
 

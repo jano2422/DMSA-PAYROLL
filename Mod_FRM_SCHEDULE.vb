@@ -151,6 +151,104 @@ Module Mod_FRM_SCHEDULE
     End Function
 
 
+    Public Sub Generate_All_Schedules()
+        Try
+            With FRM_DTR_SCHEDULE
+                Connect_to_MDB()
+
+                ' Retrieve all EMPLOYEE_IDs from VIEW_PAYROLL_EMPLOYEE_LIST
+                Dim empList As New List(Of String)
+                Dim empSQL As String = "SELECT EMPLOYEE_ID FROM VIEW_PAYROLL_EMPLOYEE_LIST"
+                Dim empCmd As New OleDbCommand(empSQL, GlobalVariables.GlobalCon)
+
+                Using reader As OleDbDataReader = empCmd.ExecuteReader()
+                    While reader.Read()
+                        empList.Add(reader.GetString(0)) ' Assuming EMPLOYEE_ID is a string
+                    End While
+                End Using
+
+                ' Initialize ProgressBar
+                .ProgressBar_Save.Visible = True
+                .ProgressBar_Save.Minimum = 0
+                .ProgressBar_Save.Maximum = empList.Count * 31 ' Total iterations
+                .ProgressBar_Save.Value = 0
+                .ProgressBar_Save.Step = 1
+
+                ' Loop through employees and update their schedules
+                For Each empId In empList
+                    For iDay As Integer = 1 To 31
+                        Dim sSched_IN As String = If(iDay <= 15, "07:00", "19:00")
+                        Dim sSched_OUT As String = If(iDay <= 15, "19:00", "07:00")
+                        Dim sTotal_Hours As String = "12"
+                        Dim sFlagShift As String = If(iDay <= 15, "MS", "NS")
+
+                        ' Call function to update or insert
+                        Generate_SecGuard_Schedule(empId, sFlagShift, iDay, sSched_IN, sSched_OUT, sTotal_Hours)
+
+                        ' Update ProgressBar
+                        .ProgressBar_Save.PerformStep()
+                        Application.DoEvents() ' Allows UI to update while looping
+                    Next
+                Next
+
+                MsgBox("All schedules generated successfully!", vbInformation, "Success")
+                .ProgressBar_Save.Visible = False
+            End With
+
+
+        Catch ex As Exception
+            MsgBox("Error updating schedules: " & ex.Message, vbCritical, "Error")
+            FRM_DTR_SCHEDULE.ProgressBar_Save.Visible = False
+        Finally
+            ' Ensure the connection is closed
+            If GlobalVariables.GlobalCon.State = ConnectionState.Open Then
+                GlobalVariables.GlobalCon.Close()
+            End If
+        End Try
+    End Sub
+
+    Public Sub Generate_SecGuard_Schedule(sEmployee_ID As String, sFlagShift As String, iDay As Integer, sSched_IN As String, sSched_OUT As String, sTotal_Hours As String)
+        With FRM_DTR_SCHEDULE
+            Dim SQL As String
+            Connect_to_MDB() ' Ensure the database connection is open
+
+            Try
+                ' First, check if the record exists
+                Dim checkSQL As String = "SELECT COUNT(*) FROM PRL_EMPLOYEE_SCHEDULE WHERE EMPLOYEE_ID = '" & sEmployee_ID & "' AND DAY_NUM = " & iDay
+                Dim checkCmd As New OleDbCommand(checkSQL, GlobalVariables.GlobalCon)
+                Dim recordCount As Integer = CInt(checkCmd.ExecuteScalar())
+
+                If recordCount > 0 Then
+                    ' Update existing record
+                    SQL = "UPDATE PRL_EMPLOYEE_SCHEDULE SET SCHED_IN = '" & sSched_IN & "', " &
+                      "SCHED_OUT = '" & sSched_OUT & "', TOTAL_HOURS = '" & sTotal_Hours & "', " &
+                      "FLAG_SHIFT = '" & sFlagShift & "' WHERE EMPLOYEE_ID = '" & sEmployee_ID & "' " &
+                      "AND DAY_NUM = " & iDay
+                Else
+                    ' Insert new record
+                    SQL = "INSERT INTO PRL_EMPLOYEE_SCHEDULE (EMPLOYEE_ID, DAY_NUM, SCHED_IN, SCHED_OUT, TOTAL_HOURS, FLAG_SHIFT) " &
+                      "VALUES ('" & sEmployee_ID & "', " & iDay & ", '" & sSched_IN & "', '" & sSched_OUT & "', '" & sTotal_Hours & "', '" & sFlagShift & "')"
+                End If
+
+                ' Execute the command
+                Dim SQLcmd As New OleDbCommand(SQL, GlobalVariables.GlobalCon)
+                SQLcmd.ExecuteNonQuery()
+                SQLcmd.Dispose()
+
+            Catch ex As Exception
+                MsgBox("Error updating schedule for Day " & iDay & ": " & ex.Message, vbCritical, "Error")
+
+            Finally
+                ' Ensure the connection is closed
+                If GlobalVariables.GlobalCon.State = ConnectionState.Open Then
+                    GlobalVariables.GlobalCon.Close()
+                End If
+            End Try
+        End With
+    End Sub
+
+
+
 
 
     Public Sub Update_SecGuard_Schedule(sEmployee_ID As String, sFlagShift As String, iDay As Integer, sSched_IN As String, sSched_OUT As String, sTotal_Hours As String)

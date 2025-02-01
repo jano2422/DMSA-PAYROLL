@@ -58,7 +58,7 @@ Public Class FRM_DTR_BIOMETRIC
             Using folderBrowser As New FolderBrowserDialog()
                 ' Get the application's base directory and set the default path to the "DTR" folder
                 Dim exeDirectory As String = AppDomain.CurrentDomain.BaseDirectory
-                Dim dtrPath As String = Path.Combine(exeDirectory, "DTR")
+                Dim dtrPath As String = Path.Combine("Z:", "MASTER_DTR")
                 folderBrowser.Description = "Select a directory containing the files"
                 folderBrowser.SelectedPath = dtrPath
 

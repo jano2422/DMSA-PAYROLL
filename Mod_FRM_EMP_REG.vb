@@ -197,7 +197,7 @@ Module Mod_FRM_EMP_REG
 
             Catch ex As Exception
                 MsgBox(ex.Message, vbCritical, "Error saving Photo information")
-
+                Call Record_activity_log(GlobalVariables.Selected_Employee_ID, "Error updating photo")
             End Try
 
             GlobalVariables.GlobalCon.Close()
@@ -227,7 +227,7 @@ Module Mod_FRM_EMP_REG
 
             Catch ex As Exception
                 MsgBox(ex.Message, vbCritical, "Error saving Photo information")
-
+                Call Record_activity_log(GlobalVariables.Selected_Employee_ID, "Error uploading new photo ")
             End Try
 
             GlobalVariables.GlobalCon.Close()

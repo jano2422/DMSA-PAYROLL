@@ -14,7 +14,9 @@
         Call Show_Employee_Schedule(GlobalVariables.DTR_Selected_Employee_ID, "Yes", 1) 'Temporary - Should be from the selected Employee
         Call Show_Employee_Schedule(GlobalVariables.DTR_Selected_Employee_ID, "Yes", 2) 'Temporary - Should be from the selected Employee
     End Sub
-
+    Private Sub BtnGenerate_Click(sender As Object, e As EventArgs) Handles BtnGenerate.Click
+        Generate_All_Schedules()
+    End Sub
     Private Sub Btn_Save_Click(sender As Object, e As EventArgs) Handles Btn_Save.Click
 
         'Controls
@@ -263,4 +265,6 @@
     Private Sub GView_Schedule1_15_CellContentClick(sender As Object, e As DataGridViewCellEventArgs) Handles GView_Schedule1_15.CellContentClick
 
     End Sub
+
+
 End Class

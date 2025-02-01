@@ -185,7 +185,7 @@ Public Class FRM_EMP_REG
                 Btn_Pic_Cancel.Visible = False
 
             Catch ex As Exception
-
+                Call Record_activity_log(GlobalVariables.Selected_Employee_ID, "Error saving of photo ")
             End Try
 
         End If

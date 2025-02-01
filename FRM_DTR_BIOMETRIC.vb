@@ -1,6 +1,8 @@
 ﻿Imports System.IO
 Imports Spire.Pdf
 Imports Spire.Pdf.Conversion
+
+
 Public Class FRM_DTR_BIOMETRIC
 
     ' Variable to store the selected directory
@@ -21,9 +23,13 @@ Public Class FRM_DTR_BIOMETRIC
         ' Show the employee list form
         FRM_DTR_EMPLOYEE_LIST.ShowDialog()
 
+
         ' Retrieve and show the employee schedule
         Call Show_Employee_Schedule(GlobalVariables.DTR_Selected_Employee_ID, "No", 0)
-
+        If String.IsNullOrEmpty(GlobalVariables.DTR_Selected_Employee_Name) Then
+            MsgBox("No selected employee found", vbExclamation, "No Employee Found")
+            Exit Sub
+        End If
         ' Extract selected employee's name
         Dim szSelectedEmpName As String = GlobalVariables.DTR_Selected_Employee_Name
 
@@ -335,6 +341,9 @@ Public Class FRM_DTR_BIOMETRIC
 
     Private Sub FRM_BIOMETRIC_DTR_Load(sender As Object, e As EventArgs) Handles MyBase.Load
         Try
+
+
+
             ' Disable buttons at form load
             SetButtonState(False, Btn_Save_DTR)
 
@@ -391,7 +400,7 @@ Public Class FRM_DTR_BIOMETRIC
                 If enable Then
                     ' Enable button, restore appearance, and set cursor to default
                     btn.Enabled = True
-                    btn.BackColor = Color.White ' Default background color
+                    btn.BackColor = Color.YellowGreen ' Default background color
                     btn.ForeColor = SystemColors.ControlText ' Default text color
                     btn.Cursor = Cursors.Hand ' Change cursor to Hand when enabled (for better UX)
                 Else
@@ -742,4 +751,11 @@ Public Class FRM_DTR_BIOMETRIC
         ProcessHoursBreakdown()
     End Sub
 
+    Private Sub Btn_TimeCalcView_Click(sender As Object, e As EventArgs) Handles Btn_TimeCalcView.Click
+        TabControl2.SelectedTab = dtrBreakDownPage
+    End Sub
+
+    Private Sub Btn_TimeDtlView_Click(sender As Object, e As EventArgs) Handles Btn_TimeDtlView.Click
+        TabControl2.SelectedTab = actualDtrPage
+    End Sub
 End Class

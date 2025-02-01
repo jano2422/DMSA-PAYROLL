@@ -9,8 +9,8 @@ Module Mod_DB_Connection
     Public Sub MDB_Connection_Init()
         Try
             ' Define the database file path
-            Dim dbfile As String = Path.Combine(Application.StartupPath, "DMSA.mdb")
-            'Dim dbfile As String = "Z:\DMSA_SYSTEM\DMSA.mdb"
+            'Dim dbfile As String = Path.Combine(Application.StartupPath, "DMSA.mdb")
+            Dim dbfile As String = "Z:\DMSA_SYSTEM\DMSA.mdb"
 
             ' Ensure the database file exists before proceeding
             If Not File.Exists(dbfile) Then
@@ -18,7 +18,7 @@ Module Mod_DB_Connection
             End If
 
             ' Set the global connection string
-            GlobalVariables.GlobalConStr = $"Provider=Microsoft.Jet.OLEDB.4.0;Data Source={dbfile};User ID=admin;Password=;"
+            GlobalVariables.GlobalConStr = $"Provider=Microsoft.Jet.OLEDB.4.0;Data Source={dbfile};Jet OLEDB:Database Password=DMSA001;;"
 
             ' Initialize the global database connection object
             GlobalVariables.GlobalCon = New OleDb.OleDbConnection(GlobalVariables.GlobalConStr)

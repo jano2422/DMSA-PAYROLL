@@ -1,4 +1,5 @@
 ﻿Imports FontAwesome.Sharp
+Imports System.Globalization
 
 Public Class FRM_MAIN
     Private Sub PictureBox1_Click(sender As Object, e As EventArgs)
@@ -23,7 +24,8 @@ Public Class FRM_MAIN
 
     Private Sub FRM_MAIN_Load(sender As Object, e As EventArgs) Handles MyBase.Load
         Call MDB_Connection_Init()
-
+        Threading.Thread.CurrentThread.CurrentCulture = New CultureInfo("en-US") ' For MM/dd/yyyy
+        Threading.Thread.CurrentThread.CurrentUICulture = New CultureInfo("en-US")
 
 
     End Sub

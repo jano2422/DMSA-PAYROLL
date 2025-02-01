@@ -22,32 +22,34 @@ Partial Class FRM_DTR_BIOMETRIC
     'Do not modify it using the code editor.
     <System.Diagnostics.DebuggerStepThrough()>
     Private Sub InitializeComponent()
-        Dim DataGridViewCellStyle59 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
-        Dim DataGridViewCellStyle41 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
-        Dim DataGridViewCellStyle42 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
-        Dim DataGridViewCellStyle43 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
-        Dim DataGridViewCellStyle44 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
-        Dim DataGridViewCellStyle45 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
-        Dim DataGridViewCellStyle46 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
-        Dim DataGridViewCellStyle47 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
-        Dim DataGridViewCellStyle48 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
-        Dim DataGridViewCellStyle49 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
-        Dim DataGridViewCellStyle50 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
-        Dim DataGridViewCellStyle51 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
-        Dim DataGridViewCellStyle52 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
-        Dim DataGridViewCellStyle53 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
-        Dim DataGridViewCellStyle54 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
-        Dim DataGridViewCellStyle55 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
-        Dim DataGridViewCellStyle56 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
-        Dim DataGridViewCellStyle57 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
-        Dim DataGridViewCellStyle58 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
-        Dim DataGridViewCellStyle60 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
+        Dim DataGridViewCellStyle19 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
+        Dim DataGridViewCellStyle1 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
+        Dim DataGridViewCellStyle2 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
+        Dim DataGridViewCellStyle3 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
+        Dim DataGridViewCellStyle4 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
+        Dim DataGridViewCellStyle5 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
+        Dim DataGridViewCellStyle6 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
+        Dim DataGridViewCellStyle7 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
+        Dim DataGridViewCellStyle8 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
+        Dim DataGridViewCellStyle9 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
+        Dim DataGridViewCellStyle10 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
+        Dim DataGridViewCellStyle11 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
+        Dim DataGridViewCellStyle12 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
+        Dim DataGridViewCellStyle13 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
+        Dim DataGridViewCellStyle14 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
+        Dim DataGridViewCellStyle15 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
+        Dim DataGridViewCellStyle16 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
+        Dim DataGridViewCellStyle17 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
+        Dim DataGridViewCellStyle18 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
+        Dim DataGridViewCellStyle20 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
         Me.Panel1 = New System.Windows.Forms.Panel()
         Me.Btn_DTR = New System.Windows.Forms.Button()
         Me.TabControl1 = New System.Windows.Forms.TabControl()
         Me.TabPage1 = New System.Windows.Forms.TabPage()
+        Me.DTR_Lbl_Period = New System.Windows.Forms.Label()
         Me.TabControl2 = New System.Windows.Forms.TabControl()
         Me.actualDtrPage = New System.Windows.Forms.TabPage()
+        Me.Btn_TimeCalcView = New System.Windows.Forms.Button()
         Me.GView_DTR = New System.Windows.Forms.DataGridView()
         Me.DataGridViewTextBoxColumn1 = New System.Windows.Forms.DataGridViewTextBoxColumn()
         Me.DataGridViewTextBoxColumn2 = New System.Windows.Forms.DataGridViewTextBoxColumn()
@@ -85,6 +87,7 @@ Partial Class FRM_DTR_BIOMETRIC
         Me.Label7 = New System.Windows.Forms.Label()
         Me.Label6 = New System.Windows.Forms.Label()
         Me.dtrBreakDownPage = New System.Windows.Forms.TabPage()
+        Me.Btn_TimeDtlView = New System.Windows.Forms.Button()
         Me.Btn_Save_DTR = New System.Windows.Forms.Button()
         Me.DTR_TimeCalculationPanel = New System.Windows.Forms.Panel()
         Me.btn_Breakdown = New System.Windows.Forms.Button()
@@ -112,7 +115,6 @@ Partial Class FRM_DTR_BIOMETRIC
         Me.Col_Attendance = New System.Windows.Forms.DataGridViewTextBoxColumn()
         Me.OpenFileDialog1 = New System.Windows.Forms.OpenFileDialog()
         Me.Label8 = New System.Windows.Forms.Label()
-        Me.DTR_Lbl_Period = New System.Windows.Forms.Label()
         Me.TabControl1.SuspendLayout()
         Me.TabPage1.SuspendLayout()
         Me.TabControl2.SuspendLayout()
@@ -134,14 +136,19 @@ Partial Class FRM_DTR_BIOMETRIC
         '
         'Btn_DTR
         '
+        Me.Btn_DTR.BackColor = System.Drawing.Color.Teal
         Me.Btn_DTR.Cursor = System.Windows.Forms.Cursors.Hand
-        Me.Btn_DTR.Font = New System.Drawing.Font("Microsoft Sans Serif", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.Btn_DTR.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(CType(CType(255, Byte), Integer), CType(CType(128, Byte), Integer), CType(CType(0, Byte), Integer))
+        Me.Btn_DTR.FlatAppearance.MouseOverBackColor = System.Drawing.Color.Cyan
+        Me.Btn_DTR.FlatStyle = System.Windows.Forms.FlatStyle.Flat
+        Me.Btn_DTR.Font = New System.Drawing.Font("Microsoft Sans Serif", 12.0!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.Btn_DTR.ForeColor = System.Drawing.SystemColors.ControlLightLight
         Me.Btn_DTR.Location = New System.Drawing.Point(6, 651)
         Me.Btn_DTR.Name = "Btn_DTR"
         Me.Btn_DTR.Size = New System.Drawing.Size(1782, 51)
         Me.Btn_DTR.TabIndex = 62
-        Me.Btn_DTR.Text = "Upload DTR"
-        Me.Btn_DTR.UseVisualStyleBackColor = True
+        Me.Btn_DTR.Text = "UPLOAD DTR"
+        Me.Btn_DTR.UseVisualStyleBackColor = False
         '
         'TabControl1
         '
@@ -174,6 +181,16 @@ Partial Class FRM_DTR_BIOMETRIC
         Me.TabPage1.TabIndex = 0
         Me.TabPage1.Text = "     DTR        "
         '
+        'DTR_Lbl_Period
+        '
+        Me.DTR_Lbl_Period.AutoSize = True
+        Me.DTR_Lbl_Period.ForeColor = System.Drawing.Color.FromArgb(CType(CType(0, Byte), Integer), CType(CType(0, Byte), Integer), CType(CType(192, Byte), Integer))
+        Me.DTR_Lbl_Period.Location = New System.Drawing.Point(552, 12)
+        Me.DTR_Lbl_Period.Name = "DTR_Lbl_Period"
+        Me.DTR_Lbl_Period.Size = New System.Drawing.Size(111, 20)
+        Me.DTR_Lbl_Period.TabIndex = 16
+        Me.DTR_Lbl_Period.Text = "Cutoff - Period"
+        '
         'TabControl2
         '
         Me.TabControl2.Controls.Add(Me.actualDtrPage)
@@ -186,6 +203,8 @@ Partial Class FRM_DTR_BIOMETRIC
         '
         'actualDtrPage
         '
+        Me.actualDtrPage.BackColor = System.Drawing.Color.Wheat
+        Me.actualDtrPage.Controls.Add(Me.Btn_TimeCalcView)
         Me.actualDtrPage.Controls.Add(Me.GView_DTR)
         Me.actualDtrPage.Controls.Add(Me.BtnSH)
         Me.actualDtrPage.Controls.Add(Me.Chk_Sunday)
@@ -199,21 +218,36 @@ Partial Class FRM_DTR_BIOMETRIC
         Me.actualDtrPage.Size = New System.Drawing.Size(1794, 708)
         Me.actualDtrPage.TabIndex = 0
         Me.actualDtrPage.Text = "Time Details"
-        Me.actualDtrPage.UseVisualStyleBackColor = True
+        '
+        'Btn_TimeCalcView
+        '
+        Me.Btn_TimeCalcView.BackColor = System.Drawing.Color.SkyBlue
+        Me.Btn_TimeCalcView.Cursor = System.Windows.Forms.Cursors.Hand
+        Me.Btn_TimeCalcView.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(CType(CType(255, Byte), Integer), CType(CType(128, Byte), Integer), CType(CType(0, Byte), Integer))
+        Me.Btn_TimeCalcView.FlatAppearance.MouseOverBackColor = System.Drawing.Color.Cyan
+        Me.Btn_TimeCalcView.FlatStyle = System.Windows.Forms.FlatStyle.Flat
+        Me.Btn_TimeCalcView.Font = New System.Drawing.Font("Microsoft Sans Serif", 12.0!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.Btn_TimeCalcView.ForeColor = System.Drawing.SystemColors.ControlLightLight
+        Me.Btn_TimeCalcView.Location = New System.Drawing.Point(7, 7)
+        Me.Btn_TimeCalcView.Name = "Btn_TimeCalcView"
+        Me.Btn_TimeCalcView.Size = New System.Drawing.Size(374, 58)
+        Me.Btn_TimeCalcView.TabIndex = 74
+        Me.Btn_TimeCalcView.Text = "Time Calculation View"
+        Me.Btn_TimeCalcView.UseVisualStyleBackColor = False
         '
         'GView_DTR
         '
         Me.GView_DTR.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.DisplayedCells
         Me.GView_DTR.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize
         Me.GView_DTR.Columns.AddRange(New System.Windows.Forms.DataGridViewColumn() {Me.DataGridViewTextBoxColumn1, Me.DataGridViewTextBoxColumn2, Me.DataGridViewTextBoxColumn3, Me.DataGridViewTextBoxColumn4, Me.DataGridViewTextBoxColumn5, Me.DataGridViewTextBoxColumn6, Me.DataGridViewTextBoxColumn7, Me.DataGridViewTextBoxColumn8, Me.ExtraTimeIn1, Me.ExtraTimeOut1, Me.DataGridViewTextBoxColumn9, Me.DataGridViewTextBoxColumn10, Me.DataGridViewTextBoxColumn11, Me.DataGridViewTextBoxColumn12, Me.DataGridViewTextBoxColumn13, Me.REG_REG, Me.REG_SUN, Me.REG_SH, Me.REG_LH, Me.RD_SUN_SH, Me.RD_SUN_LH, Me.ND_REG, Me.ND_SUN, Me.ND_SH, Me.ND_LH, Me.ND_RD_SUN_SH, Me.ND_RD_SUN_LH, Me.OT_REG, Me.FirstTimeIn, Me.LastTimeOut})
-        DataGridViewCellStyle59.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft
-        DataGridViewCellStyle59.BackColor = System.Drawing.Color.White
-        DataGridViewCellStyle59.Font = New System.Drawing.Font("Microsoft Sans Serif", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        DataGridViewCellStyle59.ForeColor = System.Drawing.SystemColors.ControlText
-        DataGridViewCellStyle59.SelectionBackColor = System.Drawing.SystemColors.Highlight
-        DataGridViewCellStyle59.SelectionForeColor = System.Drawing.SystemColors.HighlightText
-        DataGridViewCellStyle59.WrapMode = System.Windows.Forms.DataGridViewTriState.[False]
-        Me.GView_DTR.DefaultCellStyle = DataGridViewCellStyle59
+        DataGridViewCellStyle19.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft
+        DataGridViewCellStyle19.BackColor = System.Drawing.Color.White
+        DataGridViewCellStyle19.Font = New System.Drawing.Font("Microsoft Sans Serif", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        DataGridViewCellStyle19.ForeColor = System.Drawing.SystemColors.ControlText
+        DataGridViewCellStyle19.SelectionBackColor = System.Drawing.SystemColors.Highlight
+        DataGridViewCellStyle19.SelectionForeColor = System.Drawing.SystemColors.HighlightText
+        DataGridViewCellStyle19.WrapMode = System.Windows.Forms.DataGridViewTriState.[False]
+        Me.GView_DTR.DefaultCellStyle = DataGridViewCellStyle19
         Me.GView_DTR.GridColor = System.Drawing.SystemColors.ActiveCaptionText
         Me.GView_DTR.Location = New System.Drawing.Point(6, 84)
         Me.GView_DTR.MultiSelect = False
@@ -302,8 +336,8 @@ Partial Class FRM_DTR_BIOMETRIC
         '
         'DataGridViewTextBoxColumn9
         '
-        DataGridViewCellStyle41.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight
-        Me.DataGridViewTextBoxColumn9.DefaultCellStyle = DataGridViewCellStyle41
+        DataGridViewCellStyle1.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight
+        Me.DataGridViewTextBoxColumn9.DefaultCellStyle = DataGridViewCellStyle1
         Me.DataGridViewTextBoxColumn9.Frozen = True
         Me.DataGridViewTextBoxColumn9.HeaderText = "Late"
         Me.DataGridViewTextBoxColumn9.Name = "DataGridViewTextBoxColumn9"
@@ -313,8 +347,8 @@ Partial Class FRM_DTR_BIOMETRIC
         '
         'DataGridViewTextBoxColumn10
         '
-        DataGridViewCellStyle42.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight
-        Me.DataGridViewTextBoxColumn10.DefaultCellStyle = DataGridViewCellStyle42
+        DataGridViewCellStyle2.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight
+        Me.DataGridViewTextBoxColumn10.DefaultCellStyle = DataGridViewCellStyle2
         Me.DataGridViewTextBoxColumn10.Frozen = True
         Me.DataGridViewTextBoxColumn10.HeaderText = "Total Break"
         Me.DataGridViewTextBoxColumn10.Name = "DataGridViewTextBoxColumn10"
@@ -323,8 +357,8 @@ Partial Class FRM_DTR_BIOMETRIC
         '
         'DataGridViewTextBoxColumn11
         '
-        DataGridViewCellStyle43.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight
-        Me.DataGridViewTextBoxColumn11.DefaultCellStyle = DataGridViewCellStyle43
+        DataGridViewCellStyle3.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight
+        Me.DataGridViewTextBoxColumn11.DefaultCellStyle = DataGridViewCellStyle3
         Me.DataGridViewTextBoxColumn11.Frozen = True
         Me.DataGridViewTextBoxColumn11.HeaderText = "Over Break"
         Me.DataGridViewTextBoxColumn11.Name = "DataGridViewTextBoxColumn11"
@@ -333,8 +367,8 @@ Partial Class FRM_DTR_BIOMETRIC
         '
         'DataGridViewTextBoxColumn12
         '
-        DataGridViewCellStyle44.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight
-        Me.DataGridViewTextBoxColumn12.DefaultCellStyle = DataGridViewCellStyle44
+        DataGridViewCellStyle4.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight
+        Me.DataGridViewTextBoxColumn12.DefaultCellStyle = DataGridViewCellStyle4
         Me.DataGridViewTextBoxColumn12.Frozen = True
         Me.DataGridViewTextBoxColumn12.HeaderText = "Over Time"
         Me.DataGridViewTextBoxColumn12.Name = "DataGridViewTextBoxColumn12"
@@ -343,8 +377,8 @@ Partial Class FRM_DTR_BIOMETRIC
         '
         'DataGridViewTextBoxColumn13
         '
-        DataGridViewCellStyle45.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter
-        Me.DataGridViewTextBoxColumn13.DefaultCellStyle = DataGridViewCellStyle45
+        DataGridViewCellStyle5.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter
+        Me.DataGridViewTextBoxColumn13.DefaultCellStyle = DataGridViewCellStyle5
         Me.DataGridViewTextBoxColumn13.Frozen = True
         Me.DataGridViewTextBoxColumn13.HeaderText = "Total Hours"
         Me.DataGridViewTextBoxColumn13.Name = "DataGridViewTextBoxColumn13"
@@ -353,8 +387,8 @@ Partial Class FRM_DTR_BIOMETRIC
         '
         'REG_REG
         '
-        DataGridViewCellStyle46.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight
-        Me.REG_REG.DefaultCellStyle = DataGridViewCellStyle46
+        DataGridViewCellStyle6.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight
+        Me.REG_REG.DefaultCellStyle = DataGridViewCellStyle6
         Me.REG_REG.Frozen = True
         Me.REG_REG.HeaderText = "Reg"
         Me.REG_REG.Name = "REG_REG"
@@ -363,8 +397,8 @@ Partial Class FRM_DTR_BIOMETRIC
         '
         'REG_SUN
         '
-        DataGridViewCellStyle47.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight
-        Me.REG_SUN.DefaultCellStyle = DataGridViewCellStyle47
+        DataGridViewCellStyle7.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight
+        Me.REG_SUN.DefaultCellStyle = DataGridViewCellStyle7
         Me.REG_SUN.Frozen = True
         Me.REG_SUN.HeaderText = "Sun"
         Me.REG_SUN.Name = "REG_SUN"
@@ -373,8 +407,8 @@ Partial Class FRM_DTR_BIOMETRIC
         '
         'REG_SH
         '
-        DataGridViewCellStyle48.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight
-        Me.REG_SH.DefaultCellStyle = DataGridViewCellStyle48
+        DataGridViewCellStyle8.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight
+        Me.REG_SH.DefaultCellStyle = DataGridViewCellStyle8
         Me.REG_SH.Frozen = True
         Me.REG_SH.HeaderText = "SH"
         Me.REG_SH.Name = "REG_SH"
@@ -383,8 +417,8 @@ Partial Class FRM_DTR_BIOMETRIC
         '
         'REG_LH
         '
-        DataGridViewCellStyle49.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight
-        Me.REG_LH.DefaultCellStyle = DataGridViewCellStyle49
+        DataGridViewCellStyle9.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight
+        Me.REG_LH.DefaultCellStyle = DataGridViewCellStyle9
         Me.REG_LH.Frozen = True
         Me.REG_LH.HeaderText = "LH"
         Me.REG_LH.Name = "REG_LH"
@@ -393,8 +427,8 @@ Partial Class FRM_DTR_BIOMETRIC
         '
         'RD_SUN_SH
         '
-        DataGridViewCellStyle50.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight
-        Me.RD_SUN_SH.DefaultCellStyle = DataGridViewCellStyle50
+        DataGridViewCellStyle10.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight
+        Me.RD_SUN_SH.DefaultCellStyle = DataGridViewCellStyle10
         Me.RD_SUN_SH.Frozen = True
         Me.RD_SUN_SH.HeaderText = "RD SUN SH"
         Me.RD_SUN_SH.Name = "RD_SUN_SH"
@@ -403,8 +437,8 @@ Partial Class FRM_DTR_BIOMETRIC
         '
         'RD_SUN_LH
         '
-        DataGridViewCellStyle51.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight
-        Me.RD_SUN_LH.DefaultCellStyle = DataGridViewCellStyle51
+        DataGridViewCellStyle11.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight
+        Me.RD_SUN_LH.DefaultCellStyle = DataGridViewCellStyle11
         Me.RD_SUN_LH.Frozen = True
         Me.RD_SUN_LH.HeaderText = "RD SUN LH"
         Me.RD_SUN_LH.Name = "RD_SUN_LH"
@@ -413,8 +447,8 @@ Partial Class FRM_DTR_BIOMETRIC
         '
         'ND_REG
         '
-        DataGridViewCellStyle52.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight
-        Me.ND_REG.DefaultCellStyle = DataGridViewCellStyle52
+        DataGridViewCellStyle12.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight
+        Me.ND_REG.DefaultCellStyle = DataGridViewCellStyle12
         Me.ND_REG.Frozen = True
         Me.ND_REG.HeaderText = "ND Reg"
         Me.ND_REG.Name = "ND_REG"
@@ -423,8 +457,8 @@ Partial Class FRM_DTR_BIOMETRIC
         '
         'ND_SUN
         '
-        DataGridViewCellStyle53.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight
-        Me.ND_SUN.DefaultCellStyle = DataGridViewCellStyle53
+        DataGridViewCellStyle13.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight
+        Me.ND_SUN.DefaultCellStyle = DataGridViewCellStyle13
         Me.ND_SUN.Frozen = True
         Me.ND_SUN.HeaderText = "ND Sun"
         Me.ND_SUN.Name = "ND_SUN"
@@ -433,8 +467,8 @@ Partial Class FRM_DTR_BIOMETRIC
         '
         'ND_SH
         '
-        DataGridViewCellStyle54.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight
-        Me.ND_SH.DefaultCellStyle = DataGridViewCellStyle54
+        DataGridViewCellStyle14.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight
+        Me.ND_SH.DefaultCellStyle = DataGridViewCellStyle14
         Me.ND_SH.Frozen = True
         Me.ND_SH.HeaderText = "ND SH"
         Me.ND_SH.Name = "ND_SH"
@@ -443,8 +477,8 @@ Partial Class FRM_DTR_BIOMETRIC
         '
         'ND_LH
         '
-        DataGridViewCellStyle55.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight
-        Me.ND_LH.DefaultCellStyle = DataGridViewCellStyle55
+        DataGridViewCellStyle15.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight
+        Me.ND_LH.DefaultCellStyle = DataGridViewCellStyle15
         Me.ND_LH.Frozen = True
         Me.ND_LH.HeaderText = "ND LH"
         Me.ND_LH.Name = "ND_LH"
@@ -453,8 +487,8 @@ Partial Class FRM_DTR_BIOMETRIC
         '
         'ND_RD_SUN_SH
         '
-        DataGridViewCellStyle56.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight
-        Me.ND_RD_SUN_SH.DefaultCellStyle = DataGridViewCellStyle56
+        DataGridViewCellStyle16.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight
+        Me.ND_RD_SUN_SH.DefaultCellStyle = DataGridViewCellStyle16
         Me.ND_RD_SUN_SH.Frozen = True
         Me.ND_RD_SUN_SH.HeaderText = "ND RD SUN SH"
         Me.ND_RD_SUN_SH.Name = "ND_RD_SUN_SH"
@@ -463,8 +497,8 @@ Partial Class FRM_DTR_BIOMETRIC
         '
         'ND_RD_SUN_LH
         '
-        DataGridViewCellStyle57.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight
-        Me.ND_RD_SUN_LH.DefaultCellStyle = DataGridViewCellStyle57
+        DataGridViewCellStyle17.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight
+        Me.ND_RD_SUN_LH.DefaultCellStyle = DataGridViewCellStyle17
         Me.ND_RD_SUN_LH.Frozen = True
         Me.ND_RD_SUN_LH.HeaderText = "ND RD SUN LH"
         Me.ND_RD_SUN_LH.Name = "ND_RD_SUN_LH"
@@ -473,8 +507,8 @@ Partial Class FRM_DTR_BIOMETRIC
         '
         'OT_REG
         '
-        DataGridViewCellStyle58.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight
-        Me.OT_REG.DefaultCellStyle = DataGridViewCellStyle58
+        DataGridViewCellStyle18.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight
+        Me.OT_REG.DefaultCellStyle = DataGridViewCellStyle18
         Me.OT_REG.Frozen = True
         Me.OT_REG.HeaderText = "OT Reg"
         Me.OT_REG.Name = "OT_REG"
@@ -549,6 +583,7 @@ Partial Class FRM_DTR_BIOMETRIC
         'dtrBreakDownPage
         '
         Me.dtrBreakDownPage.Controls.Add(Me.Btn_Save_DTR)
+        Me.dtrBreakDownPage.Controls.Add(Me.Btn_TimeDtlView)
         Me.dtrBreakDownPage.Controls.Add(Me.DTR_TimeCalculationPanel)
         Me.dtrBreakDownPage.Controls.Add(Me.btn_Breakdown)
         Me.dtrBreakDownPage.Controls.Add(Me.Btn_Calc_DTR)
@@ -560,45 +595,65 @@ Partial Class FRM_DTR_BIOMETRIC
         Me.dtrBreakDownPage.Text = "Time Calculation"
         Me.dtrBreakDownPage.UseVisualStyleBackColor = True
         '
+        'Btn_TimeDtlView
+        '
+        Me.Btn_TimeDtlView.BackColor = System.Drawing.Color.SkyBlue
+        Me.Btn_TimeDtlView.Cursor = System.Windows.Forms.Cursors.Hand
+        Me.Btn_TimeDtlView.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(CType(CType(255, Byte), Integer), CType(CType(128, Byte), Integer), CType(CType(0, Byte), Integer))
+        Me.Btn_TimeDtlView.FlatAppearance.MouseOverBackColor = System.Drawing.Color.Cyan
+        Me.Btn_TimeDtlView.FlatStyle = System.Windows.Forms.FlatStyle.Flat
+        Me.Btn_TimeDtlView.Font = New System.Drawing.Font("Microsoft Sans Serif", 12.0!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.Btn_TimeDtlView.ForeColor = System.Drawing.SystemColors.ControlLightLight
+        Me.Btn_TimeDtlView.Location = New System.Drawing.Point(6, 6)
+        Me.Btn_TimeDtlView.Name = "Btn_TimeDtlView"
+        Me.Btn_TimeDtlView.Size = New System.Drawing.Size(374, 58)
+        Me.Btn_TimeDtlView.TabIndex = 73
+        Me.Btn_TimeDtlView.Text = "Time Details View"
+        Me.Btn_TimeDtlView.UseVisualStyleBackColor = False
+        '
         'Btn_Save_DTR
         '
-        Me.Btn_Save_DTR.Font = New System.Drawing.Font("Microsoft Sans Serif", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.Btn_Save_DTR.Location = New System.Drawing.Point(1612, 651)
+        Me.Btn_Save_DTR.BackColor = System.Drawing.Color.YellowGreen
+        Me.Btn_Save_DTR.Font = New System.Drawing.Font("Microsoft Sans Serif", 12.0!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.Btn_Save_DTR.ForeColor = System.Drawing.SystemColors.ControlLightLight
+        Me.Btn_Save_DTR.Location = New System.Drawing.Point(1612, 10)
         Me.Btn_Save_DTR.Name = "Btn_Save_DTR"
         Me.Btn_Save_DTR.Size = New System.Drawing.Size(173, 51)
         Me.Btn_Save_DTR.TabIndex = 69
         Me.Btn_Save_DTR.Text = "Save"
-        Me.Btn_Save_DTR.UseVisualStyleBackColor = True
+        Me.Btn_Save_DTR.UseVisualStyleBackColor = False
         '
         'DTR_TimeCalculationPanel
         '
         Me.DTR_TimeCalculationPanel.AutoScroll = True
-        Me.DTR_TimeCalculationPanel.Location = New System.Drawing.Point(6, 6)
+        Me.DTR_TimeCalculationPanel.Location = New System.Drawing.Point(6, 70)
         Me.DTR_TimeCalculationPanel.Name = "DTR_TimeCalculationPanel"
-        Me.DTR_TimeCalculationPanel.Size = New System.Drawing.Size(1779, 504)
+        Me.DTR_TimeCalculationPanel.Size = New System.Drawing.Size(1779, 517)
         Me.DTR_TimeCalculationPanel.TabIndex = 72
         '
         'btn_Breakdown
         '
+        Me.btn_Breakdown.BackColor = System.Drawing.Color.Gainsboro
         Me.btn_Breakdown.Cursor = System.Windows.Forms.Cursors.Hand
         Me.btn_Breakdown.Font = New System.Drawing.Font("Microsoft Sans Serif", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.btn_Breakdown.Location = New System.Drawing.Point(6, 574)
+        Me.btn_Breakdown.Location = New System.Drawing.Point(9, 651)
         Me.btn_Breakdown.Name = "btn_Breakdown"
         Me.btn_Breakdown.Size = New System.Drawing.Size(1779, 51)
         Me.btn_Breakdown.TabIndex = 71
         Me.btn_Breakdown.Text = "Recalculate Totals"
-        Me.btn_Breakdown.UseVisualStyleBackColor = True
+        Me.btn_Breakdown.UseVisualStyleBackColor = False
         '
         'Btn_Calc_DTR
         '
+        Me.Btn_Calc_DTR.BackColor = System.Drawing.Color.DarkGray
         Me.Btn_Calc_DTR.Cursor = System.Windows.Forms.Cursors.Hand
         Me.Btn_Calc_DTR.Font = New System.Drawing.Font("Microsoft Sans Serif", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.Btn_Calc_DTR.Location = New System.Drawing.Point(6, 516)
+        Me.Btn_Calc_DTR.Location = New System.Drawing.Point(9, 593)
         Me.Btn_Calc_DTR.Name = "Btn_Calc_DTR"
         Me.Btn_Calc_DTR.Size = New System.Drawing.Size(1779, 52)
         Me.Btn_Calc_DTR.TabIndex = 70
         Me.Btn_Calc_DTR.Text = "Recalculate Hours && Totals"
-        Me.Btn_Calc_DTR.UseVisualStyleBackColor = True
+        Me.Btn_Calc_DTR.UseVisualStyleBackColor = False
         '
         'Lbl_IDNumber
         '
@@ -785,8 +840,8 @@ Partial Class FRM_DTR_BIOMETRIC
         '
         'Col_Attendance
         '
-        DataGridViewCellStyle60.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter
-        Me.Col_Attendance.DefaultCellStyle = DataGridViewCellStyle60
+        DataGridViewCellStyle20.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter
+        Me.Col_Attendance.DefaultCellStyle = DataGridViewCellStyle20
         Me.Col_Attendance.HeaderText = "Attendance"
         Me.Col_Attendance.Name = "Col_Attendance"
         '
@@ -804,16 +859,6 @@ Partial Class FRM_DTR_BIOMETRIC
         Me.Label8.Size = New System.Drawing.Size(80, 20)
         Me.Label8.TabIndex = 68
         Me.Label8.Text = "Pure Gold"
-        '
-        'DTR_Lbl_Period
-        '
-        Me.DTR_Lbl_Period.AutoSize = True
-        Me.DTR_Lbl_Period.ForeColor = System.Drawing.Color.FromArgb(CType(CType(0, Byte), Integer), CType(CType(0, Byte), Integer), CType(CType(192, Byte), Integer))
-        Me.DTR_Lbl_Period.Location = New System.Drawing.Point(552, 12)
-        Me.DTR_Lbl_Period.Name = "DTR_Lbl_Period"
-        Me.DTR_Lbl_Period.Size = New System.Drawing.Size(111, 20)
-        Me.DTR_Lbl_Period.TabIndex = 16
-        Me.DTR_Lbl_Period.Text = "Cutoff - Period"
         '
         'FRM_DTR_BIOMETRIC
         '
@@ -914,4 +959,6 @@ Partial Class FRM_DTR_BIOMETRIC
     Friend WithEvents btn_Breakdown As Button
     Friend WithEvents DTR_TimeCalculationPanel As Panel
     Friend WithEvents DTR_Lbl_Period As Label
+    Friend WithEvents Btn_TimeDtlView As Button
+    Friend WithEvents Btn_TimeCalcView As Button
 End Class

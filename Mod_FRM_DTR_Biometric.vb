@@ -198,7 +198,9 @@ Module Mod_Biometric_DTR
     ' Calculates break durations and excess break time
     Private Sub CalculateBreaks()
         For i = 0 To 16 ' Iterate through DTR grid rows
-            If String.IsNullOrEmpty(CStr(FRM_DTR_BIOMETRIC.GView_DTR.Rows(i).Cells(4).Value)) Then Exit For
+            If String.IsNullOrEmpty(CStr(FRM_DTR_BIOMETRIC.GView_DTR.Rows(i).Cells(0).Value)) Then
+                Continue For
+            End If
 
             ' Calculate break durations (Break 1 and Break 2)
             Dim break1Duration As Integer = CalculateBreakDuration(i, 4, 3)
@@ -214,15 +216,26 @@ Module Mod_Biometric_DTR
     ' Calculates the duration of a specific break (in minutes)
     Private Function CalculateBreakDuration(i As Integer, breakInCell As Integer, breakOutCell As Integer) As Integer
         Try
+            ' Get cell values and check for null or empty
+            Dim breakInValue As Object = FRM_DTR_BIOMETRIC.GView_DTR.Rows(i).Cells(breakInCell).Value
+            Dim breakOutValue As Object = FRM_DTR_BIOMETRIC.GView_DTR.Rows(i).Cells(breakOutCell).Value
+
+            If breakInValue Is Nothing OrElse String.IsNullOrWhiteSpace(breakInValue.ToString()) OrElse
+           breakOutValue Is Nothing OrElse String.IsNullOrWhiteSpace(breakOutValue.ToString()) Then
+                Return 0
+            End If
+
             ' Parse break times (in and out)
-            Dim breakIn As DateTime = ParseBreakTime(FRM_DTR_BIOMETRIC.GView_DTR.Rows(i).Cells(breakInCell).Value.ToString())
-            Dim breakOut As DateTime = ParseBreakTime(FRM_DTR_BIOMETRIC.GView_DTR.Rows(i).Cells(breakOutCell).Value.ToString())
+            Dim breakIn As DateTime = ParseBreakTime(breakInValue.ToString())
+            Dim breakOut As DateTime = ParseBreakTime(breakOutValue.ToString())
+
             Return CInt((breakIn - breakOut).TotalMinutes)
         Catch ex As Exception
             MsgBox($"Error parsing break times: {ex.Message}", vbCritical, "Error")
             Return 0
         End Try
     End Function
+
 
     ' Parses a break time string into DateTime
     Private Function ParseBreakTime(breakTimeStr As String) As DateTime
@@ -256,7 +269,16 @@ Module Mod_Biometric_DTR
 
             ' Update grid cells with overtime and total worked hours
             FRM_DTR_BIOMETRIC.GView_DTR.Rows(i).Cells(13).Value = overtimeMinutes
-            FRM_DTR_BIOMETRIC.GView_DTR.Rows(i).Cells(14).Value = Math.Round(totalWorkedMinutes / 60, 2)
+
+            Dim totalWorkedHours As Double = Math.Round(totalWorkedMinutes / 60, 3)
+            ' Ensure the maximum is 12 hours
+            If totalWorkedHours > 12 Then
+                totalWorkedHours = 12
+            End If
+
+            FRM_DTR_BIOMETRIC.GView_DTR.Rows(i).Cells(14).Value = totalWorkedHours
+
+
 
             ' Accumulate total worked minutes
             'totalOverallWorkedMinutes += totalWorkedMinutes
@@ -275,15 +297,23 @@ Module Mod_Biometric_DTR
     Private Function CalculateTotalWorkedMinutes(dtrRow As DataGridViewRow, timeIn As DateTime, timeOut As DateTime, dayOfMonth As Integer) As Integer
         ' Parse the scheduled time-in for the specified day
         Dim scheduledTimeIn As DateTime = ParseScheduleIn(dtrRow, dayOfMonth)
-
+        Dim scheduledTimeOut As DateTime = ParseScheduleOut(dtrRow, dayOfMonth)
         ' Parse the actual time-in for the specified day
         Dim actualTimeIn As DateTime = timeIn
+        Dim newTimeOut As DateTime
+        Dim overtimeMinutes As Integer = CInt((timeOut - scheduledTimeOut).TotalMinutes)
+
+        If overtimeMinutes < 60 AndAlso overtimeMinutes >= 0 Then
+            newTimeOut = scheduledTimeOut
+        Else
+            newTimeOut = timeOut
+        End If
 
         ' Calculate total minutes worked (ignoring break time)
-        Dim totalMinutesWorked As Integer = CInt((timeOut - scheduledTimeIn).TotalMinutes)
+        Dim totalMinutesWorked As Integer = CInt((newTimeOut - scheduledTimeIn).TotalMinutes)
 
         ' Subtract break time from total minutes worked
-        Dim totalBreakTime As Integer = GetTotalBreakTime(dayOfMonth)
+        Dim totalBreakTime As Integer = GetTotalBreakTime(dtrRow)
         totalMinutesWorked -= totalBreakTime
 
         ' Calculate lateness (if actual time-in is later than scheduled time-in)
@@ -298,7 +328,6 @@ Module Mod_Biometric_DTR
         ' Return the final total worked minutes after accounting for lateness
         Return totalMinutesWorked
     End Function
-
 
     ' Calculates overtime based on the difference between actual time and scheduled time
     Private Function CalculateOverTime(dtrRow As DataGridViewRow, timeOut As DateTime, dayOfMonth As Integer) As Integer
@@ -317,9 +346,20 @@ Module Mod_Biometric_DTR
             scheduledTimeOut = ParseScheduleOut(dtrRow, dayOfMonth)
         End If
 
-        ' Calculate and return overtime in minutes (ensure timeOut is later than scheduledTimeOut)
-        Return CInt((timeOut - scheduledTimeOut).TotalMinutes)
+        ' Calculate overtime in minutes (ensure timeOut is later than scheduledTimeOut)
+        Dim overtimeMinutes As Integer = CInt((timeOut - scheduledTimeOut).TotalMinutes)
+
+        ' Ensure overtime is at least 60 minutes to be considered
+        If overtimeMinutes < 60 Then
+            overtimeMinutes = 0
+        ElseIf overtimeMinutes > 240 Then
+            overtimeMinutes = 240 ' Cap overtime at 4 hours (240 minutes)
+        End If
+
+        Return overtimeMinutes
     End Function
+
+
 
 
     ' Parse Time-In value and return DateTime
@@ -394,17 +434,19 @@ Module Mod_Biometric_DTR
     End Function
 
     ' Retrieves the total break time for a specific day (in minutes)
-    Private Function GetTotalBreakTime(dayOfMonth As Integer) As Integer
+    Private Function GetTotalBreakTime(dtrRow As DataGridViewRow) As Integer
         ' Assuming breaks are stored in the break columns for each row and need to be summed
         Dim totalBreakTime As Integer = 0
-        For Each row As DataGridViewRow In FRM_DTR_BIOMETRIC.GView_DTR.Rows
-            If row.Cells(0)?.Value?.ToString() = dayOfMonth.ToString() Then
-                ' Retrieve break times from break columns (cells 4 and 6 represent break times in/out)
-                totalBreakTime += CalculateBreakDuration(row.Index, 4, 3) ' Break 1
-                totalBreakTime += CalculateBreakDuration(row.Index, 6, 5) ' Break 2
-            End If
-        Next
-        Return totalBreakTime
+
+        ' Retrieve break times from break columns (cells 4 and 6 represent break times in/out)
+        Dim break1Duration As Integer = CalculateBreakDuration(dtrRow.Index, 4, 3) ' Break 1
+
+        Dim break2Duration As Integer = CalculateBreakDuration(dtrRow.Index, 6, 5) ' Break 2
+        ' Sum break durations and calculate excess break time (if any)
+        totalBreakTime = break1Duration + break2Duration
+
+
+        Return If(totalBreakTime > 60, totalBreakTime - 60, 0)
     End Function
 
 
@@ -423,8 +465,8 @@ Module Mod_Biometric_DTR
                 ' Get the current date and time as a string in the desired format
                 Dim currentDateTime As String = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")
 
-                SQL = "INSERT INTO PRL_DTR_TOTAL_HOURS (DATE_INPUT, EMPLOYEE_ID, SUB_CLIENT_ID, CUTOFF_PERIOD, NUM_OF_DAYS, TOTAL_HOURS, REG, SUN, SH, LH, RD_SUN_SH, RD_SUN_LH, ND_REG, ND_SUN, ND_SH, ND_LH, ND_RD_SUN_SH, ND_RD_SUN_LH, OT_REG)"
-                SQL = SQL & " VALUES ('" & currentDateTime & "', '" & sEmployee_ID & "', " & iSub_Client_ID & ", '" & sCutOff_Period & "', " & iNumber_of_Days
+                SQL = "INSERT INTO PRL_DTR_TOTAL_HOURS (EMPLOYEE_ID, SUB_CLIENT_ID, CUTOFF_PERIOD, NUM_OF_DAYS, TOTAL_HOURS, REG, SUN, SH, LH, RD_SUN_SH, RD_SUN_LH, ND_REG, ND_SUN, ND_SH, ND_LH, ND_RD_SUN_SH, ND_RD_SUN_LH, OT_REG)"
+                SQL = SQL & " VALUES ( '" & sEmployee_ID & "', " & iSub_Client_ID & ", '" & sCutOff_Period & "', " & iNumber_of_Days
                 SQL = SQL & ", '" & .Rows(17).Cells(14).Value & "', '" & .Rows(17).Cells(15).Value & "'"
                 SQL = SQL & ", '" & .Rows(17).Cells(16).Value & "', '" & .Rows(17).Cells(17).Value & "', '" & .Rows(17).Cells(18).Value & "', '" & .Rows(17).Cells(19).Value & "'"
                 SQL = SQL & ", '" & .Rows(17).Cells(20).Value & "', '" & .Rows(17).Cells(21).Value & "', '" & .Rows(17).Cells(22).Value & "', '" & .Rows(17).Cells(23).Value & "'"

@@ -9,8 +9,8 @@ Module Mod_DB_Connection
     Public Sub MDB_Connection_Init()
         Try
             ' Define the database file path
-            'Dim dbfile As String = Path.Combine(Application.StartupPath, "DMSA.mdb")
-            Dim dbfile As String = "Z:\DMSA_SYSTEM\DMSA.mdb"
+            Dim dbfile As String = Path.Combine(Application.StartupPath, "DMSA.mdb")
+            'Dim dbfile As String = "Z:\DMSA_SYSTEM\DMSA.mdb"
 
             ' Ensure the database file exists before proceeding
             If Not File.Exists(dbfile) Then

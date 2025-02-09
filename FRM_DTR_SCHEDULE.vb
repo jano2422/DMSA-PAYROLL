@@ -50,7 +50,7 @@
                         Exit For
                     End If
 
-                    Call Update_SecGuard_Schedule(GlobalVariables.DTR_Selected_Employee_ID, Opt_1st_CutOff_FLag_Shift, GView_Schedule1_15.Rows(iRow).Cells(0).Value, GView_Schedule1_15.Rows(iRow).Cells(1).Value, GView_Schedule1_15.Rows(iRow).Cells(2).Value, GView_Schedule1_15.Rows(iRow).Cells(3).Value.ToString)
+                    Call Update_SecGuard_Schedule(GlobalVariables.DTR_Selected_Employee_ID, GView_Schedule1_15.Rows(iRow).Cells(4).Value, GView_Schedule1_15.Rows(iRow).Cells(0).Value, GView_Schedule1_15.Rows(iRow).Cells(1).Value, GView_Schedule1_15.Rows(iRow).Cells(2).Value, GView_Schedule1_15.Rows(iRow).Cells(3).Value.ToString)
 
                 Next
                 ProgressBar_Save.Value = ProgressBar_Save.Value + 1
@@ -68,7 +68,7 @@
                         Exit For
                     End If
 
-                    Call Update_SecGuard_Schedule(GlobalVariables.DTR_Selected_Employee_ID, Opt_2nd_CutOff_FLag_Shift, GView_Schedule16_30.Rows(iRow).Cells(0).Value, GView_Schedule16_30.Rows(iRow).Cells(1).Value, GView_Schedule16_30.Rows(iRow).Cells(2).Value, GView_Schedule16_30.Rows(iRow).Cells(3).Value.ToString)
+                    Call Update_SecGuard_Schedule(GlobalVariables.DTR_Selected_Employee_ID, GView_Schedule16_30.Rows(iRow).Cells(4).Value, GView_Schedule16_30.Rows(iRow).Cells(0).Value, GView_Schedule16_30.Rows(iRow).Cells(1).Value, GView_Schedule16_30.Rows(iRow).Cells(2).Value, GView_Schedule16_30.Rows(iRow).Cells(3).Value.ToString)
 
                 Next
                 ProgressBar_Save.Value = ProgressBar_Save.Value + 1

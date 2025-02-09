@@ -1,4 +1,5 @@
-﻿Imports System.IO
+﻿Imports Microsoft.WindowsAPICodePack.Dialogs
+Imports System.IO
 Imports Spire.Pdf
 Imports Spire.Pdf.Conversion
 
@@ -14,7 +15,9 @@ Public Class FRM_DTR_BIOMETRIC
             MsgBox("Trial Period Ends")
             Exit Sub ' Exit the subroutine if the trial period has ended
         End If
-
+        GView_Schedule.Rows.Clear()
+        RemoveDataGridViewByName(DTR_TimeCalculationPanel, "Duplicate_DGV")
+        ShowOriginalDataGridViewColumns(GView_DTR)
         ' Call the subroutine to ensure a directory is selected
         If Not PromptForDirectorySelection(selectedDirectory) Then
             Exit Sub ' Exit the main subroutine if no directory is selected
@@ -53,30 +56,38 @@ Public Class FRM_DTR_BIOMETRIC
     End Sub
 
     Private Function PromptForDirectorySelection(ByRef selectedDirectory As String) As Boolean
-        ' Check if a directory has already been selected
-        If String.IsNullOrEmpty(selectedDirectory) Then
-            Using folderBrowser As New FolderBrowserDialog()
-                ' Get the application's base directory and set the default path to the "DTR" folder
-                Dim exeDirectory As String = AppDomain.CurrentDomain.BaseDirectory
-                Dim dtrPath As String = Path.Combine("Z:", "MASTER_DTR")
-                folderBrowser.Description = "Select a directory containing the files"
-                folderBrowser.SelectedPath = dtrPath
 
-                ' Show the folder browser dialog to the user
-                If folderBrowser.ShowDialog() = DialogResult.OK Then
-                    ' Update the selected directory with the user's choice
-                    selectedDirectory = folderBrowser.SelectedPath
-                    Return True ' Directory selected successfully
-                Else
-                    ' Notify the user if no directory is selected
-                    MsgBox("No directory selected. Operation cancelled.", vbExclamation, "Directory Selection")
-                    Return False ' Indicate that no directory was selected
-                End If
-            End Using
+        If Directory.Exists(selectedDirectory) Then
+            Return True
         End If
 
-        Return True ' Directory already selected
+        ' Ensure the directory exists before using it
+
+        Dim dtrPath As String = "C:\MASTER_DTR"
+        ' Ensure the directory exists before using it
+        If Not Directory.Exists(dtrPath) Then
+            Directory.CreateDirectory(dtrPath)
+        End If
+
+        Using dialog As New CommonOpenFileDialog()
+            dialog.IsFolderPicker = True ' Enables folder selection
+            dialog.InitialDirectory = dtrPath ' Set the default starting path
+            dialog.Title = "Select a directory containing the files"
+
+            ' Show the dialog
+            If dialog.ShowDialog() = CommonFileDialogResult.Ok Then
+                selectedDirectory = dialog.FileName
+                Return True ' Directory selected successfully
+            Else
+                MsgBox("No directory selected. Operation cancelled.", vbExclamation, "Directory Selection")
+                Return False ' No directory selected
+            End If
+        End Using
     End Function
+
+
+
+
 
 
     Private Sub ShowModernFileSelectionForm(filteredFiles As List(Of String))
@@ -137,13 +148,18 @@ Public Class FRM_DTR_BIOMETRIC
             ' Handle Reselect Folder button click
             AddHandler reselectFolderButton.Click, Sub()
                                                        Try
-                                                           Using folderBrowser As New FolderBrowserDialog()
-                                                               folderBrowser.Description = "Select a new directory"
-                                                               folderBrowser.SelectedPath = selectedDirectory
 
-                                                               If folderBrowser.ShowDialog() = DialogResult.OK Then
-                                                                   selectedDirectory = folderBrowser.SelectedPath
+                                                           Using dialog As New CommonOpenFileDialog()
+                                                               dialog.IsFolderPicker = True ' Enables folder selection
+                                                               dialog.InitialDirectory = selectedDirectory ' Set the default starting path
+                                                               dialog.Title = "Select a directory containing the files"
+
+                                                               ' Show the dialog
+                                                               If dialog.ShowDialog() = CommonFileDialogResult.Ok Then
+                                                                   selectedDirectory = dialog.FileName
                                                                    fileSelectionForm.Close()
+                                                               Else
+                                                                   MsgBox("No directory selected. Operation cancelled.", vbExclamation, "Directory Selection")
                                                                End If
                                                            End Using
                                                        Catch ex As Exception

@@ -207,7 +207,7 @@ Module Mod_Biometric_DTR
             Dim break2Duration As Integer = CalculateBreakDuration(i, 6, 5)
 
             ' Sum break durations and calculate excess break time (if any)
-            Dim totalBreakTime As Integer = break1Duration + break2Duration
+            Dim totalBreakTime As Integer = If(break1Duration < 30, 30, break1Duration) + If(break2Duration < 30, 30, break2Duration)
             FRM_DTR_BIOMETRIC.GView_DTR.Rows(i).Cells(11).Value = totalBreakTime
             FRM_DTR_BIOMETRIC.GView_DTR.Rows(i).Cells(12).Value = If(totalBreakTime > 60, totalBreakTime - 60, 0)
         Next
@@ -248,7 +248,11 @@ Module Mod_Biometric_DTR
         Dim totalOverallWorkedMinutes As Integer = 0 ' Variable to accumulate total worked minutes
 
         For i = 0 To 16
-            If String.IsNullOrEmpty(CStr(FRM_DTR_BIOMETRIC.GView_DTR.Rows(i).Cells(0).Value)) Then Exit For
+            Dim overtimeMinutes As Integer = 0
+            Dim totalWorkedMinutes As Integer = 0
+            If String.IsNullOrEmpty(CStr(FRM_DTR_BIOMETRIC.GView_DTR.Rows(i).Cells(0).Value)) Then
+                Exit For
+            End If
 
             ' Extract date and validate
             Dim firstDate As String = GetFirstDate(FRM_DTR_BIOMETRIC.GView_DTR.Rows(i).Cells(0)?.Value.ToString())
@@ -260,17 +264,24 @@ Module Mod_Biometric_DTR
             ' Parse time-in
             Dim parsedTimeIn As DateTime = ParseTime(FRM_DTR_BIOMETRIC.GView_DTR.Rows(i).Cells(2).Value.ToString())
             ' Parse time-out
-            Dim parsedTimeOut As DateTime = ParseTimeOut(FRM_DTR_BIOMETRIC.GView_DTR.Rows(i))
-            ' Calculate overtime
-            Dim overtimeMinutes As Integer = CalculateOverTime(FRM_DTR_BIOMETRIC.GView_DTR.Rows(i), parsedTimeOut, dayOfMonth)
+            Dim parsedTimeOut? As DateTime = ParseTimeOut(FRM_DTR_BIOMETRIC.GView_DTR.Rows(i))
+            If parsedTimeOut Is Nothing Then
+                overtimeMinutes = 0
+                totalWorkedMinutes = 0
+            Else
+                ' Calculate overtime
+                overtimeMinutes = CalculateOverTime(FRM_DTR_BIOMETRIC.GView_DTR.Rows(i), parsedTimeOut, dayOfMonth)
 
-            ' Calculate total hours worked, considering overtime and break durations
-            Dim totalWorkedMinutes As Integer = CalculateTotalWorkedMinutes(FRM_DTR_BIOMETRIC.GView_DTR.Rows(i), parsedTimeIn, parsedTimeOut, dayOfMonth)
+                ' Calculate total hours worked, considering overtime and break durations
+                totalWorkedMinutes = CalculateTotalWorkedMinutes(FRM_DTR_BIOMETRIC.GView_DTR.Rows(i), parsedTimeIn, parsedTimeOut, dayOfMonth)
+
+            End If
+
 
             ' Update grid cells with overtime and total worked hours
             FRM_DTR_BIOMETRIC.GView_DTR.Rows(i).Cells(13).Value = overtimeMinutes
 
-            Dim totalWorkedHours As Double = Math.Round(totalWorkedMinutes / 60, 3)
+            Dim totalWorkedHours As Double = Math.Round(totalWorkedMinutes / 60, 2)
             ' Ensure the maximum is 12 hours
             If totalWorkedHours > 12 Then
                 totalWorkedHours = 12
@@ -328,11 +339,21 @@ Module Mod_Biometric_DTR
         ' Return the final total worked minutes after accounting for lateness
         Return totalMinutesWorked
     End Function
+    Public Function Get_FlagShift_Value(DGVIEW_DTR_BIOMETRIC_SCHED As DataGridView, DayNum As Integer) As String
+
+        Dim cellValue As Object = DGVIEW_DTR_BIOMETRIC_SCHED.Rows(DayNum - 1).Cells(4)?.Value
+        If cellValue IsNot Nothing AndAlso Not String.IsNullOrWhiteSpace(cellValue.ToString()) Then
+            Return cellValue.ToString()
+        End If
+
+        ' Return Nothing if no valid value is found
+        Return Nothing
+    End Function
 
     ' Calculates overtime based on the difference between actual time and scheduled time
     Private Function CalculateOverTime(dtrRow As DataGridViewRow, timeOut As DateTime, dayOfMonth As Integer) As Integer
         ' Get the shift flag for the specific day of the month
-        Dim sFlagShift As String = Check_All_FlagShift_IfSame_Values(FRM_DTR_BIOMETRIC.GView_Schedule, dayOfMonth)
+        Dim sFlagShift As String = Get_FlagShift_Value(FRM_DTR_BIOMETRIC.GView_Schedule, dayOfMonth)
 
         ' Declare the scheduledTimeOut variable
         Dim scheduledTimeOut As DateTime
@@ -349,12 +370,13 @@ Module Mod_Biometric_DTR
         ' Calculate overtime in minutes (ensure timeOut is later than scheduledTimeOut)
         Dim overtimeMinutes As Integer = CInt((timeOut - scheduledTimeOut).TotalMinutes)
 
-        ' Ensure overtime is at least 60 minutes to be considered
-        If overtimeMinutes < 60 Then
-            overtimeMinutes = 0
+        ' Ensure overtime is within valid range
+        If overtimeMinutes > 0 AndAlso overtimeMinutes < 60 Then
+            overtimeMinutes = 0 ' Ignore overtime less than 60 minutes
         ElseIf overtimeMinutes > 240 Then
-            overtimeMinutes = 240 ' Cap overtime at 4 hours (240 minutes)
+            overtimeMinutes = 240 ' Cap at 4 hours (240 minutes)
         End If
+
 
         Return overtimeMinutes
     End Function
@@ -369,19 +391,26 @@ Module Mod_Biometric_DTR
         Return parsedTime
     End Function
 
-    Private Function ParseTimeOut(dtrRow As DataGridViewRow) As DateTime
+    Private Function ParseTimeOut(dtrRow As DataGridViewRow) As DateTime?
         Dim timeStr As String = String.Empty
         Dim parsedTime As DateTime = DateTime.MinValue
+        Dim hasValue As Boolean = False
 
-        ' Iterate over the specific columns: 3, 5, 7, 9
+        ' Iterate over the specific columns: 3, 5, 7, 9 to check timeout
         Dim columnsToCheck As Integer() = {3, 5, 7, 9}
 
         ' Loop through the columns and find the last non-empty value
         For Each columnIndex In columnsToCheck
             If dtrRow.Cells(columnIndex).Value IsNot Nothing AndAlso Not String.IsNullOrEmpty(dtrRow.Cells(columnIndex).Value.ToString()) Then
                 timeStr = dtrRow.Cells(columnIndex).Value.ToString()
+                hasValue = True ' Flag that at least one column has a value
             End If
         Next
+
+        ' If no values were found, return Nothing
+        If Not hasValue Then
+            Return Nothing
+        End If
 
         ' If a valid time string is found, parse it
         If Not String.IsNullOrEmpty(timeStr) Then
@@ -391,6 +420,7 @@ Module Mod_Biometric_DTR
 
         Return parsedTime
     End Function
+
 
 
     ' Get the schedule's time-in for a specific day
@@ -443,7 +473,7 @@ Module Mod_Biometric_DTR
 
         Dim break2Duration As Integer = CalculateBreakDuration(dtrRow.Index, 6, 5) ' Break 2
         ' Sum break durations and calculate excess break time (if any)
-        totalBreakTime = break1Duration + break2Duration
+        totalBreakTime = If(break1Duration < 30, 30, break1Duration) + If(break2Duration < 30, 30, break2Duration)
 
 
         Return If(totalBreakTime > 60, totalBreakTime - 60, 0)

@@ -148,7 +148,7 @@ Module Mod_Excel
 
                 End If
 
-                sFlagShift = Check_All_FlagShift_IfSame_Values(.GView_Schedule, dayNumber)
+
                 Console.WriteLine($"First DateTime: {firstRawDataItem.Item1}")
                 Console.WriteLine($"Extracted Day Number: {dayNumber}")
             Else
@@ -168,9 +168,10 @@ Module Mod_Excel
 
             For Each entry In rawData.OrderBy(Function(x) x.Item1)
                 Dim entryDate = entry.Item1
+                Dim DayNum = entry.Item1.Day
                 Dim day = entry.Item2
                 Dim time = entry.Item1
-
+                sFlagShift = Check_FlagShift_Value(.GView_Schedule, entryDate)
                 If sFlagShift = "NS" Then
                     ' Night shift logic
                     If windowStart Is Nothing OrElse entryDate > windowEnd Then
@@ -226,7 +227,7 @@ Module Mod_Excel
                     End If
 
                 Else
-                    MessageBox.Show("Error: Flag Shift Schedule Found.",
+                    MessageBox.Show("Error: Shift Schedule Not Found.",
                     "No MS/NS Found on Schedule Table", MessageBoxButtons.OK, MessageBoxIcon.Error)
                     Exit Sub
                 End If
@@ -266,6 +267,50 @@ Module Mod_Excel
 
         End With
     End Sub
+    Public Function Check_FlagShift_Value(DGVIEW_DTR_BIOMETRIC_SCHED As DataGridView, DateInput As DateTime) As String
+        Dim DayNum As Integer = DateInput.Day
+        If DayNum - 1 < 0 Or DayNum + 1 >= DGVIEW_DTR_BIOMETRIC_SCHED.Rows.Count Then
+            Return "Invalid DayNum Index"
+        End If
+        Dim previousFlagShift As Object = Nothing
+        Dim currentFlagShift As Object = DGVIEW_DTR_BIOMETRIC_SCHED.Rows(DayNum - 1).Cells(4)?.Value
+
+        If DayNum >= 2 Then
+            previousFlagShift = DGVIEW_DTR_BIOMETRIC_SCHED.Rows(DayNum - 2).Cells(4)?.Value
+        Else
+            previousFlagShift = DGVIEW_DTR_BIOMETRIC_SCHED.Rows(DayNum - 1).Cells(4)?.Value
+        End If
+
+        ' If previous day's flag is "NS", then NS shift runs from 12 PM (previous day) to 12 PM (current day)
+        If previousFlagShift IsNot Nothing AndAlso previousFlagShift.ToString() = "NS" Then
+            Dim nsStart As DateTime
+
+            ' Handle edge case where DateInput is the 1st day of a month
+            If DateInput.Day = 1 Then
+                Dim prevMonth As DateTime = DateInput.AddMonths(-1) ' Move to previous month
+                Dim lastDayOfPrevMonth As Integer = DateTime.DaysInMonth(prevMonth.Year, prevMonth.Month)
+                nsStart = New DateTime(prevMonth.Year, prevMonth.Month, lastDayOfPrevMonth, 12, 0, 0) ' 12 PM on last day of previous month
+            Else
+                nsStart = New DateTime(DateInput.Year, DateInput.Month, DateInput.Day - 1, 12, 0, 0) ' 12 PM previous day
+            End If
+
+            Dim nsEnd As DateTime = nsStart.AddDays(1) ' 12 PM current day
+
+            ' Check if DateInput falls within the NS shift window
+            If DateInput >= nsStart AndAlso DateInput < nsEnd Then
+                Return "NS"
+            End If
+        End If
+
+        ' Otherwise, return the flag shift of the current day
+        If currentFlagShift IsNot Nothing Then
+            Return currentFlagShift.ToString()
+        End If
+
+        Return "Unknown"
+    End Function
+
+
     Public Function Check_All_FlagShift_IfSame_Values(DGVIEW_DTR_BIOMETRIC_SCHED As DataGridView, FirstDayNum As Integer) As String
         Dim allMatch As Boolean = True ' Variable to check if all are the same
         Dim flagShifts As New List(Of String)() ' Store all matched cell(4) values

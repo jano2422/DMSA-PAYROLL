@@ -4,45 +4,56 @@ Imports System.Configuration
 Module Mod_FRM_SCHEDULE
 
     Public Sub Auto_Compute_total_Hours_Shedule()
-
         Dim time As TimeSpan
-
-
         Try
-
             With FRM_DTR_SCHEDULE
-
                 For iRow = 0 To 14
-                    time = DateTime.Parse(.GView_Schedule1_15.Rows(iRow).Cells(2).Value) - DateTime.Parse(.GView_Schedule1_15.Rows(iRow).Cells(1).Value)
+                    Dim timeIn As DateTime = DateTime.Parse(.GView_Schedule1_15.Rows(iRow).Cells(1).Value)
+                    Dim timeOut As DateTime = DateTime.Parse(.GView_Schedule1_15.Rows(iRow).Cells(2).Value)
+                    Dim shiftType As String
 
+                    ' Determine shift type and adjust timeOut if NS
+                    If timeIn > timeOut Then
+                        shiftType = "NS"
+                        timeOut = timeOut.AddDays(1)
+                    Else
+                        shiftType = "MS"
+                    End If
 
+                    time = timeOut - timeIn
                     Dim hour As Integer = time.Hours
                     Dim minute As Integer = time.Minutes
                     Dim decimalTime As Double = hour + (minute / 60.0)
 
                     .GView_Schedule1_15.Rows(iRow).Cells(3).Value = Math.Abs(decimalTime)
+                    .GView_Schedule1_15.Rows(iRow).Cells(4).Value = shiftType
                 Next
 
-
                 For iRow = 0 To 15
-                    time = DateTime.Parse(.GView_Schedule16_30.Rows(iRow).Cells(2).Value) - DateTime.Parse(.GView_Schedule16_30.Rows(iRow).Cells(1).Value)
+                    Dim timeIn As DateTime = DateTime.Parse(.GView_Schedule16_30.Rows(iRow).Cells(1).Value)
+                    Dim timeOut As DateTime = DateTime.Parse(.GView_Schedule16_30.Rows(iRow).Cells(2).Value)
+                    Dim shiftType As String
 
+                    ' Determine shift type and adjust timeOut if NS
+                    If timeIn > timeOut Then
+                        shiftType = "NS"
+                        timeOut = timeOut.AddDays(1)
+                    Else
+                        shiftType = "MS"
+                    End If
+
+                    time = timeOut - timeIn
                     Dim hour As Integer = time.Hours
                     Dim minute As Integer = time.Minutes
                     Dim decimalTime As Double = hour + (minute / 60.0)
 
                     .GView_Schedule16_30.Rows(iRow).Cells(3).Value = Math.Abs(decimalTime)
-
+                    .GView_Schedule16_30.Rows(iRow).Cells(4).Value = shiftType
                 Next
-
             End With
-
         Catch ex As Exception
-
+            ' Handle errors appropriately
         End Try
-
-
-
     End Sub
 
 

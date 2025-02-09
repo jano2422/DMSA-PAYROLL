@@ -34,14 +34,6 @@ Partial Class FRM_DTR_EXPORTS
         Me.Sun = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
         Me.SH = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
         Me.LH = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
-        Me.RD_DUN_SH = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
-        Me.RD_SUN_LH = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
-        Me.ND_REG = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
-        Me.ND_SUN = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
-        Me.ND_SH = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
-        Me.ND_LH = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
-        Me.ND_RD_SUN_SH = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
-        Me.ND_RD_SUN_LH = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
         Me.OT_REG = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
         Me.PictureBox1 = New System.Windows.Forms.PictureBox()
         Me.Label1 = New System.Windows.Forms.Label()
@@ -98,7 +90,7 @@ Partial Class FRM_DTR_EXPORTS
         'LV_DTR_Per_Client_List
         '
         Me.LV_DTR_Per_Client_List.BackColor = System.Drawing.Color.FromArgb(CType(CType(255, Byte), Integer), CType(CType(224, Byte), Integer), CType(CType(192, Byte), Integer))
-        Me.LV_DTR_Per_Client_List.Columns.AddRange(New System.Windows.Forms.ColumnHeader() {Me.Item, Me.Employee_Name, Me.Total_Days, Me.Total_Hours, Me.Reg, Me.Sun, Me.SH, Me.LH, Me.RD_DUN_SH, Me.RD_SUN_LH, Me.ND_REG, Me.ND_SUN, Me.ND_SH, Me.ND_LH, Me.ND_RD_SUN_SH, Me.ND_RD_SUN_LH, Me.OT_REG})
+        Me.LV_DTR_Per_Client_List.Columns.AddRange(New System.Windows.Forms.ColumnHeader() {Me.Item, Me.Employee_Name, Me.Total_Days, Me.Total_Hours, Me.Reg, Me.Sun, Me.SH, Me.LH, Me.OT_REG})
         Me.LV_DTR_Per_Client_List.Font = New System.Drawing.Font("Verdana", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.LV_DTR_Per_Client_List.FullRowSelect = True
         Me.LV_DTR_Per_Client_List.GridLines = True
@@ -149,43 +141,6 @@ Partial Class FRM_DTR_EXPORTS
         '
         Me.LH.Text = "LH"
         Me.LH.Width = 50
-        '
-        'RD_DUN_SH
-        '
-        Me.RD_DUN_SH.Text = "RD SUN SH"
-        Me.RD_DUN_SH.Width = 90
-        '
-        'RD_SUN_LH
-        '
-        Me.RD_SUN_LH.Text = "RD SUN LH"
-        Me.RD_SUN_LH.Width = 90
-        '
-        'ND_REG
-        '
-        Me.ND_REG.Text = "ND REG"
-        '
-        'ND_SUN
-        '
-        Me.ND_SUN.Text = "ND SUN"
-        Me.ND_SUN.Width = 70
-        '
-        'ND_SH
-        '
-        Me.ND_SH.Text = "ND_SH"
-        '
-        'ND_LH
-        '
-        Me.ND_LH.Text = "ND_LH"
-        '
-        'ND_RD_SUN_SH
-        '
-        Me.ND_RD_SUN_SH.Text = "ND RD SUN SH"
-        Me.ND_RD_SUN_SH.Width = 110
-        '
-        'ND_RD_SUN_LH
-        '
-        Me.ND_RD_SUN_LH.Text = "ND RD SUN LH"
-        Me.ND_RD_SUN_LH.Width = 110
         '
         'OT_REG
         '
@@ -436,14 +391,6 @@ Partial Class FRM_DTR_EXPORTS
     Friend WithEvents Sun As ColumnHeader
     Friend WithEvents SH As ColumnHeader
     Friend WithEvents LH As ColumnHeader
-    Friend WithEvents RD_DUN_SH As ColumnHeader
-    Friend WithEvents RD_SUN_LH As ColumnHeader
-    Friend WithEvents ND_REG As ColumnHeader
-    Friend WithEvents ND_SUN As ColumnHeader
-    Friend WithEvents ND_SH As ColumnHeader
-    Friend WithEvents ND_LH As ColumnHeader
-    Friend WithEvents ND_RD_SUN_SH As ColumnHeader
-    Friend WithEvents ND_RD_SUN_LH As ColumnHeader
     Friend WithEvents Label1 As Label
     Friend WithEvents Label2 As Label
     Friend WithEvents Btn_Client As Button

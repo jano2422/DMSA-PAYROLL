@@ -18,8 +18,9 @@ Public Class FRM_DTR_BIOMETRIC
         GView_Schedule.Rows.Clear()
         RemoveDataGridViewByName(DTR_TimeCalculationPanel, "Duplicate_DGV")
         ShowOriginalDataGridViewColumns(GView_DTR)
+        Dim DefaultDTRDir As String = "C:\MASTER_DTR"
         ' Call the subroutine to ensure a directory is selected
-        If Not PromptForDirectorySelection(selectedDirectory) Then
+        If Not PromptForDirectorySelection(DefaultDTRDir, False, selectedDirectory) Then
             Exit Sub ' Exit the main subroutine if no directory is selected
         End If
 
@@ -55,35 +56,43 @@ Public Class FRM_DTR_BIOMETRIC
         ShowModernFileSelectionForm(filteredFiles)
     End Sub
 
-    Private Function PromptForDirectorySelection(ByRef selectedDirectory As String) As Boolean
-
-        If Directory.Exists(selectedDirectory) Then
-            Return True
-        End If
-
-        ' Ensure the directory exists before using it
-
-        Dim dtrPath As String = "C:\MASTER_DTR"
-        ' Ensure the directory exists before using it
-        If Not Directory.Exists(dtrPath) Then
-            Directory.CreateDirectory(dtrPath)
-        End If
-
-        Using dialog As New CommonOpenFileDialog()
-            dialog.IsFolderPicker = True ' Enables folder selection
-            dialog.InitialDirectory = dtrPath ' Set the default starting path
-            dialog.Title = "Select a directory containing the files"
-
-            ' Show the dialog
-            If dialog.ShowDialog() = CommonFileDialogResult.Ok Then
-                selectedDirectory = dialog.FileName
-                Return True ' Directory selected successfully
+    Private Function PromptForDirectorySelection(defaultDir As String, showPrompt As Boolean, ByRef selectedDirectory As String) As Boolean
+        Try
+            If (Not String.IsNullOrEmpty(selectedDirectory) AndAlso Directory.Exists(selectedDirectory)) Then
+                Return True
             Else
-                MsgBox("No directory selected. Operation cancelled.", vbExclamation, "Directory Selection")
-                Return False ' No directory selected
+                selectedDirectory = defaultDir
             End If
-        End Using
+            ' Ensure the default directory exists
+            If Not Directory.Exists(defaultDir) Then Directory.CreateDirectory(defaultDir)
+
+            ' If prompt is enabled, allow user to reselect even if the directory exists
+            If showPrompt Then
+                Using dialog As New CommonOpenFileDialog()
+                    dialog.IsFolderPicker = True ' Enables folder selection
+                    dialog.InitialDirectory = If(Directory.Exists(selectedDirectory), selectedDirectory, defaultDir)
+                    dialog.Title = "Select a directory containing the files"
+
+                    ' Show dialog and handle user selection
+                    If dialog.ShowDialog() = CommonFileDialogResult.Ok Then
+                        selectedDirectory = dialog.FileName
+                        Return True
+                    Else
+                        MsgBox("No directory selected. Operation cancelled.", vbExclamation, "Directory Selection")
+                        Return False
+                    End If
+                End Using
+            End If
+
+
+            Return True
+
+        Catch ex As Exception
+            MsgBox("An error occurred: " & ex.Message, vbCritical, "Error")
+            Return False
+        End Try
     End Function
+
 
 
 
@@ -357,9 +366,6 @@ Public Class FRM_DTR_BIOMETRIC
 
     Private Sub FRM_BIOMETRIC_DTR_Load(sender As Object, e As EventArgs) Handles MyBase.Load
         Try
-
-
-
             ' Disable buttons at form load
             SetButtonState(False, Btn_Save_DTR)
 
@@ -375,6 +381,15 @@ Public Class FRM_DTR_BIOMETRIC
         Catch ex As Exception
             ' Log or display the error
             MsgBox($"An error occurred during form load: {ex.Message}", vbExclamation, "Error")
+        End Try
+    End Sub
+
+    Private Sub FRM_BIOMETRIC_DTR_FormClosed(sender As Object, e As EventArgs) Handles MyBase.FormClosed
+        Try
+            Me.Dispose()
+        Catch ex As Exception
+            ' Log or display the error
+            MsgBox($"An error occurred during form close: {ex.Message}", vbExclamation, "Error")
         End Try
     End Sub
 
@@ -463,7 +478,7 @@ Public Class FRM_DTR_BIOMETRIC
 
     Private Sub btn_Breakdown_Click(sender As Object, e As EventArgs) Handles btn_Breakdown.Click
         ShowOriginalDataGridViewColumns(GView_DTR)
-        Dim columns As Integer() = {14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27}
+        Dim columns As Integer() = {14, 15, 16, 17, 18, 19}
         ' Copy data to original DataGridView if Duplicate_DGV exists
         Dim duplicateDataGridView As DataGridView = FindDuplicateDataGridView("Duplicate_DGV")
         If duplicateDataGridView IsNot Nothing Then
@@ -587,21 +602,20 @@ Public Class FRM_DTR_BIOMETRIC
 
             Dim regHours As Double = 8 ' Standard regular hours
             Dim otHours As Double = 0
-            Dim isMorningShift As Boolean = 22 - reportedTime > 10 ' Morning shift logic (before 12 PM)
 
             ' Reset all current row columns (15 to 26) to 0
-            ResetCells(GView_DTR.Rows(iRow), 15, 26)
+            ResetCells(GView_DTR.Rows(iRow), 15, 21)
 
             ' Process regular hours and OT logic
-            ProcessRegularAndOTHours(GView_DTR.Rows(iRow), totalHours, regHours, otHours, isMorningShift)
+            ProcessRegularAndOTHours(GView_DTR.Rows(iRow), totalHours, regHours, otHours)
 
             ' Set OT value in the last column
-            GView_DTR.Rows(iRow).Cells(27).Value = otHours
+            GView_DTR.Rows(iRow).Cells(19).Value = otHours
         Next
 
         ' Array to store column indices for each hour type
-        Dim columns As Integer() = {14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27}
-        Dim totals(13) As Double ' Initialize totals array
+        Dim columns As Integer() = {14, 15, 16, 17, 18, 19}
+        Dim totals(5) As Double ' Initialize totals array
 
 
         Try
@@ -630,7 +644,7 @@ Public Class FRM_DTR_BIOMETRIC
     End Sub
 
     ' Helper function to handle regular hours and OT calculation
-    Private Sub ProcessRegularAndOTHours(row As DataGridViewRow, totalHours As Double, regHours As Double, ByRef otHours As Double, isMorningShift As Boolean)
+    Private Sub ProcessRegularAndOTHours(row As DataGridViewRow, totalHours As Double, regHours As Double, ByRef otHours As Double)
         ' Extract first day from the cell value (e.g., "Sunday - Monday" or "Saturday - Sunday")
         Dim firstDay As String = String.Empty
         Dim secondDay As String = String.Empty
@@ -654,75 +668,31 @@ Public Class FRM_DTR_BIOMETRIC
 
         ' Determine where to assign the regular and OT hours
         If firstDay = "Sunday" Or secondDay = "Sunday" Then
-            Select Case row.DefaultCellStyle.BackColor
-                Case Color.LightGreen ' Sunday Legal Holiday
-                    AssignHours(row, totalHours, regHours, 20, otHours, isMorningShift)
-                Case Color.Yellow ' Sunday Special Holiday
-                    AssignHours(row, totalHours, regHours, 19, otHours, isMorningShift)
-                Case Else ' Sunday (Non-Holiday)
-                    AssignHours(row, totalHours, regHours, 16, otHours, isMorningShift)
-            End Select
+            AssignHours(row, totalHours, regHours, 16, otHours)
         Else ' Not Sunday
             Select Case row.DefaultCellStyle.BackColor
                 Case Color.LightGreen ' Legal Holiday
-                    AssignHours(row, totalHours, regHours, 18, otHours, isMorningShift)
+                    AssignHours(row, totalHours, regHours, 18, otHours)
                 Case Color.Yellow ' Special Holiday
-                    AssignHours(row, totalHours, regHours, 17, otHours, isMorningShift)
+                    AssignHours(row, totalHours, regHours, 17, otHours)
                 Case Else ' Regular Day
-                    AssignHours(row, totalHours, regHours, 15, otHours, isMorningShift)
+                    AssignHours(row, totalHours, regHours, 15, otHours)
             End Select
         End If
     End Sub
 
     ' Helper function to assign hours
-    Private Sub AssignHours(row As DataGridViewRow, totalHours As Double, regHours As Double, cellIndex As Integer, ByRef otHours As Double, isMorningShift As Boolean)
-        If isMorningShift Then
-            If totalHours >= regHours Then
-                row.Cells(cellIndex).Value = regHours 'Set cellIndex to reg hours
-                otHours = totalHours - regHours 'Set the otHours
-            Else
-                row.Cells(cellIndex).Value = totalHours
-                otHours = 0
-            End If
+    Private Sub AssignHours(row As DataGridViewRow, totalHours As Double, regHours As Double, cellIndex As Integer, ByRef otHours As Double)
+        If totalHours >= regHours Then
+            row.Cells(cellIndex).Value = regHours
+            otHours = totalHours - regHours
         Else
-            ' Draft NightShift
-            ' Extract first day from the cell value (e.g., "Sunday - Monday" or "Saturday - Sunday")
-            Dim firstDay As String = row.Cells(1).Value.Split("-"c)(0).Trim()
-            Dim secondDay As String = row.Cells(1).Value.Split("-"c)(1).Trim()
-            ' Determine where to assign the regular and OT hours
-            If firstDay = "Sunday" Then
-                If totalHours >= regHours Then
-                    row.Cells(cellIndex).Value = regHours 'Set cellIndex to reg hours
-                    otHours = totalHours - regHours 'Set the otHours
-                Else
-                    row.Cells(cellIndex).Value = totalHours
-                    otHours = 0
-                End If
-
-            ElseIf secondDay = "Sunday" Then
-
-                If totalHours >= regHours Then
-                    row.Cells(cellIndex).Value = regHours 'Set cellIndex to reg hours
-                    otHours = totalHours - regHours 'Set the otHours
-                Else
-                    row.Cells(cellIndex).Value = totalHours
-                    otHours = 0
-                End If
-
-            Else
-                If totalHours >= regHours Then
-                    row.Cells(cellIndex).Value = regHours 'Set cellIndex to reg hours
-                    otHours = totalHours - regHours 'Set the otHours
-                Else
-                    row.Cells(cellIndex).Value = totalHours
-                    otHours = 0
-                End If
-
-            End If
-
-
+            row.Cells(cellIndex).Value = totalHours
+            otHours = 0
         End If
+
     End Sub
+
 
     ' Helper function to reset cells
     Sub ResetCells(row As DataGridViewRow, startIndex As Integer, endIndex As Integer)

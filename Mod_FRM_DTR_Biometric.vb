@@ -495,12 +495,10 @@ Module Mod_Biometric_DTR
                 ' Get the current date and time as a string in the desired format
                 Dim currentDateTime As String = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")
 
-                SQL = "INSERT INTO PRL_DTR_TOTAL_HOURS (EMPLOYEE_ID, SUB_CLIENT_ID, CUTOFF_PERIOD, NUM_OF_DAYS, TOTAL_HOURS, REG, SUN, SH, LH, RD_SUN_SH, RD_SUN_LH, ND_REG, ND_SUN, ND_SH, ND_LH, ND_RD_SUN_SH, ND_RD_SUN_LH, OT_REG)"
+                SQL = "INSERT INTO PRL_DTR_TOTAL_HOURS (EMPLOYEE_ID, SUB_CLIENT_ID, CUTOFF_PERIOD, NUM_OF_DAYS, TOTAL_HOURS, REG, SUN, SH, LH, OT_REG)"
                 SQL = SQL & " VALUES ( '" & sEmployee_ID & "', " & iSub_Client_ID & ", '" & sCutOff_Period & "', " & iNumber_of_Days
                 SQL = SQL & ", '" & .Rows(17).Cells(14).Value & "', '" & .Rows(17).Cells(15).Value & "'"
-                SQL = SQL & ", '" & .Rows(17).Cells(16).Value & "', '" & .Rows(17).Cells(17).Value & "', '" & .Rows(17).Cells(18).Value & "', '" & .Rows(17).Cells(19).Value & "'"
-                SQL = SQL & ", '" & .Rows(17).Cells(20).Value & "', '" & .Rows(17).Cells(21).Value & "', '" & .Rows(17).Cells(22).Value & "', '" & .Rows(17).Cells(23).Value & "'"
-                SQL = SQL & ", '" & .Rows(17).Cells(24).Value & "', '" & .Rows(17).Cells(25).Value & "', '" & .Rows(17).Cells(26).Value & "', '" & .Rows(17).Cells(27).Value & "')"
+                SQL = SQL & ", '" & .Rows(17).Cells(16).Value & "', '" & .Rows(17).Cells(17).Value & "', '" & .Rows(17).Cells(18).Value & "', '" & .Rows(17).Cells(19).Value & "')"
 
                 Dim SQLcmd As OleDbCommand = New OleDbCommand(SQL, GlobalVariables.GlobalCon)
                 SQLcmd.ExecuteNonQuery()

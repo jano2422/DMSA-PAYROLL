@@ -35,7 +35,7 @@
             MsgBox("Invalid time IN or time OUT was detected. Please check.", vbCritical, "Invalid")
             Exit Sub
         End If
-
+        Auto_Compute_total_Hours_Shedule()
         ' Row and Column starts at 0,0 for the gridview
         ProgressBar_Save.Visible = True
         ProgressBar_Save.Maximum = GView_Schedule1_15.RowCount + GView_Schedule16_30.RowCount

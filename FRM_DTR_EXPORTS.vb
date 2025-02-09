@@ -43,4 +43,8 @@ Public Class FRM_DTR_EXPORTS
 
         Call Export_DTR_Per_Client_to_Excell(Lbl_ClientID.Text, Lbl_Client_Address.Text, sCut_Off)
     End Sub
+
+    Private Sub FRM_DTR_EXPORTS_FormClosed(sender As Object, e As EventArgs) Handles MyBase.FormClosed
+        Me.Dispose()
+    End Sub
 End Class

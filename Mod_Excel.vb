@@ -81,13 +81,26 @@ Module Mod_Excel
 
 
     End Sub
+    Private Function GetPreviousNearest12Hour(dt As DateTime) As DateTime
+        Dim snapped = New DateTime(dt.Year, dt.Month, dt.Day, 0, 0, 0)
+        If dt.Hour >= 12 Then
+            snapped = snapped.AddHours(12) ' Go to 12:00 PM
+        End If
+        Return snapped
+    End Function
+
+    Private Function GetNextNearest12Hour(dt As DateTime) As DateTime
+        Dim snapped = New DateTime(dt.Year, dt.Month, dt.Day, 0, 0, 0)
+        If dt.Hour < 12 Then
+            snapped = snapped.AddHours(12) ' Next is 12:00 PM
+        Else
+            snapped = snapped.AddDays(1) ' Next is tomorrow 12:00 AM
+        End If
+        Return snapped
+    End Function
 
     Private Sub Rearrange_Excel_NS_DTR(excelApp As Application, workbook As Workbook, worksheet As Worksheet, refDateTimeCol As Integer)
-
-
-
         With FRM_DTR_BIOMETRIC
-
             ' Read data from Excel
             Dim rawData As New List(Of Tuple(Of DateTime, String, String))()
             Dim rowIndex As Integer = 10 ' Reference row for DATE/TIME
@@ -98,151 +111,152 @@ Module Mod_Excel
                 Dim isDateParsed As Boolean = DateTime.TryParseExact(rawDateValue, "MM/dd/yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, dateValue)
 
                 If Not isDateParsed Then
-                    ' Skip the current row if the date is invalid
                     Console.WriteLine($"Skipping invalid date at Row {rowIndex}: {rawDateValue}")
                     rowIndex += 1
                     Continue While
                 End If
 
-                ' If the date is valid, process the row
                 Dim day As String = worksheet.Cells(rowIndex, refDateTimeCol + 1).Value
 
                 For TimeCol = refDateTimeCol + 2 To 30
                     Dim time As String = worksheet.Cells(rowIndex, TimeCol).Value
-
                     If Not String.IsNullOrEmpty(time) Then
                         Dim parsedTime As TimeSpan
-
-                        ' Attempt to parse the time
                         If DateTime.TryParseExact(time, "hh:mm tt", CultureInfo.InvariantCulture, DateTimeStyles.None, Nothing) Then
-                            ' If parsing succeeds, extract the TimeSpan
                             parsedTime = DateTime.ParseExact(time, "hh:mm tt", CultureInfo.InvariantCulture).TimeOfDay
-                            Console.WriteLine($"Parsed TimeSpan: {parsedTime}")
-
-                            ' Add the parsed data to rawData
                             rawData.Add(Tuple.Create(dateValue.Add(parsedTime), day, time))
                         Else
-                            ' Handle invalid time format
                             Console.WriteLine($"Invalid time format at Row {rowIndex}, Column {TimeCol}: {time}")
                         End If
                     End If
                 Next
-
-
                 rowIndex += 1
             End While
-
-
-            Dim firstRawDataItem As Tuple(Of DateTime, String, String) = rawData.OrderBy(Function(x) x.Item1).FirstOrDefault()
-            Dim sFlagShift As String
-            If firstRawDataItem IsNot Nothing Then
-                ' Extract the day number from the DateTime value (e.g., "10" from "12/10/2024")
-                Dim dayNumber As Integer = firstRawDataItem.Item1.Day
-                Dim iDTR_Month_Num As Integer = firstRawDataItem.Item1.Month
-                Dim iDTR_Year_Num As Integer = firstRawDataItem.Item1.Year
-
-                If dayNumber <= 15 Then
-                    GlobalVariables.sPayroll_Cutoff = iDTR_Month_Num & "_" & "1st_" & iDTR_Year_Num
-                ElseIf dayNumber >= 16 Then
-                    GlobalVariables.sPayroll_Cutoff = iDTR_Month_Num & "_" & "2nd_" & iDTR_Year_Num
-
-                End If
-
-
-                Console.WriteLine($"First DateTime: {firstRawDataItem.Item1}")
-                Console.WriteLine($"Extracted Day Number: {dayNumber}")
-            Else
-                MessageBox.Show("Error: No initial date found in DTR file.",
-                    "No Data Found", MessageBoxButtons.OK, MessageBoxIcon.Error)
-                Exit Sub
-            End If
-
-
-
-            ' Process data into time windows
+            ' Process data into time windows based on DataGridView schedule
             Dim processedData As New List(Of Object)()
-            Dim windowStart As DateTime? = Nothing
-            Dim windowEnd As DateTime? = Nothing
-            Dim timeInOutData As New List(Of String)()
-            Dim days As New List(Of String)()
+            Dim previousWindowEnd As DateTime? = Nothing
 
-            For Each entry In rawData.OrderBy(Function(x) x.Item1)
-                Dim entryDate = entry.Item1
-                Dim DayNum = entry.Item1.Day
-                Dim day = entry.Item2
-                Dim time = entry.Item1
-                sFlagShift = Check_FlagShift_Value(.GView_Schedule, entryDate)
-                If sFlagShift = "NS" Then
-                    ' Night shift logic
-                    If windowStart Is Nothing OrElse entryDate > windowEnd Then
-                        ' Save the current window
-                        If windowStart IsNot Nothing Then
+            For i As Integer = 0 To .GView_Schedule.Rows.Count - 1
+                Dim row = .GView_Schedule.Rows(i)
+
+                ' Only process if required columns have values and total hours > 0
+                If row.Cells(0).Value IsNot Nothing AndAlso
+        row.Cells(1).Value IsNot Nothing AndAlso
+        row.Cells(2).Value IsNot Nothing AndAlso
+        row.Cells(3).Value IsNot Nothing AndAlso
+        row.Cells(4).Value IsNot Nothing AndAlso
+        IsNumeric(row.Cells(4).Value) AndAlso
+        Convert.ToDouble(row.Cells(4).Value) > 0 Then
+
+                    Dim dayNumIn As Integer = Convert.ToInt32(row.Cells(0).Value)
+                    Dim schedInTime As String = row.Cells(1).Value.ToString()
+                    Dim dayNumOut As Integer = Convert.ToInt32(row.Cells(2).Value)
+                    Dim schedOutTime As String = row.Cells(3).Value.ToString()
+
+                    If rawData.Count > 0 Then
+                        Dim dayNumber As Integer = rawData(0).Item1.Day
+                        Dim iDTR_Year_Num As Integer = rawData(0).Item1.Year
+                        Dim iDTR_Month_Num As Integer = rawData(0).Item1.Month
+                        Dim daysInMonth As Integer = DateTime.DaysInMonth(iDTR_Year_Num, iDTR_Month_Num)
+
+                        If dayNumber <= 15 Then
+                            GlobalVariables.sPayroll_Cutoff = iDTR_Month_Num & "_" & "1st_" & iDTR_Year_Num
+                        ElseIf dayNumber >= 16 Then
+                            GlobalVariables.sPayroll_Cutoff = iDTR_Month_Num & "_" & "2nd_" & iDTR_Year_Num
+
+                        End If
+                        ' Skip invalid schedIn values
+                        If dayNumIn > daysInMonth Then Continue For
+
+                        Dim schedInDate As New DateTime(iDTR_Year_Num, iDTR_Month_Num, dayNumIn,
+                                            Convert.ToDateTime(schedInTime).Hour,
+                                            Convert.ToDateTime(schedInTime).Minute, 0)
+
+                        Dim schedOutDate As DateTime
+                        If dayNumOut <= daysInMonth Then
+                            schedOutDate = New DateTime(iDTR_Year_Num, iDTR_Month_Num, dayNumOut,
+                                            Convert.ToDateTime(schedOutTime).Hour,
+                                            Convert.ToDateTime(schedOutTime).Minute, 0)
+                        Else
+                            ' Handle overflow day into next month or year
+                            Dim nextMonth As Integer = iDTR_Month_Num + 1
+                            Dim nextYear As Integer = iDTR_Year_Num
+
+                            If nextMonth > 12 Then
+                                nextMonth = 1
+                                nextYear += 1
+                            End If
+
+                            Dim adjustedDay As Integer = dayNumOut - daysInMonth
+                            Dim daysInNextMonth As Integer = DateTime.DaysInMonth(nextYear, nextMonth)
+
+                            ' Skip if adjusted day is invalid
+                            If adjustedDay > daysInNextMonth Then Continue For
+
+                            schedOutDate = New DateTime(nextYear, nextMonth, adjustedDay,
+                                            Convert.ToDateTime(schedOutTime).Hour,
+                                            Convert.ToDateTime(schedOutTime).Minute, 0)
+                        End If
+
+                        ' Use previous window's end as new start, else fallback to 12hrs before
+                        Dim windowStart As DateTime = If(previousWindowEnd.HasValue, previousWindowEnd.Value, GetPreviousNearest12Hour(schedInDate))
+                        Dim windowEnd As DateTime = schedOutDate
+
+                        Dim nextValidRow As DataGridViewRow = Nothing
+                        For j As Integer = i + 1 To .GView_Schedule.Rows.Count - 1
+                            Dim possibleRow = .GView_Schedule.Rows(j)
+                            If possibleRow.Cells(0).Value IsNot Nothing AndAlso
+                   possibleRow.Cells(1).Value IsNot Nothing AndAlso
+                   possibleRow.Cells(4).Value IsNot Nothing AndAlso
+                   IsNumeric(possibleRow.Cells(4).Value) AndAlso
+                   Convert.ToDouble(possibleRow.Cells(4).Value) > 0 Then
+
+                                Dim nextDayNumIn As Integer = Convert.ToInt32(possibleRow.Cells(0).Value)
+                                If nextDayNumIn <= daysInMonth Then
+                                    nextValidRow = possibleRow
+                                    Exit For
+                                End If
+                            End If
+                        Next
+
+                        If nextValidRow IsNot Nothing Then
+                            Dim nextDayNumIn As Integer = Convert.ToInt32(nextValidRow.Cells(0).Value)
+                            Dim nextSchedInTime As String = nextValidRow.Cells(1).Value.ToString()
+                            Dim nextSchedInDate As New DateTime(iDTR_Year_Num, iDTR_Month_Num, nextDayNumIn,
+                                                    Convert.ToDateTime(nextSchedInTime).Hour,
+                                                    Convert.ToDateTime(nextSchedInTime).Minute, 0)
+
+                            windowEnd = schedOutDate.AddSeconds((nextSchedInDate - schedOutDate).TotalSeconds / 2)
+                        Else
+                            windowEnd = GetNextNearest12Hour(schedOutDate)
+                        End If
+
+                        previousWindowEnd = windowEnd
+
+                        Dim timeInOutData As New List(Of String)()
+                        For Each entry In rawData
+                            If entry.Item1 >= windowStart AndAlso entry.Item1 <= windowEnd Then
+                                timeInOutData.Add(entry.Item1.ToString())
+                            End If
+                        Next
+
+                        If timeInOutData.Count > 0 Then
                             processedData.Add(New With {
-                            .DateRange = $"{windowStart:MM/dd/yyyy} - {windowEnd:MM/dd/yyyy}",
-                            .Days = String.Join("-", days),
-                            .TimeInOut = timeInOutData
-                            })
-
+                    .DateRange = If(schedInDate.Date = schedOutDate.Date,
+                                    String.Format("{0:MM/dd/yyyy}", schedInDate),
+                                    String.Format("{0:MM/dd/yyyy} - {1:MM/dd/yyyy}", schedInDate, schedOutDate)),
+                    .Days = If(schedInDate.Date = schedOutDate.Date,
+                               schedInDate.DayOfWeek.ToString(),
+                               schedInDate.DayOfWeek.ToString() & " - " & schedOutDate.DayOfWeek.ToString()),
+                    .Start = windowStart,
+                    .End = windowEnd,
+                    .TimeInOut = timeInOutData
+                })
                         End If
-
-                        ' Start a new window (night shift: 12 PM to 12 PM the next day)
-                        windowStart = entryDate.Date.AddHours(12)
-                        If entryDate.TimeOfDay < TimeSpan.FromHours(12) Then
-                            windowStart = windowStart.Value.AddDays(-1) ' Adjust for night shift
-                        End If
-                        windowEnd = windowStart.Value.AddDays(1).AddSeconds(-1)
-
-                        days = New List(Of String) From {day}
-                        timeInOutData = New List(Of String) From {time}
-                    Else
-                        ' Add to the current window
-                        If Not days.Contains(day) Then days.Add(day)
-                        timeInOutData.Add(time)
                     End If
-                ElseIf sFlagShift = "MS" Then
-                    ' Day shift logic (00:00 to 24:00 of the same day)
-                    If windowStart Is Nothing OrElse entryDate.Date > windowStart.Value.Date Then
-                        ' Save the current window
-                        If windowStart IsNot Nothing Then
-                            processedData.Add(New With {
-                            .DateRange = If(windowStart.Value.Date = windowEnd.Value.Date,
-                                    $"{windowStart:MM/dd/yyyy}", ' Single date
-                                    $"{windowStart:MM/dd/yyyy} - {windowEnd:MM/dd/yyyy}"), ' Range for night shift
-                            .Days = String.Join("-", days),
-                            .TimeInOut = timeInOutData
-                            })
-
-                        End If
-
-                        ' Start a new window (day shift: 00:00 to 24:00 of the same day)
-                        windowStart = entryDate.Date ' Start at 00:00 of the current day
-                        windowEnd = windowStart.Value.AddDays(1).AddSeconds(-1) ' End at 23:59:59 of the same day
-
-                        days = New List(Of String) From {day}
-                        timeInOutData = New List(Of String) From {time}
-                    Else
-                        ' Add to the current window
-                        If Not days.Contains(day) Then days.Add(day)
-                        timeInOutData.Add(time)
-                    End If
-
-                Else
-                    MessageBox.Show("Error: Shift Schedule Not Found.",
-                    "No MS/NS Found on Schedule Table", MessageBoxButtons.OK, MessageBoxIcon.Error)
-                    Exit Sub
                 End If
             Next
 
-            ' Add the last time window
-            If windowStart IsNot Nothing Then
-                processedData.Add(New With {
-                .DateRange = If(windowStart.Value.Date = windowEnd.Value.Date,
-                        $"{windowStart:MM/dd/yyyy}", ' Single date
-                        $"{windowStart:MM/dd/yyyy} - {windowEnd:MM/dd/yyyy}"), ' Range for night shift
-                .Days = String.Join("-", days),
-                .TimeInOut = timeInOutData
-                })
-            End If
 
 
             Dim existingRowIndex As Integer = 0
@@ -263,100 +277,7 @@ Module Mod_Excel
                 Next
                 existingRowIndex += 1
             Next
-
-
         End With
     End Sub
-    Public Function Check_FlagShift_Value(DGVIEW_DTR_BIOMETRIC_SCHED As DataGridView, DateInput As DateTime) As String
-        Dim DayNum As Integer = DateInput.Day
-        If DayNum - 1 < 0 Or DayNum + 1 >= DGVIEW_DTR_BIOMETRIC_SCHED.Rows.Count Then
-            Return "Invalid DayNum Index"
-        End If
-        Dim previousFlagShift As Object = Nothing
-        Dim currentFlagShift As Object = DGVIEW_DTR_BIOMETRIC_SCHED.Rows(DayNum - 1).Cells(4)?.Value
-
-        If DayNum >= 2 Then
-            previousFlagShift = DGVIEW_DTR_BIOMETRIC_SCHED.Rows(DayNum - 2).Cells(4)?.Value
-        Else
-            previousFlagShift = DGVIEW_DTR_BIOMETRIC_SCHED.Rows(DayNum - 1).Cells(4)?.Value
-        End If
-
-        ' If previous day's flag is "NS", then NS shift runs from 12 PM (previous day) to 12 PM (current day)
-        If previousFlagShift IsNot Nothing AndAlso previousFlagShift.ToString() = "NS" Then
-            Dim nsStart As DateTime
-
-            ' Handle edge case where DateInput is the 1st day of a month
-            If DateInput.Day = 1 Then
-                Dim prevMonth As DateTime = DateInput.AddMonths(-1) ' Move to previous month
-                Dim lastDayOfPrevMonth As Integer = DateTime.DaysInMonth(prevMonth.Year, prevMonth.Month)
-                nsStart = New DateTime(prevMonth.Year, prevMonth.Month, lastDayOfPrevMonth, 12, 0, 0) ' 12 PM on last day of previous month
-            Else
-                nsStart = New DateTime(DateInput.Year, DateInput.Month, DateInput.Day - 1, 12, 0, 0) ' 12 PM previous day
-            End If
-
-            Dim nsEnd As DateTime = nsStart.AddDays(1) ' 12 PM current day
-
-            ' Check if DateInput falls within the NS shift window
-            If DateInput >= nsStart AndAlso DateInput < nsEnd Then
-                Return "NS"
-            End If
-        End If
-
-        ' Otherwise, return the flag shift of the current day
-        If currentFlagShift IsNot Nothing Then
-            Return currentFlagShift.ToString()
-        End If
-
-        Return "Unknown"
-    End Function
-
-
-    Public Function Check_All_FlagShift_IfSame_Values(DGVIEW_DTR_BIOMETRIC_SCHED As DataGridView, FirstDayNum As Integer) As String
-        Dim allMatch As Boolean = True ' Variable to check if all are the same
-        Dim flagShifts As New List(Of String)() ' Store all matched cell(4) values
-
-        ' Determine range to check in DGVIEW_DTR_BIOMETRIC_SCHED based on DayNum
-        Dim validRange As IEnumerable(Of DataGridViewRow) = Nothing
-
-        If FirstDayNum >= 1 AndAlso FirstDayNum <= 15 Then
-            ' If DayNum is between 1-15, check rows with cells(0) between 0-14
-            validRange = DGVIEW_DTR_BIOMETRIC_SCHED.Rows.Cast(Of DataGridViewRow)().Where(Function(r) Not r.IsNewRow AndAlso Integer.TryParse(r.Cells(0)?.Value?.ToString(), New Integer()) AndAlso Integer.Parse(r.Cells(0)?.Value?.ToString()) >= 0 AndAlso Integer.Parse(r.Cells(0)?.Value?.ToString()) <= 14)
-        ElseIf FirstDayNum >= 16 AndAlso FirstDayNum <= 31 Then
-            ' If DayNum is between 16-31, check rows with cells(0) between 16-31
-            validRange = DGVIEW_DTR_BIOMETRIC_SCHED.Rows.Cast(Of DataGridViewRow)().Where(Function(r) Not r.IsNewRow AndAlso Integer.TryParse(r.Cells(0)?.Value?.ToString(), New Integer()) AndAlso Integer.Parse(r.Cells(0)?.Value?.ToString()) >= 16 AndAlso Integer.Parse(r.Cells(0)?.Value?.ToString()) <= 31)
-        Else
-            ' DayNum is out of expected range
-            Return Nothing
-        End If
-
-        ' Loop through each valid range row
-        For Each row In validRange
-            Dim schedDayNum As String = row.Cells(0)?.Value?.ToString()
-            If Not String.IsNullOrWhiteSpace(schedDayNum) Then
-                Dim cell4Value = row.Cells(4)?.Value?.ToString()
-                If Not String.IsNullOrWhiteSpace(cell4Value) Then
-                    flagShifts.Add(cell4Value) ' Store matched value
-                Else
-                    allMatch = False
-                    Exit For
-                End If
-            Else
-                allMatch = False
-                Exit For
-            End If
-        Next
-
-        ' Verify if all values in flagShifts are the same
-        If flagShifts.Count > 0 AndAlso allMatch Then
-            Dim uniqueValues = flagShifts.Distinct().ToList()
-            If uniqueValues.Count = 1 Then
-                Return uniqueValues(0) ' Return the matched value
-            Else
-                Return Nothing ' If values are not the same
-            End If
-        Else
-            Return Nothing
-        End If
-    End Function
 
 End Module

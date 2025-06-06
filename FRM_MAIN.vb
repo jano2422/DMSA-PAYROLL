@@ -1,5 +1,8 @@
-﻿Imports FontAwesome.Sharp
+﻿Imports DMSA_System.DMSA_System
+Imports FontAwesome.Sharp
 Imports System.Globalization
+Imports System.Windows.Input
+Imports System.Windows.Interop
 
 Public Class FRM_MAIN
     Private Sub PictureBox1_Click(sender As Object, e As EventArgs)
@@ -7,7 +10,24 @@ Public Class FRM_MAIN
     End Sub
 
 
+    Private Sub ShowUserManagementView()
+        ' Create the user control
+        Dim userManagementControl As New UserManagementView()
 
+        ' Wrap the user control in a new window
+        Dim userManagementWindow As New System.Windows.Window With {
+        .Title = "User Management",
+        .Width = 600,
+        .Height = 500,
+        .Content = userManagementControl,
+        .WindowStartupLocation = System.Windows.WindowStartupLocation.CenterScreen,
+        .ResizeMode = System.Windows.ResizeMode.CanResize,
+        .WindowStyle = System.Windows.WindowStyle.ToolWindow
+    }
+
+        ' Show the window as a dialog (modal), but we don't care about the result
+        userManagementWindow.ShowDialog()
+    End Sub
     Private Sub Btn_HR_Click(sender As Object, e As EventArgs)
 
 
@@ -109,6 +129,7 @@ Public Class FRM_MAIN
 
     Private Sub Btn_DTR_Click(sender As Object, e As EventArgs) Handles Btn_DTR.Click
         GlobalVariables.sDTR_or_Schedule_Process = "DTR"
+        'FRM_DTR_BIOMETRIC_WINDOW.ShowDialog()
         FRM_DTR_BIOMETRIC.ShowDialog()
     End Sub
 
@@ -117,9 +138,20 @@ Public Class FRM_MAIN
     End Sub
 
     Private Sub Btn_Schedule_Click(sender As Object, e As EventArgs) Handles Btn_Schedule.Click
-        GlobalVariables.sDTR_or_Schedule_Process = "SCHEDULE"
-        FRM_DTR_EMPLOYEE_LIST.ShowDialog()
+        '' Create and show the WPF window
+        'Dim wpfScheduleWindow As New ScheduleManager()
+        'Dim helper As New WindowInteropHelper(wpfScheduleWindow)
+        'helper.Owner = Me.Handle ' Set WinForms window as owner
+
+        '' Show as a modal dialog to ensure input focus
+        'wpfScheduleWindow.ShowDialog()
+
+        '' Ensure the window is properly activated and textbox is focused
+        'wpfScheduleWindow.Activate()
+        'Keyboard.Focus(wpfScheduleWindow.EmployeeSearchTextBox)
+        FRM_DTR_SCHEDULE.ShowDialog()
     End Sub
+
 
     Private Sub Btn_Operations_Click(sender As Object, e As EventArgs) Handles Btn_Operations.Click
         If GRP_Operations.Visible = False Then
@@ -129,5 +161,13 @@ Public Class FRM_MAIN
         Else
             GRP_Operations.Visible = False
         End If
+    End Sub
+
+    Private Sub Btn_DefaultSchedule_Click(sender As Object, e As EventArgs)
+        FRM_DTR_EMPLOYEE_LIST.ShowDialog()
+    End Sub
+
+    Private Sub AdminBtn_Click(sender As Object, e As EventArgs) Handles AdminBtn.Click
+        ShowUserManagementView()
     End Sub
 End Class

@@ -623,7 +623,7 @@ Partial Class FRM_HRIS_APPLICATION
         Me.Cmb_Relationship.FlatStyle = System.Windows.Forms.FlatStyle.System
         Me.Cmb_Relationship.Font = New System.Drawing.Font("Microsoft Sans Serif", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.Cmb_Relationship.FormattingEnabled = True
-        Me.Cmb_Relationship.Items.AddRange(New Object() {"Spouse", "Mother", "Father", "Son", "Daughter", "Relative", "Guardian", "Live-in Partner"})
+        Me.Cmb_Relationship.Items.AddRange(New Object() {"Spouse", "Mother", "Father", "Son", "Daughter", "Brother", "Sister", "Guardian"})
         Me.Cmb_Relationship.Location = New System.Drawing.Point(704, 40)
         Me.Cmb_Relationship.Name = "Cmb_Relationship"
         Me.Cmb_Relationship.Size = New System.Drawing.Size(169, 28)

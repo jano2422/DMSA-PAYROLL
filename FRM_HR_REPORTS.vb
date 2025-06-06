@@ -296,4 +296,10 @@ Public Class FRM_HR_REPORTS
     Private Sub Lbl_Export_Client_Contract_Exp_Click(sender As Object, e As EventArgs) Handles Lbl_Export_Client_Contract_Exp.Click
         Call Export_Client_Contract_Expiry_to_Excel()
     End Sub
+
+    Private Sub FRM_HR_REPORTS_Load(sender As Object, e As EventArgs) Handles MyBase.Load
+        Cmb_Exp_Category.SelectedIndex = 1 'Security License
+        Cmb_Expiry_Status.SelectedIndex = 3 'Expired
+        Cmb_Client_Expiration.SelectedIndex = 3 'Expired
+    End Sub
 End Class

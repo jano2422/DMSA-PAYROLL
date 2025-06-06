@@ -1,4 +1,6 @@
 ﻿Imports System.Data.OleDb
+Imports System.Windows
+
 Public Class FRM_LOGIN
     Private Sub FRM_LOGIN_Load(sender As Object, e As EventArgs) Handles MyBase.Load
 
@@ -22,6 +24,7 @@ Public Class FRM_LOGIN
 
     End Sub
 
+
     Private Sub TxtPassword_KeyPress(sender As Object, e As KeyPressEventArgs) Handles TxtPassword.KeyPress
 
         If e.KeyChar = Convert.ToChar(Keys.Enter) Then
@@ -32,5 +35,7 @@ Public Class FRM_LOGIN
 
     End Sub
 
+    Private Sub AdminBtn_Click(sender As Object, e As EventArgs)
 
+    End Sub
 End Class

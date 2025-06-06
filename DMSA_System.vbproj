@@ -90,6 +90,7 @@
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="System.Net.Http" />
     <Reference Include="WindowsBase" />
+    <Reference Include="WindowsFormsIntegration" />
   </ItemGroup>
   <ItemGroup>
     <Import Include="FontAwesome.Sharp" />
@@ -106,6 +107,13 @@
     <Import Include="System.Threading.Tasks" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Data\Services\ScheduleService.vb" />
+    <Compile Include="UserManagementView.xaml.vb">
+      <DependentUpon>UserManagementView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="FileSelectionControl.xaml.vb">
+      <DependentUpon>FileSelectionControl.xaml</DependentUpon>
+    </Compile>
     <Compile Include="FRM_APPROVAL.Designer.vb">
       <DependentUpon>FRM_APPROVAL.vb</DependentUpon>
     </Compile>
@@ -129,6 +137,15 @@
     </Compile>
     <Compile Include="FRM_DTR.vb">
       <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FRM_DTR_BIOMETRIC_WINDOW.Designer.vb">
+      <DependentUpon>FRM_DTR_BIOMETRIC_WINDOW.vb</DependentUpon>
+    </Compile>
+    <Compile Include="FRM_DTR_BIOMETRIC_WINDOW.vb">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FRM_DTR_BIOMETRIC_WPF_UC.xaml.vb">
+      <DependentUpon>FRM_DTR_BIOMETRIC_WPF_UC.xaml</DependentUpon>
     </Compile>
     <Compile Include="FRM_DTR_EMPLOYEE_LIST.Designer.vb">
       <DependentUpon>FRM_DTR_EMPLOYEE_LIST.vb</DependentUpon>
@@ -221,6 +238,10 @@
     <Compile Include="FRM_DTR_BIOMETRIC.vb">
       <SubType>Form</SubType>
     </Compile>
+    <Compile Include="Helpers\RelayCommand.vb" />
+    <Compile Include="Helpers\ShiftEndDayConverter.vb" />
+    <Compile Include="Models\Employee.vb" />
+    <Compile Include="Models\EmployeeSchedule.vb" />
     <Compile Include="Mod_Excel.vb" />
     <Compile Include="Mod_FRM_DTR_EXPORTS.vb" />
     <Compile Include="Mod_FRM_DTR_Biometric.vb" />
@@ -271,6 +292,10 @@
       <DependentUpon>Settings.settings</DependentUpon>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
+    <Compile Include="Presentation\ViewModels\ScheduleManagerViewModel.vb" />
+    <Compile Include="Presentation\Views\ScheduleManager.xaml.vb">
+      <DependentUpon>ScheduleManager.xaml</DependentUpon>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="FRM_APPROVAL.resx">
@@ -289,6 +314,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="FRM_DTR_BIOMETRIC.resx">
       <DependentUpon>FRM_DTR_BIOMETRIC.vb</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FRM_DTR_BIOMETRIC_WINDOW.resx">
+      <DependentUpon>FRM_DTR_BIOMETRIC_WINDOW.vb</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="FRM_DTR_EMPLOYEE_LIST.resx">
       <DependentUpon>FRM_DTR_EMPLOYEE_LIST.vb</DependentUpon>
@@ -410,8 +438,29 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
+    <PackageReference Include="ControlzEx">
+      <Version>7.0.0</Version>
+    </PackageReference>
+    <PackageReference Include="EntityFramework">
+      <Version>6.5.1</Version>
+    </PackageReference>
+    <PackageReference Include="FluentWPF">
+      <Version>0.10.2</Version>
+    </PackageReference>
     <PackageReference Include="FontAwesome.Sharp">
       <Version>6.3.0</Version>
+    </PackageReference>
+    <PackageReference Include="itext7">
+      <Version>9.1.0</Version>
+    </PackageReference>
+    <PackageReference Include="MaterialDesignColors">
+      <Version>5.2.1</Version>
+    </PackageReference>
+    <PackageReference Include="MaterialDesignThemes">
+      <Version>5.2.1</Version>
+    </PackageReference>
+    <PackageReference Include="MaterialDesignThemes.MahApps">
+      <Version>5.2.1</Version>
     </PackageReference>
     <PackageReference Include="Microsoft.Office.Interop.Excel">
       <Version>15.0.4795.1001</Version>
@@ -447,5 +496,24 @@
       <Install>false</Install>
     </BootstrapperPackage>
   </ItemGroup>
+  <ItemGroup>
+    <Page Include="UserManagementView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="FileSelectionControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="FRM_DTR_BIOMETRIC_WPF_UC.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Presentation\Views\ScheduleManager.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.VisualBasic.targets" />
 </Project>

@@ -1,33 +1,28 @@
 ﻿Imports System.Data.OleDb
+
 Module Mod_FRM_USER_CREATOR
 
     Public Sub Insert_new_User(sUsername As String, sPassword As String, sUserLevel As String)
-
-        Dim SQL As String
+        Dim SQL As String = "INSERT INTO TBL_USERS (COMPANY_ID, [PASSWORD], USER_LEVEL) VALUES (?, ?, ?)"
         Connect_to_MDB()
 
         Try
-            With FRM_CLIENT_HDR
+            Using SQLcmd As New OleDbCommand(SQL, GlobalVariables.GlobalCon)
+                SQLcmd.Parameters.AddWithValue("?", sUsername)
+                SQLcmd.Parameters.AddWithValue("?", sPassword)
+                SQLcmd.Parameters.AddWithValue("?", sUserLevel)
 
-
-                SQL = "INSERT INTO TBL_USERS (USER_ID, PASSWORD, USER_LEVEL) VALUES ('" & sUsername & "', '" & sPassword & "', '" & FRM_USER_CREATOR.Cmb_UserLevel.Text & "') "
-
-
-                Dim SQLcmd As OleDbCommand = New OleDbCommand(SQL, GlobalVariables.GlobalCon)
                 SQLcmd.ExecuteNonQuery()
-                SQLcmd.Dispose()
+            End Using
 
+            MsgBox("New user account was successfully saved!", vbInformation, "Saved!")
 
-                MsgBox("New user account was successfully saved!", vbInformation, "Saved!")
-
-            End With
         Catch ex As Exception
             MsgBox(ex.Message, vbCritical, "Error creating new account!")
 
+        Finally
+            GlobalVariables.GlobalCon.Close()
         End Try
-
-        GlobalVariables.GlobalCon.Close()
-
     End Sub
 
 End Module

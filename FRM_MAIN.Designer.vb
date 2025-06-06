@@ -35,6 +35,7 @@ Partial Class FRM_MAIN
         Me.Btn_Schedule = New FontAwesome.Sharp.IconButton()
         Me.Label2 = New System.Windows.Forms.Label()
         Me.Panel1 = New System.Windows.Forms.Panel()
+        Me.AdminBtn = New FontAwesome.Sharp.IconButton()
         Me.IconButton9 = New FontAwesome.Sharp.IconButton()
         Me.IconButton8 = New FontAwesome.Sharp.IconButton()
         Me.Btn_Operations = New FontAwesome.Sharp.IconButton()
@@ -254,6 +255,7 @@ Partial Class FRM_MAIN
         'Panel1
         '
         Me.Panel1.BackColor = System.Drawing.Color.FromArgb(CType(CType(64, Byte), Integer), CType(CType(64, Byte), Integer), CType(CType(64, Byte), Integer))
+        Me.Panel1.Controls.Add(Me.AdminBtn)
         Me.Panel1.Controls.Add(Me.IconButton9)
         Me.Panel1.Controls.Add(Me.IconButton8)
         Me.Panel1.Controls.Add(Me.Btn_Operations)
@@ -265,6 +267,23 @@ Partial Class FRM_MAIN
         Me.Panel1.Name = "Panel1"
         Me.Panel1.Size = New System.Drawing.Size(283, 877)
         Me.Panel1.TabIndex = 27
+        '
+        'AdminBtn
+        '
+        Me.AdminBtn.Font = New System.Drawing.Font("Microsoft Sans Serif", 14.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.AdminBtn.IconChar = FontAwesome.Sharp.IconChar.User
+        Me.AdminBtn.IconColor = System.Drawing.Color.FromArgb(CType(CType(128, Byte), Integer), CType(CType(64, Byte), Integer), CType(CType(0, Byte), Integer))
+        Me.AdminBtn.IconFont = FontAwesome.Sharp.IconFont.[Auto]
+        Me.AdminBtn.IconSize = 60
+        Me.AdminBtn.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft
+        Me.AdminBtn.Location = New System.Drawing.Point(3, 602)
+        Me.AdminBtn.Name = "AdminBtn"
+        Me.AdminBtn.Size = New System.Drawing.Size(277, 67)
+        Me.AdminBtn.TabIndex = 36
+        Me.AdminBtn.Text = "Admin"
+        Me.AdminBtn.TextAlign = System.Drawing.ContentAlignment.MiddleLeft
+        Me.AdminBtn.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText
+        Me.AdminBtn.UseVisualStyleBackColor = True
         '
         'IconButton9
         '
@@ -447,4 +466,5 @@ Partial Class FRM_MAIN
     Friend WithEvents Btn_DTR As IconButton
     Friend WithEvents Btn_Schedule As IconButton
     Friend WithEvents GRP_Operations As GroupBox
+    Friend WithEvents AdminBtn As IconButton
 End Class

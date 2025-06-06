@@ -22,7 +22,7 @@ Partial Class FRM_DTR_BIOMETRIC
     'Do not modify it using the code editor.
     <System.Diagnostics.DebuggerStepThrough()>
     Private Sub InitializeComponent()
-        Dim DataGridViewCellStyle19 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
+        Dim DataGridViewCellStyle11 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
         Dim DataGridViewCellStyle1 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
         Dim DataGridViewCellStyle2 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
         Dim DataGridViewCellStyle3 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
@@ -33,15 +33,7 @@ Partial Class FRM_DTR_BIOMETRIC
         Dim DataGridViewCellStyle8 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
         Dim DataGridViewCellStyle9 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
         Dim DataGridViewCellStyle10 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
-        Dim DataGridViewCellStyle11 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
         Dim DataGridViewCellStyle12 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
-        Dim DataGridViewCellStyle13 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
-        Dim DataGridViewCellStyle14 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
-        Dim DataGridViewCellStyle15 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
-        Dim DataGridViewCellStyle16 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
-        Dim DataGridViewCellStyle17 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
-        Dim DataGridViewCellStyle18 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
-        Dim DataGridViewCellStyle20 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
         Me.Panel1 = New System.Windows.Forms.Panel()
         Me.Btn_DTR = New System.Windows.Forms.Button()
         Me.TabControl1 = New System.Windows.Forms.TabControl()
@@ -70,14 +62,6 @@ Partial Class FRM_DTR_BIOMETRIC
         Me.REG_SUN = New System.Windows.Forms.DataGridViewTextBoxColumn()
         Me.REG_SH = New System.Windows.Forms.DataGridViewTextBoxColumn()
         Me.REG_LH = New System.Windows.Forms.DataGridViewTextBoxColumn()
-        Me.RD_SUN_SH = New System.Windows.Forms.DataGridViewTextBoxColumn()
-        Me.RD_SUN_LH = New System.Windows.Forms.DataGridViewTextBoxColumn()
-        Me.ND_REG = New System.Windows.Forms.DataGridViewTextBoxColumn()
-        Me.ND_SUN = New System.Windows.Forms.DataGridViewTextBoxColumn()
-        Me.ND_SH = New System.Windows.Forms.DataGridViewTextBoxColumn()
-        Me.ND_LH = New System.Windows.Forms.DataGridViewTextBoxColumn()
-        Me.ND_RD_SUN_SH = New System.Windows.Forms.DataGridViewTextBoxColumn()
-        Me.ND_RD_SUN_LH = New System.Windows.Forms.DataGridViewTextBoxColumn()
         Me.OT_REG = New System.Windows.Forms.DataGridViewTextBoxColumn()
         Me.FirstTimeIn = New System.Windows.Forms.DataGridViewTextBoxColumn()
         Me.LastTimeOut = New System.Windows.Forms.DataGridViewTextBoxColumn()
@@ -87,8 +71,8 @@ Partial Class FRM_DTR_BIOMETRIC
         Me.Label7 = New System.Windows.Forms.Label()
         Me.Label6 = New System.Windows.Forms.Label()
         Me.dtrBreakDownPage = New System.Windows.Forms.TabPage()
-        Me.Btn_TimeDtlView = New System.Windows.Forms.Button()
         Me.Btn_Save_DTR = New System.Windows.Forms.Button()
+        Me.Btn_TimeDtlView = New System.Windows.Forms.Button()
         Me.DTR_TimeCalculationPanel = New System.Windows.Forms.Panel()
         Me.btn_Breakdown = New System.Windows.Forms.Button()
         Me.Btn_Calc_DTR = New System.Windows.Forms.Button()
@@ -106,15 +90,16 @@ Partial Class FRM_DTR_BIOMETRIC
         Me.Label9 = New System.Windows.Forms.Label()
         Me.Label4 = New System.Windows.Forms.Label()
         Me.GView_Schedule = New System.Windows.Forms.DataGridView()
+        Me.OpenFileDialog1 = New System.Windows.Forms.OpenFileDialog()
+        Me.Label8 = New System.Windows.Forms.Label()
         Me.Col_DayNum = New System.Windows.Forms.DataGridViewTextBoxColumn()
         Me.Col_Sched_in = New System.Windows.Forms.DataGridViewTextBoxColumn()
+        Me.Column1 = New System.Windows.Forms.DataGridViewTextBoxColumn()
         Me.Col_Sched_Out = New System.Windows.Forms.DataGridViewTextBoxColumn()
         Me.Col_Sched_TotalHours = New System.Windows.Forms.DataGridViewTextBoxColumn()
         Me.Col_FlagShift = New System.Windows.Forms.DataGridViewTextBoxColumn()
         Me.Col_ID = New System.Windows.Forms.DataGridViewTextBoxColumn()
         Me.Col_Attendance = New System.Windows.Forms.DataGridViewTextBoxColumn()
-        Me.OpenFileDialog1 = New System.Windows.Forms.OpenFileDialog()
-        Me.Label8 = New System.Windows.Forms.Label()
         Me.TabControl1.SuspendLayout()
         Me.TabPage1.SuspendLayout()
         Me.TabControl2.SuspendLayout()
@@ -239,15 +224,15 @@ Partial Class FRM_DTR_BIOMETRIC
         '
         Me.GView_DTR.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.DisplayedCells
         Me.GView_DTR.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize
-        Me.GView_DTR.Columns.AddRange(New System.Windows.Forms.DataGridViewColumn() {Me.DataGridViewTextBoxColumn1, Me.DataGridViewTextBoxColumn2, Me.DataGridViewTextBoxColumn3, Me.DataGridViewTextBoxColumn4, Me.DataGridViewTextBoxColumn5, Me.DataGridViewTextBoxColumn6, Me.DataGridViewTextBoxColumn7, Me.DataGridViewTextBoxColumn8, Me.ExtraTimeIn1, Me.ExtraTimeOut1, Me.DataGridViewTextBoxColumn9, Me.DataGridViewTextBoxColumn10, Me.DataGridViewTextBoxColumn11, Me.DataGridViewTextBoxColumn12, Me.DataGridViewTextBoxColumn13, Me.REG_REG, Me.REG_SUN, Me.REG_SH, Me.REG_LH, Me.RD_SUN_SH, Me.RD_SUN_LH, Me.ND_REG, Me.ND_SUN, Me.ND_SH, Me.ND_LH, Me.ND_RD_SUN_SH, Me.ND_RD_SUN_LH, Me.OT_REG, Me.FirstTimeIn, Me.LastTimeOut})
-        DataGridViewCellStyle19.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft
-        DataGridViewCellStyle19.BackColor = System.Drawing.Color.White
-        DataGridViewCellStyle19.Font = New System.Drawing.Font("Microsoft Sans Serif", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        DataGridViewCellStyle19.ForeColor = System.Drawing.SystemColors.ControlText
-        DataGridViewCellStyle19.SelectionBackColor = System.Drawing.SystemColors.Highlight
-        DataGridViewCellStyle19.SelectionForeColor = System.Drawing.SystemColors.HighlightText
-        DataGridViewCellStyle19.WrapMode = System.Windows.Forms.DataGridViewTriState.[False]
-        Me.GView_DTR.DefaultCellStyle = DataGridViewCellStyle19
+        Me.GView_DTR.Columns.AddRange(New System.Windows.Forms.DataGridViewColumn() {Me.DataGridViewTextBoxColumn1, Me.DataGridViewTextBoxColumn2, Me.DataGridViewTextBoxColumn3, Me.DataGridViewTextBoxColumn4, Me.DataGridViewTextBoxColumn5, Me.DataGridViewTextBoxColumn6, Me.DataGridViewTextBoxColumn7, Me.DataGridViewTextBoxColumn8, Me.ExtraTimeIn1, Me.ExtraTimeOut1, Me.DataGridViewTextBoxColumn9, Me.DataGridViewTextBoxColumn10, Me.DataGridViewTextBoxColumn11, Me.DataGridViewTextBoxColumn12, Me.DataGridViewTextBoxColumn13, Me.REG_REG, Me.REG_SUN, Me.REG_SH, Me.REG_LH, Me.OT_REG, Me.FirstTimeIn, Me.LastTimeOut})
+        DataGridViewCellStyle11.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft
+        DataGridViewCellStyle11.BackColor = System.Drawing.Color.White
+        DataGridViewCellStyle11.Font = New System.Drawing.Font("Microsoft Sans Serif", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        DataGridViewCellStyle11.ForeColor = System.Drawing.SystemColors.ControlText
+        DataGridViewCellStyle11.SelectionBackColor = System.Drawing.SystemColors.Highlight
+        DataGridViewCellStyle11.SelectionForeColor = System.Drawing.SystemColors.HighlightText
+        DataGridViewCellStyle11.WrapMode = System.Windows.Forms.DataGridViewTriState.[False]
+        Me.GView_DTR.DefaultCellStyle = DataGridViewCellStyle11
         Me.GView_DTR.GridColor = System.Drawing.SystemColors.ActiveCaptionText
         Me.GView_DTR.Location = New System.Drawing.Point(6, 84)
         Me.GView_DTR.MultiSelect = False
@@ -278,7 +263,7 @@ Partial Class FRM_DTR_BIOMETRIC
         Me.DataGridViewTextBoxColumn3.HeaderText = "Time In"
         Me.DataGridViewTextBoxColumn3.Name = "DataGridViewTextBoxColumn3"
         Me.DataGridViewTextBoxColumn3.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable
-        Me.DataGridViewTextBoxColumn3.Width = 60
+        Me.DataGridViewTextBoxColumn3.Width = 67
         '
         'DataGridViewTextBoxColumn4
         '
@@ -286,7 +271,7 @@ Partial Class FRM_DTR_BIOMETRIC
         Me.DataGridViewTextBoxColumn4.HeaderText = "Time Out"
         Me.DataGridViewTextBoxColumn4.Name = "DataGridViewTextBoxColumn4"
         Me.DataGridViewTextBoxColumn4.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable
-        Me.DataGridViewTextBoxColumn4.Width = 71
+        Me.DataGridViewTextBoxColumn4.Width = 79
         '
         'DataGridViewTextBoxColumn5
         '
@@ -294,7 +279,7 @@ Partial Class FRM_DTR_BIOMETRIC
         Me.DataGridViewTextBoxColumn5.HeaderText = "Time In"
         Me.DataGridViewTextBoxColumn5.Name = "DataGridViewTextBoxColumn5"
         Me.DataGridViewTextBoxColumn5.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable
-        Me.DataGridViewTextBoxColumn5.Width = 60
+        Me.DataGridViewTextBoxColumn5.Width = 67
         '
         'DataGridViewTextBoxColumn6
         '
@@ -302,7 +287,7 @@ Partial Class FRM_DTR_BIOMETRIC
         Me.DataGridViewTextBoxColumn6.HeaderText = "Time Out"
         Me.DataGridViewTextBoxColumn6.Name = "DataGridViewTextBoxColumn6"
         Me.DataGridViewTextBoxColumn6.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable
-        Me.DataGridViewTextBoxColumn6.Width = 71
+        Me.DataGridViewTextBoxColumn6.Width = 79
         '
         'DataGridViewTextBoxColumn7
         '
@@ -310,7 +295,7 @@ Partial Class FRM_DTR_BIOMETRIC
         Me.DataGridViewTextBoxColumn7.HeaderText = "Time In"
         Me.DataGridViewTextBoxColumn7.Name = "DataGridViewTextBoxColumn7"
         Me.DataGridViewTextBoxColumn7.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable
-        Me.DataGridViewTextBoxColumn7.Width = 60
+        Me.DataGridViewTextBoxColumn7.Width = 67
         '
         'DataGridViewTextBoxColumn8
         '
@@ -318,21 +303,21 @@ Partial Class FRM_DTR_BIOMETRIC
         Me.DataGridViewTextBoxColumn8.HeaderText = "Time Out"
         Me.DataGridViewTextBoxColumn8.Name = "DataGridViewTextBoxColumn8"
         Me.DataGridViewTextBoxColumn8.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable
-        Me.DataGridViewTextBoxColumn8.Width = 71
+        Me.DataGridViewTextBoxColumn8.Width = 79
         '
         'ExtraTimeIn1
         '
         Me.ExtraTimeIn1.Frozen = True
         Me.ExtraTimeIn1.HeaderText = "Time In"
         Me.ExtraTimeIn1.Name = "ExtraTimeIn1"
-        Me.ExtraTimeIn1.Width = 79
+        Me.ExtraTimeIn1.Width = 86
         '
         'ExtraTimeOut1
         '
         Me.ExtraTimeOut1.Frozen = True
         Me.ExtraTimeOut1.HeaderText = "Time Out"
         Me.ExtraTimeOut1.Name = "ExtraTimeOut1"
-        Me.ExtraTimeOut1.Width = 90
+        Me.ExtraTimeOut1.Width = 98
         '
         'DataGridViewTextBoxColumn9
         '
@@ -353,7 +338,7 @@ Partial Class FRM_DTR_BIOMETRIC
         Me.DataGridViewTextBoxColumn10.HeaderText = "Total Break"
         Me.DataGridViewTextBoxColumn10.Name = "DataGridViewTextBoxColumn10"
         Me.DataGridViewTextBoxColumn10.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable
-        Me.DataGridViewTextBoxColumn10.Width = 86
+        Me.DataGridViewTextBoxColumn10.Width = 96
         '
         'DataGridViewTextBoxColumn11
         '
@@ -363,7 +348,7 @@ Partial Class FRM_DTR_BIOMETRIC
         Me.DataGridViewTextBoxColumn11.HeaderText = "Over Break"
         Me.DataGridViewTextBoxColumn11.Name = "DataGridViewTextBoxColumn11"
         Me.DataGridViewTextBoxColumn11.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable
-        Me.DataGridViewTextBoxColumn11.Width = 85
+        Me.DataGridViewTextBoxColumn11.Width = 94
         '
         'DataGridViewTextBoxColumn12
         '
@@ -373,7 +358,7 @@ Partial Class FRM_DTR_BIOMETRIC
         Me.DataGridViewTextBoxColumn12.HeaderText = "Over Time"
         Me.DataGridViewTextBoxColumn12.Name = "DataGridViewTextBoxColumn12"
         Me.DataGridViewTextBoxColumn12.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable
-        Me.DataGridViewTextBoxColumn12.Width = 77
+        Me.DataGridViewTextBoxColumn12.Width = 86
         '
         'DataGridViewTextBoxColumn13
         '
@@ -383,7 +368,7 @@ Partial Class FRM_DTR_BIOMETRIC
         Me.DataGridViewTextBoxColumn13.HeaderText = "Total Hours"
         Me.DataGridViewTextBoxColumn13.Name = "DataGridViewTextBoxColumn13"
         Me.DataGridViewTextBoxColumn13.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable
-        Me.DataGridViewTextBoxColumn13.Width = 87
+        Me.DataGridViewTextBoxColumn13.Width = 97
         '
         'REG_REG
         '
@@ -425,110 +410,30 @@ Partial Class FRM_DTR_BIOMETRIC
         Me.REG_LH.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable
         Me.REG_LH.Width = 36
         '
-        'RD_SUN_SH
-        '
-        DataGridViewCellStyle10.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight
-        Me.RD_SUN_SH.DefaultCellStyle = DataGridViewCellStyle10
-        Me.RD_SUN_SH.Frozen = True
-        Me.RD_SUN_SH.HeaderText = "RD SUN SH"
-        Me.RD_SUN_SH.Name = "RD_SUN_SH"
-        Me.RD_SUN_SH.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable
-        Me.RD_SUN_SH.Width = 94
-        '
-        'RD_SUN_LH
-        '
-        DataGridViewCellStyle11.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight
-        Me.RD_SUN_LH.DefaultCellStyle = DataGridViewCellStyle11
-        Me.RD_SUN_LH.Frozen = True
-        Me.RD_SUN_LH.HeaderText = "RD SUN LH"
-        Me.RD_SUN_LH.Name = "RD_SUN_LH"
-        Me.RD_SUN_LH.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable
-        Me.RD_SUN_LH.Width = 92
-        '
-        'ND_REG
-        '
-        DataGridViewCellStyle12.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight
-        Me.ND_REG.DefaultCellStyle = DataGridViewCellStyle12
-        Me.ND_REG.Frozen = True
-        Me.ND_REG.HeaderText = "ND Reg"
-        Me.ND_REG.Name = "ND_REG"
-        Me.ND_REG.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable
-        Me.ND_REG.Width = 65
-        '
-        'ND_SUN
-        '
-        DataGridViewCellStyle13.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight
-        Me.ND_SUN.DefaultCellStyle = DataGridViewCellStyle13
-        Me.ND_SUN.Frozen = True
-        Me.ND_SUN.HeaderText = "ND Sun"
-        Me.ND_SUN.Name = "ND_SUN"
-        Me.ND_SUN.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable
-        Me.ND_SUN.Width = 64
-        '
-        'ND_SH
-        '
-        DataGridViewCellStyle14.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight
-        Me.ND_SH.DefaultCellStyle = DataGridViewCellStyle14
-        Me.ND_SH.Frozen = True
-        Me.ND_SH.HeaderText = "ND SH"
-        Me.ND_SH.Name = "ND_SH"
-        Me.ND_SH.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable
-        Me.ND_SH.Width = 38
-        '
-        'ND_LH
-        '
-        DataGridViewCellStyle15.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight
-        Me.ND_LH.DefaultCellStyle = DataGridViewCellStyle15
-        Me.ND_LH.Frozen = True
-        Me.ND_LH.HeaderText = "ND LH"
-        Me.ND_LH.Name = "ND_LH"
-        Me.ND_LH.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable
-        Me.ND_LH.Width = 38
-        '
-        'ND_RD_SUN_SH
-        '
-        DataGridViewCellStyle16.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight
-        Me.ND_RD_SUN_SH.DefaultCellStyle = DataGridViewCellStyle16
-        Me.ND_RD_SUN_SH.Frozen = True
-        Me.ND_RD_SUN_SH.HeaderText = "ND RD SUN SH"
-        Me.ND_RD_SUN_SH.Name = "ND_RD_SUN_SH"
-        Me.ND_RD_SUN_SH.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable
-        Me.ND_RD_SUN_SH.Width = 97
-        '
-        'ND_RD_SUN_LH
-        '
-        DataGridViewCellStyle17.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight
-        Me.ND_RD_SUN_LH.DefaultCellStyle = DataGridViewCellStyle17
-        Me.ND_RD_SUN_LH.Frozen = True
-        Me.ND_RD_SUN_LH.HeaderText = "ND RD SUN LH"
-        Me.ND_RD_SUN_LH.Name = "ND_RD_SUN_LH"
-        Me.ND_RD_SUN_LH.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable
-        Me.ND_RD_SUN_LH.Width = 97
-        '
         'OT_REG
         '
-        DataGridViewCellStyle18.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight
-        Me.OT_REG.DefaultCellStyle = DataGridViewCellStyle18
+        DataGridViewCellStyle10.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight
+        Me.OT_REG.DefaultCellStyle = DataGridViewCellStyle10
         Me.OT_REG.Frozen = True
         Me.OT_REG.HeaderText = "OT Reg"
         Me.OT_REG.Name = "OT_REG"
         Me.OT_REG.ReadOnly = True
         Me.OT_REG.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable
-        Me.OT_REG.Width = 63
+        Me.OT_REG.Width = 70
         '
         'FirstTimeIn
         '
         Me.FirstTimeIn.HeaderText = "First Time In"
         Me.FirstTimeIn.Name = "FirstTimeIn"
         Me.FirstTimeIn.Visible = False
-        Me.FirstTimeIn.Width = 98
+        Me.FirstTimeIn.Width = 121
         '
         'LastTimeOut
         '
         Me.LastTimeOut.HeaderText = "Last Time Out"
         Me.LastTimeOut.Name = "LastTimeOut"
         Me.LastTimeOut.Visible = False
-        Me.LastTimeOut.Width = 98
+        Me.LastTimeOut.Width = 133
         '
         'BtnSH
         '
@@ -595,6 +500,18 @@ Partial Class FRM_DTR_BIOMETRIC
         Me.dtrBreakDownPage.Text = "Time Calculation"
         Me.dtrBreakDownPage.UseVisualStyleBackColor = True
         '
+        'Btn_Save_DTR
+        '
+        Me.Btn_Save_DTR.BackColor = System.Drawing.Color.YellowGreen
+        Me.Btn_Save_DTR.Font = New System.Drawing.Font("Microsoft Sans Serif", 12.0!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.Btn_Save_DTR.ForeColor = System.Drawing.SystemColors.ControlLightLight
+        Me.Btn_Save_DTR.Location = New System.Drawing.Point(1612, 10)
+        Me.Btn_Save_DTR.Name = "Btn_Save_DTR"
+        Me.Btn_Save_DTR.Size = New System.Drawing.Size(173, 51)
+        Me.Btn_Save_DTR.TabIndex = 69
+        Me.Btn_Save_DTR.Text = "Save"
+        Me.Btn_Save_DTR.UseVisualStyleBackColor = False
+        '
         'Btn_TimeDtlView
         '
         Me.Btn_TimeDtlView.BackColor = System.Drawing.Color.SkyBlue
@@ -610,18 +527,6 @@ Partial Class FRM_DTR_BIOMETRIC
         Me.Btn_TimeDtlView.TabIndex = 73
         Me.Btn_TimeDtlView.Text = "Time Details View"
         Me.Btn_TimeDtlView.UseVisualStyleBackColor = False
-        '
-        'Btn_Save_DTR
-        '
-        Me.Btn_Save_DTR.BackColor = System.Drawing.Color.YellowGreen
-        Me.Btn_Save_DTR.Font = New System.Drawing.Font("Microsoft Sans Serif", 12.0!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.Btn_Save_DTR.ForeColor = System.Drawing.SystemColors.ControlLightLight
-        Me.Btn_Save_DTR.Location = New System.Drawing.Point(1612, 10)
-        Me.Btn_Save_DTR.Name = "Btn_Save_DTR"
-        Me.Btn_Save_DTR.Size = New System.Drawing.Size(173, 51)
-        Me.Btn_Save_DTR.TabIndex = 69
-        Me.Btn_Save_DTR.Text = "Save"
-        Me.Btn_Save_DTR.UseVisualStyleBackColor = False
         '
         'DTR_TimeCalculationPanel
         '
@@ -801,11 +706,26 @@ Partial Class FRM_DTR_BIOMETRIC
         '
         Me.GView_Schedule.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill
         Me.GView_Schedule.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize
-        Me.GView_Schedule.Columns.AddRange(New System.Windows.Forms.DataGridViewColumn() {Me.Col_DayNum, Me.Col_Sched_in, Me.Col_Sched_Out, Me.Col_Sched_TotalHours, Me.Col_FlagShift, Me.Col_ID, Me.Col_Attendance})
+        Me.GView_Schedule.Columns.AddRange(New System.Windows.Forms.DataGridViewColumn() {Me.Col_DayNum, Me.Col_Sched_in, Me.Column1, Me.Col_Sched_Out, Me.Col_Sched_TotalHours, Me.Col_FlagShift, Me.Col_ID, Me.Col_Attendance})
         Me.GView_Schedule.Location = New System.Drawing.Point(27, 57)
         Me.GView_Schedule.Name = "GView_Schedule"
         Me.GView_Schedule.Size = New System.Drawing.Size(727, 637)
         Me.GView_Schedule.TabIndex = 2
+        '
+        'OpenFileDialog1
+        '
+        Me.OpenFileDialog1.FileName = "OpenFileDialog1"
+        '
+        'Label8
+        '
+        Me.Label8.AutoSize = True
+        Me.Label8.Font = New System.Drawing.Font("Microsoft Sans Serif", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.Label8.ForeColor = System.Drawing.Color.Yellow
+        Me.Label8.Location = New System.Drawing.Point(1802, 42)
+        Me.Label8.Name = "Label8"
+        Me.Label8.Size = New System.Drawing.Size(80, 20)
+        Me.Label8.TabIndex = 68
+        Me.Label8.Text = "Pure Gold"
         '
         'Col_DayNum
         '
@@ -816,6 +736,11 @@ Partial Class FRM_DTR_BIOMETRIC
         '
         Me.Col_Sched_in.HeaderText = "Sched IN"
         Me.Col_Sched_in.Name = "Col_Sched_in"
+        '
+        'Column1
+        '
+        Me.Column1.HeaderText = "Day Out"
+        Me.Column1.Name = "Column1"
         '
         'Col_Sched_Out
         '
@@ -840,25 +765,10 @@ Partial Class FRM_DTR_BIOMETRIC
         '
         'Col_Attendance
         '
-        DataGridViewCellStyle20.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter
-        Me.Col_Attendance.DefaultCellStyle = DataGridViewCellStyle20
+        DataGridViewCellStyle12.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter
+        Me.Col_Attendance.DefaultCellStyle = DataGridViewCellStyle12
         Me.Col_Attendance.HeaderText = "Attendance"
         Me.Col_Attendance.Name = "Col_Attendance"
-        '
-        'OpenFileDialog1
-        '
-        Me.OpenFileDialog1.FileName = "OpenFileDialog1"
-        '
-        'Label8
-        '
-        Me.Label8.AutoSize = True
-        Me.Label8.Font = New System.Drawing.Font("Microsoft Sans Serif", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.Label8.ForeColor = System.Drawing.Color.Yellow
-        Me.Label8.Location = New System.Drawing.Point(1802, 42)
-        Me.Label8.Name = "Label8"
-        Me.Label8.Size = New System.Drawing.Size(80, 20)
-        Me.Label8.TabIndex = 68
-        Me.Label8.Text = "Pure Gold"
         '
         'FRM_DTR_BIOMETRIC
         '
@@ -915,14 +825,15 @@ Partial Class FRM_DTR_BIOMETRIC
     Friend WithEvents Btn_Save_DTR As Button
     Friend WithEvents BtnSH As Button
     Friend WithEvents BtnLH As Button
-    Friend WithEvents Col_DayNum As DataGridViewTextBoxColumn
-    Friend WithEvents Col_Sched_in As DataGridViewTextBoxColumn
-    Friend WithEvents Col_Sched_Out As DataGridViewTextBoxColumn
-    Friend WithEvents Col_Sched_TotalHours As DataGridViewTextBoxColumn
-    Friend WithEvents Col_FlagShift As DataGridViewTextBoxColumn
-    Friend WithEvents Col_ID As DataGridViewTextBoxColumn
-    Friend WithEvents Col_Attendance As DataGridViewTextBoxColumn
     Friend WithEvents Btn_Calc_DTR As Button
+    Friend WithEvents TabControl2 As TabControl
+    Friend WithEvents actualDtrPage As TabPage
+    Friend WithEvents dtrBreakDownPage As TabPage
+    Friend WithEvents btn_Breakdown As Button
+    Friend WithEvents DTR_TimeCalculationPanel As Panel
+    Friend WithEvents DTR_Lbl_Period As Label
+    Friend WithEvents Btn_TimeDtlView As Button
+    Friend WithEvents Btn_TimeCalcView As Button
     Friend WithEvents DataGridViewTextBoxColumn1 As DataGridViewTextBoxColumn
     Friend WithEvents DataGridViewTextBoxColumn2 As DataGridViewTextBoxColumn
     Friend WithEvents DataGridViewTextBoxColumn3 As DataGridViewTextBoxColumn
@@ -942,23 +853,15 @@ Partial Class FRM_DTR_BIOMETRIC
     Friend WithEvents REG_SUN As DataGridViewTextBoxColumn
     Friend WithEvents REG_SH As DataGridViewTextBoxColumn
     Friend WithEvents REG_LH As DataGridViewTextBoxColumn
-    Friend WithEvents RD_SUN_SH As DataGridViewTextBoxColumn
-    Friend WithEvents RD_SUN_LH As DataGridViewTextBoxColumn
-    Friend WithEvents ND_REG As DataGridViewTextBoxColumn
-    Friend WithEvents ND_SUN As DataGridViewTextBoxColumn
-    Friend WithEvents ND_SH As DataGridViewTextBoxColumn
-    Friend WithEvents ND_LH As DataGridViewTextBoxColumn
-    Friend WithEvents ND_RD_SUN_SH As DataGridViewTextBoxColumn
-    Friend WithEvents ND_RD_SUN_LH As DataGridViewTextBoxColumn
     Friend WithEvents OT_REG As DataGridViewTextBoxColumn
     Friend WithEvents FirstTimeIn As DataGridViewTextBoxColumn
     Friend WithEvents LastTimeOut As DataGridViewTextBoxColumn
-    Friend WithEvents TabControl2 As TabControl
-    Friend WithEvents actualDtrPage As TabPage
-    Friend WithEvents dtrBreakDownPage As TabPage
-    Friend WithEvents btn_Breakdown As Button
-    Friend WithEvents DTR_TimeCalculationPanel As Panel
-    Friend WithEvents DTR_Lbl_Period As Label
-    Friend WithEvents Btn_TimeDtlView As Button
-    Friend WithEvents Btn_TimeCalcView As Button
+    Friend WithEvents Col_DayNum As DataGridViewTextBoxColumn
+    Friend WithEvents Col_Sched_in As DataGridViewTextBoxColumn
+    Friend WithEvents Column1 As DataGridViewTextBoxColumn
+    Friend WithEvents Col_Sched_Out As DataGridViewTextBoxColumn
+    Friend WithEvents Col_Sched_TotalHours As DataGridViewTextBoxColumn
+    Friend WithEvents Col_FlagShift As DataGridViewTextBoxColumn
+    Friend WithEvents Col_ID As DataGridViewTextBoxColumn
+    Friend WithEvents Col_Attendance As DataGridViewTextBoxColumn
 End Class

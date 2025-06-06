@@ -48,7 +48,7 @@ Module Mod_Biometric_DTR
 
                     ' Validate schedule for the given day
                     Dim scheduledTimeIn As String = GetScheduleTime(dayOfMonth, 1)
-                    Dim scheduledTimeOut As String = GetScheduleTime(dayOfMonth, 2)
+                    Dim scheduledTimeOut As String = GetScheduleTime(dayOfMonth, 3)
                     ValidateScheduleTimes(dayOfMonth, scheduledTimeIn, scheduledTimeOut, invalidRows)
                 Next
 
@@ -281,10 +281,12 @@ Module Mod_Biometric_DTR
             ' Update grid cells with overtime and total worked hours
             FRM_DTR_BIOMETRIC.GView_DTR.Rows(i).Cells(13).Value = overtimeMinutes
 
-            Dim totalWorkedHours As Double = Math.Round(totalWorkedMinutes / 60, 2)
+            Dim totalWorkedHours As Double = Math.Round(totalWorkedMinutes / 60,2)
             ' Ensure the maximum is 12 hours
-            If totalWorkedHours > 12 Then
-                totalWorkedHours = 12
+
+            Dim schedTotalWorkHours = ParseScheduleTotalHours(dayOfMonth)
+            If totalWorkedHours > schedTotalWorkHours Then
+                totalWorkedHours = schedTotalWorkHours
             End If
 
             FRM_DTR_BIOMETRIC.GView_DTR.Rows(i).Cells(14).Value = totalWorkedHours
@@ -306,9 +308,15 @@ Module Mod_Biometric_DTR
 
     ' Calculate total minutes worked (including overtime and excluding break time), and consider lateness as a penalty
     Private Function CalculateTotalWorkedMinutes(dtrRow As DataGridViewRow, timeIn As DateTime, timeOut As DateTime, dayOfMonth As Integer) As Integer
+
+        ' Declare the scheduledTimeOut variable
+        Dim scheduledTimeOut As DateTime
+
+        ' Otherwise, get the scheduled time out without adding a day
+        scheduledTimeOut = ParseScheduleOut(dtrRow, dayOfMonth)
+
         ' Parse the scheduled time-in for the specified day
         Dim scheduledTimeIn As DateTime = ParseScheduleIn(dtrRow, dayOfMonth)
-        Dim scheduledTimeOut As DateTime = ParseScheduleOut(dtrRow, dayOfMonth)
         ' Parse the actual time-in for the specified day
         Dim actualTimeIn As DateTime = timeIn
         Dim newTimeOut As DateTime
@@ -339,33 +347,17 @@ Module Mod_Biometric_DTR
         ' Return the final total worked minutes after accounting for lateness
         Return totalMinutesWorked
     End Function
-    Public Function Get_FlagShift_Value(DGVIEW_DTR_BIOMETRIC_SCHED As DataGridView, DayNum As Integer) As String
-
-        Dim cellValue As Object = DGVIEW_DTR_BIOMETRIC_SCHED.Rows(DayNum - 1).Cells(4)?.Value
-        If cellValue IsNot Nothing AndAlso Not String.IsNullOrWhiteSpace(cellValue.ToString()) Then
-            Return cellValue.ToString()
-        End If
-
-        ' Return Nothing if no valid value is found
-        Return Nothing
-    End Function
 
     ' Calculates overtime based on the difference between actual time and scheduled time
     Private Function CalculateOverTime(dtrRow As DataGridViewRow, timeOut As DateTime, dayOfMonth As Integer) As Integer
         ' Get the shift flag for the specific day of the month
-        Dim sFlagShift As String = Get_FlagShift_Value(FRM_DTR_BIOMETRIC.GView_Schedule, dayOfMonth)
 
         ' Declare the scheduledTimeOut variable
         Dim scheduledTimeOut As DateTime
 
-        ' Determine the scheduled time out based on the shift flag
-        If sFlagShift = "NS" Then
-            ' If the shift is NS (Night Shift), add 1 day to scheduled time out
-            scheduledTimeOut = ParseScheduleOut(dtrRow, dayOfMonth).AddDays(1)
-        Else
-            ' Otherwise, get the scheduled time out without adding a day
-            scheduledTimeOut = ParseScheduleOut(dtrRow, dayOfMonth)
-        End If
+
+        ' Otherwise, get the scheduled time out without adding a day
+        scheduledTimeOut = ParseScheduleOut(dtrRow, dayOfMonth)
 
         ' Calculate overtime in minutes (ensure timeOut is later than scheduledTimeOut)
         Dim overtimeMinutes As Integer = CInt((timeOut - scheduledTimeOut).TotalMinutes)
@@ -444,10 +436,29 @@ Module Mod_Biometric_DTR
         Throw New Exception($"No schedule found for day {dayNumber}")
     End Function
 
+    Private Function ParseScheduleTotalHours(dayNumber As Integer) As Integer
+        For Each schedRow As DataGridViewRow In FRM_DTR_BIOMETRIC.GView_Schedule.Rows
+            If schedRow.Cells(0)?.Value?.ToString() = dayNumber.ToString() Then
+                Dim schedTotalHoursStr As String = schedRow.Cells(4)?.Value?.ToString()
+
+                Dim schedTotalHours As Double
+                If Double.TryParse(schedTotalHoursStr, schedTotalHours) Then
+                    ' Round to nearest whole number before converting to Integer
+                    Return CInt(Math.Round(schedTotalHours, MidpointRounding.AwayFromZero))
+
+                Else
+                    Throw New Exception($"Invalid schedule total hours format for Day {dayNumber}.")
+                End If
+            End If
+        Next
+        Throw New Exception($"No schedule total hours found for Day {dayNumber}.")
+    End Function
+
+
     Private Function ParseScheduleOut(dtrRow As DataGridViewRow, dayNumber As Integer) As DateTime
         For Each schedRow As DataGridViewRow In FRM_DTR_BIOMETRIC.GView_Schedule.Rows
             If schedRow.Cells(0)?.Value?.ToString() = dayNumber.ToString() Then
-                Dim schedTimeOut As String = schedRow.Cells(2)?.Value?.ToString()
+                Dim schedTimeOut As String = schedRow.Cells(3)?.Value?.ToString()
 
                 Dim parsedScheduleOut As DateTime
 
@@ -495,12 +506,10 @@ Module Mod_Biometric_DTR
                 ' Get the current date and time as a string in the desired format
                 Dim currentDateTime As String = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")
 
-                SQL = "INSERT INTO PRL_DTR_TOTAL_HOURS (EMPLOYEE_ID, SUB_CLIENT_ID, CUTOFF_PERIOD, NUM_OF_DAYS, TOTAL_HOURS, REG, SUN, SH, LH, RD_SUN_SH, RD_SUN_LH, ND_REG, ND_SUN, ND_SH, ND_LH, ND_RD_SUN_SH, ND_RD_SUN_LH, OT_REG)"
+                SQL = "INSERT INTO PRL_DTR_TOTAL_HOURS (EMPLOYEE_ID, SUB_CLIENT_ID, CUTOFF_PERIOD, NUM_OF_DAYS, TOTAL_HOURS, REG, SUN, SH, LH, OT_REG)"
                 SQL = SQL & " VALUES ( '" & sEmployee_ID & "', " & iSub_Client_ID & ", '" & sCutOff_Period & "', " & iNumber_of_Days
                 SQL = SQL & ", '" & .Rows(17).Cells(14).Value & "', '" & .Rows(17).Cells(15).Value & "'"
-                SQL = SQL & ", '" & .Rows(17).Cells(16).Value & "', '" & .Rows(17).Cells(17).Value & "', '" & .Rows(17).Cells(18).Value & "', '" & .Rows(17).Cells(19).Value & "'"
-                SQL = SQL & ", '" & .Rows(17).Cells(20).Value & "', '" & .Rows(17).Cells(21).Value & "', '" & .Rows(17).Cells(22).Value & "', '" & .Rows(17).Cells(23).Value & "'"
-                SQL = SQL & ", '" & .Rows(17).Cells(24).Value & "', '" & .Rows(17).Cells(25).Value & "', '" & .Rows(17).Cells(26).Value & "', '" & .Rows(17).Cells(27).Value & "')"
+                SQL = SQL & ", '" & .Rows(17).Cells(16).Value & "', '" & .Rows(17).Cells(17).Value & "', '" & .Rows(17).Cells(18).Value & "', '" & .Rows(17).Cells(19).Value & "')"
 
                 Dim SQLcmd As OleDbCommand = New OleDbCommand(SQL, GlobalVariables.GlobalCon)
                 SQLcmd.ExecuteNonQuery()
@@ -577,88 +586,109 @@ Module Mod_Biometric_DTR
     End Sub
 
     Public Sub Show_Employee_Schedule(iEmployee_ID As Integer, sScheduler As String, iCutOff As Integer)
-
-
         Dim da As New OleDb.OleDbDataAdapter
         Dim dt As New DataTable
-
         dt.Clear()
         dt.Reset()
         Dim SQL As String
 
         Try
+            ' SQL Query based on cutoff
             If iCutOff = 1 Then
-                SQL = "Select DAY_NUM, SCHED_IN, SCHED_OUT,TOTAL_HOURS, FLAG_SHIFT  from PRL_EMPLOYEE_SCHEDULE where EMPLOYEE_ID = '" & iEmployee_ID & "' and DAY_NUM <= 15"
+                SQL = "SELECT DAY_NUM, SCHED_IN, DAY_NUM_OUT, SCHED_OUT, TOTAL_HOURS FROM PRL_EMPLOYEE_SCHEDULE WHERE EMPLOYEE_ID = '" & iEmployee_ID & "' AND DAY_NUM <= 15"
             ElseIf iCutOff = 2 Then
-                SQL = "Select DAY_NUM, SCHED_IN, SCHED_OUT,TOTAL_HOURS, FLAG_SHIFT  from PRL_EMPLOYEE_SCHEDULE where EMPLOYEE_ID = '" & iEmployee_ID & "' and DAY_NUM > 15"
-            ElseIf iCutOff = 0 Then
-                SQL = "Select DAY_NUM, SCHED_IN, SCHED_OUT,TOTAL_HOURS, FLAG_SHIFT  from PRL_EMPLOYEE_SCHEDULE where EMPLOYEE_ID = '" & iEmployee_ID & "' "
+                SQL = "SELECT DAY_NUM, SCHED_IN, DAY_NUM_OUT, SCHED_OUT, TOTAL_HOURS FROM PRL_EMPLOYEE_SCHEDULE WHERE EMPLOYEE_ID = '" & iEmployee_ID & "' AND DAY_NUM > 15"
+            Else
+                SQL = "SELECT DAY_NUM, SCHED_IN, DAY_NUM_OUT, SCHED_OUT, TOTAL_HOURS FROM PRL_EMPLOYEE_SCHEDULE WHERE EMPLOYEE_ID = '" & iEmployee_ID & "'"
             End If
 
+            ' Execute Query
             da = New OleDbDataAdapter(SQL, Mod_GlobalVariables.GlobalVariables.GlobalCon)
             da.Fill(dt)
 
-
-            If dt.Rows.Count > 0 Then ' SHOW DATA
-
+            If dt.Rows.Count > 0 Then
                 If sScheduler = "No" Then
-
                     FRM_DTR_BIOMETRIC.GView_Schedule.Rows.Clear()
                     For Each row As DataRow In dt.Rows
                         Dim newRow As Integer = FRM_DTR_BIOMETRIC.GView_Schedule.Rows.Add()
                         For i As Integer = 0 To dt.Columns.Count - 1
                             FRM_DTR_BIOMETRIC.GView_Schedule.Rows(newRow).Cells(i).Value = row(i).ToString()
                         Next
-
                     Next
 
                 ElseIf sScheduler = "Yes" Then
-
                     If iCutOff = 1 Then
                         FRM_DTR_SCHEDULE.GView_Schedule1_15.Rows.Clear()
                         For Each row As DataRow In dt.Rows
-
                             Dim newRow As Integer = FRM_DTR_SCHEDULE.GView_Schedule1_15.Rows.Add()
 
-                            For i As Integer = 0 To dt.Columns.Count - 1
+                            ' Assign values except DAY_NUM_OUT
+                            FRM_DTR_SCHEDULE.GView_Schedule1_15.Rows(newRow).Cells(0).Value = row("DAY_NUM").ToString()
+                            FRM_DTR_SCHEDULE.GView_Schedule1_15.Rows(newRow).Cells(1).Value = row("SCHED_IN").ToString()
+                            FRM_DTR_SCHEDULE.GView_Schedule1_15.Rows(newRow).Cells(3).Value = row("SCHED_OUT").ToString()
+                            FRM_DTR_SCHEDULE.GView_Schedule1_15.Rows(newRow).Cells(4).Value = row("TOTAL_HOURS").ToString()
 
-                                FRM_DTR_SCHEDULE.GView_Schedule1_15.Rows(newRow).Cells(i).Value = row(i).ToString()
+                            ' Create and configure ComboBox for DAY_NUM_OUT
+                            Dim comboCell As New DataGridViewComboBoxCell()
+                            Dim currentDay As Integer = Convert.ToInt32(row("DAY_NUM"))
+                            Dim dayNumOut As Integer = If(IsDBNull(row("DAY_NUM_OUT")), -1, Convert.ToInt32(row("DAY_NUM_OUT")))
 
-                            Next
+                            ' Populate ComboBox with DAY_NUM and DAY_NUM + 1
+                            comboCell.Items.Add(currentDay.ToString())
+                            comboCell.Items.Add((currentDay + 1).ToString())
 
+                            ' Set the selected value only if DAY_NUM_OUT is within the range
+                            If dayNumOut = currentDay OrElse dayNumOut = currentDay + 1 Then
+                                comboCell.Value = dayNumOut.ToString()
+                            Else
+                                comboCell.Value = Nothing ' No selected value
+                            End If
+
+                            ' Assign the ComboBox to column 2 (DAY_NUM_OUT)
+                            FRM_DTR_SCHEDULE.GView_Schedule1_15.Rows(newRow).Cells(2) = comboCell
                         Next
+
                     ElseIf iCutOff = 2 Then
                         FRM_DTR_SCHEDULE.GView_Schedule16_30.Rows.Clear()
                         For Each row As DataRow In dt.Rows
-
                             Dim newRow As Integer = FRM_DTR_SCHEDULE.GView_Schedule16_30.Rows.Add()
 
-                            For i As Integer = 0 To dt.Columns.Count - 1
+                            ' Assign values except DAY_NUM_OUT
+                            FRM_DTR_SCHEDULE.GView_Schedule16_30.Rows(newRow).Cells(0).Value = row("DAY_NUM").ToString()
+                            FRM_DTR_SCHEDULE.GView_Schedule16_30.Rows(newRow).Cells(1).Value = row("SCHED_IN").ToString()
+                            FRM_DTR_SCHEDULE.GView_Schedule16_30.Rows(newRow).Cells(3).Value = row("SCHED_OUT").ToString()
+                            FRM_DTR_SCHEDULE.GView_Schedule16_30.Rows(newRow).Cells(4).Value = row("TOTAL_HOURS").ToString()
 
-                                FRM_DTR_SCHEDULE.GView_Schedule16_30.Rows(newRow).Cells(i).Value = row(i).ToString()
+                            ' Create and configure ComboBox for DAY_NUM_OUT
+                            Dim comboCell As New DataGridViewComboBoxCell()
+                            Dim currentDay As Integer = Convert.ToInt32(row("DAY_NUM"))
+                            Dim dayNumOut As Integer = If(IsDBNull(row("DAY_NUM_OUT")), -1, Convert.ToInt32(row("DAY_NUM_OUT")))
 
-                            Next
+                            ' Populate ComboBox with DAY_NUM and DAY_NUM + 1
+                            comboCell.Items.Add(currentDay.ToString())
+                            comboCell.Items.Add((currentDay + 1).ToString())
 
+                            ' Set the selected value only if DAY_NUM_OUT is within the range
+                            If dayNumOut = currentDay OrElse dayNumOut = currentDay + 1 Then
+                                comboCell.Value = dayNumOut.ToString()
+                            Else
+                                comboCell.Value = Nothing ' No selected value
+                            End If
+
+                            ' Assign the ComboBox to column 2 (DAY_NUM_OUT)
+                            FRM_DTR_SCHEDULE.GView_Schedule16_30.Rows(newRow).Cells(2) = comboCell
                         Next
                     End If
-
                 End If
-
-            Else
-
             End If
 
-
-
         Catch ex As Exception
-            MsgBox(ex.ToString)
+            MsgBox(ex.ToString, vbCritical, "Error")
+        Finally
+            GlobalVariables.GlobalCon.Close()
         End Try
-
-        GlobalVariables.GlobalCon.Close()
-
-
-
     End Sub
+
 
 
 

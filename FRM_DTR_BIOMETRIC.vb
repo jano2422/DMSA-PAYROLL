@@ -2,37 +2,45 @@
 Imports System.IO
 Imports Spire.Pdf
 Imports Spire.Pdf.Conversion
-
+Imports System.Windows
 
 Public Class FRM_DTR_BIOMETRIC
 
     ' Variable to store the selected directory
     Private selectedDirectory As String = String.Empty
-
+    Dim DefaultDTRDir As String = "\\DMSAC-SERVER\Files\MASTER_DTR"
     Private Sub Btn_DTR_Click(sender As Object, e As EventArgs) Handles Btn_DTR.Click
         ' Check if the trial period has ended
         If Now.Year = 2026 Then
             MsgBox("Trial Period Ends")
             Exit Sub ' Exit the subroutine if the trial period has ended
         End If
+
+        ' Clear the schedule grid and reset UI
         GView_Schedule.Rows.Clear()
         RemoveDataGridViewByName(DTR_TimeCalculationPanel, "Duplicate_DGV")
         ShowOriginalDataGridViewColumns(GView_DTR)
-        ' Call the subroutine to ensure a directory is selected
-        If Not PromptForDirectorySelection(selectedDirectory) Then
-            Exit Sub ' Exit the main subroutine if no directory is selected
+
+        ' Default DTR Directory
+
+
+        ' Ensure a directory is selected
+        If Not PromptForDirectorySelection(DefaultDTRDir, False, selectedDirectory) Then
+            Exit Sub ' Exit if no directory is selected
         End If
 
         ' Show the employee list form
         FRM_DTR_EMPLOYEE_LIST.ShowDialog()
 
-
         ' Retrieve and show the employee schedule
         Call Show_Employee_Schedule(GlobalVariables.DTR_Selected_Employee_ID, "No", 0)
+
+        ' Ensure an employee is selected
         If String.IsNullOrEmpty(GlobalVariables.DTR_Selected_Employee_Name) Then
             MsgBox("No selected employee found", vbExclamation, "No Employee Found")
             Exit Sub
         End If
+
         ' Extract selected employee's name
         Dim szSelectedEmpName As String = GlobalVariables.DTR_Selected_Employee_Name
 
@@ -41,7 +49,7 @@ Public Class FRM_DTR_BIOMETRIC
         Dim lastName As String = nameParts(0).Trim()
         Dim firstName As String = If(nameParts.Length > 1, nameParts(1).Trim(), "")
 
-        ' Filter files in the selected directory
+        ' Filter files in the selected directory based on employee name
         Dim filteredFiles As List(Of String) = Directory.GetFiles(selectedDirectory, "*.pdf") _
         .Where(Function(file) Path.GetFileName(file).IndexOf(lastName, StringComparison.OrdinalIgnoreCase) >= 0 _
             OrElse Path.GetFileName(file).IndexOf(firstName, StringComparison.OrdinalIgnoreCase) >= 0).ToList()
@@ -51,192 +59,125 @@ Public Class FRM_DTR_BIOMETRIC
             MsgBox("No files found containing the selected employee's name.", vbExclamation, "No Files Found")
         End If
 
-        ' Create and show the custom file selection dialog
-        ShowModernFileSelectionForm(filteredFiles)
+        ' Show the modern file selection form and get the selected file
+        Dim selectedFile As String = ShowModernFileSelectionForm(filteredFiles, selectedDirectory)
+        If String.IsNullOrEmpty(selectedFile) Then
+            MsgBox("No file selected.", vbExclamation, "Selection Canceled")
+            Exit Sub
+        End If
+
+        ' Process the selected PDF file
+        ProcessSelectedPDF(selectedFile)
     End Sub
 
-    Private Function PromptForDirectorySelection(ByRef selectedDirectory As String) As Boolean
 
-        If Directory.Exists(selectedDirectory) Then
-            Return True
-        End If
-
-        ' Ensure the directory exists before using it
-
-        Dim dtrPath As String = "C:\MASTER_DTR"
-        ' Ensure the directory exists before using it
-        If Not Directory.Exists(dtrPath) Then
-            Directory.CreateDirectory(dtrPath)
-        End If
-
-        Using dialog As New CommonOpenFileDialog()
-            dialog.IsFolderPicker = True ' Enables folder selection
-            dialog.InitialDirectory = dtrPath ' Set the default starting path
-            dialog.Title = "Select a directory containing the files"
-
-            ' Show the dialog
-            If dialog.ShowDialog() = CommonFileDialogResult.Ok Then
-                selectedDirectory = dialog.FileName
-                Return True ' Directory selected successfully
+    Private Function PromptForDirectorySelection(defaultDir As String, showPrompt As Boolean, ByRef selectedDirectory As String) As Boolean
+        Try
+            ' If a valid directory is already set, use it
+            If Not String.IsNullOrEmpty(selectedDirectory) AndAlso Directory.Exists(selectedDirectory) Then
+                Return True
             Else
-                MsgBox("No directory selected. Operation cancelled.", vbExclamation, "Directory Selection")
-                Return False ' No directory selected
+                selectedDirectory = defaultDir
             End If
-        End Using
+
+            ' Ensure the default directory exists
+            If Not Directory.Exists(defaultDir) Then Directory.CreateDirectory(defaultDir)
+
+            ' Allow user to reselect if showPrompt is enabled
+            If showPrompt Then
+                Using dialog As New CommonOpenFileDialog()
+                    dialog.IsFolderPicker = True ' Enables folder selection
+                    dialog.InitialDirectory = If(Directory.Exists(selectedDirectory), selectedDirectory, defaultDir)
+                    dialog.Title = "Select a directory containing the files"
+
+                    ' Show dialog and handle user selection
+                    If dialog.ShowDialog() = CommonFileDialogResult.Ok Then
+                        selectedDirectory = dialog.FileName
+                        Return True
+                    Else
+                        MsgBox("No directory selected. Operation cancelled.", vbExclamation, "Directory Selection")
+                        Return False
+                    End If
+                End Using
+            End If
+
+            Return True
+        Catch ex As Exception
+            MsgBox("An error occurred: " & ex.Message, vbCritical, "Error")
+            Return False
+        End Try
     End Function
 
 
-
-
-
-
-    Private Sub ShowModernFileSelectionForm(filteredFiles As List(Of String))
-        Dim fileSelectionForm As New Form()
-
+    Private Sub ProcessSelectedPDF(selectedFile As String)
         Try
-            ' Set basic properties of the form
-            With fileSelectionForm
-                .Text = "Select DTR File"
-                .Size = New Size(700, 500) ' Increased size for modern look
-                .StartPosition = FormStartPosition.CenterScreen
-                .FormBorderStyle = FormBorderStyle.FixedDialog
-                .MaximizeBox = False
-                .MinimizeBox = False
-                .ShowInTaskbar = False
-                .Font = New Font("Segoe UI", 12, FontStyle.Regular) ' Modern font and larger size
-                .BackColor = Color.White ' Clean white background for the form
-            End With
+            ' Load the selected PDF file
+            Dim pdf As New PdfDocument()
+            Try
+                pdf.LoadFromFile(selectedFile)
+            Catch ex As Exception
+                Debug.WriteLine($"Error loading PDF file: {ex.Message}")
+                MsgBox("Failed to load the selected PDF file.", vbExclamation, "Error")
+                Exit Sub
+            End Try
 
-            ' Create a ListBox to show filtered files
-            Dim fileListBox As New ListBox() With {
-    .Dock = DockStyle.Top,
-    .Height = 250,
-    .Font = New Font("Segoe UI", 12, FontStyle.Regular), ' Larger font for list box items
-    .ItemHeight = 30, ' Adjust item height for better readability
-    .BackColor = Color.LightYellow, ' Light yellow background for the list box
-    .ForeColor = Color.Black ' Black text color for readability
-}
-            fileListBox.Items.AddRange(filteredFiles.Select(Function(f) Path.GetFileName(f)).ToArray())
+            ' Define output Excel file path
+            Dim exeDirectory As String = AppDomain.CurrentDomain.BaseDirectory
+            Dim filePath As String = Path.Combine(exeDirectory, "PdfToExcel.xlsx")
 
-            ' Create a Reselect Folder button
-            Dim reselectFolderButton As New Button() With {
-    .Text = "Reselect DTR Folder Path",
-    .Dock = DockStyle.Bottom,
-    .Height = 50, ' Increased button height for a modern touch
-    .Font = New Font("Segoe UI", 14, FontStyle.Bold), ' Modern font and bold style
-    .FlatStyle = FlatStyle.Flat, ' Flat style for modern look
-    .BackColor = Color.Maroon, ' Maroon background for the button
-    .ForeColor = Color.White ' White text color for contrast
-}
+            ' Convert and save PDF as Excel
+            Try
+                pdf.SaveToFile(filePath, FileFormat.XLSX)
+            Catch ex As Exception
+                Debug.WriteLine($"Error saving PDF to Excel: {ex.Message}")
+                MsgBox("Failed to save PDF as Excel.", vbExclamation, "Error")
+                Exit Sub
+            End Try
 
-            ' Create a Cancel button
-            Dim cancelButton As New Button() With {
-    .Text = "Cancel",
-    .Dock = DockStyle.Bottom,
-    .Height = 50, ' Increased button height for consistency
-    .Font = New Font("Segoe UI", 14, FontStyle.Bold), ' Modern font and bold style
-    .FlatStyle = FlatStyle.Flat, ' Flat style for modern look
-    .BackColor = Color.Black, ' Black background for the button
-    .ForeColor = Color.Yellow ' Yellow text color for contrast
-}
+            ' Remove previous DataGridView duplicates
+            RemoveDataGridViewByName(DTR_TimeCalculationPanel, "Duplicate_DGV")
 
-            ' Add controls to the form
-            fileSelectionForm.Controls.Add(fileListBox)
-            fileSelectionForm.Controls.Add(reselectFolderButton)
-            fileSelectionForm.Controls.Add(cancelButton)
+            ' Load the converted Excel file into the application
+            Connect_to_Excel_DTR()
+            RemoveDataGridViewByName(DTR_TimeCalculationPanel, "Duplicate_DGV")
+            ShowOriginalDataGridViewColumns(GView_DTR)
 
-            ' Handle Reselect Folder button click
-            AddHandler reselectFolderButton.Click, Sub()
-                                                       Try
+            ' Perform DTR calculations
+            Calculate_DTR()
+            ProcessHoursBreakdown()
+            DuplicateAndHideDtrDGView()
 
-                                                           Using dialog As New CommonOpenFileDialog()
-                                                               dialog.IsFolderPicker = True ' Enables folder selection
-                                                               dialog.InitialDirectory = selectedDirectory ' Set the default starting path
-                                                               dialog.Title = "Select a directory containing the files"
+            ' Enable the save button
+            SetButtonState(True, Btn_Save_DTR)
 
-                                                               ' Show the dialog
-                                                               If dialog.ShowDialog() = CommonFileDialogResult.Ok Then
-                                                                   selectedDirectory = dialog.FileName
-                                                                   fileSelectionForm.Close()
-                                                               Else
-                                                                   MsgBox("No directory selected. Operation cancelled.", vbExclamation, "Directory Selection")
-                                                               End If
-                                                           End Using
-                                                       Catch ex As Exception
-                                                           ' Log and display error if folder selection fails
-                                                           Debug.WriteLine($"Error selecting folder: {ex.Message}")
-                                                           MsgBox("An error occurred while selecting a folder.", vbExclamation, "Error")
-                                                       End Try
-                                                   End Sub
-
-            ' Handle ListBox item double-click
-            AddHandler fileListBox.MouseDoubleClick, Sub(sender As Object, e As MouseEventArgs)
-                                                         Try
-                                                             Dim index As Integer = fileListBox.IndexFromPoint(e.Location)
-                                                             If index <> ListBox.NoMatches Then
-                                                                 Dim selectedFile As String = filteredFiles(index)
-
-                                                                 ' Process the selected file
-                                                                 Dim pdf As New PdfDocument()
-                                                                 Try
-                                                                     pdf.LoadFromFile(selectedFile)
-                                                                 Catch ex As Exception
-                                                                     ' Log and display error if file cannot be loaded
-                                                                     Debug.WriteLine($"Error loading PDF file: {ex.Message}")
-                                                                     MsgBox("Failed to load the selected PDF file.", vbExclamation, "Error")
-                                                                     Return
-                                                                 End Try
-
-                                                                 Dim exeDirectory As String = AppDomain.CurrentDomain.BaseDirectory
-                                                                 Dim filePath As String = System.IO.Path.Combine(exeDirectory, "PdfToExcel.xlsx")
-
-                                                                 Try
-                                                                     pdf.SaveToFile(filePath, FileFormat.XLSX)
-                                                                 Catch ex As Exception
-                                                                     ' Log and display error if file cannot be saved
-                                                                     Debug.WriteLine($"Error saving PDF to Excel: {ex.Message}")
-                                                                     MsgBox("Failed to save PDF as Excel.", vbExclamation, "Error")
-                                                                     Return
-                                                                 End Try
-
-                                                                 RemoveDataGridViewByName(DTR_TimeCalculationPanel, "Duplicate_DGV")
-                                                                 fileSelectionForm.Close()
-
-                                                                 Connect_to_Excel_DTR()
-                                                                 RemoveDataGridViewByName(DTR_TimeCalculationPanel, "Duplicate_DGV")
-                                                                 ShowOriginalDataGridViewColumns(GView_DTR)
-                                                                 Calculate_DTR()
-                                                                 ProcessHoursBreakdown()
-                                                                 DuplicateAndHideDtrDGView()
-
-                                                                 SetButtonState(True, Btn_Save_DTR)
-                                                             End If
-                                                         Catch ex As Exception
-                                                             ' Log and display error if any other error occurs
-                                                             Debug.WriteLine($"Error processing ListBox item: {ex.Message}")
-                                                             MsgBox("An error occurred while processing the selected file.", vbExclamation, "Error")
-                                                         End Try
-                                                     End Sub
-
-            ' Handle Cancel button click
-            AddHandler cancelButton.Click, Sub()
-                                               Try
-                                                   fileSelectionForm.Close()
-                                               Catch ex As Exception
-                                                   ' Log and display error if closing the form fails
-                                                   Debug.WriteLine($"Error closing file selection form: {ex.Message}")
-                                                   MsgBox("An error occurred while closing the form.", vbExclamation, "Error")
-                                               End Try
-                                           End Sub
-
-            ' Show the custom file selection dialog
-            fileSelectionForm.ShowDialog()
         Catch ex As Exception
-            ' Catch any other errors that may occur during form creation or initialization
-            Debug.WriteLine($"Error initializing the file selection form: {ex.Message}")
-            MsgBox("An error occurred while setting up the file selection form.", vbExclamation, "Error")
+            Debug.WriteLine($"Unexpected error processing PDF: {ex.Message}")
+            MsgBox("An unexpected error occurred while processing the PDF.", vbExclamation, "Error")
         End Try
     End Sub
+
+    Private Function ShowModernFileSelectionForm(filteredFiles As List(Of String), ByRef selectedDirectory As String) As String
+        ' Pass the current directory to the FileSelectionControl
+        Dim fileSelectionControl As New FileSelectionControl(filteredFiles, selectedDirectory)
+
+        Dim fileSelectionWindow As New Window With {
+        .Title = "Select a File",
+        .Width = 600,
+        .Height = 400,
+        .WindowStartupLocation = WindowStartupLocation.CenterScreen,
+        .Content = fileSelectionControl
+    }
+
+        Dim result = fileSelectionWindow.ShowDialog()
+
+        ' If the dialog result is True, update the directory and return the selected file
+        If result.HasValue AndAlso result.Value Then
+            selectedDirectory = fileSelectionControl.SelectedDirectory
+            Return fileSelectionControl.SelectedFile
+        End If
+
+        Return Nothing
+    End Function
 
 
 
@@ -276,7 +217,7 @@ Public Class FRM_DTR_BIOMETRIC
         Else
             newDataGridView = New DataGridView() With {
             .Name = "Duplicate_DGV",
-            .Location = New Point(10, 10),
+            .Location = New System.Drawing.Point(10, 10),
             .Size = originalDataGridView.Size,
             .AllowUserToAddRows = originalDataGridView.AllowUserToAddRows,
             .AllowUserToDeleteRows = originalDataGridView.AllowUserToDeleteRows,
@@ -357,9 +298,6 @@ Public Class FRM_DTR_BIOMETRIC
 
     Private Sub FRM_BIOMETRIC_DTR_Load(sender As Object, e As EventArgs) Handles MyBase.Load
         Try
-
-
-
             ' Disable buttons at form load
             SetButtonState(False, Btn_Save_DTR)
 
@@ -375,6 +313,15 @@ Public Class FRM_DTR_BIOMETRIC
         Catch ex As Exception
             ' Log or display the error
             MsgBox($"An error occurred during form load: {ex.Message}", vbExclamation, "Error")
+        End Try
+    End Sub
+
+    Private Sub FRM_BIOMETRIC_DTR_FormClosed(sender As Object, e As EventArgs) Handles MyBase.FormClosed
+        Try
+            Me.Dispose()
+        Catch ex As Exception
+            ' Log or display the error
+            MsgBox($"An error occurred during form close: {ex.Message}", vbExclamation, "Error")
         End Try
     End Sub
 
@@ -417,7 +364,7 @@ Public Class FRM_DTR_BIOMETRIC
                     ' Enable button, restore appearance, and set cursor to default
                     btn.Enabled = True
                     btn.BackColor = Color.YellowGreen ' Default background color
-                    btn.ForeColor = SystemColors.ControlText ' Default text color
+                    btn.ForeColor = System.Drawing.SystemColors.ControlText ' Default text color
                     btn.Cursor = Cursors.Hand ' Change cursor to Hand when enabled (for better UX)
                 Else
                     ' Disable button, visually gray it out, and set cursor to Arrow
@@ -463,7 +410,7 @@ Public Class FRM_DTR_BIOMETRIC
 
     Private Sub btn_Breakdown_Click(sender As Object, e As EventArgs) Handles btn_Breakdown.Click
         ShowOriginalDataGridViewColumns(GView_DTR)
-        Dim columns As Integer() = {14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27}
+        Dim columns As Integer() = {14, 15, 16, 17, 18, 19}
         ' Copy data to original DataGridView if Duplicate_DGV exists
         Dim duplicateDataGridView As DataGridView = FindDuplicateDataGridView("Duplicate_DGV")
         If duplicateDataGridView IsNot Nothing Then
@@ -587,21 +534,20 @@ Public Class FRM_DTR_BIOMETRIC
 
             Dim regHours As Double = 8 ' Standard regular hours
             Dim otHours As Double = 0
-            Dim isMorningShift As Boolean = 22 - reportedTime > 10 ' Morning shift logic (before 12 PM)
 
             ' Reset all current row columns (15 to 26) to 0
-            ResetCells(GView_DTR.Rows(iRow), 15, 26)
+            ResetCells(GView_DTR.Rows(iRow), 15, 21)
 
             ' Process regular hours and OT logic
-            ProcessRegularAndOTHours(GView_DTR.Rows(iRow), totalHours, regHours, otHours, isMorningShift)
+            ProcessRegularAndOTHours(GView_DTR.Rows(iRow), totalHours, regHours, otHours)
 
             ' Set OT value in the last column
-            GView_DTR.Rows(iRow).Cells(27).Value = otHours
+            GView_DTR.Rows(iRow).Cells(19).Value = otHours
         Next
 
         ' Array to store column indices for each hour type
-        Dim columns As Integer() = {14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27}
-        Dim totals(13) As Double ' Initialize totals array
+        Dim columns As Integer() = {14, 15, 16, 17, 18, 19}
+        Dim totals(5) As Double ' Initialize totals array
 
 
         Try
@@ -630,7 +576,7 @@ Public Class FRM_DTR_BIOMETRIC
     End Sub
 
     ' Helper function to handle regular hours and OT calculation
-    Private Sub ProcessRegularAndOTHours(row As DataGridViewRow, totalHours As Double, regHours As Double, ByRef otHours As Double, isMorningShift As Boolean)
+    Private Sub ProcessRegularAndOTHours(row As DataGridViewRow, totalHours As Double, regHours As Double, ByRef otHours As Double)
         ' Extract first day from the cell value (e.g., "Sunday - Monday" or "Saturday - Sunday")
         Dim firstDay As String = String.Empty
         Dim secondDay As String = String.Empty
@@ -654,75 +600,31 @@ Public Class FRM_DTR_BIOMETRIC
 
         ' Determine where to assign the regular and OT hours
         If firstDay = "Sunday" Or secondDay = "Sunday" Then
-            Select Case row.DefaultCellStyle.BackColor
-                Case Color.LightGreen ' Sunday Legal Holiday
-                    AssignHours(row, totalHours, regHours, 20, otHours, isMorningShift)
-                Case Color.Yellow ' Sunday Special Holiday
-                    AssignHours(row, totalHours, regHours, 19, otHours, isMorningShift)
-                Case Else ' Sunday (Non-Holiday)
-                    AssignHours(row, totalHours, regHours, 16, otHours, isMorningShift)
-            End Select
+            AssignHours(row, totalHours, regHours, 16, otHours)
         Else ' Not Sunday
             Select Case row.DefaultCellStyle.BackColor
                 Case Color.LightGreen ' Legal Holiday
-                    AssignHours(row, totalHours, regHours, 18, otHours, isMorningShift)
+                    AssignHours(row, totalHours, regHours, 18, otHours)
                 Case Color.Yellow ' Special Holiday
-                    AssignHours(row, totalHours, regHours, 17, otHours, isMorningShift)
+                    AssignHours(row, totalHours, regHours, 17, otHours)
                 Case Else ' Regular Day
-                    AssignHours(row, totalHours, regHours, 15, otHours, isMorningShift)
+                    AssignHours(row, totalHours, regHours, 15, otHours)
             End Select
         End If
     End Sub
 
     ' Helper function to assign hours
-    Private Sub AssignHours(row As DataGridViewRow, totalHours As Double, regHours As Double, cellIndex As Integer, ByRef otHours As Double, isMorningShift As Boolean)
-        If isMorningShift Then
-            If totalHours >= regHours Then
-                row.Cells(cellIndex).Value = regHours 'Set cellIndex to reg hours
-                otHours = totalHours - regHours 'Set the otHours
-            Else
-                row.Cells(cellIndex).Value = totalHours
-                otHours = 0
-            End If
+    Private Sub AssignHours(row As DataGridViewRow, totalHours As Double, regHours As Double, cellIndex As Integer, ByRef otHours As Double)
+        If totalHours >= regHours Then
+            row.Cells(cellIndex).Value = regHours
+            otHours = totalHours - regHours
         Else
-            ' Draft NightShift
-            ' Extract first day from the cell value (e.g., "Sunday - Monday" or "Saturday - Sunday")
-            Dim firstDay As String = row.Cells(1).Value.Split("-"c)(0).Trim()
-            Dim secondDay As String = row.Cells(1).Value.Split("-"c)(1).Trim()
-            ' Determine where to assign the regular and OT hours
-            If firstDay = "Sunday" Then
-                If totalHours >= regHours Then
-                    row.Cells(cellIndex).Value = regHours 'Set cellIndex to reg hours
-                    otHours = totalHours - regHours 'Set the otHours
-                Else
-                    row.Cells(cellIndex).Value = totalHours
-                    otHours = 0
-                End If
-
-            ElseIf secondDay = "Sunday" Then
-
-                If totalHours >= regHours Then
-                    row.Cells(cellIndex).Value = regHours 'Set cellIndex to reg hours
-                    otHours = totalHours - regHours 'Set the otHours
-                Else
-                    row.Cells(cellIndex).Value = totalHours
-                    otHours = 0
-                End If
-
-            Else
-                If totalHours >= regHours Then
-                    row.Cells(cellIndex).Value = regHours 'Set cellIndex to reg hours
-                    otHours = totalHours - regHours 'Set the otHours
-                Else
-                    row.Cells(cellIndex).Value = totalHours
-                    otHours = 0
-                End If
-
-            End If
-
-
+            row.Cells(cellIndex).Value = totalHours
+            otHours = 0
         End If
+
     End Sub
+
 
     ' Helper function to reset cells
     Sub ResetCells(row As DataGridViewRow, startIndex As Integer, endIndex As Integer)

@@ -34,15 +34,7 @@ Module Mod_FRM_DTR_EXPORTS
             objSheet.Cells(7, 5).value = "SUN"
             objSheet.Cells(7, 6).value = "SH"
             objSheet.Cells(7, 7).value = "LH"
-            objSheet.Cells(7, 8).value = "RD SUN SH"
-            objSheet.Cells(7, 9).value = "RD SUN LH"
-            objSheet.Cells(7, 10).value = "ND REG"
-            objSheet.Cells(7, 11).value = "ND SUN"
-            objSheet.Cells(7, 12).value = "ND SH"
-            objSheet.Cells(7, 13).value = "ND LH"
-            objSheet.Cells(7, 14).value = "RD ND SUN SH"
-            objSheet.Cells(7, 15).value = "RD ND SUN LH"
-            objSheet.Cells(7, 16).value = "OT REG"
+            objSheet.Cells(7, 8).value = "OT REG"
 
 
             Dim testValue As String
@@ -51,7 +43,7 @@ Module Mod_FRM_DTR_EXPORTS
                 ' Employee List : A14
                 For iRow = 0 To .Items.Count - 1  ' Column of List View
 
-                    For iCol = 1 To 16  ' Row of List View
+                    For iCol = 1 To 8  ' Row of List View
 
 
                         If .Items(iRow).SubItems(iCol).Text = "" Then ' Exit for 
@@ -91,7 +83,7 @@ Module Mod_FRM_DTR_EXPORTS
             'SQL = "select LAST_NAME, FIRST_NAME, MIDDLE_NAME, NUM_OF_DAYS, TOTAL_HOURS, REG, SUN,SH,LH, RD_SUN_SH, RD_SUN_LH, ND_REG, ND_SUN, ND_SH, ND_LH, ND_RD_SUN_SH, ND_RD_SUN_LH, OT_REG from VIEW_DTR_PER_SUB_CLIENT"
             'SQL = SQL & " where A.SUB_CLIENT_ID = " & iClient_ID & " and CUTOFF_PERIOD = '" & sCut_Off & "'"
 
-            SQL = "SELECT LAST_NAME, FIRST_NAME, MIDDLE_NAME, NUM_OF_DAYS, TOTAL_HOURS, REG, SUN, SH, LH, RD_SUN_SH, RD_SUN_LH, ND_REG, ND_SUN, ND_SH, ND_LH, ND_RD_SUN_SH, ND_RD_SUN_LH, OT_REG "
+            SQL = "SELECT LAST_NAME, FIRST_NAME, MIDDLE_NAME, NUM_OF_DAYS, TOTAL_HOURS, REG, SUN, SH, LH, OT_REG "
             SQL = SQL & "FROM VIEW_DTR_PER_SUB_CLIENT A "
             SQL = SQL & "WHERE A.A.SUB_CLIENT_ID = " & iClient_ID & " AND A.CUTOFF_PERIOD = '" & sCut_Off & "' "
             SQL = SQL & "AND A.D.ID = (SELECT MAX(D.ID) FROM PRL_DTR_TOTAL_HOURS D WHERE D.EMPLOYEE_ID = A.A.EMPLOYEE_ID AND D.CUTOFF_PERIOD = A.CUTOFF_PERIOD)"
@@ -116,14 +108,6 @@ Module Mod_FRM_DTR_EXPORTS
                         .Items(.Items.Count - 1).SubItems.Add(myRow.Item("SUN"))
                         .Items(.Items.Count - 1).SubItems.Add(myRow.Item("SH"))
                         .Items(.Items.Count - 1).SubItems.Add(myRow.Item("LH"))
-                        .Items(.Items.Count - 1).SubItems.Add(myRow.Item("RD_SUN_SH"))
-                        .Items(.Items.Count - 1).SubItems.Add(myRow.Item("RD_SUN_LH"))
-                        .Items(.Items.Count - 1).SubItems.Add(myRow.Item("ND_REG"))
-                        .Items(.Items.Count - 1).SubItems.Add(myRow.Item("ND_SUN"))
-                        .Items(.Items.Count - 1).SubItems.Add(myRow.Item("ND_SH"))
-                        .Items(.Items.Count - 1).SubItems.Add(myRow.Item("ND_LH"))
-                        .Items(.Items.Count - 1).SubItems.Add(myRow.Item("ND_RD_SUN_SH"))
-                        .Items(.Items.Count - 1).SubItems.Add(myRow.Item("ND_RD_SUN_LH"))
                         .Items(.Items.Count - 1).SubItems.Add(myRow.Item("OT_REG"))
 
                         iRow += 1 ' Increment the row counter

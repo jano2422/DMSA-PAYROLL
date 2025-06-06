@@ -22,9 +22,9 @@ Partial Class FRM_HR_REPORTS
     'Do not modify it using the code editor.
     <System.Diagnostics.DebuggerStepThrough()>
     Private Sub InitializeComponent()
-        Dim ChartArea2 As System.Windows.Forms.DataVisualization.Charting.ChartArea = New System.Windows.Forms.DataVisualization.Charting.ChartArea()
-        Dim Legend2 As System.Windows.Forms.DataVisualization.Charting.Legend = New System.Windows.Forms.DataVisualization.Charting.Legend()
-        Dim Series2 As System.Windows.Forms.DataVisualization.Charting.Series = New System.Windows.Forms.DataVisualization.Charting.Series()
+        Dim ChartArea1 As System.Windows.Forms.DataVisualization.Charting.ChartArea = New System.Windows.Forms.DataVisualization.Charting.ChartArea()
+        Dim Legend1 As System.Windows.Forms.DataVisualization.Charting.Legend = New System.Windows.Forms.DataVisualization.Charting.Legend()
+        Dim Series1 As System.Windows.Forms.DataVisualization.Charting.Series = New System.Windows.Forms.DataVisualization.Charting.Series()
         Me.MenuStrip1 = New System.Windows.Forms.MenuStrip()
         Me.Label2 = New System.Windows.Forms.Label()
         Me.Tab_Logs = New System.Windows.Forms.TabPage()
@@ -56,6 +56,7 @@ Partial Class FRM_HR_REPORTS
         Me.Col_Expiry_Date = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
         Me.Col_DaysExpired = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
         Me.TabPage7 = New System.Windows.Forms.TabPage()
+        Me.Lbl_Export_Client_Contract_Exp = New System.Windows.Forms.Label()
         Me.Cmb_Client_Expiration = New System.Windows.Forms.ComboBox()
         Me.Label17 = New System.Windows.Forms.Label()
         Me.LV_Client_Contract_Exp = New System.Windows.Forms.ListView()
@@ -137,7 +138,6 @@ Partial Class FRM_HR_REPORTS
         Me.ColumnHeader17 = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
         Me.ColumnHeader18 = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
         Me.PictureBox2 = New System.Windows.Forms.PictureBox()
-        Me.Lbl_Export_Client_Contract_Exp = New System.Windows.Forms.Label()
         Me.Tab_Logs.SuspendLayout()
         Me.Tab_Security_License.SuspendLayout()
         Me.TabControl1.SuspendLayout()
@@ -462,6 +462,17 @@ Partial Class FRM_HR_REPORTS
         Me.TabPage7.TabIndex = 1
         Me.TabPage7.Text = "   Client Contract   "
         '
+        'Lbl_Export_Client_Contract_Exp
+        '
+        Me.Lbl_Export_Client_Contract_Exp.AutoSize = True
+        Me.Lbl_Export_Client_Contract_Exp.Font = New System.Drawing.Font("Microsoft Sans Serif", 12.0!, CType((System.Drawing.FontStyle.Italic Or System.Drawing.FontStyle.Underline), System.Drawing.FontStyle), System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.Lbl_Export_Client_Contract_Exp.ForeColor = System.Drawing.Color.Blue
+        Me.Lbl_Export_Client_Contract_Exp.Location = New System.Drawing.Point(1034, 530)
+        Me.Lbl_Export_Client_Contract_Exp.Name = "Lbl_Export_Client_Contract_Exp"
+        Me.Lbl_Export_Client_Contract_Exp.Size = New System.Drawing.Size(115, 20)
+        Me.Lbl_Export_Client_Contract_Exp.TabIndex = 63
+        Me.Lbl_Export_Client_Contract_Exp.Text = "Export to Excel"
+        '
         'Cmb_Client_Expiration
         '
         Me.Cmb_Client_Expiration.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
@@ -640,20 +651,20 @@ Partial Class FRM_HR_REPORTS
         Me.CH_Emp_Status.BorderlineColor = System.Drawing.Color.FromArgb(CType(CType(255, Byte), Integer), CType(CType(128, Byte), Integer), CType(CType(0, Byte), Integer))
         Me.CH_Emp_Status.BorderlineDashStyle = System.Windows.Forms.DataVisualization.Charting.ChartDashStyle.Solid
         Me.CH_Emp_Status.BorderlineWidth = 5
-        ChartArea2.Name = "ChartArea1"
-        Me.CH_Emp_Status.ChartAreas.Add(ChartArea2)
-        Legend2.Name = "L_Hired"
-        Me.CH_Emp_Status.Legends.Add(Legend2)
+        ChartArea1.Name = "ChartArea1"
+        Me.CH_Emp_Status.ChartAreas.Add(ChartArea1)
+        Legend1.Name = "L_Hired"
+        Me.CH_Emp_Status.Legends.Add(Legend1)
         Me.CH_Emp_Status.Location = New System.Drawing.Point(301, 35)
         Me.CH_Emp_Status.Name = "CH_Emp_Status"
-        Series2.ChartArea = "ChartArea1"
-        Series2.Color = System.Drawing.Color.Black
-        Series2.IsValueShownAsLabel = True
-        Series2.LabelBackColor = System.Drawing.Color.Cyan
-        Series2.Legend = "L_Hired"
-        Series2.Name = "Count"
-        Series2.Palette = System.Windows.Forms.DataVisualization.Charting.ChartColorPalette.Chocolate
-        Me.CH_Emp_Status.Series.Add(Series2)
+        Series1.ChartArea = "ChartArea1"
+        Series1.Color = System.Drawing.Color.Black
+        Series1.IsValueShownAsLabel = True
+        Series1.LabelBackColor = System.Drawing.Color.Cyan
+        Series1.Legend = "L_Hired"
+        Series1.Name = "Count"
+        Series1.Palette = System.Windows.Forms.DataVisualization.Charting.ChartColorPalette.Chocolate
+        Me.CH_Emp_Status.Series.Add(Series1)
         Me.CH_Emp_Status.Size = New System.Drawing.Size(928, 578)
         Me.CH_Emp_Status.TabIndex = 0
         Me.CH_Emp_Status.Text = "Chart1"
@@ -1262,17 +1273,6 @@ Partial Class FRM_HR_REPORTS
         Me.PictureBox2.Size = New System.Drawing.Size(1258, 70)
         Me.PictureBox2.TabIndex = 121
         Me.PictureBox2.TabStop = False
-        '
-        'Lbl_Export_Client_Contract_Exp
-        '
-        Me.Lbl_Export_Client_Contract_Exp.AutoSize = True
-        Me.Lbl_Export_Client_Contract_Exp.Font = New System.Drawing.Font("Microsoft Sans Serif", 12.0!, CType((System.Drawing.FontStyle.Italic Or System.Drawing.FontStyle.Underline), System.Drawing.FontStyle), System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.Lbl_Export_Client_Contract_Exp.ForeColor = System.Drawing.Color.Blue
-        Me.Lbl_Export_Client_Contract_Exp.Location = New System.Drawing.Point(1034, 530)
-        Me.Lbl_Export_Client_Contract_Exp.Name = "Lbl_Export_Client_Contract_Exp"
-        Me.Lbl_Export_Client_Contract_Exp.Size = New System.Drawing.Size(115, 20)
-        Me.Lbl_Export_Client_Contract_Exp.TabIndex = 63
-        Me.Lbl_Export_Client_Contract_Exp.Text = "Export to Excel"
         '
         'FRM_HR_REPORTS
         '

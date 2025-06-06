@@ -8,9 +8,15 @@ Module Mod_DB_Connection
     ''' </summary>
     Public Sub MDB_Connection_Init()
         Try
+            ' If connection is already set, do not reinitialize
+            If GlobalVariables.GlobalCon IsNot Nothing AndAlso GlobalVariables.GlobalCon.State <> ConnectionState.Closed Then
+                Debug.WriteLine("Database connection already initialized.")
+                Exit Sub ' Prevent unnecessary reinitialization
+            End If
+
             ' Define the database file path
-            Dim dbfile As String = Path.Combine(Application.StartupPath, "DMSA.mdb")
-            'Dim dbfile As String = "Z:\DMSA_SYSTEM\DMSA.mdb"
+            'Dim dbfile As String = Path.Combine(Application.StartupPath, "DMSA.mdb")
+            Dim dbfile As String = "\\DMSAC-SERVER\Files\DMSA_SYSTEM\DMSA.mdb"
 
             ' Ensure the database file exists before proceeding
             If Not File.Exists(dbfile) Then
@@ -18,15 +24,14 @@ Module Mod_DB_Connection
             End If
 
             ' Set the global connection string
-            GlobalVariables.GlobalConStr = $"Provider=Microsoft.Jet.OLEDB.4.0;Data Source={dbfile};Jet OLEDB:Database Password=DMSA001;;"
+            GlobalVariables.GlobalConStr = $"Provider=Microsoft.Jet.OLEDB.4.0;Data Source={dbfile};Jet OLEDB:Database Password=DMSA001;"
 
             ' Initialize the global database connection object
             GlobalVariables.GlobalCon = New OleDb.OleDbConnection(GlobalVariables.GlobalConStr)
 
-            ' Log success (optional)
             Debug.WriteLine("Database connection initialized successfully.")
+
         Catch ex As Exception
-            ' Log or display an error if initialization fails
             Debug.WriteLine($"Error initializing database connection: {ex.Message}")
             MsgBox($"Failed to initialize database connection: {ex.Message}", vbExclamation, "Database Connection Error")
         End Try
@@ -38,18 +43,25 @@ Module Mod_DB_Connection
     ''' </summary>
     Public Sub Connect_to_MDB()
         Try
-            ' Check if the connection is closed before attempting to open it
-            If GlobalVariables.GlobalCon IsNot Nothing AndAlso GlobalVariables.GlobalCon.State = ConnectionState.Closed Then
-                GlobalVariables.GlobalCon.Open()
-                ' Log successful connection (optional)
-                Debug.WriteLine("Successfully connected to the database.")
+            ' Ensure the connection is initialized first
+            If GlobalVariables.GlobalCon Is Nothing Then
+                MDB_Connection_Init()
             End If
+
+            ' Open the connection if it's closed
+            If GlobalVariables.GlobalCon.State = ConnectionState.Closed Then
+                GlobalVariables.GlobalCon.Open()
+                Debug.WriteLine("Successfully connected to the database.")
+            Else
+                Debug.WriteLine("Database connection is already open.")
+            End If
+
         Catch ex As Exception
-            ' Handle any exceptions that occur during the connection attempt
             Debug.WriteLine($"Error connecting to the database: {ex.Message}")
             MsgBox($"Failed to connect to the database: {ex.Message}", vbExclamation, "Database Connection Error")
         End Try
     End Sub
+
 
 
 End Module

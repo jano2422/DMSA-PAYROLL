@@ -92,4 +92,8 @@ Public Class FRM_DTR_EXPORTS
     Private Sub FRM_DTR_EXPORTS_FormClosed(sender As Object, e As EventArgs) Handles MyBase.FormClosed
         Me.Dispose()
     End Sub
+
+    Private Sub FRM_DTR_EXPORTS_FormClosed(sender As Object, e As EventArgs) Handles MyBase.FormClosed
+        Me.Dispose()
+    End Sub
 End Class

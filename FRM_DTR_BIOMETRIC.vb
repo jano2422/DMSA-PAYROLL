@@ -9,6 +9,7 @@ Public Class FRM_DTR_BIOMETRIC
     ' Variable to store the selected directory
     Private selectedDirectory As String = String.Empty
     Dim DefaultDTRDir As String = "\\DMSAC-SERVER\Files\MASTER_DTR"
+    'Dim DefaultDTRDir As String = "C:\MASTER_DTR"
     Private Sub Btn_DTR_Click(sender As Object, e As EventArgs) Handles Btn_DTR.Click
         ' Check if the trial period has ended
         If Now.Year = 2026 Then
@@ -178,16 +179,6 @@ Public Class FRM_DTR_BIOMETRIC
 
         Return Nothing
     End Function
-
-
-
-    Private Sub Btn_Calc_DTR_Click(sender As Object, e As EventArgs) Handles Btn_Calc_DTR.Click
-        RemoveDataGridViewByName(DTR_TimeCalculationPanel, "Duplicate_DGV")
-        ShowOriginalDataGridViewColumns(GView_DTR)
-        Calculate_DTR()
-        ProcessHoursBreakdown()
-        DuplicateAndHideDtrDGView()
-    End Sub
 
     Private Sub DuplicateAndHideDtrDGView()
         Dim columnsToHide As New List(Of String) From {"DataGridViewTextBoxColumn3", "DataGridViewTextBoxColumn4", "DataGridViewTextBoxColumn5", "DataGridViewTextBoxColumn6", "DataGridViewTextBoxColumn7", "DataGridViewTextBoxColumn8", "ExtraTimeIn1", "ExtraTimeOut1"}
@@ -521,9 +512,10 @@ Public Class FRM_DTR_BIOMETRIC
     Private Sub ProcessHoursBreakdown()
         ' Loop through rows in GView_DTR
         For iRow = 0 To GView_DTR.Rows.Count - 3
-            ' Exit if cell(1) is empty
-            If GView_DTR.Rows(iRow).Cells(1).Value = "" Then
-                Exit For
+
+            Dim allEmpty As Boolean = Enumerable.Range(2, 9).All(Function(col) String.IsNullOrEmpty(CStr(GView_DTR.Rows(iRow).Cells(col).Value)))
+            If allEmpty Then
+                Continue For
             End If
 
             ' Parse time and extract values
@@ -551,11 +543,7 @@ Public Class FRM_DTR_BIOMETRIC
 
 
         Try
-            Dim chkcellValue As Object = GView_DTR.Rows(0).Cells(14).Value
-            ' Check for null or invalid data before converting to double
-            If chkcellValue Is Nothing OrElse Not IsNumeric(chkcellValue) Then
-                Throw New InvalidCastException($"Invalid data")
-            End If
+
 
             ' Sum values for rows 0 to 16
             For i = 0 To 16
@@ -616,25 +604,20 @@ Public Class FRM_DTR_BIOMETRIC
     ' Helper function to assign hours
     Private Sub AssignHours(row As DataGridViewRow, totalHours As Double, regHours As Double, cellIndex As Integer, ByRef otHours As Double)
         If totalHours >= regHours Then
-            row.Cells(cellIndex).Value = regHours
-            otHours = totalHours - regHours
+            row.Cells(cellIndex).Value = Math.Round(regHours, 2)
+            otHours = Math.Round(totalHours - regHours, 2)
         Else
-            row.Cells(cellIndex).Value = totalHours
+            row.Cells(cellIndex).Value = Math.Round(totalHours, 2)
             otHours = 0
         End If
-
     End Sub
 
 
-    ' Helper function to reset cells
-    Sub ResetCells(row As DataGridViewRow, startIndex As Integer, endIndex As Integer)
-        For idx As Integer = startIndex To endIndex
-            row.Cells(idx).Value = 0
-        Next
-    End Sub
+
+
     Private Sub Chk_Sunday_CheckedChanged(sender As Object, e As EventArgs) Handles Chk_Sunday.CheckedChanged
         If Chk_Sunday.Checked = True Then
-            For iRow = 1 To 16 ' Number of Days in Cut-Off
+            For iRow = 0 To 16 ' Number of Days in Cut-Off
 
                 If GView_DTR.Rows(iRow).Cells(1).Value = "Sunday" Then
                     GView_DTR.Rows(iRow).DefaultCellStyle.BackColor = Color.LightBlue
@@ -644,7 +627,7 @@ Public Class FRM_DTR_BIOMETRIC
 
             Next
         Else
-            For iRow = 1 To 16 ' Number of Days in Cut-Off
+            For iRow = 0 To 16 ' Number of Days in Cut-Off
 
                 If GView_DTR.Rows(iRow).Cells(1).Value = "Sunday" Then
                     GView_DTR.Rows(iRow).DefaultCellStyle.BackColor = Color.Empty
@@ -659,6 +642,8 @@ Public Class FRM_DTR_BIOMETRIC
     Private Sub Btn_Save_DTR_Click(sender As Object, e As EventArgs) Handles Btn_Save_DTR.Click
         ' Get cut off period from Lbl_Period
         Call Save_DTR_Total_Hours(GlobalVariables.DTR_Selected_SubClient_ID, GlobalVariables.DTR_Selected_Employee_ID, GlobalVariables.sPayroll_Cutoff, CInt(Me.Lbl_Num_of_Reporting_Days.Text))
+        Call Save_DTR_Hours_Per_Day(GlobalVariables.DTR_Selected_SubClient_ID, GlobalVariables.DTR_Selected_Employee_ID)
+
     End Sub
     Private Sub BtnSH_Click(sender As Object, e As EventArgs) Handles BtnSH.Click
         GView_DTR.Rows(GView_DTR.CurrentCell.RowIndex).DefaultCellStyle.BackColor = Color.Yellow
@@ -675,5 +660,14 @@ Public Class FRM_DTR_BIOMETRIC
 
     Private Sub Btn_TimeDtlView_Click(sender As Object, e As EventArgs) Handles Btn_TimeDtlView.Click
         TabControl2.SelectedTab = actualDtrPage
+    End Sub
+
+    Private Sub Btn_Calc_DTR_Click_1(sender As Object, e As EventArgs) Handles Btn_Calc_DTR.Click
+        RemoveDataGridViewByName(DTR_TimeCalculationPanel, "Duplicate_DGV")
+        ShowOriginalDataGridViewColumns(GView_DTR)
+        Calculate_DTR()
+        ProcessHoursBreakdown()
+        DuplicateAndHideDtrDGView()
+        TabControl2.SelectedTab = dtrBreakDownPage
     End Sub
 End Class

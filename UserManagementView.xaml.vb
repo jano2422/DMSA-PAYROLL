@@ -8,7 +8,7 @@ Public Class UserManagementView
     Private Sub UserManagementView_Loaded(sender As Object, e As RoutedEventArgs) Handles Me.Loaded
         LoadUserLevelOnStart()
 
-        If Not String.Equals(GlobalVariables.sUser_Level, "Administrator", StringComparison.OrdinalIgnoreCase) Then
+        If Not String.Equals(GlobalVariables.sUser_Level, "administrator", StringComparison.OrdinalIgnoreCase) Then
             MessageBox.Show("Access denied. Only administrators are allowed to access this view.", "Unauthorized Access", MessageBoxButton.OK, MessageBoxImage.Warning)
 
             ' Close the parent window
@@ -32,15 +32,16 @@ Public Class UserManagementView
         ' Default state: ComboBox is disabled
         Cmb_UserLevel.IsEnabled = False
 
-        Select Case GlobalVariables.sUser_Level
-            Case "User"
+        Select Case GlobalVariables.sUser_Level.ToLower()
+            Case "user"
                 Cmb_UserLevel.SelectedIndex = 0
 
-            Case "Administrator"
+            Case "administrator"
                 Cmb_UserLevel.IsEnabled = True
                 Cmb_UserLevel.SelectedIndex = 1
         End Select
     End Sub
+
 
 
     Private Sub Btn_Create_Click(sender As Object, e As RoutedEventArgs)

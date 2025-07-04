@@ -29,6 +29,7 @@ Partial Class FRM_LOGIN
         Me.Label2 = New System.Windows.Forms.Label()
         Me.Btn_Confirm = New System.Windows.Forms.Button()
         Me.PictureBox2 = New System.Windows.Forms.PictureBox()
+        Me.BtnChangePw = New System.Windows.Forms.Button()
         CType(Me.PictureBox2, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.SuspendLayout()
         '
@@ -79,12 +80,13 @@ Partial Class FRM_LOGIN
         Me.Label2.ForeColor = System.Drawing.Color.White
         Me.Label2.Location = New System.Drawing.Point(244, 108)
         Me.Label2.Name = "Label2"
-        Me.Label2.Size = New System.Drawing.Size(138, 23)
+        Me.Label2.Size = New System.Drawing.Size(114, 23)
         Me.Label2.TabIndex = 6
-        Me.Label2.Text = "Company ID:"
+        Me.Label2.Text = "Username:"
         '
         'Btn_Confirm
         '
+        Me.Btn_Confirm.Cursor = System.Windows.Forms.Cursors.Hand
         Me.Btn_Confirm.Font = New System.Drawing.Font("Verdana", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.Btn_Confirm.Location = New System.Drawing.Point(379, 206)
         Me.Btn_Confirm.Name = "Btn_Confirm"
@@ -104,12 +106,26 @@ Partial Class FRM_LOGIN
         Me.PictureBox2.TabIndex = 25
         Me.PictureBox2.TabStop = False
         '
+        'BtnChangePw
+        '
+        Me.BtnChangePw.BackColor = System.Drawing.Color.Maroon
+        Me.BtnChangePw.Cursor = System.Windows.Forms.Cursors.Hand
+        Me.BtnChangePw.Font = New System.Drawing.Font("Verdana", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.BtnChangePw.ForeColor = System.Drawing.SystemColors.ControlLightLight
+        Me.BtnChangePw.Location = New System.Drawing.Point(39, 250)
+        Me.BtnChangePw.Name = "BtnChangePw"
+        Me.BtnChangePw.Size = New System.Drawing.Size(192, 31)
+        Me.BtnChangePw.TabIndex = 26
+        Me.BtnChangePw.Text = "Change Password"
+        Me.BtnChangePw.UseVisualStyleBackColor = False
+        '
         'FRM_LOGIN
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
         Me.BackColor = System.Drawing.Color.Black
         Me.ClientSize = New System.Drawing.Size(629, 293)
+        Me.Controls.Add(Me.BtnChangePw)
         Me.Controls.Add(Me.PictureBox2)
         Me.Controls.Add(Me.Btn_Confirm)
         Me.Controls.Add(Me.TxtPassword)
@@ -135,4 +151,5 @@ Partial Class FRM_LOGIN
     Friend WithEvents Label2 As Label
     Friend WithEvents Btn_Confirm As Button
     Friend WithEvents PictureBox2 As PictureBox
+    Friend WithEvents BtnChangePw As Button
 End Class

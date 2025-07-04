@@ -20,6 +20,7 @@ Public Class FRM_DTR_EXPORTS
         Next
 
         ' Set the default selected items to the current month and year
+        Cmb_CutOff.SelectedIndex = 0
         Cmb_Month.SelectedItem = DateTime.Now.ToString("MMM")
         Cmb_Year.SelectedItem = currentYear.ToString()
     End Sub
@@ -49,7 +50,7 @@ Public Class FRM_DTR_EXPORTS
         sCut_Off = monthNumber & "_" & Mid(Cmb_CutOff.Text, 1, 3) & "_" & Cmb_Year.Text
 
         Call Get_DTR_Per_Client(CInt(Lbl_ClientID.Text), sCut_Off)
-
+        Call Generate_DTR_Hours_Matrix(CInt(Lbl_ClientID.Text), sCut_Off)
     End Sub
 
     Private Sub Btn_Export_to_Excell_Click(sender As Object, e As EventArgs) Handles Btn_Export_to_Excell.Click

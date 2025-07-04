@@ -41,6 +41,7 @@ Partial Class FRM_DTR_BIOMETRIC
         Me.DTR_Lbl_Period = New System.Windows.Forms.Label()
         Me.TabControl2 = New System.Windows.Forms.TabControl()
         Me.actualDtrPage = New System.Windows.Forms.TabPage()
+        Me.Btn_Calc_DTR = New System.Windows.Forms.Button()
         Me.Btn_TimeCalcView = New System.Windows.Forms.Button()
         Me.GView_DTR = New System.Windows.Forms.DataGridView()
         Me.DataGridViewTextBoxColumn1 = New System.Windows.Forms.DataGridViewTextBoxColumn()
@@ -75,7 +76,6 @@ Partial Class FRM_DTR_BIOMETRIC
         Me.Btn_TimeDtlView = New System.Windows.Forms.Button()
         Me.DTR_TimeCalculationPanel = New System.Windows.Forms.Panel()
         Me.btn_Breakdown = New System.Windows.Forms.Button()
-        Me.Btn_Calc_DTR = New System.Windows.Forms.Button()
         Me.Lbl_IDNumber = New System.Windows.Forms.Label()
         Me.Lbl_Name = New System.Windows.Forms.Label()
         Me.Label3 = New System.Windows.Forms.Label()
@@ -90,8 +90,6 @@ Partial Class FRM_DTR_BIOMETRIC
         Me.Label9 = New System.Windows.Forms.Label()
         Me.Label4 = New System.Windows.Forms.Label()
         Me.GView_Schedule = New System.Windows.Forms.DataGridView()
-        Me.OpenFileDialog1 = New System.Windows.Forms.OpenFileDialog()
-        Me.Label8 = New System.Windows.Forms.Label()
         Me.Col_DayNum = New System.Windows.Forms.DataGridViewTextBoxColumn()
         Me.Col_Sched_in = New System.Windows.Forms.DataGridViewTextBoxColumn()
         Me.Column1 = New System.Windows.Forms.DataGridViewTextBoxColumn()
@@ -100,6 +98,8 @@ Partial Class FRM_DTR_BIOMETRIC
         Me.Col_FlagShift = New System.Windows.Forms.DataGridViewTextBoxColumn()
         Me.Col_ID = New System.Windows.Forms.DataGridViewTextBoxColumn()
         Me.Col_Attendance = New System.Windows.Forms.DataGridViewTextBoxColumn()
+        Me.OpenFileDialog1 = New System.Windows.Forms.OpenFileDialog()
+        Me.Label8 = New System.Windows.Forms.Label()
         Me.TabControl1.SuspendLayout()
         Me.TabPage1.SuspendLayout()
         Me.TabControl2.SuspendLayout()
@@ -172,9 +172,9 @@ Partial Class FRM_DTR_BIOMETRIC
         Me.DTR_Lbl_Period.ForeColor = System.Drawing.Color.FromArgb(CType(CType(0, Byte), Integer), CType(CType(0, Byte), Integer), CType(CType(192, Byte), Integer))
         Me.DTR_Lbl_Period.Location = New System.Drawing.Point(552, 12)
         Me.DTR_Lbl_Period.Name = "DTR_Lbl_Period"
-        Me.DTR_Lbl_Period.Size = New System.Drawing.Size(111, 20)
+        Me.DTR_Lbl_Period.Size = New System.Drawing.Size(14, 20)
         Me.DTR_Lbl_Period.TabIndex = 16
-        Me.DTR_Lbl_Period.Text = "Cutoff - Period"
+        Me.DTR_Lbl_Period.Text = "-"
         '
         'TabControl2
         '
@@ -189,6 +189,7 @@ Partial Class FRM_DTR_BIOMETRIC
         'actualDtrPage
         '
         Me.actualDtrPage.BackColor = System.Drawing.Color.Wheat
+        Me.actualDtrPage.Controls.Add(Me.Btn_Calc_DTR)
         Me.actualDtrPage.Controls.Add(Me.Btn_TimeCalcView)
         Me.actualDtrPage.Controls.Add(Me.GView_DTR)
         Me.actualDtrPage.Controls.Add(Me.BtnSH)
@@ -203,6 +204,20 @@ Partial Class FRM_DTR_BIOMETRIC
         Me.actualDtrPage.Size = New System.Drawing.Size(1794, 708)
         Me.actualDtrPage.TabIndex = 0
         Me.actualDtrPage.Text = "Time Details"
+        '
+        'Btn_Calc_DTR
+        '
+        Me.Btn_Calc_DTR.BackColor = System.Drawing.Color.OliveDrab
+        Me.Btn_Calc_DTR.Cursor = System.Windows.Forms.Cursors.Hand
+        Me.Btn_Calc_DTR.FlatStyle = System.Windows.Forms.FlatStyle.Flat
+        Me.Btn_Calc_DTR.Font = New System.Drawing.Font("Microsoft Sans Serif", 12.0!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.Btn_Calc_DTR.ForeColor = System.Drawing.SystemColors.ControlLightLight
+        Me.Btn_Calc_DTR.Location = New System.Drawing.Point(6, 593)
+        Me.Btn_Calc_DTR.Name = "Btn_Calc_DTR"
+        Me.Btn_Calc_DTR.Size = New System.Drawing.Size(1779, 52)
+        Me.Btn_Calc_DTR.TabIndex = 75
+        Me.Btn_Calc_DTR.Text = "Calculate Modified DTR/Time Details"
+        Me.Btn_Calc_DTR.UseVisualStyleBackColor = False
         '
         'Btn_TimeCalcView
         '
@@ -238,7 +253,7 @@ Partial Class FRM_DTR_BIOMETRIC
         Me.GView_DTR.MultiSelect = False
         Me.GView_DTR.Name = "GView_DTR"
         Me.GView_DTR.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.CellSelect
-        Me.GView_DTR.Size = New System.Drawing.Size(1782, 544)
+        Me.GView_DTR.Size = New System.Drawing.Size(1782, 503)
         Me.GView_DTR.TabIndex = 1
         '
         'DataGridViewTextBoxColumn1
@@ -491,7 +506,6 @@ Partial Class FRM_DTR_BIOMETRIC
         Me.dtrBreakDownPage.Controls.Add(Me.Btn_TimeDtlView)
         Me.dtrBreakDownPage.Controls.Add(Me.DTR_TimeCalculationPanel)
         Me.dtrBreakDownPage.Controls.Add(Me.btn_Breakdown)
-        Me.dtrBreakDownPage.Controls.Add(Me.Btn_Calc_DTR)
         Me.dtrBreakDownPage.Location = New System.Drawing.Point(4, 29)
         Me.dtrBreakDownPage.Name = "dtrBreakDownPage"
         Me.dtrBreakDownPage.Padding = New System.Windows.Forms.Padding(3)
@@ -540,25 +554,14 @@ Partial Class FRM_DTR_BIOMETRIC
         '
         Me.btn_Breakdown.BackColor = System.Drawing.Color.Gainsboro
         Me.btn_Breakdown.Cursor = System.Windows.Forms.Cursors.Hand
-        Me.btn_Breakdown.Font = New System.Drawing.Font("Microsoft Sans Serif", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.btn_Breakdown.Location = New System.Drawing.Point(9, 651)
+        Me.btn_Breakdown.FlatStyle = System.Windows.Forms.FlatStyle.Flat
+        Me.btn_Breakdown.Font = New System.Drawing.Font("Microsoft Sans Serif", 12.0!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.btn_Breakdown.Location = New System.Drawing.Point(6, 623)
         Me.btn_Breakdown.Name = "btn_Breakdown"
         Me.btn_Breakdown.Size = New System.Drawing.Size(1779, 51)
         Me.btn_Breakdown.TabIndex = 71
-        Me.btn_Breakdown.Text = "Recalculate Totals"
+        Me.btn_Breakdown.Text = "Calculate Modified Time Calculation"
         Me.btn_Breakdown.UseVisualStyleBackColor = False
-        '
-        'Btn_Calc_DTR
-        '
-        Me.Btn_Calc_DTR.BackColor = System.Drawing.Color.DarkGray
-        Me.Btn_Calc_DTR.Cursor = System.Windows.Forms.Cursors.Hand
-        Me.Btn_Calc_DTR.Font = New System.Drawing.Font("Microsoft Sans Serif", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.Btn_Calc_DTR.Location = New System.Drawing.Point(9, 593)
-        Me.Btn_Calc_DTR.Name = "Btn_Calc_DTR"
-        Me.Btn_Calc_DTR.Size = New System.Drawing.Size(1779, 52)
-        Me.Btn_Calc_DTR.TabIndex = 70
-        Me.Btn_Calc_DTR.Text = "Recalculate Hours && Totals"
-        Me.Btn_Calc_DTR.UseVisualStyleBackColor = False
         '
         'Lbl_IDNumber
         '
@@ -568,7 +571,7 @@ Partial Class FRM_DTR_BIOMETRIC
         Me.Lbl_IDNumber.Name = "Lbl_IDNumber"
         Me.Lbl_IDNumber.Size = New System.Drawing.Size(240, 20)
         Me.Lbl_IDNumber.TabIndex = 7
-        Me.Lbl_IDNumber.Text = "ID Number                       "
+        Me.Lbl_IDNumber.Text = "-                    "
         '
         'Lbl_Name
         '
@@ -578,7 +581,7 @@ Partial Class FRM_DTR_BIOMETRIC
         Me.Lbl_Name.Name = "Lbl_Name"
         Me.Lbl_Name.Size = New System.Drawing.Size(240, 20)
         Me.Lbl_Name.TabIndex = 5
-        Me.Lbl_Name.Text = "Juan Dela Cruz                        "
+        Me.Lbl_Name.Text = "-                      "
         '
         'Label3
         '
@@ -712,21 +715,6 @@ Partial Class FRM_DTR_BIOMETRIC
         Me.GView_Schedule.Size = New System.Drawing.Size(727, 637)
         Me.GView_Schedule.TabIndex = 2
         '
-        'OpenFileDialog1
-        '
-        Me.OpenFileDialog1.FileName = "OpenFileDialog1"
-        '
-        'Label8
-        '
-        Me.Label8.AutoSize = True
-        Me.Label8.Font = New System.Drawing.Font("Microsoft Sans Serif", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.Label8.ForeColor = System.Drawing.Color.Yellow
-        Me.Label8.Location = New System.Drawing.Point(1802, 42)
-        Me.Label8.Name = "Label8"
-        Me.Label8.Size = New System.Drawing.Size(80, 20)
-        Me.Label8.TabIndex = 68
-        Me.Label8.Text = "Pure Gold"
-        '
         'Col_DayNum
         '
         Me.Col_DayNum.HeaderText = "Day"
@@ -769,6 +757,21 @@ Partial Class FRM_DTR_BIOMETRIC
         Me.Col_Attendance.DefaultCellStyle = DataGridViewCellStyle12
         Me.Col_Attendance.HeaderText = "Attendance"
         Me.Col_Attendance.Name = "Col_Attendance"
+        '
+        'OpenFileDialog1
+        '
+        Me.OpenFileDialog1.FileName = "OpenFileDialog1"
+        '
+        'Label8
+        '
+        Me.Label8.AutoSize = True
+        Me.Label8.Font = New System.Drawing.Font("Microsoft Sans Serif", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.Label8.ForeColor = System.Drawing.Color.Yellow
+        Me.Label8.Location = New System.Drawing.Point(1802, 42)
+        Me.Label8.Name = "Label8"
+        Me.Label8.Size = New System.Drawing.Size(80, 20)
+        Me.Label8.TabIndex = 68
+        Me.Label8.Text = "Pure Gold"
         '
         'FRM_DTR_BIOMETRIC
         '
@@ -825,7 +828,6 @@ Partial Class FRM_DTR_BIOMETRIC
     Friend WithEvents Btn_Save_DTR As Button
     Friend WithEvents BtnSH As Button
     Friend WithEvents BtnLH As Button
-    Friend WithEvents Btn_Calc_DTR As Button
     Friend WithEvents TabControl2 As TabControl
     Friend WithEvents actualDtrPage As TabPage
     Friend WithEvents dtrBreakDownPage As TabPage
@@ -864,4 +866,5 @@ Partial Class FRM_DTR_BIOMETRIC
     Friend WithEvents Col_FlagShift As DataGridViewTextBoxColumn
     Friend WithEvents Col_ID As DataGridViewTextBoxColumn
     Friend WithEvents Col_Attendance As DataGridViewTextBoxColumn
+    Friend WithEvents Btn_Calc_DTR As Button
 End Class

@@ -1,5 +1,6 @@
 ﻿Public Class FRM_DTR_EMPLOYEE_LIST
     Private Sub FRM_DTR_EMPLOYEE_LIST_Load(sender As Object, e As EventArgs) Handles MyBase.Load
+        Cmb_Category.SelectedItem = "LAST_NAME"
         Call Show_DTR_Employee_List("LAST_NAME", TxtSearch.Text)
     End Sub
     Private Sub FRM_DTR_EMPLOYEE_LIST_FormClosed(sender As Object, e As EventArgs) Handles MyBase.FormClosed

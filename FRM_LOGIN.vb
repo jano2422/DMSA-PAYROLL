@@ -24,7 +24,24 @@ Public Class FRM_LOGIN
 
     End Sub
 
+    Private Sub ShowChangePasswordView()
+        ' Create the user control
+        Dim changePasswordControl As New ChangePasswordView()
 
+        ' Wrap the user control in a new window
+        Dim changePasswordWindow As New System.Windows.Window With {
+        .Title = "Change Password",
+        .Width = 600,
+        .Height = 500,
+        .Content = changePasswordControl,
+        .WindowStartupLocation = System.Windows.WindowStartupLocation.CenterScreen,
+        .ResizeMode = System.Windows.ResizeMode.CanResize,
+        .WindowStyle = System.Windows.WindowStyle.ToolWindow
+    }
+
+        ' Show the window as a dialog (modal), but we don't care about the result
+        changePasswordWindow.ShowDialog()
+    End Sub
     Private Sub TxtPassword_KeyPress(sender As Object, e As KeyPressEventArgs) Handles TxtPassword.KeyPress
 
         If e.KeyChar = Convert.ToChar(Keys.Enter) Then
@@ -37,5 +54,9 @@ Public Class FRM_LOGIN
 
     Private Sub AdminBtn_Click(sender As Object, e As EventArgs)
 
+    End Sub
+
+    Private Sub BtnChangePw_Click(sender As Object, e As EventArgs) Handles BtnChangePw.Click
+        ShowChangePasswordView()
     End Sub
 End Class

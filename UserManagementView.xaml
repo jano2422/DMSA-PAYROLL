@@ -170,7 +170,7 @@
             <!-- Form Section -->
             <StackPanel Grid.Row="0" Orientation="Vertical" Margin="0,0,0,10">
                 <StackPanel Orientation="Horizontal" Margin="0,8">
-                    <TextBlock Text="Company ID:" Width="100" Margin="10,0,10,0"/>
+                    <TextBlock Text="Username:" Width="100" Margin="10,0,10,0"/>
                     <TextBox x:Name="Txt_UserID" Width="200"/>
                 </StackPanel>
 
@@ -194,7 +194,7 @@
             <DataGrid x:Name="UsersDataGrid" Grid.Row="1" AutoGenerateColumns="False" IsReadOnly="True"
                   SelectionChanged="UsersDataGrid_SelectionChanged" Margin="10,10,10,10">
                 <DataGrid.Columns>
-                    <DataGridTextColumn Header="Company ID" Binding="{Binding COMPANY_ID}" Width="*"/>
+                    <DataGridTextColumn Header="Username" Binding="{Binding COMPANY_ID}" Width="*"/>
                     <DataGridTextColumn Header="User Level" Binding="{Binding USER_LEVEL}" Width="*"/>
                 </DataGrid.Columns>
             </DataGrid>

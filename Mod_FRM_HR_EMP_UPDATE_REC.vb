@@ -1,6 +1,37 @@
 ﻿Imports System.Data.OleDb
 Imports System.IO
 Module Mod_FRM_HR_EMP_UPDATE_REC
+
+    Public Sub Update_Employee_Record_New_Client_Assignment(sEmployee_ID As String, iNewClient_ID As Integer)
+        Dim SQL As String
+        Connect_to_MDB()
+
+        Try
+            With FRM_EMP_UPDATE_REC
+
+
+                SQL = "UPDATE HR_EMPLOYEE_RECORD_HDR SET SUB_CLIENT_ID = " & iNewClient_ID & " WHERE EMPLOYEE_ID = '" & sEmployee_ID & "'"
+
+                Dim SQLcmd As OleDbCommand = New OleDbCommand(SQL, GlobalVariables.GlobalCon)
+                SQLcmd.ExecuteNonQuery()
+                SQLcmd.Dispose()
+
+
+                ' MsgBox("Insurance record was successfully updated!", vbInformation, "Saved!")
+
+            End With
+        Catch ex As Exception
+            MsgBox(ex.Message, vbCritical, "Error updating EMPLOYEE HDR record")
+
+        End Try
+
+        GlobalVariables.GlobalCon.Close()
+
+
+
+
+    End Sub
+
     Public Sub Show_Status_Change_History(sEmployee_ID As String)
 
         Dim da As New OleDb.OleDbDataAdapter
@@ -771,7 +802,7 @@ Module Mod_FRM_HR_EMP_UPDATE_REC
                 SQL = ""
                 SQL = "DELETE FROM HR_SECURITY_LICENSE_RECORD_DTL WHERE EMPLOYEE_ID = '" & sEmployee_ID & "' and ID = " & sRef_ID & ""
 
-            Dim SQLcmd As OleDbCommand = New OleDbCommand(SQL, GlobalVariables.GlobalCon)
+                Dim SQLcmd As OleDbCommand = New OleDbCommand(SQL, GlobalVariables.GlobalCon)
                 SQLcmd.ExecuteNonQuery()
                 SQLcmd.Dispose()
 

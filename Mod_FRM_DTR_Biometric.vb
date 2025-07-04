@@ -33,11 +33,14 @@ Module Mod_Biometric_DTR
 
                 ' Iterate through each row in the DTR (Daily Time Record) grid
                 For Each row As DataGridViewRow In .GView_DTR.Rows
-                    ' Skip empty rows
-                    If String.IsNullOrEmpty(CStr(row.Cells(0)?.Value)) Then Continue For
+                    ' Skip rows that are entirely empty
+                    Dim isRowEmpty As Boolean = row.Cells.Cast(Of DataGridViewCell)().All(Function(cell) String.IsNullOrWhiteSpace(CStr(cell?.Value))) OrElse
+                        String.IsNullOrWhiteSpace(CStr(row.Cells(0)?.Value))
+
+                    If isRowEmpty Then Continue For
 
                     ' Extract the first date value (in string format) and parse it
-                    Dim firstDate As String = GetFirstDate(row.Cells(0)?.Value.ToString())
+                    Dim firstDate As String = GetFirstDate(row.Cells(0)?.Value?.ToString())
                     Dim parsedDate = ParseDate(firstDate)
                     If parsedDate Is Nothing Then Continue For
 
@@ -51,6 +54,7 @@ Module Mod_Biometric_DTR
                     Dim scheduledTimeOut As String = GetScheduleTime(dayOfMonth, 3)
                     ValidateScheduleTimes(dayOfMonth, scheduledTimeIn, scheduledTimeOut, invalidRows)
                 Next
+
 
                 ' If there are any invalid rows, show an error message and exit
                 If invalidRows.Length > 0 Then
@@ -127,17 +131,21 @@ Module Mod_Biometric_DTR
         Dim absentCount As Integer = 0
 
         For Each row As DataGridViewRow In FRM_DTR_BIOMETRIC.GView_DTR.Rows
-            If String.IsNullOrWhiteSpace(CStr(row.Cells(0)?.Value)) Then Exit For
+            ' Check if the entire row is empty (skip if true)
+            Dim isRowEmpty As Boolean =
+        row.Cells.Cast(Of DataGridViewCell)().All(Function(cell) String.IsNullOrWhiteSpace(CStr(cell?.Value))) OrElse
+        String.IsNullOrWhiteSpace(CStr(row.Cells(0)?.Value))
 
-            ' Extract date and validate
-            Dim firstDate As String = GetFirstDate(row.Cells(0)?.Value.ToString())
+            If isRowEmpty Then Continue For
+
+            ' Proceed with processing since this row contains data
+            Dim firstDate As String = GetFirstDate(row.Cells(0)?.Value?.ToString())
             Dim parsedDate = ParseDate(firstDate)
             If parsedDate Is Nothing Then Throw New Exception("Invalid Date")
 
             Dim dayOfMonth As Integer = parsedDate.Value.Day
             Dim scheduleFound As Boolean = False
 
-            ' Match schedule row for the current day
             For Each scheduleRow As DataGridViewRow In FRM_DTR_BIOMETRIC.GView_Schedule.Rows
                 If scheduleRow.Cells(0)?.Value?.ToString() = dayOfMonth.ToString() Then
                     scheduleFound = True
@@ -150,6 +158,7 @@ Module Mod_Biometric_DTR
                 absentCount += 1
             End If
         Next
+
 
         ' Update UI elements showing the count of present and absent days
         FRM_DTR_BIOMETRIC.Lbl_Num_of_Reporting_Days.Text = presentCount
@@ -243,6 +252,12 @@ Module Mod_Biometric_DTR
         Parsed_StrToDate(breakTimeStr, parsedTime)
         Return parsedTime
     End Function
+    ' Helper function to reset cells
+    Sub ResetCells(row As DataGridViewRow, startIndex As Integer, endIndex As Integer)
+        For idx As Integer = startIndex To endIndex
+            row.Cells(idx).Value = Nothing
+        Next
+    End Sub
     ' Calculates overtime and total hours worked (including breaks)
     Private Sub CalculateOvertimeAndTotalHours()
         Dim totalOverallWorkedMinutes As Integer = 0 ' Variable to accumulate total worked minutes
@@ -251,7 +266,8 @@ Module Mod_Biometric_DTR
             Dim overtimeMinutes As Integer = 0
             Dim totalWorkedMinutes As Integer = 0
             If String.IsNullOrEmpty(CStr(FRM_DTR_BIOMETRIC.GView_DTR.Rows(i).Cells(0).Value)) Then
-                Exit For
+                ResetCells(FRM_DTR_BIOMETRIC.GView_DTR.Rows(i), 10, 14)
+                Continue For
             End If
 
             ' Extract date and validate
@@ -526,6 +542,49 @@ Module Mod_Biometric_DTR
 
     End Sub
 
+    Public Sub Save_DTR_Hours_Per_Day(iSub_Client_ID As Integer, sEmployee_ID As String)
+
+        Dim SQL As String
+        Connect_to_MDB()
+
+        Try
+            With FRM_DTR_BIOMETRIC.GView_DTR
+                For i = 0 To .Rows.Count - 1
+
+                    If IsNothing(.Rows(i).Cells(0).Value) Then
+                        Continue For
+                    End If
+
+                    ' Format the date for MS Access
+                    Dim reportDate As String = "#" & Format(CDate(.Rows(i).Cells(0).Value), "yyyy-MM-dd") & "#"
+                    Dim reportDay As String = .Rows(i).Cells(1).Value.ToString()
+                    Dim totalHours As Double = 0
+
+                    ' Safe conversion using TryParse
+                    Dim cellValue As Object = .Rows(i).Cells(14).Value
+                    If Not IsNothing(cellValue) AndAlso Not String.IsNullOrWhiteSpace(cellValue.ToString()) Then
+                        Double.TryParse(cellValue.ToString(), totalHours)
+                    End If
+
+                    ' Build SQL
+                    SQL = "INSERT INTO PRL_DTR_HOURS_PER_DAY (EMPLOYEE_ID, SUB_CLIENT_ID, REPORT_DATE, REPORT_DAY, DAILY_TOTAL_HOURS) " &
+                      "VALUES ('" & sEmployee_ID & "', " & iSub_Client_ID & ", " & reportDate & ", '" & reportDay & "', " & totalHours & ")"
+
+                    Using SQLcmd As New OleDbCommand(SQL, GlobalVariables.GlobalCon)
+                        SQLcmd.ExecuteNonQuery()
+                    End Using
+
+                Next
+            End With
+        Catch ex As Exception
+            MsgBox(ex.Message, vbCritical, "Error saving Total Hours Per Day!")
+        Finally
+            If GlobalVariables.GlobalCon.State = ConnectionState.Open Then
+                GlobalVariables.GlobalCon.Close()
+            End If
+        End Try
+
+    End Sub
 
     Public Sub Show_DTR_Employee_List(sCategory As String, sValue As String)
 

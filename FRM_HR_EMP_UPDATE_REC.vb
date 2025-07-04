@@ -4,12 +4,16 @@
     Private Sub FRM_EMP_UPDATE_REC_Load(sender As Object, e As EventArgs) Handles MyBase.Load
         With FRM_EMP_REG
 
-            GlobalVariables.Photo_Path_from_DB = Show_Photo_in_Employee_Rec(GlobalVariables.Selected_Employee_ID)
-            If GlobalVariables.Photo_Path_from_DB = "0" Then
+            Try
+                GlobalVariables.Photo_Path_from_DB = Show_Photo_in_Employee_Rec(GlobalVariables.Selected_Employee_ID)
+                If GlobalVariables.Photo_Path_from_DB = "0" Then
+                    Me.Pic_Employee_Photo.Image = My.Resources.DMSA_Logo
+                Else ' with Path from DB
+                    Me.Pic_Employee_Photo.Image = Image.FromFile(GlobalVariables.Photo_Path_from_DB)
+                End If
+            Catch ex As Exception
                 Me.Pic_Employee_Photo.Image = My.Resources.DMSA_Logo
-            Else ' with Path from DB
-                Me.Pic_Employee_Photo.Image = Image.FromFile(GlobalVariables.Photo_Path_from_DB)
-            End If
+            End Try
 
             Panel3.Size = New Size(845, 131)
 
@@ -629,6 +633,10 @@
 
     Private Sub Btn_Client_Delete_Click(sender As Object, e As EventArgs) Handles Btn_Client_Delete.Click
         If Btn_Client_Delete.Text = "Delete" Then
+
+            MsgBox("Only Administrator can delete records.", vbExclamation, "Delete not allowed")
+            Exit Sub
+
             Dim sResponse As String
             sResponse = MsgBox("Are you sure you want to delete this record?", vbQuestion + vbYesNo, "Delete?")
             If sResponse = vbYes Then
@@ -780,6 +788,7 @@
             'End If
 
             Call Add_New_Client_Historical_Record(Me.Lbl_Employee_ID.Text, Me.Txt_ClientID.Text)
+            Call Update_Employee_Record_New_Client_Assignment(Me.Lbl_Employee_ID.Text, Me.Txt_ClientID.Text)
             Call Show_Employee_Client_History_at_Client_Change(Me.Lbl_Employee_ID.Text)
 
             Btn_Client_Add.Text = "Add"

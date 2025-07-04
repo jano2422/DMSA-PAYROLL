@@ -98,7 +98,8 @@ Public Class FRM_EMP_REG
 
             End If
         Catch ex As Exception
-            MsgBox(ex.Message, vbCritical, "Loading Photo Error")
+            Me.Pic_Employee_Photo.Image = My.Resources.DMSA_Logo
+            'MsgBox(ex.Message, vbCritical, "Loading Photo Error")
         End Try
 
 

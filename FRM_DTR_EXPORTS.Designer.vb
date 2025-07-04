@@ -1,9 +1,9 @@
-﻿<Global.Microsoft.VisualBasic.CompilerServices.DesignerGenerated()> _
+﻿<Global.Microsoft.VisualBasic.CompilerServices.DesignerGenerated()>
 Partial Class FRM_DTR_EXPORTS
     Inherits System.Windows.Forms.Form
 
     'Form overrides dispose to clean up the component list.
-    <System.Diagnostics.DebuggerNonUserCode()> _
+    <System.Diagnostics.DebuggerNonUserCode()>
     Protected Overrides Sub Dispose(ByVal disposing As Boolean)
         Try
             If disposing AndAlso components IsNot Nothing Then
@@ -20,7 +20,7 @@ Partial Class FRM_DTR_EXPORTS
     'NOTE: The following procedure is required by the Windows Form Designer
     'It can be modified using the Windows Form Designer.  
     'Do not modify it using the code editor.
-    <System.Diagnostics.DebuggerStepThrough()> _
+    <System.Diagnostics.DebuggerStepThrough()>
     Private Sub InitializeComponent()
         Me.Panel1 = New System.Windows.Forms.Panel()
         Me.TabControl1 = New System.Windows.Forms.TabControl()
@@ -52,9 +52,13 @@ Partial Class FRM_DTR_EXPORTS
         Me.Lbl_Client_Address = New System.Windows.Forms.Label()
         Me.Lbl_ClientID = New System.Windows.Forms.Label()
         Me.Label7 = New System.Windows.Forms.Label()
+        Me.TabPage2 = New System.Windows.Forms.TabPage()
+        Me.DGV_DTR_MATRIX = New System.Windows.Forms.DataGridView()
         Me.TabControl1.SuspendLayout()
         Me.TabPage1.SuspendLayout()
         CType(Me.PictureBox1, System.ComponentModel.ISupportInitialize).BeginInit()
+        Me.TabPage2.SuspendLayout()
+        CType(Me.DGV_DTR_MATRIX, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.SuspendLayout()
         '
         'Panel1
@@ -69,6 +73,7 @@ Partial Class FRM_DTR_EXPORTS
         'TabControl1
         '
         Me.TabControl1.Controls.Add(Me.TabPage1)
+        Me.TabControl1.Controls.Add(Me.TabPage2)
         Me.TabControl1.Font = New System.Drawing.Font("Microsoft Sans Serif", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.TabControl1.Location = New System.Drawing.Point(29, 279)
         Me.TabControl1.Name = "TabControl1"
@@ -342,6 +347,28 @@ Partial Class FRM_DTR_EXPORTS
         Me.Label7.TabIndex = 610
         Me.Label7.Text = "Client ID:"
         '
+        'TabPage2
+        '
+        Me.TabPage2.Controls.Add(Me.DGV_DTR_MATRIX)
+        Me.TabPage2.Location = New System.Drawing.Point(4, 29)
+        Me.TabPage2.Name = "TabPage2"
+        Me.TabPage2.Padding = New System.Windows.Forms.Padding(3)
+        Me.TabPage2.Size = New System.Drawing.Size(1391, 496)
+        Me.TabPage2.TabIndex = 1
+        Me.TabPage2.Text = "Hours Per Day"
+        Me.TabPage2.UseVisualStyleBackColor = True
+        '
+        'DGV_DTR_MATRIX
+        '
+        Me.DGV_DTR_MATRIX.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.AllCells
+        Me.DGV_DTR_MATRIX.BackgroundColor = System.Drawing.Color.FromArgb(CType(CType(255, Byte), Integer), CType(CType(224, Byte), Integer), CType(CType(192, Byte), Integer))
+        Me.DGV_DTR_MATRIX.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize
+        Me.DGV_DTR_MATRIX.GridColor = System.Drawing.Color.FromArgb(CType(CType(255, Byte), Integer), CType(CType(224, Byte), Integer), CType(CType(192, Byte), Integer))
+        Me.DGV_DTR_MATRIX.Location = New System.Drawing.Point(6, 6)
+        Me.DGV_DTR_MATRIX.Name = "DGV_DTR_MATRIX"
+        Me.DGV_DTR_MATRIX.Size = New System.Drawing.Size(1379, 484)
+        Me.DGV_DTR_MATRIX.TabIndex = 72
+        '
         'FRM_DTR_EXPORTS
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
@@ -373,6 +400,8 @@ Partial Class FRM_DTR_EXPORTS
         Me.TabControl1.ResumeLayout(False)
         Me.TabPage1.ResumeLayout(False)
         CType(Me.PictureBox1, System.ComponentModel.ISupportInitialize).EndInit()
+        Me.TabPage2.ResumeLayout(False)
+        CType(Me.DGV_DTR_MATRIX, System.ComponentModel.ISupportInitialize).EndInit()
         Me.ResumeLayout(False)
         Me.PerformLayout()
 
@@ -408,4 +437,6 @@ Partial Class FRM_DTR_EXPORTS
     Friend WithEvents Lbl_ClientID As Label
     Friend WithEvents Label7 As Label
     Friend WithEvents OT_REG As ColumnHeader
+    Friend WithEvents TabPage2 As TabPage
+    Friend WithEvents DGV_DTR_MATRIX As DataGridView
 End Class

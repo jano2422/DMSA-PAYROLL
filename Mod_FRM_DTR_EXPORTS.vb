@@ -2,6 +2,32 @@
 Imports Microsoft.Office.Interop
 Module Mod_FRM_DTR_EXPORTS
 
+    Private Sub WriteHeaderInfo(objSheet As Excel.Worksheet, sAddress As String, sCutOff As String)
+        objSheet.Cells(2, 1).value = "Client ID:"
+        objSheet.Cells(3, 1).value = "Client Address:"
+        objSheet.Cells(4, 1).value = "Period:"
+
+        objSheet.Cells(2, 2).value = UCase(FRM_DTR_EXPORTS.Lbl_Client_Name.Text)
+        objSheet.Cells(3, 2).value = sAddress
+        objSheet.Cells(4, 2).value = sCutOff
+    End Sub
+
+    Private Function TryGetNumericValue(value As String) As Double
+        Dim parsedValue As Double
+        If Double.TryParse(value, parsedValue) Then
+            Return parsedValue
+        End If
+
+        Return 0
+    End Function
+
+    Private Sub FormatRangeAsTable(range As Excel.Range)
+        With range.Borders
+            .LineStyle = Excel.XlLineStyle.xlContinuous
+            .Weight = Excel.XlBorderWeight.xlThin
+        End With
+    End Sub
+
     Public Sub Export_DTR_Per_Client_to_Excell(sClient As String, sAddress As String, sCutOff As String)
 
         Try
@@ -17,13 +43,7 @@ Module Mod_FRM_DTR_EXPORTS
             objSheet.Name = "SUMMARY"
 
             ' Header Info
-            objSheet.Cells(2, 1).value = "Client ID:"
-            objSheet.Cells(3, 1).value = "Client Address:"
-            objSheet.Cells(4, 1).value = "Period:"
-
-            objSheet.Cells(2, 2).value = UCase(FRM_DTR_EXPORTS.Lbl_Client_Name.Text)
-            objSheet.Cells(3, 2).value = sAddress
-            objSheet.Cells(4, 2).value = sCutOff
+            WriteHeaderInfo(objSheet, sAddress, sCutOff)
 
             ' Table Header
             objSheet.Cells(7, 1).value = "Employee Name"
@@ -50,13 +70,7 @@ Module Mod_FRM_DTR_EXPORTS
             objSheet2.Name = "DAILY_TOTAL_HOURS"
 
             ' Copy same header info to Sheet2
-            objSheet2.Cells(2, 1).value = "Client ID:"
-            objSheet2.Cells(3, 1).value = "Client Address:"
-            objSheet2.Cells(4, 1).value = "Period:"
-
-            objSheet2.Cells(2, 2).value = UCase(FRM_DTR_EXPORTS.Lbl_Client_Name.Text)
-            objSheet2.Cells(3, 2).value = sAddress
-            objSheet2.Cells(4, 2).value = sCutOff
+            WriteHeaderInfo(objSheet2, sAddress, sCutOff)
 
             ' Write DGV Matrix table below the header (start at row 7)
             Dim dgv As DataGridView = FRM_DTR_EXPORTS.DGV_DTR_MATRIX
@@ -80,6 +94,135 @@ Module Mod_FRM_DTR_EXPORTS
                 .HorizontalAlignment = Excel.XlHAlign.xlHAlignCenter
                 .VerticalAlignment = Excel.XlVAlign.xlVAlignCenter
             End With
+
+            ' === Sheet3: PAYROLL ===
+            Dim payrollSheet As Excel.Worksheet = CType(objExcel.Sheets.Add(After:=objExcel.Sheets(objExcel.Sheets.Count)), Excel.Worksheet)
+            payrollSheet.Name = "PAYROLL"
+
+            Dim payrollHeaderRange As Excel.Range = payrollSheet.Range("A1", "W1")
+            payrollHeaderRange.Merge()
+            payrollHeaderRange.Value = "PAYROLL"
+            payrollHeaderRange.Font.Bold = True
+            payrollHeaderRange.HorizontalAlignment = Excel.XlHAlign.xlHAlignCenter
+
+            WriteHeaderInfo(payrollSheet, sAddress, sCutOff)
+
+            Dim payrollHeaders As String() = {
+                "NAME", "NO. DAYS", "TOTAL HOURS", "REG", "SUN", "LH", "SH", "ND",
+                "OT/HRS", "BASIC", "SUN PAY", "LH PAY", "SH PAY", "OT PAY", "INC",
+                "OFFICER'S ALLOW", "TOTAL EARNINGS", "CB", "SSS LOAN", "PI LOAN",
+                "TOTAL DEDUCTIONS", "NET AMOUNT PAID", "SIGNATURE"
+            }
+
+            For iCol As Integer = 0 To payrollHeaders.Length - 1
+                payrollSheet.Cells(7, iCol + 1).Value = payrollHeaders(iCol)
+            Next
+
+            With FRM_DTR_EXPORTS.LV_DTR_Per_Client_List
+                For iRow = 0 To .Items.Count - 1
+                    Dim baseRow As Integer = 8 + iRow
+                    Dim item = .Items(iRow)
+
+                    payrollSheet.Cells(baseRow, 1).Value = item.SubItems(1).Text
+                    payrollSheet.Cells(baseRow, 2).Value = item.SubItems(2).Text
+                    payrollSheet.Cells(baseRow, 3).Value = item.SubItems(3).Text
+                    payrollSheet.Cells(baseRow, 4).Value = item.SubItems(4).Text
+                    payrollSheet.Cells(baseRow, 5).Value = item.SubItems(5).Text
+                    payrollSheet.Cells(baseRow, 6).Value = item.SubItems(7).Text
+                    payrollSheet.Cells(baseRow, 7).Value = item.SubItems(6).Text
+                    payrollSheet.Cells(baseRow, 9).Value = item.SubItems(8).Text
+
+                    payrollSheet.Cells(baseRow, 18).Value = item.SubItems(9).Text
+                    payrollSheet.Cells(baseRow, 19).Value = item.SubItems(10).Text
+                    payrollSheet.Cells(baseRow, 20).Value = item.SubItems(11).Text
+
+                    Dim totalDeductions As Double = TryGetNumericValue(item.SubItems(9).Text) +
+                        TryGetNumericValue(item.SubItems(10).Text) +
+                        TryGetNumericValue(item.SubItems(11).Text)
+                    payrollSheet.Cells(baseRow, 21).Value = If(totalDeductions > 0, totalDeductions.ToString("0.00"), "")
+                Next
+            End With
+
+            payrollSheet.Rows(7).Font.Bold = True
+            payrollSheet.Columns.AutoFit()
+            FormatRangeAsTable(payrollSheet.Range("A7", "W" & (7 + FRM_DTR_EXPORTS.LV_DTR_Per_Client_List.Items.Count + 1).ToString()))
+
+            ' === Sheet4: PAYSLIP ===
+            Dim payslipSheet As Excel.Worksheet = CType(objExcel.Sheets.Add(After:=objExcel.Sheets(objExcel.Sheets.Count)), Excel.Worksheet)
+            payslipSheet.Name = "PAYSLIP"
+
+            Dim payslipTitleRange As Excel.Range = payslipSheet.Range("A1", "H1")
+            payslipTitleRange.Merge()
+            payslipTitleRange.Value = "PAYSLIP"
+            payslipTitleRange.Font.Bold = True
+            payslipTitleRange.HorizontalAlignment = Excel.XlHAlign.xlHAlignCenter
+
+            Dim currentRow As Integer = 3
+            With FRM_DTR_EXPORTS.LV_DTR_Per_Client_List
+                For iRow = 0 To .Items.Count - 1
+                    Dim item = .Items(iRow)
+
+                    payslipSheet.Cells(currentRow, 1).Value = "Client:"
+                    payslipSheet.Cells(currentRow, 2).Value = UCase(FRM_DTR_EXPORTS.Lbl_Client_Name.Text)
+                    currentRow += 1
+
+                    payslipSheet.Cells(currentRow, 1).Value = "Address:"
+                    payslipSheet.Cells(currentRow, 2).Value = sAddress
+                    currentRow += 1
+
+                    payslipSheet.Cells(currentRow, 1).Value = "Period:"
+                    payslipSheet.Cells(currentRow, 2).Value = sCutOff
+                    currentRow += 1
+
+                    payslipSheet.Cells(currentRow, 1).Value = "Employee:"
+                    payslipSheet.Cells(currentRow, 2).Value = item.SubItems(1).Text
+                    currentRow += 1
+
+                    payslipSheet.Cells(currentRow, 1).Value = "No. of Days:"
+                    payslipSheet.Cells(currentRow, 2).Value = item.SubItems(2).Text
+                    payslipSheet.Cells(currentRow, 4).Value = "Total Hours:"
+                    payslipSheet.Cells(currentRow, 5).Value = item.SubItems(3).Text
+                    currentRow += 1
+
+                    Dim tableStartRow As Integer = currentRow
+                    payslipSheet.Range("A" & currentRow, "D" & currentRow).Merge()
+                    payslipSheet.Range("E" & currentRow, "H" & currentRow).Merge()
+                    payslipSheet.Cells(currentRow, 1).Value = "EARNINGS"
+                    payslipSheet.Cells(currentRow, 5).Value = "DEDUCTIONS"
+                    payslipSheet.Rows(currentRow).Font.Bold = True
+                    currentRow += 1
+
+                    payslipSheet.Cells(currentRow, 1).Value = "REG"
+                    payslipSheet.Cells(currentRow, 2).Value = item.SubItems(4).Text
+                    payslipSheet.Cells(currentRow, 5).Value = "CB"
+                    payslipSheet.Cells(currentRow, 6).Value = item.SubItems(9).Text
+                    currentRow += 1
+
+                    payslipSheet.Cells(currentRow, 1).Value = "SUN"
+                    payslipSheet.Cells(currentRow, 2).Value = item.SubItems(5).Text
+                    payslipSheet.Cells(currentRow, 5).Value = "SSS LOAN"
+                    payslipSheet.Cells(currentRow, 6).Value = item.SubItems(10).Text
+                    currentRow += 1
+
+                    payslipSheet.Cells(currentRow, 1).Value = "SH"
+                    payslipSheet.Cells(currentRow, 2).Value = item.SubItems(6).Text
+                    payslipSheet.Cells(currentRow, 5).Value = "PI LOAN"
+                    payslipSheet.Cells(currentRow, 6).Value = item.SubItems(11).Text
+                    currentRow += 1
+
+                    payslipSheet.Cells(currentRow, 1).Value = "LH"
+                    payslipSheet.Cells(currentRow, 2).Value = item.SubItems(7).Text
+                    currentRow += 1
+
+                    payslipSheet.Cells(currentRow, 1).Value = "OT REG"
+                    payslipSheet.Cells(currentRow, 2).Value = item.SubItems(8).Text
+                    currentRow += 2
+
+                    FormatRangeAsTable(payslipSheet.Range("A" & tableStartRow.ToString(), "H" & (currentRow - 1).ToString()))
+                Next
+            End With
+
+            payslipSheet.Columns.AutoFit()
 
         Catch ex As Exception
             MsgBox(ex.ToString)

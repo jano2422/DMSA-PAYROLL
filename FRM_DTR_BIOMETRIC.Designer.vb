@@ -100,6 +100,13 @@ Partial Class FRM_DTR_BIOMETRIC
         Me.Col_Attendance = New System.Windows.Forms.DataGridViewTextBoxColumn()
         Me.OpenFileDialog1 = New System.Windows.Forms.OpenFileDialog()
         Me.Label8 = New System.Windows.Forms.Label()
+        Me.dtrDeductions = New System.Windows.Forms.TabPage()
+        Me.szCashBond = New System.Windows.Forms.TextBox()
+        Me.szPILoan = New System.Windows.Forms.TextBox()
+        Me.szSSSLoan = New System.Windows.Forms.TextBox()
+        Me.Label12 = New System.Windows.Forms.Label()
+        Me.Label13 = New System.Windows.Forms.Label()
+        Me.Label14 = New System.Windows.Forms.Label()
         Me.TabControl1.SuspendLayout()
         Me.TabPage1.SuspendLayout()
         Me.TabControl2.SuspendLayout()
@@ -180,6 +187,7 @@ Partial Class FRM_DTR_BIOMETRIC
         '
         Me.TabControl2.Controls.Add(Me.actualDtrPage)
         Me.TabControl2.Controls.Add(Me.dtrBreakDownPage)
+        Me.TabControl2.Controls.Add(Me.dtrDeductions)
         Me.TabControl2.Location = New System.Drawing.Point(32, 67)
         Me.TabControl2.Name = "TabControl2"
         Me.TabControl2.SelectedIndex = 0
@@ -502,6 +510,12 @@ Partial Class FRM_DTR_BIOMETRIC
         '
         'dtrBreakDownPage
         '
+        Me.dtrBreakDownPage.Controls.Add(Me.Label14)
+        Me.dtrBreakDownPage.Controls.Add(Me.Label13)
+        Me.dtrBreakDownPage.Controls.Add(Me.Label12)
+        Me.dtrBreakDownPage.Controls.Add(Me.szSSSLoan)
+        Me.dtrBreakDownPage.Controls.Add(Me.szPILoan)
+        Me.dtrBreakDownPage.Controls.Add(Me.szCashBond)
         Me.dtrBreakDownPage.Controls.Add(Me.Btn_Save_DTR)
         Me.dtrBreakDownPage.Controls.Add(Me.Btn_TimeDtlView)
         Me.dtrBreakDownPage.Controls.Add(Me.DTR_TimeCalculationPanel)
@@ -519,9 +533,9 @@ Partial Class FRM_DTR_BIOMETRIC
         Me.Btn_Save_DTR.BackColor = System.Drawing.Color.YellowGreen
         Me.Btn_Save_DTR.Font = New System.Drawing.Font("Microsoft Sans Serif", 12.0!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.Btn_Save_DTR.ForeColor = System.Drawing.SystemColors.ControlLightLight
-        Me.Btn_Save_DTR.Location = New System.Drawing.Point(1612, 10)
+        Me.Btn_Save_DTR.Location = New System.Drawing.Point(1314, 623)
         Me.Btn_Save_DTR.Name = "Btn_Save_DTR"
-        Me.Btn_Save_DTR.Size = New System.Drawing.Size(173, 51)
+        Me.Btn_Save_DTR.Size = New System.Drawing.Size(447, 51)
         Me.Btn_Save_DTR.TabIndex = 69
         Me.Btn_Save_DTR.Text = "Save"
         Me.Btn_Save_DTR.UseVisualStyleBackColor = False
@@ -547,7 +561,7 @@ Partial Class FRM_DTR_BIOMETRIC
         Me.DTR_TimeCalculationPanel.AutoScroll = True
         Me.DTR_TimeCalculationPanel.Location = New System.Drawing.Point(6, 70)
         Me.DTR_TimeCalculationPanel.Name = "DTR_TimeCalculationPanel"
-        Me.DTR_TimeCalculationPanel.Size = New System.Drawing.Size(1779, 517)
+        Me.DTR_TimeCalculationPanel.Size = New System.Drawing.Size(1260, 517)
         Me.DTR_TimeCalculationPanel.TabIndex = 72
         '
         'btn_Breakdown
@@ -558,7 +572,7 @@ Partial Class FRM_DTR_BIOMETRIC
         Me.btn_Breakdown.Font = New System.Drawing.Font("Microsoft Sans Serif", 12.0!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.btn_Breakdown.Location = New System.Drawing.Point(6, 623)
         Me.btn_Breakdown.Name = "btn_Breakdown"
-        Me.btn_Breakdown.Size = New System.Drawing.Size(1779, 51)
+        Me.btn_Breakdown.Size = New System.Drawing.Size(1260, 51)
         Me.btn_Breakdown.TabIndex = 71
         Me.btn_Breakdown.Text = "Calculate Modified Time Calculation"
         Me.btn_Breakdown.UseVisualStyleBackColor = False
@@ -773,6 +787,64 @@ Partial Class FRM_DTR_BIOMETRIC
         Me.Label8.TabIndex = 68
         Me.Label8.Text = "Pure Gold"
         '
+        'dtrDeductions
+        '
+        Me.dtrDeductions.Location = New System.Drawing.Point(4, 29)
+        Me.dtrDeductions.Name = "dtrDeductions"
+        Me.dtrDeductions.Padding = New System.Windows.Forms.Padding(3)
+        Me.dtrDeductions.Size = New System.Drawing.Size(1794, 708)
+        Me.dtrDeductions.TabIndex = 2
+        Me.dtrDeductions.Text = "Deductions"
+        Me.dtrDeductions.UseVisualStyleBackColor = True
+        '
+        'szCashBond
+        '
+        Me.szCashBond.Location = New System.Drawing.Point(1417, 80)
+        Me.szCashBond.Name = "szCashBond"
+        Me.szCashBond.Size = New System.Drawing.Size(321, 26)
+        Me.szCashBond.TabIndex = 74
+        '
+        'szPILoan
+        '
+        Me.szPILoan.Location = New System.Drawing.Point(1417, 246)
+        Me.szPILoan.Name = "szPILoan"
+        Me.szPILoan.Size = New System.Drawing.Size(321, 26)
+        Me.szPILoan.TabIndex = 75
+        '
+        'szSSSLoan
+        '
+        Me.szSSSLoan.Location = New System.Drawing.Point(1417, 165)
+        Me.szSSSLoan.Name = "szSSSLoan"
+        Me.szSSSLoan.Size = New System.Drawing.Size(321, 26)
+        Me.szSSSLoan.TabIndex = 76
+        '
+        'Label12
+        '
+        Me.Label12.AutoSize = True
+        Me.Label12.Location = New System.Drawing.Point(1314, 86)
+        Me.Label12.Name = "Label12"
+        Me.Label12.Size = New System.Drawing.Size(92, 20)
+        Me.Label12.TabIndex = 77
+        Me.Label12.Text = "Cash Bond:"
+        '
+        'Label13
+        '
+        Me.Label13.AutoSize = True
+        Me.Label13.Location = New System.Drawing.Point(1320, 171)
+        Me.Label13.Name = "Label13"
+        Me.Label13.Size = New System.Drawing.Size(86, 20)
+        Me.Label13.TabIndex = 78
+        Me.Label13.Text = "SSS Loan:"
+        '
+        'Label14
+        '
+        Me.Label14.AutoSize = True
+        Me.Label14.Location = New System.Drawing.Point(1338, 252)
+        Me.Label14.Name = "Label14"
+        Me.Label14.Size = New System.Drawing.Size(68, 20)
+        Me.Label14.TabIndex = 79
+        Me.Label14.Text = "PI Loan:"
+        '
         'FRM_DTR_BIOMETRIC
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
@@ -793,6 +865,7 @@ Partial Class FRM_DTR_BIOMETRIC
         Me.actualDtrPage.PerformLayout()
         CType(Me.GView_DTR, System.ComponentModel.ISupportInitialize).EndInit()
         Me.dtrBreakDownPage.ResumeLayout(False)
+        Me.dtrBreakDownPage.PerformLayout()
         Me.TabPage2.ResumeLayout(False)
         Me.TabPage2.PerformLayout()
         CType(Me.GView_Schedule, System.ComponentModel.ISupportInitialize).EndInit()
@@ -867,4 +940,11 @@ Partial Class FRM_DTR_BIOMETRIC
     Friend WithEvents Col_ID As DataGridViewTextBoxColumn
     Friend WithEvents Col_Attendance As DataGridViewTextBoxColumn
     Friend WithEvents Btn_Calc_DTR As Button
+    Friend WithEvents Label14 As Label
+    Friend WithEvents Label13 As Label
+    Friend WithEvents Label12 As Label
+    Friend WithEvents szSSSLoan As TextBox
+    Friend WithEvents szPILoan As TextBox
+    Friend WithEvents szCashBond As TextBox
+    Friend WithEvents dtrDeductions As TabPage
 End Class

@@ -35,6 +35,8 @@ Partial Class FRM_DTR_EXPORTS
         Me.SH = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
         Me.LH = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
         Me.OT_REG = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
+        Me.TabPage2 = New System.Windows.Forms.TabPage()
+        Me.DGV_DTR_MATRIX = New System.Windows.Forms.DataGridView()
         Me.PictureBox1 = New System.Windows.Forms.PictureBox()
         Me.Label1 = New System.Windows.Forms.Label()
         Me.Label2 = New System.Windows.Forms.Label()
@@ -52,13 +54,14 @@ Partial Class FRM_DTR_EXPORTS
         Me.Lbl_Client_Address = New System.Windows.Forms.Label()
         Me.Lbl_ClientID = New System.Windows.Forms.Label()
         Me.Label7 = New System.Windows.Forms.Label()
-        Me.TabPage2 = New System.Windows.Forms.TabPage()
-        Me.DGV_DTR_MATRIX = New System.Windows.Forms.DataGridView()
+        Me.CB = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
+        Me.SSS_Loan = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
+        Me.PI_Loan = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
         Me.TabControl1.SuspendLayout()
         Me.TabPage1.SuspendLayout()
-        CType(Me.PictureBox1, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.TabPage2.SuspendLayout()
         CType(Me.DGV_DTR_MATRIX, System.ComponentModel.ISupportInitialize).BeginInit()
+        CType(Me.PictureBox1, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.SuspendLayout()
         '
         'Panel1
@@ -95,7 +98,7 @@ Partial Class FRM_DTR_EXPORTS
         'LV_DTR_Per_Client_List
         '
         Me.LV_DTR_Per_Client_List.BackColor = System.Drawing.Color.FromArgb(CType(CType(255, Byte), Integer), CType(CType(224, Byte), Integer), CType(CType(192, Byte), Integer))
-        Me.LV_DTR_Per_Client_List.Columns.AddRange(New System.Windows.Forms.ColumnHeader() {Me.Item, Me.Employee_Name, Me.Total_Days, Me.Total_Hours, Me.Reg, Me.Sun, Me.SH, Me.LH, Me.OT_REG})
+        Me.LV_DTR_Per_Client_List.Columns.AddRange(New System.Windows.Forms.ColumnHeader() {Me.Item, Me.Employee_Name, Me.Total_Days, Me.Total_Hours, Me.Reg, Me.Sun, Me.SH, Me.LH, Me.OT_REG, Me.CB, Me.SSS_Loan, Me.PI_Loan})
         Me.LV_DTR_Per_Client_List.Font = New System.Drawing.Font("Verdana", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.LV_DTR_Per_Client_List.FullRowSelect = True
         Me.LV_DTR_Per_Client_List.GridLines = True
@@ -151,6 +154,28 @@ Partial Class FRM_DTR_EXPORTS
         '
         Me.OT_REG.Text = "OT REG"
         Me.OT_REG.Width = 90
+        '
+        'TabPage2
+        '
+        Me.TabPage2.Controls.Add(Me.DGV_DTR_MATRIX)
+        Me.TabPage2.Location = New System.Drawing.Point(4, 29)
+        Me.TabPage2.Name = "TabPage2"
+        Me.TabPage2.Padding = New System.Windows.Forms.Padding(3)
+        Me.TabPage2.Size = New System.Drawing.Size(1391, 496)
+        Me.TabPage2.TabIndex = 1
+        Me.TabPage2.Text = "Hours Per Day"
+        Me.TabPage2.UseVisualStyleBackColor = True
+        '
+        'DGV_DTR_MATRIX
+        '
+        Me.DGV_DTR_MATRIX.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.AllCells
+        Me.DGV_DTR_MATRIX.BackgroundColor = System.Drawing.Color.FromArgb(CType(CType(255, Byte), Integer), CType(CType(224, Byte), Integer), CType(CType(192, Byte), Integer))
+        Me.DGV_DTR_MATRIX.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize
+        Me.DGV_DTR_MATRIX.GridColor = System.Drawing.Color.FromArgb(CType(CType(255, Byte), Integer), CType(CType(224, Byte), Integer), CType(CType(192, Byte), Integer))
+        Me.DGV_DTR_MATRIX.Location = New System.Drawing.Point(6, 6)
+        Me.DGV_DTR_MATRIX.Name = "DGV_DTR_MATRIX"
+        Me.DGV_DTR_MATRIX.Size = New System.Drawing.Size(1379, 484)
+        Me.DGV_DTR_MATRIX.TabIndex = 72
         '
         'PictureBox1
         '
@@ -347,27 +372,20 @@ Partial Class FRM_DTR_EXPORTS
         Me.Label7.TabIndex = 610
         Me.Label7.Text = "Client ID:"
         '
-        'TabPage2
+        'CB
         '
-        Me.TabPage2.Controls.Add(Me.DGV_DTR_MATRIX)
-        Me.TabPage2.Location = New System.Drawing.Point(4, 29)
-        Me.TabPage2.Name = "TabPage2"
-        Me.TabPage2.Padding = New System.Windows.Forms.Padding(3)
-        Me.TabPage2.Size = New System.Drawing.Size(1391, 496)
-        Me.TabPage2.TabIndex = 1
-        Me.TabPage2.Text = "Hours Per Day"
-        Me.TabPage2.UseVisualStyleBackColor = True
+        Me.CB.Text = "Cash Bond"
+        Me.CB.Width = 115
         '
-        'DGV_DTR_MATRIX
+        'SSS_Loan
         '
-        Me.DGV_DTR_MATRIX.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.AllCells
-        Me.DGV_DTR_MATRIX.BackgroundColor = System.Drawing.Color.FromArgb(CType(CType(255, Byte), Integer), CType(CType(224, Byte), Integer), CType(CType(192, Byte), Integer))
-        Me.DGV_DTR_MATRIX.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize
-        Me.DGV_DTR_MATRIX.GridColor = System.Drawing.Color.FromArgb(CType(CType(255, Byte), Integer), CType(CType(224, Byte), Integer), CType(CType(192, Byte), Integer))
-        Me.DGV_DTR_MATRIX.Location = New System.Drawing.Point(6, 6)
-        Me.DGV_DTR_MATRIX.Name = "DGV_DTR_MATRIX"
-        Me.DGV_DTR_MATRIX.Size = New System.Drawing.Size(1379, 484)
-        Me.DGV_DTR_MATRIX.TabIndex = 72
+        Me.SSS_Loan.Text = "SSS Loan"
+        Me.SSS_Loan.Width = 118
+        '
+        'PI_Loan
+        '
+        Me.PI_Loan.Text = "PI Loan"
+        Me.PI_Loan.Width = 104
         '
         'FRM_DTR_EXPORTS
         '
@@ -399,9 +417,9 @@ Partial Class FRM_DTR_EXPORTS
         Me.Text = "DTR Exports"
         Me.TabControl1.ResumeLayout(False)
         Me.TabPage1.ResumeLayout(False)
-        CType(Me.PictureBox1, System.ComponentModel.ISupportInitialize).EndInit()
         Me.TabPage2.ResumeLayout(False)
         CType(Me.DGV_DTR_MATRIX, System.ComponentModel.ISupportInitialize).EndInit()
+        CType(Me.PictureBox1, System.ComponentModel.ISupportInitialize).EndInit()
         Me.ResumeLayout(False)
         Me.PerformLayout()
 
@@ -439,4 +457,7 @@ Partial Class FRM_DTR_EXPORTS
     Friend WithEvents OT_REG As ColumnHeader
     Friend WithEvents TabPage2 As TabPage
     Friend WithEvents DGV_DTR_MATRIX As DataGridView
+    Friend WithEvents CB As ColumnHeader
+    Friend WithEvents SSS_Loan As ColumnHeader
+    Friend WithEvents PI_Loan As ColumnHeader
 End Class

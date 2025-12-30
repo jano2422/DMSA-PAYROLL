@@ -509,36 +509,73 @@ Module Mod_Biometric_DTR
 
 #End Region
 
+    Private Function ToDec(value As Object) As Decimal
+        If value Is Nothing OrElse value Is DBNull.Value Then Return 0D
+
+        Dim s As String = value.ToString().Trim()
+        If s = "" Then Return 0D
+
+        Dim d As Decimal
+        If Decimal.TryParse(s, d) Then Return d
+
+        Return 0D
+    End Function
 
 
-    Public Sub Save_DTR_Total_Hours(iSub_Client_ID As Integer, sEmployee_ID As String, sCutOff_Period As String, iNumber_of_Days As Integer)
+    Public Sub Save_DTR_Total_Hours(
+    iSub_Client_ID As Integer,
+    sEmployee_ID As String,
+    sCutOff_Period As String,
+    iNumber_of_Days As Integer,
+    cbDeduct As Decimal,
+    sssLoanDeduct As Decimal,
+    piLoanDeduct As Decimal
+)
 
-        Dim SQL As String
+        Dim SQL As String = ""
         Connect_to_MDB()
 
         Try
             With FRM_DTR_BIOMETRIC.GView_DTR
 
-                ' Get the current date and time as a string in the desired format
-                Dim currentDateTime As String = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")
+                SQL = "INSERT INTO PRL_DTR_TOTAL_HOURS " &
+                  "(EMPLOYEE_ID, SUB_CLIENT_ID, CUTOFF_PERIOD, NUM_OF_DAYS, " &
+                  "TOTAL_HOURS, REG, SUN, SH, LH, OT_REG, " &
+                  "CB_DEDUCT, SSS_LOAN_DEDUCT, PI_LOAN_DEDUCT) " &
+                  "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"
 
-                SQL = "INSERT INTO PRL_DTR_TOTAL_HOURS (EMPLOYEE_ID, SUB_CLIENT_ID, CUTOFF_PERIOD, NUM_OF_DAYS, TOTAL_HOURS, REG, SUN, SH, LH, OT_REG)"
-                SQL = SQL & " VALUES ( '" & sEmployee_ID & "', " & iSub_Client_ID & ", '" & sCutOff_Period & "', " & iNumber_of_Days
-                SQL = SQL & ", '" & .Rows(17).Cells(14).Value & "', '" & .Rows(17).Cells(15).Value & "'"
-                SQL = SQL & ", '" & .Rows(17).Cells(16).Value & "', '" & .Rows(17).Cells(17).Value & "', '" & .Rows(17).Cells(18).Value & "', '" & .Rows(17).Cells(19).Value & "')"
+                Using SQLcmd As New OleDbCommand(SQL, GlobalVariables.GlobalCon)
 
-                Dim SQLcmd As OleDbCommand = New OleDbCommand(SQL, GlobalVariables.GlobalCon)
-                SQLcmd.ExecuteNonQuery()
-                SQLcmd.Dispose()
+                    SQLcmd.Parameters.AddWithValue("?", sEmployee_ID)
+                    SQLcmd.Parameters.AddWithValue("?", iSub_Client_ID)
+                    SQLcmd.Parameters.AddWithValue("?", sCutOff_Period)
+                    SQLcmd.Parameters.AddWithValue("?", iNumber_of_Days)
+
+                    SQLcmd.Parameters.AddWithValue("?", ToDec(.Rows(17).Cells(14).Value))
+                    SQLcmd.Parameters.AddWithValue("?", ToDec(.Rows(17).Cells(15).Value))
+                    SQLcmd.Parameters.AddWithValue("?", ToDec(.Rows(17).Cells(16).Value))
+                    SQLcmd.Parameters.AddWithValue("?", ToDec(.Rows(17).Cells(17).Value))
+                    SQLcmd.Parameters.AddWithValue("?", ToDec(.Rows(17).Cells(18).Value))
+                    SQLcmd.Parameters.AddWithValue("?", ToDec(.Rows(17).Cells(19).Value))
+
+                    SQLcmd.Parameters.AddWithValue("?", cbDeduct)
+                    SQLcmd.Parameters.AddWithValue("?", sssLoanDeduct)
+                    SQLcmd.Parameters.AddWithValue("?", piLoanDeduct)
+
+                    SQLcmd.ExecuteNonQuery()
+                End Using
 
                 MsgBox("DTR Total Hours was successfully saved!", vbInformation, "Saved")
 
             End With
+
         Catch ex As Exception
             MsgBox(ex.Message, vbCritical, "Error saving total hours!")
+        Finally
+            If GlobalVariables.GlobalCon IsNot Nothing AndAlso GlobalVariables.GlobalCon.State <> ConnectionState.Closed Then
+                GlobalVariables.GlobalCon.Close()
+            End If
         End Try
-
-        GlobalVariables.GlobalCon.Close()
 
     End Sub
 

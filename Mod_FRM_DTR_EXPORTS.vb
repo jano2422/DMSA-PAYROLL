@@ -102,7 +102,7 @@ Module Mod_FRM_DTR_EXPORTS
             'SQL = "select LAST_NAME, FIRST_NAME, MIDDLE_NAME, NUM_OF_DAYS, TOTAL_HOURS, REG, SUN,SH,LH, RD_SUN_SH, RD_SUN_LH, ND_REG, ND_SUN, ND_SH, ND_LH, ND_RD_SUN_SH, ND_RD_SUN_LH, OT_REG from VIEW_DTR_PER_SUB_CLIENT"
             'SQL = SQL & " where A.SUB_CLIENT_ID = " & iClient_ID & " and CUTOFF_PERIOD = '" & sCut_Off & "'"
 
-            SQL = "SELECT LAST_NAME, FIRST_NAME, MIDDLE_NAME, NUM_OF_DAYS, TOTAL_HOURS, REG, SUN, SH, LH, OT_REG "
+            SQL = "SELECT LAST_NAME, FIRST_NAME, MIDDLE_NAME, NUM_OF_DAYS, TOTAL_HOURS, REG, SUN, SH, LH, OT_REG, CB_DEDUCT, SSS_LOAN_DEDUCT, PI_LOAN_DEDUCT "
             SQL = SQL & "FROM VIEW_DTR_PER_SUB_CLIENT A "
             SQL = SQL & "WHERE A.A.SUB_CLIENT_ID = " & iClient_ID & " AND A.CUTOFF_PERIOD = '" & sCut_Off & "' "
             SQL = SQL & "AND A.D.ID = (SELECT MAX(D.ID) FROM PRL_DTR_TOTAL_HOURS D WHERE D.EMPLOYEE_ID = A.A.EMPLOYEE_ID AND D.CUTOFF_PERIOD = A.CUTOFF_PERIOD) "
@@ -133,6 +133,9 @@ Module Mod_FRM_DTR_EXPORTS
                         .Items(.Items.Count - 1).SubItems.Add(myRow.Item("SH"))
                         .Items(.Items.Count - 1).SubItems.Add(myRow.Item("LH"))
                         .Items(.Items.Count - 1).SubItems.Add(myRow.Item("OT_REG"))
+                        .Items(.Items.Count - 1).SubItems.Add(myRow.Item("CB_DEDUCT"))
+                        .Items(.Items.Count - 1).SubItems.Add(myRow.Item("SSS_LOAN_DEDUCT"))
+                        .Items(.Items.Count - 1).SubItems.Add(myRow.Item("PI_LOAN_DEDUCT"))
 
                         iRow += 1 ' Increment the row counter
                     Next

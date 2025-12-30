@@ -8,8 +8,8 @@ Public Class FRM_DTR_BIOMETRIC
 
     ' Variable to store the selected directory
     Private selectedDirectory As String = String.Empty
-    Dim DefaultDTRDir As String = "\\DMSAC-SERVER\Files\MASTER_DTR"
-    'Dim DefaultDTRDir As String = "C:\MASTER_DTR"
+    'Dim DefaultDTRDir As String = "\\DMSAC-SERVER\Files\MASTER_DTR"
+    Dim DefaultDTRDir As String = "C:\MASTER_DTR"
     Private Sub Btn_DTR_Click(sender As Object, e As EventArgs) Handles Btn_DTR.Click
         ' Check if the trial period has ended
         If Now.Year = 2026 Then
@@ -639,9 +639,24 @@ Public Class FRM_DTR_BIOMETRIC
 
         End If
     End Sub
+    Private Function GetDecimalFromTextBox(txt As TextBox) As Decimal
+        If txt Is Nothing Then Return 0D
+
+        Dim value As Decimal
+        If Decimal.TryParse(txt.Text.Trim(), value) Then
+            Return value
+        End If
+
+        Return 0D
+    End Function
+
     Private Sub Btn_Save_DTR_Click(sender As Object, e As EventArgs) Handles Btn_Save_DTR.Click
         ' Get cut off period from Lbl_Period
-        Call Save_DTR_Total_Hours(GlobalVariables.DTR_Selected_SubClient_ID, GlobalVariables.DTR_Selected_Employee_ID, GlobalVariables.sPayroll_Cutoff, CInt(Me.Lbl_Num_of_Reporting_Days.Text))
+        Dim cbDeduct As Decimal = GetDecimalFromTextBox(szCashBond)
+        Dim sssLoanDeduct As Decimal = GetDecimalFromTextBox(szSSSLoan)
+        Dim piLoanDeduct As Decimal = GetDecimalFromTextBox(szPILoan)
+
+        Call Save_DTR_Total_Hours(GlobalVariables.DTR_Selected_SubClient_ID, GlobalVariables.DTR_Selected_Employee_ID, GlobalVariables.sPayroll_Cutoff, CInt(Me.Lbl_Num_of_Reporting_Days.Text), cbDeduct, sssLoanDeduct, piLoanDeduct)
         Call Save_DTR_Hours_Per_Day(GlobalVariables.DTR_Selected_SubClient_ID, GlobalVariables.DTR_Selected_Employee_ID)
 
     End Sub

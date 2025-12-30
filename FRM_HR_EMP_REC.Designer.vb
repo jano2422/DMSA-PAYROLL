@@ -158,7 +158,7 @@ Partial Class FRM_EMP_REG
         '
         Me.ExportToExcellToolStripMenuItem.DropDownItems.AddRange(New System.Windows.Forms.ToolStripItem() {Me.AllEmployeeRecordsToolStripMenuItem})
         Me.ExportToExcellToolStripMenuItem.Name = "ExportToExcellToolStripMenuItem"
-        Me.ExportToExcellToolStripMenuItem.Size = New System.Drawing.Size(180, 22)
+        Me.ExportToExcellToolStripMenuItem.Size = New System.Drawing.Size(153, 22)
         Me.ExportToExcellToolStripMenuItem.Text = "Export to Excell"
         '
         'AllEmployeeRecordsToolStripMenuItem
@@ -1021,6 +1021,7 @@ Partial Class FRM_EMP_REG
         'Cmb_Bank_Name
         '
         Me.Cmb_Bank_Name.FormattingEnabled = True
+        Me.Cmb_Bank_Name.Items.AddRange(New Object() {"LAND BANK OF THE PHILIPPINES", "PHILIPPINE VETERANS BANK", "METROBANK", "(BPI) BANK OF THE PHILIPPINE ISLANDS", "(BDO) BANCO DE ORO", "TBD"})
         Me.Cmb_Bank_Name.Location = New System.Drawing.Point(173, 58)
         Me.Cmb_Bank_Name.Name = "Cmb_Bank_Name"
         Me.Cmb_Bank_Name.Size = New System.Drawing.Size(305, 27)

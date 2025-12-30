@@ -556,7 +556,10 @@ Module Mod_Biometric_DTR
                     End If
 
                     ' Format the date for MS Access
-                    Dim reportDate As String = "#" & Format(CDate(.Rows(i).Cells(0).Value), "yyyy-MM-dd") & "#"
+                    Dim rawValue As String = .Rows(i).Cells(0).Value.ToString()
+                    Dim datePart As String = rawValue.Split("-"c)(0).Trim()
+                    Dim reportDate As String = "#" & Format(CDate(datePart), "yyyy-MM-dd") & "#"
+
                     Dim reportDay As String = .Rows(i).Cells(1).Value.ToString()
                     Dim totalHours As Double = 0
 
@@ -652,7 +655,6 @@ Module Mod_Biometric_DTR
         Dim SQL As String
 
         Try
-            ' SQL Query based on cutoff
             If iCutOff = 1 Then
                 SQL = "SELECT DAY_NUM, SCHED_IN, DAY_NUM_OUT, SCHED_OUT, TOTAL_HOURS FROM PRL_EMPLOYEE_SCHEDULE WHERE EMPLOYEE_ID = '" & iEmployee_ID & "' AND DAY_NUM <= 15"
             ElseIf iCutOff = 2 Then
@@ -661,7 +663,6 @@ Module Mod_Biometric_DTR
                 SQL = "SELECT DAY_NUM, SCHED_IN, DAY_NUM_OUT, SCHED_OUT, TOTAL_HOURS FROM PRL_EMPLOYEE_SCHEDULE WHERE EMPLOYEE_ID = '" & iEmployee_ID & "'"
             End If
 
-            ' Execute Query
             da = New OleDbDataAdapter(SQL, Mod_GlobalVariables.GlobalVariables.GlobalCon)
             da.Fill(dt)
 
@@ -681,30 +682,22 @@ Module Mod_Biometric_DTR
                         For Each row As DataRow In dt.Rows
                             Dim newRow As Integer = FRM_DTR_SCHEDULE.GView_Schedule1_15.Rows.Add()
 
-                            ' Assign values except DAY_NUM_OUT
-                            FRM_DTR_SCHEDULE.GView_Schedule1_15.Rows(newRow).Cells(0).Value = row("DAY_NUM").ToString()
+                            Dim currentDay As Integer = Convert.ToInt32(row("DAY_NUM"))
+                            Dim dayNumOut As Integer = If(IsDBNull(row("DAY_NUM_OUT")), -1, Convert.ToInt32(row("DAY_NUM_OUT")))
+                            Dim altDay As Integer = Math.Min(currentDay + 1, 16)
+
+                            FRM_DTR_SCHEDULE.GView_Schedule1_15.Rows(newRow).Cells(0).Value = currentDay.ToString()
                             FRM_DTR_SCHEDULE.GView_Schedule1_15.Rows(newRow).Cells(1).Value = row("SCHED_IN").ToString()
                             FRM_DTR_SCHEDULE.GView_Schedule1_15.Rows(newRow).Cells(3).Value = row("SCHED_OUT").ToString()
                             FRM_DTR_SCHEDULE.GView_Schedule1_15.Rows(newRow).Cells(4).Value = row("TOTAL_HOURS").ToString()
 
-                            ' Create and configure ComboBox for DAY_NUM_OUT
-                            Dim comboCell As New DataGridViewComboBoxCell()
-                            Dim currentDay As Integer = Convert.ToInt32(row("DAY_NUM"))
-                            Dim dayNumOut As Integer = If(IsDBNull(row("DAY_NUM_OUT")), -1, Convert.ToInt32(row("DAY_NUM_OUT")))
-
-                            ' Populate ComboBox with DAY_NUM and DAY_NUM + 1
-                            comboCell.Items.Add(currentDay.ToString())
-                            comboCell.Items.Add((currentDay + 1).ToString())
-
-                            ' Set the selected value only if DAY_NUM_OUT is within the range
-                            If dayNumOut = currentDay OrElse dayNumOut = currentDay + 1 Then
-                                comboCell.Value = dayNumOut.ToString()
+                            If dayNumOut = currentDay OrElse dayNumOut = altDay Then
+                                FRM_DTR_SCHEDULE.GView_Schedule1_15.Rows(newRow).Cells(2).Value = dayNumOut.ToString()
                             Else
-                                comboCell.Value = Nothing ' No selected value
+                                FRM_DTR_SCHEDULE.GView_Schedule1_15.Rows(newRow).Cells(2).Value = currentDay.ToString()
                             End If
 
-                            ' Assign the ComboBox to column 2 (DAY_NUM_OUT)
-                            FRM_DTR_SCHEDULE.GView_Schedule1_15.Rows(newRow).Cells(2) = comboCell
+                            FRM_DTR_SCHEDULE.GView_Schedule1_15.Rows(newRow).Tag = {currentDay, altDay}
                         Next
 
                     ElseIf iCutOff = 2 Then
@@ -712,30 +705,22 @@ Module Mod_Biometric_DTR
                         For Each row As DataRow In dt.Rows
                             Dim newRow As Integer = FRM_DTR_SCHEDULE.GView_Schedule16_30.Rows.Add()
 
-                            ' Assign values except DAY_NUM_OUT
-                            FRM_DTR_SCHEDULE.GView_Schedule16_30.Rows(newRow).Cells(0).Value = row("DAY_NUM").ToString()
+                            Dim currentDay As Integer = Convert.ToInt32(row("DAY_NUM"))
+                            Dim dayNumOut As Integer = If(IsDBNull(row("DAY_NUM_OUT")), -1, Convert.ToInt32(row("DAY_NUM_OUT")))
+                            Dim altDay As Integer = Math.Min(currentDay + 1, 32)
+
+                            FRM_DTR_SCHEDULE.GView_Schedule16_30.Rows(newRow).Cells(0).Value = currentDay.ToString()
                             FRM_DTR_SCHEDULE.GView_Schedule16_30.Rows(newRow).Cells(1).Value = row("SCHED_IN").ToString()
                             FRM_DTR_SCHEDULE.GView_Schedule16_30.Rows(newRow).Cells(3).Value = row("SCHED_OUT").ToString()
                             FRM_DTR_SCHEDULE.GView_Schedule16_30.Rows(newRow).Cells(4).Value = row("TOTAL_HOURS").ToString()
 
-                            ' Create and configure ComboBox for DAY_NUM_OUT
-                            Dim comboCell As New DataGridViewComboBoxCell()
-                            Dim currentDay As Integer = Convert.ToInt32(row("DAY_NUM"))
-                            Dim dayNumOut As Integer = If(IsDBNull(row("DAY_NUM_OUT")), -1, Convert.ToInt32(row("DAY_NUM_OUT")))
-
-                            ' Populate ComboBox with DAY_NUM and DAY_NUM + 1
-                            comboCell.Items.Add(currentDay.ToString())
-                            comboCell.Items.Add((currentDay + 1).ToString())
-
-                            ' Set the selected value only if DAY_NUM_OUT is within the range
-                            If dayNumOut = currentDay OrElse dayNumOut = currentDay + 1 Then
-                                comboCell.Value = dayNumOut.ToString()
+                            If dayNumOut = currentDay OrElse dayNumOut = altDay Then
+                                FRM_DTR_SCHEDULE.GView_Schedule16_30.Rows(newRow).Cells(2).Value = dayNumOut.ToString()
                             Else
-                                comboCell.Value = Nothing ' No selected value
+                                FRM_DTR_SCHEDULE.GView_Schedule16_30.Rows(newRow).Cells(2).Value = currentDay.ToString()
                             End If
 
-                            ' Assign the ComboBox to column 2 (DAY_NUM_OUT)
-                            FRM_DTR_SCHEDULE.GView_Schedule16_30.Rows(newRow).Cells(2) = comboCell
+                            FRM_DTR_SCHEDULE.GView_Schedule16_30.Rows(newRow).Tag = {currentDay, altDay}
                         Next
                     End If
                 End If
@@ -747,6 +732,7 @@ Module Mod_Biometric_DTR
             GlobalVariables.GlobalCon.Close()
         End Try
     End Sub
+
 
 
 

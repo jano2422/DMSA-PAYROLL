@@ -58,55 +58,55 @@ Public Class FRM_EMP_REG
 
         FRM_EMP_UPDATE_REC.ShowDialog()
     End Sub
-    Private Sub LV_Employee_List_SelectedIndexChanged(sender As Object, e As EventArgs) Handles LV_Employee_List.SelectedIndexChanged
+    'Private Sub LV_Employee_List_SelectedIndexChanged(sender As Object, e As EventArgs) Handles LV_Employee_List.SelectedIndexChanged
 
-        Try
-            GlobalVariables.Selected_Employee_ID = LV_Employee_List.SelectedItems(0).SubItems(1).Text
-        Catch ex As Exception
-            ' Need to check why having error when selecting records
-            GlobalVariables.Selected_Employee_ID = ""
-        End Try
-
-
-        Try
-
-            Call Show_Employee_Details(GlobalVariables.Selected_Employee_ID)
-            Call Show_Employee_Client_History(GlobalVariables.Selected_Employee_ID)
-            Call Show_ATM_Info(GlobalVariables.Selected_Employee_ID)
-            ' Expirations
-            Call Show_Security_License_Expiration_To_Employee_Record(GlobalVariables.Selected_Employee_ID)
-            Call Show_Medical_Expiration_To_Employee_Record(GlobalVariables.Selected_Employee_ID)
-            Call Show_Insurance_Expiration_to_Employee_Record(GlobalVariables.Selected_Employee_ID)
-        Catch EX As Exception
-            MsgBox(EX.Message, vbCritical, "Loading information Error")
-        End Try
-
-        Try
-            GlobalVariables.Photo_Path_from_DB = Show_Photo_in_Employee_Rec(GlobalVariables.Selected_Employee_ID)
-            If GlobalVariables.Photo_Path_from_DB = "0" Then
-                Me.Pic_Employee_Photo.Image = My.Resources.DMSA_Logo
-            Else ' with Path from DB
-                Me.Pic_Employee_Photo.Image = Image.FromFile(GlobalVariables.Photo_Path_from_DB)
-            End If
+    '    Try
+    '        GlobalVariables.Selected_Employee_ID = LV_Employee_List.SelectedItems(0).SubItems(1).Text
+    '    Catch ex As Exception
+    '        ' Need to check why having error when selecting records
+    '        GlobalVariables.Selected_Employee_ID = ""
+    '    End Try
 
 
-            If GlobalVariables.Selected_Employee_ID <> "" Then
-                Btn_Pic_Upload.Enabled = True
+    '    Try
 
-            Else
-                Btn_Pic_Upload.Enabled = False
+    '        Call Show_Employee_Details(GlobalVariables.Selected_Employee_ID)
+    '        Call Show_Employee_Client_History(GlobalVariables.Selected_Employee_ID)
+    '        Call Show_ATM_Info(GlobalVariables.Selected_Employee_ID)
+    '        ' Expirations
+    '        Call Show_Security_License_Expiration_To_Employee_Record(GlobalVariables.Selected_Employee_ID)
+    '        Call Show_Medical_Expiration_To_Employee_Record(GlobalVariables.Selected_Employee_ID)
+    '        Call Show_Insurance_Expiration_to_Employee_Record(GlobalVariables.Selected_Employee_ID)
+    '    Catch EX As Exception
+    '        MsgBox(EX.Message, vbCritical, "Loading information Error")
+    '    End Try
 
-            End If
-        Catch ex As Exception
-            Me.Pic_Employee_Photo.Image = My.Resources.DMSA_Logo
-            'MsgBox(ex.Message, vbCritical, "Loading Photo Error")
-        End Try
+    '    Try
+    '        GlobalVariables.Photo_Path_from_DB = Show_Photo_in_Employee_Rec(GlobalVariables.Selected_Employee_ID)
+    '        If GlobalVariables.Photo_Path_from_DB = "0" Then
+    '            Me.Pic_Employee_Photo.Image = My.Resources.DMSA_Logo
+    '        Else ' with Path from DB
+    '            Me.Pic_Employee_Photo.Image = Image.FromFile(GlobalVariables.Photo_Path_from_DB)
+    '        End If
 
 
+    '        If GlobalVariables.Selected_Employee_ID <> "" Then
+    '            Btn_Pic_Upload.Enabled = True
+
+    '        Else
+    '            Btn_Pic_Upload.Enabled = False
+
+    '        End If
+    '    Catch ex As Exception
+    '        Me.Pic_Employee_Photo.Image = My.Resources.DMSA_Logo
+    '        'MsgBox(ex.Message, vbCritical, "Loading Photo Error")
+    '    End Try
 
 
 
-    End Sub
+
+
+    'End Sub
 
     Private Sub ShowExpiryPhotoToolStripMenuItem_Click(sender As Object, e As EventArgs)
 
@@ -200,8 +200,41 @@ Public Class FRM_EMP_REG
     End Sub
 
     Private Sub AllEmployeeRecordsToolStripMenuItem_Click(sender As Object, e As EventArgs) Handles AllEmployeeRecordsToolStripMenuItem.Click
-        Call Export_EMployee_Records_To_Excel()
+        Dim dt As DataTable = GetEmployeeList()
+
+        If dt.Rows.Count = 0 Then
+            MsgBox("No data to export.", vbExclamation)
+            Exit Sub
+        End If
+
+        Dim timestamp As String = Format(Now, "yyyyMMdd_HHmmss")
+
+        Dim sfd As New SaveFileDialog
+        sfd.Filter = "Excel Files (*.xlsx)|*.xlsx"
+        sfd.FileName = "Employee_List_" & timestamp
+
+        If sfd.ShowDialog() = DialogResult.OK Then
+
+            ' 👉 SHOW PROCESSING WINDOW
+            Dim processing As New FrmProcessing("Saving Excel file, please wait...")
+            processing.Show()
+            processing.Refresh()
+
+            ' 👉 RUN EXPORT IN BACKGROUND
+            Task.Run(Sub()
+                         ExportDataTableToExcel(dt, sfd.FileName)
+
+                         ' CLOSE PROCESSING WINDOW FROM UI THREAD
+                         Me.Invoke(Sub()
+                                       processing.Close()
+                                       MsgBox("Export completed successfully!", vbInformation)
+                                   End Sub)
+                     End Sub)
+        End If
     End Sub
+
+
+
 
     Private Sub Btn_ATM_Edit_Click(sender As Object, e As EventArgs) Handles Btn_ATM_Edit.Click
         If Btn_ATM_Edit.Text = "Edit" Then
@@ -264,4 +297,54 @@ Public Class FRM_EMP_REG
 
         End If
     End Sub
+
+    Private Sub LV_Employee_List_MouseClick(sender As Object, e As MouseEventArgs) Handles LV_Employee_List.MouseClick
+        Try
+            GlobalVariables.Selected_Employee_ID = LV_Employee_List.SelectedItems(0).SubItems(1).Text
+        Catch ex As Exception
+            ' Need to check why having error when selecting records
+            GlobalVariables.Selected_Employee_ID = ""
+        End Try
+
+
+        Try
+
+            Call Show_Employee_Details(GlobalVariables.Selected_Employee_ID)
+            Call Show_Employee_Client_History(GlobalVariables.Selected_Employee_ID)
+            Call Show_ATM_Info(GlobalVariables.Selected_Employee_ID)
+            ' Expirations
+            Call Show_Security_License_Expiration_To_Employee_Record(GlobalVariables.Selected_Employee_ID)
+            Call Show_Medical_Expiration_To_Employee_Record(GlobalVariables.Selected_Employee_ID)
+            Call Show_Insurance_Expiration_to_Employee_Record(GlobalVariables.Selected_Employee_ID)
+        Catch EX As Exception
+            MsgBox(EX.Message, vbCritical, "Loading information Error")
+        End Try
+
+        Try
+            GlobalVariables.Photo_Path_from_DB = Show_Photo_in_Employee_Rec(GlobalVariables.Selected_Employee_ID)
+            If GlobalVariables.Photo_Path_from_DB = "0" Then
+                Me.Pic_Employee_Photo.Image = My.Resources.DMSA_Logo
+            Else ' with Path from DB
+                Me.Pic_Employee_Photo.Image = Image.FromFile(GlobalVariables.Photo_Path_from_DB)
+            End If
+
+
+            If GlobalVariables.Selected_Employee_ID <> "" Then
+                Btn_Pic_Upload.Enabled = True
+
+            Else
+                Btn_Pic_Upload.Enabled = False
+
+            End If
+        Catch ex As Exception
+            Me.Pic_Employee_Photo.Image = My.Resources.DMSA_Logo
+            'MsgBox(ex.Message, vbCritical, "Loading Photo Error")
+        End Try
+
+
+
+
+    End Sub
+
+
 End Class

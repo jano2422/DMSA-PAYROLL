@@ -31,7 +31,7 @@ Module Mod_Acitivity_Logs
 
                         .Items.Add(myRow.Item("USER_ID")) ' Company ID
                         .Items(.Items.Count - 1).SubItems.Add(myRow.Item("CHANGE_DESC"))
-                        .Items(.Items.Count - 1).SubItems.Add(myRow.Item("DATE_COMMITTED"))
+                        .Items(.Items.Count - 1).SubItems.Add(Format(CDate(myRow.Item("DATE_COMMITTED")), "dd-MMM-yyyy"))
 
 
 

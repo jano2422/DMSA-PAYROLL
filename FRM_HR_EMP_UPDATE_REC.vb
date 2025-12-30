@@ -62,7 +62,7 @@
 
 
     Private Sub DP_Sepa_day_ValueChanged(sender As Object, e As EventArgs) Handles DP_Sepa_day.ValueChanged
-        Txt_StatusChange_Date.Text = DP_Sepa_day.Value.ToShortDateString()
+        Txt_StatusChange_Date.Text = DP_Sepa_day.Value.ToString("dd-MMM-yyyy")
     End Sub
 
     Private Sub Btn_Leave_New_Click(sender As Object, e As EventArgs) Handles Btn_Leave_New.Click
@@ -161,11 +161,11 @@
 
 
     Private Sub DP_Leave_From_ValueChanged(sender As Object, e As EventArgs) Handles DP_Leave_From.ValueChanged
-        Txt_Leave_DateFrom.Text = DP_Leave_From.Value.ToShortDateString
+        Txt_Leave_DateFrom.Text = DP_Leave_From.Value.ToString("dd-MMM-yyyy")
     End Sub
 
     Private Sub DP_Leave_To_ValueChanged_1(sender As Object, e As EventArgs) Handles DP_Leave_To.ValueChanged
-        Txt_Leave_DateTo.Text = DP_Leave_To.Value.ToShortDateString
+        Txt_Leave_DateTo.Text = DP_Leave_To.Value.ToString("dd-MMM-yyyy")
     End Sub
 
 
@@ -334,7 +334,7 @@
     End Sub
 
     Private Sub DP_License_Expiry_ValueChanged_1(sender As Object, e As EventArgs) Handles DP_License_Expiry.ValueChanged
-        Me.Txt_License_Expiry.Text = DP_License_Expiry.Value.ToShortDateString
+        Me.Txt_License_Expiry.Text = DP_License_Expiry.Value.ToString("dd-MMM-yyyy")
     End Sub
 
     Private Sub Btn_License_AttachFile_Click(sender As Object, e As EventArgs) Handles Btn_License_AttachFile.Click
@@ -350,8 +350,8 @@
 
 
     Private Sub DP_Client_Start_Date_ValueChanged(sender As Object, e As EventArgs) Handles DP_Client_Start_Date.ValueChanged
-        Txt_Client_Start_Date.Text = DP_Client_Start_Date.Value.ToShortDateString
-        Txt_Client_End_Date.Text = DP_Client_Start_Date.Value.ToShortDateString ' Default same value to activate "Up to Present"
+        Txt_Client_Start_Date.Text = DP_Client_Start_Date.Value.ToString("dd-MMM-yyyy")
+        Txt_Client_End_Date.Text = DP_Client_Start_Date.Value.ToString("dd-MMM-yyyy") ' Default same value to activate "Up to Present"
     End Sub
 
     Private Sub LV_Client_History_SelectedIndexChanged(sender As Object, e As EventArgs) Handles LV_Client_History.SelectedIndexChanged
@@ -449,7 +449,7 @@
 
         Else
 
-            Call Update_Medical_Record(Me.Lbl_Employee_ID.Text)
+            Call Update_Medical_Record(Me.Lbl_Medical_Ref_ID.Text)
             Call Show_Medical_Record_to_Listview(Me.Lbl_Employee_ID.Text)
 
             Btn_Medical_Edit.Text = "Edit"
@@ -513,7 +513,7 @@
     End Sub
 
     Private Sub DP_Medical_Date_ValueChanged(sender As Object, e As EventArgs) Handles DP_Medical_Date.ValueChanged
-        Txt_Medical_Date.Text = DP_Medical_Date.Value.ToShortDateString
+        Txt_Medical_Date.Text = DP_Medical_Date.Value.ToString("dd-MMM-yyyy")
     End Sub
 
     Private Sub Btn_Insurance_New_Click(sender As Object, e As EventArgs) Handles Btn_Insurance_New.Click
@@ -618,16 +618,16 @@
     End Sub
 
     Private Sub DP_Insurance_DateStart_ValueChanged(sender As Object, e As EventArgs) Handles DP_Insurance_DateStart.ValueChanged
-        Txt_Insurance_DateStart.Text = DP_Insurance_DateStart.Value.ToShortDateString
+        Txt_Insurance_DateStart.Text = DP_Insurance_DateStart.Value.ToString("dd-MMM-yyyy")
 
     End Sub
 
     Private Sub DP_Insurance_DateEnd_ValueChanged(sender As Object, e As EventArgs) Handles DP_Insurance_DateEnd.ValueChanged
-        Txt_Insurance_DateEnd.Text = DP_Insurance_DateEnd.Value.ToShortDateString
+        Txt_Insurance_DateEnd.Text = DP_Insurance_DateEnd.Value.ToString("dd-MMM-yyyy")
     End Sub
 
     Private Sub DP_Medical_Exp_Date_ValueChanged(sender As Object, e As EventArgs) Handles DP_Medical_Exp_Date.ValueChanged
-        Txt_Medical_Exp_Date.Text = DP_Medical_Exp_Date.Value.ToShortDateString
+        Txt_Medical_Exp_Date.Text = DP_Medical_Exp_Date.Value.ToString("dd-MMM-yyyy")
 
     End Sub
 
@@ -742,7 +742,42 @@
         Txt_StatusChange_Date.Text = ""
         Txt_ChangeStatus_Remark.Text = ""
     End Sub
+    Private Sub Btn_UpRemarks_Click(sender As Object, e As EventArgs) Handles Btn_UpRemarks.Click
+        ' Get remarks from textbox
+        Dim remarks As String = Txt_ChangeStatus_Remark.Text.Trim()
 
+        ' ✅ Make sure a row is selected
+        If LV_Status_History.SelectedItems.Count = 0 Then
+            MessageBox.Show("⚠️ Please select a record from the list first.", "No Selection", MessageBoxButtons.OK, MessageBoxIcon.Warning)
+            Exit Sub
+        End If
+
+        ' ✅ Safely get selected ID (column index 4)
+        Dim selectedID As Integer = CInt(LV_Status_History.SelectedItems(0).SubItems(4).Text)
+        Dim status As String = LV_Status_History.SelectedItems(0).SubItems(3).Text
+        ' ✅ Call your update method with correct arguments
+        Update_Employee_Status_Remarks(
+        selectedID,
+        Me.Lbl_Employee_ID.Text,               ' sEmployee_ID (if it's a string ID)
+        status,                ' sNew_Status
+        remarks                                ' updatedRemarks
+    )
+        Call Show_Status_Change_History(Me.Lbl_Employee_ID.Text)
+    End Sub
+
+
+
+    Private Sub LV_Status_History_SelectedIndexChanged(sender As Object, e As EventArgs) Handles LV_Status_History.SelectedIndexChanged
+        If LV_Status_History.SelectedItems.Count > 0 Then
+            Dim selectedItem As ListViewItem = LV_Status_History.SelectedItems(0)
+
+            ' Assuming column 0 is ID and column 2 is Remarks (adjust as needed)
+            Dim selectedRemarks As String = selectedItem.SubItems(3).Text
+
+            ' Display in textboxes
+            Txt_ChangeStatus_Remark.Text = selectedRemarks
+        End If
+    End Sub
     Private Sub DP_Client_End_Date_ValueChanged(sender As Object, e As EventArgs) Handles DP_Client_End_Date.ValueChanged
         Txt_Client_End_Date.Text = DP_Client_End_Date.Value.ToShortDateString
     End Sub
@@ -885,9 +920,7 @@
         End If
     End Sub
 
-    Private Sub TabPage1_Click(sender As Object, e As EventArgs) Handles Tab_Leave_Filing.Click
 
-    End Sub
 
     Private Sub Btn_Leave_Filing_Click(sender As Object, e As EventArgs) Handles Btn_Leave_Filing.Click
         Tab_Employee_Transactions.SelectedIndex = 0
@@ -929,4 +962,7 @@
     Private Sub Panel3_Paint(sender As Object, e As PaintEventArgs) Handles Panel3.Paint
 
     End Sub
+
+
+
 End Class

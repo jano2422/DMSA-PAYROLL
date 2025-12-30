@@ -112,6 +112,10 @@ Module Mod_FRM_DTR_EXPORTS
             da = New OleDbDataAdapter(SQL, Mod_GlobalVariables.GlobalVariables.GlobalCon)
             da.Fill(dt)
 
+            With FRM_DTR_EXPORTS.LV_DTR_Per_Client_List
+                .Items.Clear()
+            End With
+
             If dt.Rows.Count > 0 Then ' SHOW DATAS
                 With FRM_DTR_EXPORTS.LV_DTR_Per_Client_List
                     Dim myRow As DataRow
@@ -199,12 +203,13 @@ Module Mod_FRM_DTR_EXPORTS
             da = New OleDbDataAdapter(SQL, Mod_GlobalVariables.GlobalVariables.GlobalCon)
             da.Fill(dt)
 
+            With FRM_DTR_EXPORTS.DGV_DTR_MATRIX
+                .DataSource = Nothing
+                .Rows.Clear()
+                .Refresh()
+            End With
             If dt.Rows.Count = 0 Then
-                With FRM_DTR_EXPORTS.DGV_DTR_MATRIX
-                    .DataSource = Nothing
-                    .Rows.Clear()
-                    .Refresh()
-                End With
+
                 MsgBox("No daily hour records found for the selected cutoff.")
                 Exit Sub
             End If
@@ -238,12 +243,12 @@ Module Mod_FRM_DTR_EXPORTS
                 For day = dFrom.Day To dTo.Day
                     empRow(day.ToString()) = "0.00"
                 Next
-
                 ' Fill in available data from database
                 For Each rec In empGroup
                     Dim day = CDate(rec("REPORT_DATE")).Day.ToString()
-                    empRow(day) = FormatNumber(CDbl(rec("DAILY_TOTAL_HOURS")), 2)
+                    empRow(day) = FormatNumber(CDec(rec("DAILY_TOTAL_HOURS")), 2)
                 Next
+
 
                 ' Add total hours (even if some daily hours are missing)
                 Dim totalHrs = empGroup.First()("TOTAL_HOURS")

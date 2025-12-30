@@ -383,7 +383,7 @@ Partial Class FRM_HR_REPORTS
         Me.Cmb_Expiry_Status.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
         Me.Cmb_Expiry_Status.Font = New System.Drawing.Font("Microsoft Sans Serif", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.Cmb_Expiry_Status.FormattingEnabled = True
-        Me.Cmb_Expiry_Status.Items.AddRange(New Object() {"In 1 month", "In 2 months", "In 3 months", "Expired", "No License", "No Insurance", "No Medical"})
+        Me.Cmb_Expiry_Status.Items.AddRange(New Object() {"In 1 month", "In 2 months", "In 3 months", "Expired", "No Record"})
         Me.Cmb_Expiry_Status.Location = New System.Drawing.Point(436, 26)
         Me.Cmb_Expiry_Status.Name = "Cmb_Expiry_Status"
         Me.Cmb_Expiry_Status.Size = New System.Drawing.Size(172, 28)
@@ -478,7 +478,7 @@ Partial Class FRM_HR_REPORTS
         Me.Cmb_Client_Expiration.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
         Me.Cmb_Client_Expiration.Font = New System.Drawing.Font("Microsoft Sans Serif", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.Cmb_Client_Expiration.FormattingEnabled = True
-        Me.Cmb_Client_Expiration.Items.AddRange(New Object() {"In 1 month", "In 2 months", "In 3 months", "Expired", "All"})
+        Me.Cmb_Client_Expiration.Items.AddRange(New Object() {"In 1 month", "In 2 months", "In 3 months", "Expired", "No Record"})
         Me.Cmb_Client_Expiration.Location = New System.Drawing.Point(147, 31)
         Me.Cmb_Client_Expiration.Name = "Cmb_Client_Expiration"
         Me.Cmb_Client_Expiration.Size = New System.Drawing.Size(188, 28)
@@ -707,7 +707,7 @@ Partial Class FRM_HR_REPORTS
         Me.Cmb_Pending_Category.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
         Me.Cmb_Pending_Category.Font = New System.Drawing.Font("Microsoft Sans Serif", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.Cmb_Pending_Category.FormattingEnabled = True
-        Me.Cmb_Pending_Category.Items.AddRange(New Object() {"SSS_NO", "PAGIBIG_NO", "TIN_NO", "PHIL_HEALTH_NO"})
+        Me.Cmb_Pending_Category.Items.AddRange(New Object() {"SSS_NO", "PAGIBIG_NO", "TIN_NO", "PHIL_HEALTH_NO", "BANK_NAME"})
         Me.Cmb_Pending_Category.Location = New System.Drawing.Point(122, 21)
         Me.Cmb_Pending_Category.Name = "Cmb_Pending_Category"
         Me.Cmb_Pending_Category.Size = New System.Drawing.Size(172, 28)
@@ -794,7 +794,7 @@ Partial Class FRM_HR_REPORTS
         '
         'Col_Gov_IDs
         '
-        Me.Col_Gov_IDs.Text = "Government IDs"
+        Me.Col_Gov_IDs.Text = "Remarks"
         Me.Col_Gov_IDs.TextAlign = System.Windows.Forms.HorizontalAlignment.Center
         Me.Col_Gov_IDs.Width = 235
         '
@@ -1261,7 +1261,7 @@ Partial Class FRM_HR_REPORTS
         '
         'ColumnHeader18
         '
-        Me.ColumnHeader18.Text = "Employee Count"
+        Me.ColumnHeader18.Text = "Active Employees"
         Me.ColumnHeader18.TextAlign = System.Windows.Forms.HorizontalAlignment.Center
         Me.ColumnHeader18.Width = 200
         '

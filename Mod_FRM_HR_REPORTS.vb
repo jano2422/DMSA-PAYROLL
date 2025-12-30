@@ -3,52 +3,87 @@ Imports Microsoft.Office.Interop
 Imports System.Configuration
 
 Module Mod_FRM_HR_REPORTS
-    Public Sub Show_Client_Contract_Expiry(dExpiry_Date As DateTime)
+    Public Sub Show_Client_Contract_Expiry(filter As ExpiryFilter)
 
         Dim da As New OleDb.OleDbDataAdapter
         Dim dt As New DataTable
-
-        dt.Clear()
-        dt.Reset()
         Dim SQL As String
 
+        SQL = "
+SELECT 
+    B.SUB_CLIENT_NAME,
+    B.ADDRESS,
+    A.START_CONTRACT_DATE,
+    A.END_CONTRACT_DATE,
+    A.CONTRACT_STATUS
+FROM 
+    TBL_CLIENT_CONTRACT A
+    INNER JOIN TBL_CLIENT_SUB B ON A.SUB_CLIENT_ID = B.SUB_CLIENT_ID
+WHERE 
+    1=1
+"
+
+        ' 📌 APPLY FILTERS BASED ON ENUM
+        Select Case filter
+
+            Case ExpiryFilter.Exp1Month
+                SQL &= "AND A.END_CONTRACT_DATE BETWEEN Date() AND DateAdd('d', 30, Date()) "
+
+            Case ExpiryFilter.Exp2Month
+                SQL &= "AND A.END_CONTRACT_DATE BETWEEN Date() AND DateAdd('d', 60, Date()) "
+
+            Case ExpiryFilter.Exp3Month
+                SQL &= "AND A.END_CONTRACT_DATE BETWEEN Date() AND DateAdd('d', 90, Date()) "
+
+            Case ExpiryFilter.Expired
+                SQL &= "AND A.END_CONTRACT_DATE < Date() "
+
+            Case ExpiryFilter.NoRecord
+                SQL &= "AND A.END_CONTRACT_DATE IS NULL "
+        End Select
+
+        SQL &= " ORDER BY A.END_CONTRACT_DATE ASC"
+
         Try
-            SQL = ""
-
-            SQL = "SELECT * FROM TBL_CLIENT_CONTRACT A, TBL_CLIENT_SUB B WHERE A.SUB_CLIENT_ID = B.SUB_CLIENT_ID AND A.END_CONTRACT_DATE <= CDate('" & dExpiry_Date & "') order by end_contract_date desc"
-
-            da = New OleDbDataAdapter(SQL, Mod_GlobalVariables.GlobalVariables.GlobalCon)
+            da = New OleDb.OleDbDataAdapter(SQL, GlobalVariables.GlobalCon)
             da.Fill(dt)
 
+            If dt.Rows.Count > 0 Then
 
-            If dt.Rows.Count > 0 Then ' SHOW DATAS
                 With FRM_HR_REPORTS.LV_Client_Contract_Exp
-
-                    Dim myRow As DataRow
-
                     .Items.Clear()
 
-                    For Each myRow In dt.Rows
+                    For Each row As DataRow In dt.Rows
 
-                        .Items.Add(myRow.Item("SUB_CLIENT_NAME")) ' Company ID
-                        .Items(.Items.Count - 1).SubItems.Add(myRow.Item("ADDRESS"))
-                        .Items(.Items.Count - 1).SubItems.Add(myRow.Item("START_CONTRACT_DATE"))
-                        .Items(.Items.Count - 1).SubItems.Add(myRow.Item("END_CONTRACT_DATE"))
-                        .Items(.Items.Count - 1).SubItems.Add(myRow.Item("CONTRACT_STATUS"))
+                        Dim startDate As String = ""
+                        Dim endDate As String = ""
+                        Dim daysExpired As Integer = 0
 
+                        If Not IsDBNull(row("START_CONTRACT_DATE")) Then
+                            startDate = CDate(row("START_CONTRACT_DATE")).ToString("dd-MMM-yyyy")
+                        End If
 
-                        Dim expirationDate As DateTime = CType(myRow.Item("END_CONTRACT_DATE"), DateTime)
-                        Dim currentDate As DateTime = DateTime.Now
-                        ' Calculate the difference in days
-                        Dim daysExpired As Integer = (currentDate - expirationDate).Days
+                        If Not IsDBNull(row("END_CONTRACT_DATE")) Then
+                            Dim expDate As Date = CDate(row("END_CONTRACT_DATE"))
+                            endDate = expDate.ToString("dd-MMM-yyyy")
+                            daysExpired = (Date.Now - expDate).Days
+                        End If
 
-                        .Items(.Items.Count - 1).SubItems.Add(daysExpired)
-
+                        With .Items
+                            .Add(row("SUB_CLIENT_NAME").ToString())
+                            .Item(.Count - 1).SubItems.Add(row("ADDRESS").ToString())
+                            .Item(.Count - 1).SubItems.Add(startDate)
+                            .Item(.Count - 1).SubItems.Add(endDate)
+                            .Item(.Count - 1).SubItems.Add(row("CONTRACT_STATUS").ToString())
+                            .Item(.Count - 1).SubItems.Add(daysExpired.ToString())
+                        End With
 
                     Next
+
                 End With
+
             Else
-                MsgBox("No records found from your filter", vbExclamation, "No records")
+                'MsgBox("No records found from your filter", vbExclamation)
                 FRM_HR_REPORTS.LV_Client_Contract_Exp.Items.Clear()
             End If
 
@@ -58,8 +93,8 @@ Module Mod_FRM_HR_REPORTS
 
         GlobalVariables.GlobalCon.Close()
 
-
     End Sub
+
     Public Sub Show_Main_Client_Employe_Count()
 
         Dim da As New OleDb.OleDbDataAdapter
@@ -165,7 +200,7 @@ Module Mod_FRM_HR_REPORTS
 
         Try
             SQL = "SELECT A.main_client_name, COUNT(B.SUB_CLIENT_ID) AS SubClient_count FROM tbl_client_main A, tbl_client_Sub B"
-            SQL = SQL & " WHERE A.main_client_id = B.main_client_id GROUP BY A.main_client_name ORDER BY COUNT(B.SUB_CLIENT_ID) DESC"
+            SQL = SQL & " WHERE A.main_client_id = B.main_client_id AND SUB_CLIENT_STATUS = 'Active' GROUP BY A.main_client_name ORDER BY COUNT(B.SUB_CLIENT_ID) DESC"
 
             da = New OleDbDataAdapter(SQL, Mod_GlobalVariables.GlobalVariables.GlobalCon)
             da.Fill(dt)
@@ -345,7 +380,7 @@ Module Mod_FRM_HR_REPORTS
             dt.Reset()
 
             SQL = ""
-            SQL = "SELECT COUNT(*) AS CLIENT_COUNT FROM ( SELECT DISTINCT(MAIN_CLIENT_ID) FROM TBL_CLIENT_MAIN)"
+            SQL = "SELECT COUNT(*) AS CLIENT_COUNT FROM (SELECT DISTINCT MAIN_CLIENT_ID FROM TBL_CLIENT_MAIN WHERE GLOBAL_STATUS = 'Active')"
 
             da = New OleDbDataAdapter(SQL, Mod_GlobalVariables.GlobalVariables.GlobalCon)
             da.Fill(dt)
@@ -559,15 +594,15 @@ Module Mod_FRM_HR_REPORTS
                         .Items.Add(myRow.Item("B.EMPLOYEE_ID")) ' Company ID
                         .Items(.Items.Count - 1).SubItems.Add(myRow.Item("Last_name") & ", " & myRow.Item("First_Name") & " " & Left(myRow.Item("Middle_Name"), 1) & ".") ' Name
                         .Items(.Items.Count - 1).SubItems.Add(myRow.Item("LEAVE_TYPE"))
-                        .Items(.Items.Count - 1).SubItems.Add(myRow.Item("DATE_FROM"))
-                        .Items(.Items.Count - 1).SubItems.Add(myRow.Item("DATE_TO"))
+                        .Items(.Items.Count - 1).SubItems.Add(Format(CDate(myRow.Item("DATE_FROM")), "dd-MMM-yyyy"))
+                        .Items(.Items.Count - 1).SubItems.Add(Format(CDate(myRow.Item("DATE_TO")), "dd-MMM-yyyy"))
                         .Items(.Items.Count - 1).SubItems.Add(myRow.Item("SUB_CLIENT_NAME"))
 
 
                     Next
                 End With
             Else
-                MsgBox("No records found from your filter", vbExclamation, "No records")
+                'MsgBox("No records found from your filter", vbExclamation, "No records")
                 FRM_HR_REPORTS.LV_Leave_List.Items.Clear()
             End If
 
@@ -592,7 +627,8 @@ Module Mod_FRM_HR_REPORTS
 
         Try
 
-            SQL = "Select * from VIEW_PENDING_GOV_INFO WHERE UCASE(" & sField & ") in('NA', 'TO FOLLOW') order by 1 asc" ' Called Views (Query)
+            ' For improvement: Instead of specific string , filter by data type - number
+            SQL = "Select * from VIEW_PENDING_GOV_INFO WHERE UCASE(" & sField & ") in('NA','N/A', 'TO FOLLOW','FOR UPDATE') order by 1 asc" ' Called Views (Query)
 
 
             da = New OleDbDataAdapter(SQL, Mod_GlobalVariables.GlobalVariables.GlobalCon)
@@ -608,15 +644,15 @@ Module Mod_FRM_HR_REPORTS
 
                     For Each myRow In dt.Rows
 
-                        .Items.Add(myRow.Item("EMPLOYEE_ID")) ' Company ID
+                        .Items.Add(myRow.Item("D.EMPLOYEE_ID")) ' Company ID
                         .Items(.Items.Count - 1).SubItems.Add(myRow.Item("Last_name") & ", " & myRow.Item("First_Name") & " " & Left(myRow.Item("Middle_Name"), 1) & ".") ' Name
-                        .Items(.Items.Count - 1).SubItems.Add(myRow.Item("DATE_HIRED"))
+                        .Items(.Items.Count - 1).SubItems.Add(Format(CDate(myRow.Item("DATE_HIRED")), "dd-MMM-yyyy"))
                         .Items(.Items.Count - 1).SubItems.Add(myRow.Item("SUB_CLIENT_NAME"))
-                        .Items(.Items.Count - 1).SubItems.Add("To Follow")
+                        .Items(.Items.Count - 1).SubItems.Add("No Available Information")
                     Next
                 End With
             Else
-                MsgBox("No records found from your filter", vbExclamation, "No records")
+                'MsgBox("No records found from your filter", vbExclamation, "No records")
                 FRM_HR_REPORTS.LV_Pending_List.Items.Clear()
             End If
 
@@ -713,54 +749,92 @@ Module Mod_FRM_HR_REPORTS
 
     End Sub
 
-    Public Sub Show_Insurance_Expiry(dExpiry_Date As DateTime)
+    Public Enum ExpiryFilter
+            Exp1Month = 0
+            Exp2Month = 1
+            Exp3Month = 2
+            Expired = 3
+            NoRecord = 4
+        End Enum
+
+        Public Enum ExpiryType
+            Medical = 0
+            License = 1
+            Insurance = 2
+        End Enum
+
+
+
+
+    Public Sub Show_Expiry(filter As ExpiryFilter, expType As ExpiryType)
 
         Dim da As New OleDb.OleDbDataAdapter
         Dim dt As New DataTable
-
-        dt.Clear()
-        dt.Reset()
         Dim SQL As String
 
+        Dim tableName As String = ""
+        Dim dateField As String = ""
+
+        Select Case expType
+            Case ExpiryType.Insurance
+                tableName = "HR_INSURANCE_DTL"
+                dateField = "END_DATE"
+
+            Case ExpiryType.Medical
+                tableName = "HR_MEDICAL_RECORDS_DTL"
+                dateField = "MED_EXP_DATE"
+
+            Case ExpiryType.License
+                tableName = "HR_SECURITY_LICENSE_RECORD_DTL"
+                dateField = "SEC_EXP_DATE"
+        End Select
+
+
+
+        SQL = $"
+SELECT *
+FROM (
+    (HR_APPLICATION_DTL A
+        INNER JOIN HR_EMPLOYEE_RECORD_HDR B ON A.APPLICATION_ID = B.APPLICATION_ID)
+        INNER JOIN TBL_CLIENT_SUB C ON B.SUB_CLIENT_ID = C.SUB_CLIENT_ID)
+LEFT JOIN (
+    SELECT X.*
+    FROM {tableName} X
+    WHERE X.{dateField} = (
+        SELECT MAX({dateField})
+        FROM {tableName}
+        WHERE EMPLOYEE_ID = X.EMPLOYEE_ID
+    )
+) D ON D.EMPLOYEE_ID = B.EMPLOYEE_ID
+WHERE B.EMPLOYMENT_STATUS = 'Active'
+"
+
+
+        Select Case filter
+            Case ExpiryFilter.Exp1Month
+                SQL &= $"AND D.{dateField} BETWEEN Date() AND DateAdd('d', 30, Date()) "
+            Case ExpiryFilter.Exp2Month
+                SQL &= $"AND D.{dateField} BETWEEN Date() AND DateAdd('d', 60, Date()) "
+            Case ExpiryFilter.Exp3Month
+                SQL &= $"AND D.{dateField} BETWEEN Date() AND DateAdd('d', 90, Date()) "
+            Case ExpiryFilter.Expired
+                SQL &= $"AND D.{dateField} < Date() "
+            Case ExpiryFilter.NoRecord
+                SQL &= $"AND D.{dateField} IS NULL "
+        End Select
+
+        SQL &= $" ORDER BY D.{dateField} ASC"
+
+
+
         Try
-            SQL = ""
-
-
-            SQL = "Select * From HR_APPLICATION_DTL A, HR_EMPLOYEE_RECORD_HDR B, TBL_CLIENT_SUB C, HR_INSURANCE_DTL D"
-            SQL = SQL & " Where A.APPLICATION_ID = B.APPLICATION_ID And B.SUB_CLIENT_ID = C.SUB_CLIENT_ID And D.EMPLOYEE_ID = B.EMPLOYEE_ID"
-            SQL = SQL & " And D.END_DATE <= CDate('" & dExpiry_Date & "') AND B.EMPLOYMENT_STATUS = 'Active' ORDER BY END_DATE ASC"
-
-            da = New OleDbDataAdapter(SQL, Mod_GlobalVariables.GlobalVariables.GlobalCon)
+            da = New OleDb.OleDbDataAdapter(SQL, GlobalVariables.GlobalCon)
             da.Fill(dt)
 
-
-            If dt.Rows.Count > 0 Then ' SHOW DATAS
-                With FRM_HR_REPORTS.LV_Expiry_List
-
-                    Dim myRow As DataRow
-
-                    .Items.Clear()
-
-                    For Each myRow In dt.Rows
-
-                        .Items.Add(myRow.Item("D.EMPLOYEE_ID")) ' Company ID
-                        .Items(.Items.Count - 1).SubItems.Add(myRow.Item("Last_name") & ", " & myRow.Item("First_Name") & " " & Left(myRow.Item("Middle_Name"), 1) & ".") ' Name
-                        .Items(.Items.Count - 1).SubItems.Add(Format(myRow.Item("DATE_HIRED"), "dd-MMM-yyyy"))
-                        .Items(.Items.Count - 1).SubItems.Add(myRow.Item("SUB_CLIENT_NAME"))
-                        .Items(.Items.Count - 1).SubItems.Add(Format(myRow.Item("END_DATE"), "dd-MMM-yyyy"))
-
-                        Dim expirationDate As DateTime = CType(myRow.Item("END_DATE"), DateTime)
-                        Dim currentDate As DateTime = DateTime.Now
-                        ' Calculate the difference in days
-                        Dim daysExpired As Integer = (currentDate - expirationDate).Days
-
-                        .Items(.Items.Count - 1).SubItems.Add(daysExpired)
-
-
-                    Next
-                End With
+            If dt.Rows.Count > 0 Then
+                FillListView_Expiry(dt, dateField)
             Else
-                MsgBox("No records found from your filter", vbExclamation, "No records")
+                'MsgBox("No records found for this filter", vbExclamation)
                 FRM_HR_REPORTS.LV_Expiry_List.Items.Clear()
             End If
 
@@ -769,127 +843,48 @@ Module Mod_FRM_HR_REPORTS
         End Try
 
         GlobalVariables.GlobalCon.Close()
-
-
-    End Sub
-    Public Sub Show_Medical_Expiry(dExpiry_Date As DateTime)
-
-        Dim da As New OleDb.OleDbDataAdapter
-        Dim dt As New DataTable
-
-        dt.Clear()
-        dt.Reset()
-        Dim SQL As String
-
-        Try
-            SQL = ""
-
-
-            'SQL = "Select * From HR_APPLICATION_DTL A, HR_EMPLOYEE_RECORD_HDR B, TBL_CLIENT_SUB C, HR_MEDICAL_RECORDS_DTL D"
-            'SQL = SQL & " Where A.APPLICATION_ID = B.APPLICATION_ID And B.CLIENT_ID = C.CLIENT_ID And D.EMPLOYEE_ID = B.EMPLOYEE_ID"
-            'SQL = SQL & " And D.MED_EXP_DATE <= CDate('" & dExpiry_Date & "') AND D.MED_EXP_DATE <= CDate('" & Date.Now & "')"
-
-
-            SQL = "Select * From HR_APPLICATION_DTL A, HR_EMPLOYEE_RECORD_HDR B, TBL_CLIENT_SUB C, HR_MEDICAL_RECORDS_DTL D"
-            SQL = SQL & " Where A.APPLICATION_ID = B.APPLICATION_ID And B.SUB_CLIENT_ID = C.SUB_CLIENT_ID And D.EMPLOYEE_ID = B.EMPLOYEE_ID"
-            SQL = SQL & " And D.MED_EXP_DATE <= CDate('" & dExpiry_Date & "') AND B.EMPLOYMENT_STATUS = 'Active' ORDER BY MED_EXP_DATE ASC "
-
-            da = New OleDbDataAdapter(SQL, Mod_GlobalVariables.GlobalVariables.GlobalCon)
-            da.Fill(dt)
-
-
-            If dt.Rows.Count > 0 Then ' SHOW DATAS
-                With FRM_HR_REPORTS.LV_Expiry_List
-
-                    Dim myRow As DataRow
-
-                    .Items.Clear()
-
-                    For Each myRow In dt.Rows
-
-                        .Items.Add(myRow.Item("D.EMPLOYEE_ID")) ' Company ID
-                        .Items(.Items.Count - 1).SubItems.Add(myRow.Item("Last_name") & ", " & myRow.Item("First_Name") & " " & Left(myRow.Item("Middle_Name"), 1) & ".") ' Name
-                        .Items(.Items.Count - 1).SubItems.Add(Format(myRow.Item("DATE_HIRED"), "dd-MMM-yyyy"))
-                        .Items(.Items.Count - 1).SubItems.Add(myRow.Item("SUB_CLIENT_NAME"))
-                        .Items(.Items.Count - 1).SubItems.Add(Format(myRow.Item("MED_EXP_DATE"), "dd-MMM-yyyy"))
-
-                        Dim expirationDate As DateTime = CType(myRow.Item("MED_EXP_DATE"), DateTime)
-                        Dim currentDate As DateTime = DateTime.Now
-                        ' Calculate the difference in days
-                        Dim daysExpired As Integer = (currentDate - expirationDate).Days
-
-                        .Items(.Items.Count - 1).SubItems.Add(daysExpired)
-
-
-                    Next
-                End With
-            Else
-                MsgBox("No records found from your filter", vbExclamation, "No records")
-                FRM_HR_REPORTS.LV_Expiry_List.Items.Clear()
-            End If
-
-        Catch ex As Exception
-            MsgBox(ex.ToString)
-        End Try
-
-        GlobalVariables.GlobalCon.Close()
-
 
     End Sub
 
-    Public Sub Show_License_Expiry(dExpiry_Date As DateTime)
+    Public Sub FillListView_Expiry(dt As DataTable, dateField As String)
 
-        Dim da As New OleDb.OleDbDataAdapter
-        Dim dt As New DataTable
+        With FRM_HR_REPORTS.LV_Expiry_List
+            .Items.Clear()
 
-        dt.Clear()
-        dt.Reset()
-        Dim SQL As String
+            For Each row As DataRow In dt.Rows
 
-        Try
-            SQL = "Select * FROM HR_APPLICATION_DTL A, HR_EMPLOYEE_RECORD_HDR B, TBL_CLIENT_SUB C, HR_SECURITY_LICENSE_RECORD_DTL D"
-            SQL = SQL & " WHERE A.APPLICATION_ID = B.APPLICATION_ID And B.SUB_CLIENT_ID = C.SUB_CLIENT_ID AND D.EMPLOYEE_ID = B.EMPLOYEE_ID And D.SEC_EXP_DATE <= CDate('" & dExpiry_Date & "') AND B.EMPLOYMENT_STATUS = 'Active' order by SEC_EXP_DATE ASC"
-            'SQL = SQL & " OR D.SEC_EXP_DATE <= CDate('" & Date.Now & "')"
+                Dim empId As String = If(IsDBNull(row("B.EMPLOYEE_ID")), "", row("B.EMPLOYEE_ID").ToString())
+                Dim lastName As String = If(IsDBNull(row("Last_Name")), "", row("Last_Name").ToString())
+                Dim firstName As String = If(IsDBNull(row("First_Name")), "", row("First_Name").ToString())
+                Dim middleName As String = If(IsDBNull(row("Middle_Name")), "", row("Middle_Name").ToString())
+                Dim subClientName As String = If(IsDBNull(row("SUB_CLIENT_NAME")), "", row("SUB_CLIENT_NAME").ToString())
 
-            da = New OleDbDataAdapter(SQL, Mod_GlobalVariables.GlobalVariables.GlobalCon)
-            da.Fill(dt)
+                Dim dateHiredStr As String = ""
+                If Not IsDBNull(row("DATE_HIRED")) Then
+                    dateHiredStr = CDate(row("DATE_HIRED")).ToString("dd-MMM-yyyy")
+                End If
 
+                Dim expDateStr As String = ""
+                Dim daysExpired As String = ""
 
-            If dt.Rows.Count > 0 Then ' SHOW DATAS
-                With FRM_HR_REPORTS.LV_Expiry_List
+                If Not IsDBNull(row(dateField)) Then
+                    Dim expDate As Date = CDate(row(dateField))
+                    expDateStr = expDate.ToString("dd-MMM-yyyy")
+                    daysExpired = (Date.Now - expDate).Days.ToString()
+                End If
 
-                    Dim myRow As DataRow
-
-                    .Items.Clear()
-
-                    For Each myRow In dt.Rows
-
-                        .Items.Add(myRow.Item("D.EMPLOYEE_ID")) ' Company ID
-                        .Items(.Items.Count - 1).SubItems.Add(myRow.Item("Last_name") & ", " & myRow.Item("First_Name") & " " & Left(myRow.Item("Middle_Name"), 1) & ".") ' Name
-                        .Items(.Items.Count - 1).SubItems.Add(Format(myRow.Item("DATE_HIRED"), "dd-MMM-yyyy"))
-                        .Items(.Items.Count - 1).SubItems.Add(myRow.Item("SUB_CLIENT_NAME"))
-                        .Items(.Items.Count - 1).SubItems.Add(Format(myRow.Item("SEC_EXP_DATE"), "dd-MMM-yyyy"))
-
-                        Dim expirationDate As DateTime = CType(myRow.Item("SEC_EXP_DATE"), DateTime)
-                        Dim currentDate As DateTime = DateTime.Now
-                        ' Calculate the difference in days
-                        Dim daysExpired As Integer = (currentDate - expirationDate).Days
-
-                        .Items(.Items.Count - 1).SubItems.Add(daysExpired)
-
-                    Next
+                With .Items
+                    .Add(empId)
+                    .Item(.Count - 1).SubItems.Add($"{lastName}, {firstName} {If(middleName <> "", Left(middleName, 1) & ".", "")}")
+                    .Item(.Count - 1).SubItems.Add(dateHiredStr)
+                    .Item(.Count - 1).SubItems.Add(subClientName)
+                    .Item(.Count - 1).SubItems.Add(expDateStr)
+                    .Item(.Count - 1).SubItems.Add(daysExpired)
                 End With
-            Else
-                MsgBox("No records found from your filter", vbExclamation, "No records")
-                FRM_HR_REPORTS.LV_Expiry_List.Items.Clear()
-            End If
 
-        Catch ex As Exception
-            MsgBox(ex.ToString)
-        End Try
+            Next
 
-        GlobalVariables.GlobalCon.Close()
-
+        End With
 
     End Sub
 

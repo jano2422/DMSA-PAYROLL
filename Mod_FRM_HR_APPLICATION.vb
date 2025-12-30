@@ -112,7 +112,7 @@ Module Mod_FRM_HR_APPLICATION
 
                         .Items.Add(myRow.Item("APPLICATION_ID"))
                         .Items(.Items.Count - 1).SubItems.Add(myRow.Item("Last_name") & ", " & myRow.Item("First_Name") & " " & Left(myRow.Item("Middle_Name"), 1) & ".")
-                        .Items(.Items.Count - 1).SubItems.Add(Format(myRow.Item("DATE_REGISTERED"), "MMMM dd, yyyy"))
+                        .Items(.Items.Count - 1).SubItems.Add(Format(CDate(myRow.Item("DATE_REGISTERED")), "dd-MMM-yyyy"))
                         .Items(.Items.Count - 1).SubItems.Add(myRow.Item("STATUS"))
 
 
@@ -238,7 +238,8 @@ Module Mod_FRM_HR_APPLICATION
                         .Txt_ClientID.Text = myRow.Item("SUB_CLIENT_ID")
                         .Lbl_Current_CLient_ID.Text = myRow.Item("SUB_CLIENT_ID") ' redundant client id for comparaing purposes to identify change in client ID
                         .Txt_Employee_ID.Text = myRow.Item("EMPLOYEE_ID")
-                        .TxtDate_Hired.Text = myRow.Item("DATE_HIRED")
+                        .TxtDate_Hired.Text = Format(CDate(myRow.Item("DATE_HIRED")), "dd-MMM-yyyy")
+
 
 
                     End With
@@ -882,7 +883,7 @@ Module Mod_FRM_HR_APPLICATION
                                 .Txt_LastName.Text = myRow.Item("LAST_NAME")
                                 .Txt_Maiden.Text = myRow.Item("MAIDEN_NAME")
                                 .Cmb_Civil_Status.Text = myRow.Item("CIVIL_STATUS")
-                                .Txt_Birthday.Text = myRow.Item("BIRTH_DATE")
+                                .Txt_Birthday.Text = Format(CDate(myRow.Item("BIRTH_DATE")), "dd-MMM-yyyy")
                                 .Cmb_Gender.Text = myRow.Item("GENDER")
                                 .Cmb_BloodType.Text = myRow.Item("BLOOD_TYPE")
                                 .Cmb_Height.Text = myRow.Item("HEIGHT")

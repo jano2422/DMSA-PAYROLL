@@ -22,22 +22,18 @@ Partial Class FRM_DTR_SCHEDULE
     'Do not modify it using the code editor.
     <System.Diagnostics.DebuggerStepThrough()>
     Private Sub InitializeComponent()
-        Dim DataGridViewCellStyle1 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
-        Dim DataGridViewCellStyle2 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
-        Dim DataGridViewCellStyle3 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
-        Dim DataGridViewCellStyle4 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
         Dim DataGridViewCellStyle5 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
         Dim DataGridViewCellStyle6 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
         Dim DataGridViewCellStyle7 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
         Dim DataGridViewCellStyle8 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
+        Dim DataGridViewCellStyle1 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
+        Dim DataGridViewCellStyle2 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
+        Dim DataGridViewCellStyle3 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
+        Dim DataGridViewCellStyle4 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
         Me.Panel1 = New System.Windows.Forms.Panel()
         Me.GView_Schedule1_15 = New System.Windows.Forms.DataGridView()
-        Me.Col_Day = New System.Windows.Forms.DataGridViewTextBoxColumn()
-        Me.Col_Time_IN = New System.Windows.Forms.DataGridViewTextBoxColumn()
-        Me.Col_Day_Out = New System.Windows.Forms.DataGridViewTextBoxColumn()
-        Me.Col_TimeOut = New System.Windows.Forms.DataGridViewTextBoxColumn()
-        Me.Col_TotalHours = New System.Windows.Forms.DataGridViewTextBoxColumn()
         Me.Panel2 = New System.Windows.Forms.Panel()
+        Me.updateSubEmpRec = New FontAwesome.Sharp.IconButton()
         Me.Btn_EmpList = New FontAwesome.Sharp.IconButton()
         Me.BtnGenerate = New FontAwesome.Sharp.IconButton()
         Me.Btn_Save = New FontAwesome.Sharp.IconButton()
@@ -69,6 +65,11 @@ Partial Class FRM_DTR_SCHEDULE
         Me.ProgressBar_Save = New System.Windows.Forms.ProgressBar()
         Me.Label8 = New System.Windows.Forms.Label()
         Me.Lbl_SubClient_Name = New System.Windows.Forms.Label()
+        Me.Col_Day = New System.Windows.Forms.DataGridViewTextBoxColumn()
+        Me.Col_Time_IN = New System.Windows.Forms.DataGridViewTextBoxColumn()
+        Me.Col_Day_Out = New System.Windows.Forms.DataGridViewTextBoxColumn()
+        Me.Col_TimeOut = New System.Windows.Forms.DataGridViewTextBoxColumn()
+        Me.Col_TotalHours = New System.Windows.Forms.DataGridViewTextBoxColumn()
         CType(Me.GView_Schedule1_15, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.Panel2.SuspendLayout()
         CType(Me.PictureBox1, System.ComponentModel.ISupportInitialize).BeginInit()
@@ -98,49 +99,10 @@ Partial Class FRM_DTR_SCHEDULE
         Me.GView_Schedule1_15.Size = New System.Drawing.Size(466, 439)
         Me.GView_Schedule1_15.TabIndex = 6
         '
-        'Col_Day
-        '
-        DataGridViewCellStyle1.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter
-        DataGridViewCellStyle1.Font = New System.Drawing.Font("Verdana", 9.75!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        DataGridViewCellStyle1.ForeColor = System.Drawing.Color.Black
-        Me.Col_Day.DefaultCellStyle = DataGridViewCellStyle1
-        Me.Col_Day.HeaderText = "Day In"
-        Me.Col_Day.Name = "Col_Day"
-        Me.Col_Day.ReadOnly = True
-        '
-        'Col_Time_IN
-        '
-        DataGridViewCellStyle2.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter
-        DataGridViewCellStyle2.Font = New System.Drawing.Font("Verdana", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.Col_Time_IN.DefaultCellStyle = DataGridViewCellStyle2
-        Me.Col_Time_IN.HeaderText = "Time-IN"
-        Me.Col_Time_IN.Name = "Col_Time_IN"
-        '
-        'Col_Day_Out
-        '
-        Me.Col_Day_Out.HeaderText = "Day Out"
-        Me.Col_Day_Out.Name = "Col_Day_Out"
-        '
-        'Col_TimeOut
-        '
-        DataGridViewCellStyle3.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter
-        DataGridViewCellStyle3.Font = New System.Drawing.Font("Verdana", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.Col_TimeOut.DefaultCellStyle = DataGridViewCellStyle3
-        Me.Col_TimeOut.HeaderText = "Time-OUT"
-        Me.Col_TimeOut.Name = "Col_TimeOut"
-        '
-        'Col_TotalHours
-        '
-        DataGridViewCellStyle4.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter
-        DataGridViewCellStyle4.Font = New System.Drawing.Font("Verdana", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.Col_TotalHours.DefaultCellStyle = DataGridViewCellStyle4
-        Me.Col_TotalHours.HeaderText = "Total Hours"
-        Me.Col_TotalHours.Name = "Col_TotalHours"
-        Me.Col_TotalHours.ReadOnly = True
-        '
         'Panel2
         '
         Me.Panel2.BackColor = System.Drawing.Color.DimGray
+        Me.Panel2.Controls.Add(Me.updateSubEmpRec)
         Me.Panel2.Controls.Add(Me.Btn_EmpList)
         Me.Panel2.Controls.Add(Me.BtnGenerate)
         Me.Panel2.Controls.Add(Me.Btn_Save)
@@ -149,6 +111,21 @@ Partial Class FRM_DTR_SCHEDULE
         Me.Panel2.Name = "Panel2"
         Me.Panel2.Size = New System.Drawing.Size(287, 745)
         Me.Panel2.TabIndex = 14
+        '
+        'updateSubEmpRec
+        '
+        Me.updateSubEmpRec.Font = New System.Drawing.Font("Microsoft Sans Serif", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.updateSubEmpRec.IconChar = FontAwesome.Sharp.IconChar.CalendarWeek
+        Me.updateSubEmpRec.IconColor = System.Drawing.Color.Green
+        Me.updateSubEmpRec.IconFont = FontAwesome.Sharp.IconFont.[Auto]
+        Me.updateSubEmpRec.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft
+        Me.updateSubEmpRec.Location = New System.Drawing.Point(12, 518)
+        Me.updateSubEmpRec.Name = "updateSubEmpRec"
+        Me.updateSubEmpRec.Size = New System.Drawing.Size(251, 62)
+        Me.updateSubEmpRec.TabIndex = 3
+        Me.updateSubEmpRec.Text = "Update Sub Client From Emp Rec"
+        Me.updateSubEmpRec.UseVisualStyleBackColor = True
+        Me.updateSubEmpRec.Visible = False
         '
         'Btn_EmpList
         '
@@ -506,6 +483,46 @@ Partial Class FRM_DTR_SCHEDULE
         Me.Lbl_SubClient_Name.TabIndex = 31
         Me.Lbl_SubClient_Name.Text = "Detachment"
         '
+        'Col_Day
+        '
+        DataGridViewCellStyle1.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter
+        DataGridViewCellStyle1.Font = New System.Drawing.Font("Verdana", 9.75!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        DataGridViewCellStyle1.ForeColor = System.Drawing.Color.Black
+        Me.Col_Day.DefaultCellStyle = DataGridViewCellStyle1
+        Me.Col_Day.HeaderText = "Day In"
+        Me.Col_Day.Name = "Col_Day"
+        Me.Col_Day.ReadOnly = True
+        '
+        'Col_Time_IN
+        '
+        DataGridViewCellStyle2.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter
+        DataGridViewCellStyle2.Font = New System.Drawing.Font("Verdana", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.Col_Time_IN.DefaultCellStyle = DataGridViewCellStyle2
+        Me.Col_Time_IN.HeaderText = "Time-IN"
+        Me.Col_Time_IN.Name = "Col_Time_IN"
+        '
+        'Col_Day_Out
+        '
+        Me.Col_Day_Out.HeaderText = "Day Out"
+        Me.Col_Day_Out.Name = "Col_Day_Out"
+        '
+        'Col_TimeOut
+        '
+        DataGridViewCellStyle3.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter
+        DataGridViewCellStyle3.Font = New System.Drawing.Font("Verdana", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.Col_TimeOut.DefaultCellStyle = DataGridViewCellStyle3
+        Me.Col_TimeOut.HeaderText = "Time-OUT"
+        Me.Col_TimeOut.Name = "Col_TimeOut"
+        '
+        'Col_TotalHours
+        '
+        DataGridViewCellStyle4.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter
+        DataGridViewCellStyle4.Font = New System.Drawing.Font("Verdana", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.Col_TotalHours.DefaultCellStyle = DataGridViewCellStyle4
+        Me.Col_TotalHours.HeaderText = "Total Hours"
+        Me.Col_TotalHours.Name = "Col_TotalHours"
+        Me.Col_TotalHours.ReadOnly = True
+        '
         'FRM_DTR_SCHEDULE
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
@@ -574,14 +591,15 @@ Partial Class FRM_DTR_SCHEDULE
     Friend WithEvents Lbl_SubClient_Name As Label
     Friend WithEvents BtnGenerate As IconButton
     Friend WithEvents Btn_EmpList As IconButton
-    Friend WithEvents Col_Day As DataGridViewTextBoxColumn
-    Friend WithEvents Col_Time_IN As DataGridViewTextBoxColumn
-    Friend WithEvents Col_Day_Out As DataGridViewTextBoxColumn
-    Friend WithEvents Col_TimeOut As DataGridViewTextBoxColumn
-    Friend WithEvents Col_TotalHours As DataGridViewTextBoxColumn
     Friend WithEvents DataGridViewTextBoxColumn5 As DataGridViewTextBoxColumn
     Friend WithEvents DataGridViewTextBoxColumn6 As DataGridViewTextBoxColumn
     Friend WithEvents DataGridViewTextBoxColumn As DataGridViewTextBoxColumn
     Friend WithEvents DataGridViewTextBoxColumn7 As DataGridViewTextBoxColumn
     Friend WithEvents DataGridViewTextBoxColumn8 As DataGridViewTextBoxColumn
+    Friend WithEvents updateSubEmpRec As IconButton
+    Friend WithEvents Col_Day As DataGridViewTextBoxColumn
+    Friend WithEvents Col_Time_IN As DataGridViewTextBoxColumn
+    Friend WithEvents Col_Day_Out As DataGridViewTextBoxColumn
+    Friend WithEvents Col_TimeOut As DataGridViewTextBoxColumn
+    Friend WithEvents Col_TotalHours As DataGridViewTextBoxColumn
 End Class

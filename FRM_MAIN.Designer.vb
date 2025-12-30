@@ -398,9 +398,9 @@ Partial Class FRM_MAIN
         Me.Label1.ForeColor = System.Drawing.Color.Black
         Me.Label1.Location = New System.Drawing.Point(1379, 872)
         Me.Label1.Name = "Label1"
-        Me.Label1.Size = New System.Drawing.Size(268, 20)
+        Me.Label1.Size = New System.Drawing.Size(232, 20)
         Me.Label1.TabIndex = 28
-        Me.Label1.Text = "email: jcsoftwaresolution@gmail.com"
+        Me.Label1.Text = "email: kodogen.sds@gmail.com"
         '
         'GRP_Operations
         '

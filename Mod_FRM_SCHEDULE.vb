@@ -77,79 +77,6 @@ Module Mod_FRM_SCHEDULE
         End Try
     End Sub
 
-
-
-
-
-
-    Public Sub Update_2ndCutoff_Cells(sTime_IN As String, sTime_OUT As String)
-
-        With FRM_DTR_SCHEDULE
-
-            .GView_Schedule16_30.Rows.Clear()
-            For i = 0 To 15
-                .GView_Schedule16_30.Rows.Add()
-                .GView_Schedule16_30.Rows(i).Cells(0).Value = (i + 16).ToString()
-                .GView_Schedule16_30.Rows(i).Cells(1).Value = .Cmb_2nd_TimeIN.Text
-                .GView_Schedule16_30.Rows(i).Cells(3).Value = .Cmb_2nd_TimeOUT.Text
-
-                ' Create a ComboBox in column 2
-                Dim comboCell As New DataGridViewComboBoxCell()
-                comboCell.Items.Add((i + 16).ToString()) ' Add current row number
-                If i < 13 Then
-                    comboCell.Items.Add((i + 17).ToString()) ' Add next row number
-                End If
-
-                ' Assign the ComboBox cell to column 2
-                .GView_Schedule16_30.Rows(i).Cells(2) = comboCell
-
-                ' Set the default selected value to the first item in the ComboBox
-                If comboCell.Items.Count > 0 Then
-                    .GView_Schedule16_30.Rows(i).Cells(2).Value = comboCell.Items(0)
-                End If
-            Next
-
-            MsgBox("Time IN and Time OUT were successfully updated!", vbInformation, "Updated")
-
-        End With
-
-
-
-
-
-    End Sub
-    Public Sub Update_1stCutoff_Cells(sTime_IN As String, sTime_OUT As String)
-        With FRM_DTR_SCHEDULE
-            .GView_Schedule1_15.Rows.Clear()
-
-            For i = 0 To 14
-                .GView_Schedule1_15.Rows.Add()
-                .GView_Schedule1_15.Rows(i).Cells(0).Value = (i + 1).ToString()
-                .GView_Schedule1_15.Rows(i).Cells(1).Value = .Cmb_1st_TimeIN.Text
-                .GView_Schedule1_15.Rows(i).Cells(3).Value = .Cmb_1st_TimeOUT.Text
-
-                ' Create a ComboBox in column 2
-                Dim comboCell As New DataGridViewComboBoxCell()
-                comboCell.Items.Add((i + 1).ToString()) ' Add current row number
-                If i < 13 Then
-                    comboCell.Items.Add((i + 2).ToString()) ' Add next row number
-                End If
-
-                ' Assign the ComboBox cell to column 2
-                .GView_Schedule1_15.Rows(i).Cells(2) = comboCell
-
-                ' Set the default selected value to the first item in the ComboBox
-                If comboCell.Items.Count > 0 Then
-                    .GView_Schedule1_15.Rows(i).Cells(2).Value = comboCell.Items(0)
-                End If
-            Next
-
-            MsgBox("Time IN and Time OUT were successfully updated!", vbInformation, "Updated")
-        End With
-    End Sub
-
-
-
     Public Function Verify_Schedule_Validity() As Integer
         Dim First_Cut_Off_Time As String
         Dim Second_Cut_Off_Time As String
@@ -269,6 +196,75 @@ Module Mod_FRM_SCHEDULE
             End If
         End Try
     End Sub
+
+    Sub UpdateSubClientFromLatestTransfer()
+        Using con As New OleDbConnection(GlobalVariables.GlobalConStr)
+            con.Open()
+
+            ' Load qryLatestSubClient results into memory
+            Dim selectCmd As New OleDbCommand("SELECT EMPLOYEE_ID, SUB_CLIENT_ID FROM qryLatestSubClient", con)
+            Dim reader As OleDbDataReader = selectCmd.ExecuteReader()
+
+            While reader.Read()
+                Dim employeeId As String = reader("EMPLOYEE_ID").ToString()
+                Dim subClientId As String = reader("SUB_CLIENT_ID").ToString()
+
+                ' Now update the HR_EMPLOYEE_RECORD_HDR with the subclient id
+                Dim updateCmd As New OleDbCommand("UPDATE HR_EMPLOYEE_RECORD_HDR SET SUB_CLIENT_ID = ? WHERE EMPLOYEE_ID = ?", con)
+                updateCmd.Parameters.AddWithValue("?", subClientId)
+                updateCmd.Parameters.AddWithValue("?", employeeId)
+                updateCmd.ExecuteNonQuery()
+            End While
+
+            reader.Close()
+        End Using
+
+        MessageBox.Show("Update complete.")
+    End Sub
+    ' Example for 1st Cutoff
+    Public Sub Update_1stCutoff_Cells(sTime_IN As String, sTime_OUT As String)
+        With FRM_DTR_SCHEDULE
+            .GView_Schedule1_15.Rows.Clear()
+
+            For i = 0 To 14
+                .GView_Schedule1_15.Rows.Add()
+                .GView_Schedule1_15.Rows(i).Cells(0).Value = (i + 1).ToString()
+                .GView_Schedule1_15.Rows(i).Cells(1).Value = .Cmb_1st_TimeIN.Text
+                .GView_Schedule1_15.Rows(i).Cells(3).Value = .Cmb_1st_TimeOUT.Text
+
+                Dim day1 As Integer = i + 1
+                Dim day2 As Integer = i + 2
+
+                .GView_Schedule1_15.Rows(i).Cells(2).Value = day1.ToString() ' Default
+                .GView_Schedule1_15.Rows(i).Tag = {day1, day2} ' Store both values in Tag
+            Next
+
+            MsgBox("Time IN and Time OUT were successfully updated!", vbInformation, "Updated")
+        End With
+    End Sub
+
+    ' Same for 2nd Cutoff
+    Public Sub Update_2ndCutoff_Cells(sTime_IN As String, sTime_OUT As String)
+        With FRM_DTR_SCHEDULE
+            .GView_Schedule16_30.Rows.Clear()
+
+            For i = 0 To 16
+                .GView_Schedule16_30.Rows.Add()
+                .GView_Schedule16_30.Rows(i).Cells(0).Value = (i + 16).ToString()
+                .GView_Schedule16_30.Rows(i).Cells(1).Value = .Cmb_2nd_TimeIN.Text
+                .GView_Schedule16_30.Rows(i).Cells(3).Value = .Cmb_2nd_TimeOUT.Text
+
+                Dim day1 As Integer = i + 16
+                Dim day2 As Integer = i + 17
+
+                .GView_Schedule16_30.Rows(i).Cells(2).Value = day1.ToString() ' Default
+                .GView_Schedule16_30.Rows(i).Tag = {day1, day2} ' Store both values
+            Next
+
+            MsgBox("Time IN and Time OUT were successfully updated!", vbInformation, "Updated")
+        End With
+    End Sub
+
     Public Sub Generate_All_Schedules()
         Try
             With FRM_DTR_SCHEDULE

@@ -188,6 +188,7 @@ Partial Class FRM_EMP_UPDATE_REC
         Me.Btn_Leave_Filing = New FontAwesome.Sharp.IconButton()
         Me.Panel3 = New System.Windows.Forms.Panel()
         Me.Pic_Employee_Photo = New System.Windows.Forms.PictureBox()
+        Me.Btn_UpRemarks = New System.Windows.Forms.Button()
         Me.Tab_Employee_Transactions.SuspendLayout()
         Me.Tab_Leave_Filing.SuspendLayout()
         Me.Grp_Leave_Info.SuspendLayout()
@@ -322,7 +323,7 @@ Partial Class FRM_EMP_UPDATE_REC
         Me.Cmb_LeaveType.FlatStyle = System.Windows.Forms.FlatStyle.System
         Me.Cmb_LeaveType.Font = New System.Drawing.Font("Microsoft Sans Serif", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.Cmb_LeaveType.FormattingEnabled = True
-        Me.Cmb_LeaveType.Items.AddRange(New Object() {"Vacation Leave", "Emergency Leave", "Sick Leave", "Maternity Leave", "Paternity Leave"})
+        Me.Cmb_LeaveType.Items.AddRange(New Object() {"Vacation Leave", "Emergency Leave", "Sick Leave", "Maternity Leave", "Paternity Leave", "Suspension"})
         Me.Cmb_LeaveType.Location = New System.Drawing.Point(90, 34)
         Me.Cmb_LeaveType.Name = "Cmb_LeaveType"
         Me.Cmb_LeaveType.Size = New System.Drawing.Size(185, 28)
@@ -1611,6 +1612,7 @@ Partial Class FRM_EMP_UPDATE_REC
         'TabPage6
         '
         Me.TabPage6.BackColor = System.Drawing.Color.FromArgb(CType(CType(255, Byte), Integer), CType(CType(192, Byte), Integer), CType(CType(128, Byte), Integer))
+        Me.TabPage6.Controls.Add(Me.Btn_UpRemarks)
         Me.TabPage6.Controls.Add(Me.LV_Status_History)
         Me.TabPage6.Controls.Add(Me.Btn_Separation_Update)
         Me.TabPage6.Controls.Add(Me.PictureBox7)
@@ -1637,6 +1639,7 @@ Partial Class FRM_EMP_UPDATE_REC
         Me.LV_Status_History.GridLines = True
         Me.LV_Status_History.HideSelection = False
         Me.LV_Status_History.Location = New System.Drawing.Point(31, 30)
+        Me.LV_Status_History.MultiSelect = False
         Me.LV_Status_History.Name = "LV_Status_History"
         Me.LV_Status_History.Size = New System.Drawing.Size(715, 222)
         Me.LV_Status_History.TabIndex = 167
@@ -1745,7 +1748,7 @@ Partial Class FRM_EMP_UPDATE_REC
         Me.Cmb_Separation.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
         Me.Cmb_Separation.Font = New System.Drawing.Font("Microsoft Sans Serif", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.Cmb_Separation.FormattingEnabled = True
-        Me.Cmb_Separation.Items.AddRange(New Object() {"Active", "Resigned", "Terminated", "Finished Contract", "AWOL", "Floating", "Terminated", "Suspended"})
+        Me.Cmb_Separation.Items.AddRange(New Object() {"Active", "Resigned", "Terminated", "Finished Contract", "AWOL", "Floating", "Terminated"})
         Me.Cmb_Separation.Location = New System.Drawing.Point(169, 276)
         Me.Cmb_Separation.Name = "Cmb_Separation"
         Me.Cmb_Separation.Size = New System.Drawing.Size(150, 28)
@@ -1989,6 +1992,16 @@ Partial Class FRM_EMP_UPDATE_REC
         Me.Pic_Employee_Photo.TabIndex = 74
         Me.Pic_Employee_Photo.TabStop = False
         '
+        'Btn_UpRemarks
+        '
+        Me.Btn_UpRemarks.Font = New System.Drawing.Font("Microsoft Sans Serif", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.Btn_UpRemarks.Location = New System.Drawing.Point(50, 437)
+        Me.Btn_UpRemarks.Name = "Btn_UpRemarks"
+        Me.Btn_UpRemarks.Size = New System.Drawing.Size(657, 34)
+        Me.Btn_UpRemarks.TabIndex = 168
+        Me.Btn_UpRemarks.Text = "Update Remarks"
+        Me.Btn_UpRemarks.UseVisualStyleBackColor = True
+        '
         'FRM_EMP_UPDATE_REC
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
@@ -2185,7 +2198,6 @@ Partial Class FRM_EMP_UPDATE_REC
     Friend WithEvents Col_Client_Address As ColumnHeader
     Friend WithEvents Btn_Client_Add As Button
     Friend WithEvents Lbl_License_View_Attachment As Label
-    Friend WithEvents LV_Status_History As ListView
     Friend WithEvents ColumnHeader2 As ColumnHeader
     Friend WithEvents Col_DeclaredStatus As ColumnHeader
     Friend WithEvents ColumnHeader14 As ColumnHeader
@@ -2202,4 +2214,6 @@ Partial Class FRM_EMP_UPDATE_REC
     Friend WithEvents Btn_Leave_Filing As IconButton
     Friend WithEvents Btn_Selected_Button As IconButton
     Friend WithEvents Pic_Employee_Photo As PictureBox
+    Friend WithEvents Btn_UpRemarks As Button
+    Friend WithEvents LV_Status_History As ListView
 End Class

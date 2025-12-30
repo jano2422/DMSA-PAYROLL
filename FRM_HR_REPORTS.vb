@@ -27,36 +27,17 @@ Public Class FRM_HR_REPORTS
 
     Private Sub Cmb_Expiry_Status_SelectedIndexChanged_1(sender As Object, e As EventArgs) Handles Cmb_Expiry_Status.SelectedIndexChanged
 
-        Dim Target_Date_of_Expiration As Date
-
-        Select Case Cmb_Expiry_Status.SelectedIndex
-
-            Case 0 ' expieres in 1 month
-                Target_Date_of_Expiration = Date.Now.AddDays(30) ' Expired In 1 month
-            Case 1 ' expires in 2 months
-                Target_Date_of_Expiration = Date.Now.AddDays(60)
-            Case 2 ' already expired
-                Target_Date_of_Expiration = Date.Now.AddDays(90)
-            Case 3
-                Target_Date_of_Expiration = Date.Now.AddDays(0) ' Expired already
-        End Select
-
+        Dim filter As ExpiryFilter = CType(Cmb_Expiry_Status.SelectedIndex, ExpiryFilter)
+        Dim expType As ExpiryType
 
         Select Case Cmb_Exp_Category.SelectedIndex
-
-            Case 0 ' Annual Medical
-                Call Show_Medical_Expiry(Target_Date_of_Expiration.ToShortDateString)
-
-            Case 1 ' Security License
-                Call Show_License_Expiry(Target_Date_of_Expiration.ToShortDateString)
-
-            Case 2 ' Insurance
-                Call Show_Insurance_Expiry(Target_Date_of_Expiration.ToShortDateString)
-
+            Case 0 : expType = ExpiryType.Medical
+            Case 1 : expType = ExpiryType.License
+            Case 2 : expType = ExpiryType.Insurance
+            Case Else : Exit Sub
         End Select
 
-
-
+        Show_Expiry(filter, expType)
 
     End Sub
 
@@ -65,15 +46,17 @@ Public Class FRM_HR_REPORTS
     End Sub
 
     Private Sub Cmb_Exp_Category_SelectedIndexChanged(sender As Object, e As EventArgs) Handles Cmb_Exp_Category.SelectedIndexChanged
-        Cmb_Expiry_Status.SelectedIndex = -1
+        Cmb_Expiry_Status.SelectedIndex = 3   ' Default to Expired
+        Cmb_Expiry_Status_SelectedIndexChanged_1(Cmb_Expiry_Status, EventArgs.Empty)
     End Sub
 
+
     Private Sub DP_Leave_DateTo_ValueChanged(sender As Object, e As EventArgs) Handles DP_Leave_DateTo.ValueChanged
-        Txt_Leave_DateTo.Text = DP_Leave_DateTo.Value.ToShortDateString
+        Txt_Leave_DateTo.Text = DP_Leave_DateTo.Value.ToString("dd-MMM-yyyy")
     End Sub
 
     Private Sub DP_Leave_DateFrom_ValueChanged(sender As Object, e As EventArgs) Handles DP_Leave_DateFrom.ValueChanged
-        Txt_Leave_DateFrom.Text = DP_Leave_DateFrom.Value.ToShortDateString
+        Txt_Leave_DateFrom.Text = DP_Leave_DateFrom.Value.ToString("dd-MMM-yyyy")
     End Sub
 
     Private Sub Btn_Show_Leave_Click(sender As Object, e As EventArgs) Handles Btn_Show_Leave.Click
@@ -104,11 +87,11 @@ Public Class FRM_HR_REPORTS
     End Sub
 
     Private Sub DP_Logs_From_ValueChanged(sender As Object, e As EventArgs) Handles DP_Logs_From.ValueChanged
-        Txt_Logs_DateFrom.Text = DP_Logs_From.Value.ToShortDateString
+        Txt_Logs_DateFrom.Text = DP_Logs_From.Value.ToString("dd-MMM-yyyy")
     End Sub
 
     Private Sub DP_Logs_To_ValueChanged(sender As Object, e As EventArgs) Handles DP_Logs_To.ValueChanged
-        Txt_Logs_DateTo.Text = DP_Logs_To.Value.ToShortDateString
+        Txt_Logs_DateTo.Text = DP_Logs_To.Value.ToString("dd-MMM-yyyy")
     End Sub
 
 
@@ -272,26 +255,13 @@ Public Class FRM_HR_REPORTS
     End Sub
 
     Private Sub Cmb_Client_Expiration_SelectedIndexChanged(sender As Object, e As EventArgs) Handles Cmb_Client_Expiration.SelectedIndexChanged
-        Dim Target_Date_of_Expiration As Date
 
-        Select Case Cmb_Client_Expiration.SelectedIndex
+        Dim filter As ExpiryFilter = CType(Cmb_Client_Expiration.SelectedIndex, ExpiryFilter)
 
-            Case 0 ' expires in 1 month
-                Target_Date_of_Expiration = Date.Now.AddDays(30) ' Expired In 1 month
-            Case 1 ' expires in 2 months
-                Target_Date_of_Expiration = Date.Now.AddDays(60)
-            Case 2 ' expires in 3 months
-                Target_Date_of_Expiration = Date.Now.AddDays(90)
-            Case 3 ' already expired
-                Target_Date_of_Expiration = Date.Now.AddDays(0) ' Expired already
-            Case 4 ' already expired
-                Target_Date_of_Expiration = Date.Now.AddDays(1000) ' Expired already
-        End Select
-
-
-        Call Show_Client_Contract_Expiry(Target_Date_of_Expiration.ToShortDateString)
+        Show_Client_Contract_Expiry(filter)
 
     End Sub
+
 
     Private Sub Lbl_Export_Client_Contract_Exp_Click(sender As Object, e As EventArgs) Handles Lbl_Export_Client_Contract_Exp.Click
         Call Export_Client_Contract_Expiry_to_Excel()
@@ -300,6 +270,18 @@ Public Class FRM_HR_REPORTS
     Private Sub FRM_HR_REPORTS_Load(sender As Object, e As EventArgs) Handles MyBase.Load
         Cmb_Exp_Category.SelectedIndex = 1 'Security License
         Cmb_Expiry_Status.SelectedIndex = 3 'Expired
-        Cmb_Client_Expiration.SelectedIndex = 3 'Expired
+        Cmb_Client_Expiration.SelectedIndex = 4 'All
+        Cmb_LeaveType.SelectedItem = "All"
+        Cmb_Status.SelectedIndex = 0
+        Cmb_Pending_Category.SelectedIndex = 0
+
+
+
     End Sub
+
+    Private Sub Cmb_LeaveType_SelectedIndexChanged(sender As Object, e As EventArgs) Handles Cmb_LeaveType.SelectedIndexChanged
+
+    End Sub
+
+
 End Class

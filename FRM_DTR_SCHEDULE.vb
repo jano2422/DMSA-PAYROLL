@@ -18,9 +18,69 @@
         GView_Schedule1_15.Rows.Clear()
         GView_Schedule16_30.Rows.Clear()
 
+        Call SetupToggleColumns()
         Call SetTimeCmbBox()
         Call Show_Employee_Schedule(GlobalVariables.DTR_Selected_Employee_ID, "Yes", 1) 'Temporary - Should be from the selected Employee
         Call Show_Employee_Schedule(GlobalVariables.DTR_Selected_Employee_ID, "Yes", 2) 'Temporary - Should be from the selected Employee
+
+        AddHandler GView_Schedule1_15.CellClick, AddressOf GView_Schedule_CellClick
+        AddHandler GView_Schedule16_30.CellClick, AddressOf GView_Schedule_CellClick
+    End Sub
+    Private Sub SetupToggleColumns()
+        With Me.GView_Schedule1_15
+            If .Columns.Count < 6 Then
+                ' Add buttons in column 4 and 5 (after day column)
+                Dim btnSub As New DataGridViewButtonColumn()
+                btnSub.Name = "BtnSub"
+                btnSub.HeaderText = "◀ Day Out"
+                btnSub.Text = "◀"
+                btnSub.UseColumnTextForButtonValue = True
+                .Columns.Insert(5, btnSub)
+
+                Dim btnAdd As New DataGridViewButtonColumn()
+                btnAdd.Name = "BtnAdd"
+                btnAdd.HeaderText = "+ Day Out"
+                btnAdd.Text = "+"
+                btnAdd.UseColumnTextForButtonValue = True
+                .Columns.Insert(6, btnAdd)
+            End If
+        End With
+
+        With Me.GView_Schedule16_30
+            If .Columns.Count < 6 Then
+                ' Add buttons in column 4 and 5 (after day column)
+                Dim btnSub As New DataGridViewButtonColumn()
+                btnSub.Name = "BtnSub"
+                btnSub.HeaderText = "◀ Day Out"
+                btnSub.Text = "-"
+                btnSub.UseColumnTextForButtonValue = True
+                .Columns.Insert(5, btnSub)
+
+                Dim btnAdd As New DataGridViewButtonColumn()
+                btnAdd.Name = "BtnAdd"
+                btnAdd.HeaderText = "+ Day Out"
+                btnAdd.Text = "+"
+                btnAdd.UseColumnTextForButtonValue = True
+                .Columns.Insert(6, btnAdd)
+            End If
+        End With
+    End Sub
+
+    Private Sub GView_Schedule_CellClick(sender As Object, e As DataGridViewCellEventArgs)
+        Dim grid = CType(sender, DataGridView)
+        If e.RowIndex < 0 Then Exit Sub
+        Dim row = grid.Rows(e.RowIndex)
+        If row.Tag Is Nothing Then Exit Sub
+        Dim days = CType(row.Tag, Integer())
+        Dim currentVal = CInt(row.Cells(2).Value)
+
+        Select Case grid.Columns(e.ColumnIndex).Name
+            Case "BtnAdd"
+                If currentVal <> days(1) Then row.Cells(2).Value = days(1)
+            Case "BtnSub"
+                If currentVal <> days(0) Then row.Cells(2).Value = days(0)
+        End Select
+        Call Auto_Compute_total_Hours_Shedule()
     End Sub
     Private Sub BtnGenerate_Click(sender As Object, e As EventArgs) Handles BtnGenerate.Click
         Generate_Default_Schedule(GlobalVariables.DTR_Selected_Employee_ID)
@@ -33,18 +93,14 @@
         Call Show_Employee_Schedule(GlobalVariables.DTR_Selected_Employee_ID, "Yes", 2)
     End Sub
     Private Sub Btn_Save_Click(sender As Object, e As EventArgs) Handles Btn_Save.Click
-        ' Controls
         If GView_Schedule1_15.RowCount <= 1 Or GView_Schedule16_30.RowCount <= 1 Then
             MsgBox("Nothing to save.", vbCritical, "Invalid")
             Exit Sub
         End If
 
-        ProgressBar_Save.Value = 0 ' Reset
+        ProgressBar_Save.Value = 0
 
-        ' Check content/time input validity
-        Dim iError_Detected As Integer
-        iError_Detected = Verify_Schedule_Validity()
-
+        Dim iError_Detected As Integer = Verify_Schedule_Validity()
         If iError_Detected = -1 Then
             MsgBox("Invalid time IN or time OUT was detected. Please check.", vbCritical, "Invalid")
             Exit Sub
@@ -52,34 +108,24 @@
 
         Auto_Compute_total_Hours_Shedule()
 
-        ' Row and Column starts at 0,0 for the gridview
         ProgressBar_Save.Visible = True
         ProgressBar_Save.Maximum = GView_Schedule1_15.RowCount + GView_Schedule16_30.RowCount
 
         Try
-            ' Loop save (1-15)
             For iRow = 0 To GView_Schedule1_15.RowCount - 1
-                If GView_Schedule1_15.Rows(iRow).Cells(0).Value = "" Then ' Control (end of grid is null)
-                    Exit For
-                End If
+                If GView_Schedule1_15.Rows(iRow).Cells(0).Value = "" Then Exit For
 
-                ' Retrieve the selected ComboBox value from column 2
                 Dim selectedValue As String = ""
-                Dim comboCell As DataGridViewComboBoxCell = TryCast(GView_Schedule1_15.Rows(iRow).Cells(2), DataGridViewComboBoxCell)
-                If comboCell IsNot Nothing AndAlso comboCell.Value IsNot Nothing Then
-                    selectedValue = comboCell.Value.ToString().Trim()
+                If GView_Schedule1_15.Rows(iRow).Cells(2).Value IsNot Nothing Then
+                    selectedValue = GView_Schedule1_15.Rows(iRow).Cells(2).Value.ToString().Trim()
                 End If
 
-                ' Skip if selectedValue is empty
-                If selectedValue = "" Then
-                    Continue For
-                End If
+                If selectedValue = "" Then Continue For
 
-                ' Call Update function with extracted ComboBox value
                 Call Update_SecGuard_Schedule(GlobalVariables.DTR_Selected_Employee_ID,
                                           GView_Schedule1_15.Rows(iRow).Cells(0).Value,
                                           GView_Schedule1_15.Rows(iRow).Cells(1).Value,
-                                          selectedValue, ' Using the selected ComboBox value
+                                          selectedValue,
                                           GView_Schedule1_15.Rows(iRow).Cells(3).Value,
                                           GView_Schedule1_15.Rows(iRow).Cells(4).Value.ToString())
 
@@ -90,29 +136,20 @@
         End Try
 
         Try
-            ' Loop save (16-31)
             For iRow = 0 To GView_Schedule16_30.RowCount - 1
-                If GView_Schedule16_30.Rows(iRow).Cells(0).Value = "" Then ' Control (end of grid is null)
-                    Exit For
-                End If
+                If GView_Schedule16_30.Rows(iRow).Cells(0).Value = "" Then Exit For
 
-                ' Retrieve the selected ComboBox value from column 2
                 Dim selectedValue As String = ""
-                Dim comboCell As DataGridViewComboBoxCell = TryCast(GView_Schedule16_30.Rows(iRow).Cells(2), DataGridViewComboBoxCell)
-                If comboCell IsNot Nothing AndAlso comboCell.Value IsNot Nothing Then
-                    selectedValue = comboCell.Value.ToString().Trim()
+                If GView_Schedule16_30.Rows(iRow).Cells(2).Value IsNot Nothing Then
+                    selectedValue = GView_Schedule16_30.Rows(iRow).Cells(2).Value.ToString().Trim()
                 End If
 
-                ' Skip if selectedValue is empty
-                If selectedValue = "" Then
-                    Continue For
-                End If
+                If selectedValue = "" Then Continue For
 
-                ' Call Update function with extracted ComboBox value
                 Call Update_SecGuard_Schedule(GlobalVariables.DTR_Selected_Employee_ID,
                                           GView_Schedule16_30.Rows(iRow).Cells(0).Value,
                                           GView_Schedule16_30.Rows(iRow).Cells(1).Value,
-                                          selectedValue, ' Using the selected ComboBox value
+                                          selectedValue,
                                           GView_Schedule16_30.Rows(iRow).Cells(3).Value,
                                           GView_Schedule16_30.Rows(iRow).Cells(4).Value.ToString())
 
@@ -126,9 +163,6 @@
             MsgBox(ex.Message, vbCritical, "Progress: '" & ProgressBar_Save.Value & "'")
         End Try
     End Sub
-
-
-
 
     Private Sub SetTimeCmbBox()
         Cmb_1st_TimeIN.Items.Clear()
@@ -233,5 +267,9 @@
     Private Sub Btn_EmpList_Click(sender As Object, e As EventArgs) Handles Btn_EmpList.Click
         GlobalVariables.sDTR_or_Schedule_Process = "EMPLOYEE_LIST"
         FRM_DTR_EMPLOYEE_LIST.ShowDialog()
+    End Sub
+
+    Private Sub updateSubEmpRec_Click(sender As Object, e As EventArgs) Handles updateSubEmpRec.Click
+        UpdateSubClientFromLatestTransfer()
     End Sub
 End Class

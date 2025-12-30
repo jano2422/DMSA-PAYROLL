@@ -136,49 +136,57 @@ Module Mod_Excel
             Dim processedData As New List(Of Object)()
             Dim previousWindowEnd As DateTime? = Nothing
 
+            ' Loop through all rows in the schedule DataGridView
             For i As Integer = 0 To .GView_Schedule.Rows.Count - 1
                 Dim row = .GView_Schedule.Rows(i)
 
-                ' Only process if required columns have values and total hours > 0
+                ' Only process rows with valid schedule and hours > 0
                 If row.Cells(0).Value IsNot Nothing AndAlso
-        row.Cells(1).Value IsNot Nothing AndAlso
-        row.Cells(2).Value IsNot Nothing AndAlso
-        row.Cells(3).Value IsNot Nothing AndAlso
-        row.Cells(4).Value IsNot Nothing AndAlso
-        IsNumeric(row.Cells(4).Value) AndAlso
-        Convert.ToDouble(row.Cells(4).Value) > 0 Then
+       row.Cells(1).Value IsNot Nothing AndAlso
+       row.Cells(2).Value IsNot Nothing AndAlso
+       row.Cells(3).Value IsNot Nothing AndAlso
+       row.Cells(4).Value IsNot Nothing AndAlso
+       IsNumeric(row.Cells(4).Value) AndAlso
+       Convert.ToDouble(row.Cells(4).Value) > 0 Then
 
+                    ' Extract schedule day numbers and time strings
                     Dim dayNumIn As Integer = Convert.ToInt32(row.Cells(0).Value)
                     Dim schedInTime As String = row.Cells(1).Value.ToString()
                     Dim dayNumOut As Integer = Convert.ToInt32(row.Cells(2).Value)
                     Dim schedOutTime As String = row.Cells(3).Value.ToString()
 
+                    ' Only proceed if there is time-in/out raw data
                     If rawData.Count > 0 Then
+                        ' Get date information from the first raw entry
                         Dim dayNumber As Integer = rawData(0).Item1.Day
                         Dim iDTR_Year_Num As Integer = rawData(0).Item1.Year
                         Dim iDTR_Month_Num As Integer = rawData(0).Item1.Month
                         Dim daysInMonth As Integer = DateTime.DaysInMonth(iDTR_Year_Num, iDTR_Month_Num)
 
+                        ' Set payroll cutoff based on day of month
                         If dayNumber <= 15 Then
                             GlobalVariables.sPayroll_Cutoff = iDTR_Month_Num & "_" & "1st_" & iDTR_Year_Num
                         ElseIf dayNumber >= 16 Then
                             GlobalVariables.sPayroll_Cutoff = iDTR_Month_Num & "_" & "2nd_" & iDTR_Year_Num
-
                         End If
-                        ' Skip invalid schedIn values
+
+                        ' Skip if sched-in date is invalid
                         If dayNumIn > daysInMonth Then Continue For
 
+                        ' Build DateTime object for schedule in
                         Dim schedInDate As New DateTime(iDTR_Year_Num, iDTR_Month_Num, dayNumIn,
                                             Convert.ToDateTime(schedInTime).Hour,
                                             Convert.ToDateTime(schedInTime).Minute, 0)
 
                         Dim schedOutDate As DateTime
+
+                        ' If sched-out day is still within the month
                         If dayNumOut <= daysInMonth Then
                             schedOutDate = New DateTime(iDTR_Year_Num, iDTR_Month_Num, dayNumOut,
                                             Convert.ToDateTime(schedOutTime).Hour,
                                             Convert.ToDateTime(schedOutTime).Minute, 0)
                         Else
-                            ' Handle overflow day into next month or year
+                            ' Handle sched-out dates that fall into next month/year
                             Dim nextMonth As Integer = iDTR_Month_Num + 1
                             Dim nextYear As Integer = iDTR_Year_Num
 
@@ -187,6 +195,7 @@ Module Mod_Excel
                                 nextYear += 1
                             End If
 
+                            ' Adjust overflow day
                             Dim adjustedDay As Integer = dayNumOut - daysInMonth
                             Dim daysInNextMonth As Integer = DateTime.DaysInMonth(nextYear, nextMonth)
 
@@ -198,10 +207,11 @@ Module Mod_Excel
                                             Convert.ToDateTime(schedOutTime).Minute, 0)
                         End If
 
-                        ' Use previous window's end as new start, else fallback to 12hrs before
+                        ' Determine window start: previous end if exists, else nearest 12-hour before sched-in
                         Dim windowStart As DateTime = If(previousWindowEnd.HasValue, previousWindowEnd.Value, GetPreviousNearest12Hour(schedInDate))
-                        Dim windowEnd As DateTime = schedOutDate
+                        Dim windowEnd As DateTime = schedOutDate ' initial window end
 
+                        ' Try to find the next valid schedule row to calculate mid-window
                         Dim nextValidRow As DataGridViewRow = Nothing
                         For j As Integer = i + 1 To .GView_Schedule.Rows.Count - 1
                             Dim possibleRow = .GView_Schedule.Rows(j)
@@ -219,6 +229,7 @@ Module Mod_Excel
                             End If
                         Next
 
+                        ' If next valid schedule found, compute the midpoint between current out and next in
                         If nextValidRow IsNot Nothing Then
                             Dim nextDayNumIn As Integer = Convert.ToInt32(nextValidRow.Cells(0).Value)
                             Dim nextSchedInTime As String = nextValidRow.Cells(1).Value.ToString()
@@ -228,11 +239,14 @@ Module Mod_Excel
 
                             windowEnd = schedOutDate.AddSeconds((nextSchedInDate - schedOutDate).TotalSeconds / 2)
                         Else
+                            ' Else set next nearest 12-hour mark after sched-out
                             windowEnd = GetNextNearest12Hour(schedOutDate)
                         End If
 
+                        ' Store this window’s end to be used in the next iteration
                         previousWindowEnd = windowEnd
 
+                        ' Find raw punches between the calculated window start and end
                         Dim timeInOutData As New List(Of String)()
                         For Each entry In rawData
                             If entry.Item1 >= windowStart AndAlso entry.Item1 <= windowEnd Then
@@ -240,6 +254,7 @@ Module Mod_Excel
                             End If
                         Next
 
+                        ' If any punches found in the window, add processed data to the result
                         If timeInOutData.Count > 0 Then
                             processedData.Add(New With {
                     .DateRange = If(schedInDate.Date = schedOutDate.Date,
@@ -259,6 +274,7 @@ Module Mod_Excel
 
 
 
+
             Dim existingRowIndex As Integer = 0
             For Each entry In processedData
                 ' Find the row index that matches the entry, assuming you have a unique key like DateRange
@@ -268,7 +284,7 @@ Module Mod_Excel
                 .GView_DTR.Rows(existingRowIndex).Cells(1).Value = entry.Days
 
                 ' Update Time In/Out columns (assuming 2nd column is the Days column and 3rd to 8th are the Time In/Out columns)
-                For i = 0 To 6 ' Adjust the range depending on the number of Time In/Out columns you have
+                For i = 0 To 7 ' Adjust the range depending on the number of Time In/Out columns you have
                     If i < entry.TimeInOut.Count Then
                         .GView_DTR.Rows(existingRowIndex).Cells(i + 2).Value = entry.TimeInOut(i) ' +2 to start from the 3rd column (index 2)
                     Else

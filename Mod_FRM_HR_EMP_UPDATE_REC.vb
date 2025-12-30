@@ -2,6 +2,11 @@
 Imports System.IO
 Module Mod_FRM_HR_EMP_UPDATE_REC
 
+
+
+
+
+
     Public Sub Update_Employee_Record_New_Client_Assignment(sEmployee_ID As String, iNewClient_ID As Integer)
         Dim SQL As String
         Connect_to_MDB()
@@ -60,7 +65,7 @@ Module Mod_FRM_HR_EMP_UPDATE_REC
 
                         .Items.Add(iROw)
                         .Items(.Items.Count - 1).SubItems.Add(myRow.Item("EMPLOYMENT_STATUS"))
-                        .Items(.Items.Count - 1).SubItems.Add(Format(myRow.Item("EFFECTIVITY_DATE"), "MMMM dd, yyyy"))
+                        .Items(.Items.Count - 1).SubItems.Add(Format(myRow.Item("EFFECTIVITY_DATE"), "dd-MMM-yyyy"))
                         .Items(.Items.Count - 1).SubItems.Add(myRow.Item("REMARKS"))
                         .Items(.Items.Count - 1).SubItems.Add(myRow.Item("ID"))
 
@@ -209,8 +214,8 @@ Module Mod_FRM_HR_EMP_UPDATE_REC
 
                     For Each myRow In dt.Rows
 
-                        .Txt_Insurance_DateStart.Text = myRow.Item("START_DATE")
-                        .Txt_Insurance_DateEnd.Text = myRow.Item("END_DATE")
+                        .Txt_Insurance_DateStart.Text = Format(CDate(myRow.Item("START_DATE")), "dd-MMM-yyyy")
+                        .Txt_Insurance_DateEnd.Text = Format(CDate(myRow.Item("END_DATE")), "dd-MMM-yyyy")
                         .Txt_Insurance_Policy.Text = myRow.Item("POLICY_NUMBER")
                         .Cmb_Insurance_CompName.Text = myRow.Item("INSURANCE_COMPANY")
 
@@ -256,8 +261,8 @@ Module Mod_FRM_HR_EMP_UPDATE_REC
                     For Each myRow In dt.Rows
 
                         .Items.Add(iROw)
-                        .Items(.Items.Count - 1).SubItems.Add(myRow.Item("START_DATE"))
-                        .Items(.Items.Count - 1).SubItems.Add(myRow.Item("END_DATE"))
+                        .Items(.Items.Count - 1).SubItems.Add(Format(CDate(myRow.Item("START_DATE")), "dd-MMM-yyyy"))
+                        .Items(.Items.Count - 1).SubItems.Add(Format(CDate(myRow.Item("END_DATE")), "dd-MMM-yyyy"))
                         .Items(.Items.Count - 1).SubItems.Add(myRow.Item("INSURANCE_COMPANY"))
                         .Items(.Items.Count - 1).SubItems.Add(myRow.Item("POLICY_NUMBER"))
                         .Items(.Items.Count - 1).SubItems.Add(myRow.Item("ID"))
@@ -308,10 +313,10 @@ Module Mod_FRM_HR_EMP_UPDATE_REC
 
                         .Cmb_Hospital.Text = myRow.Item("HOSPITAL_NAME")
                         .Cmb_Medical_Type.Text = myRow.Item("MED_TYPE")
-                        .Txt_Medical_Date.Text = myRow.Item("MED_DATE")
+                        .Txt_Medical_Date.Text = Format(CDate(myRow.Item("MED_DATE")), "dd-MMM-yyyy")
                         .Cmb_Drug_Test.Text = myRow.Item("DRUG_TEST")
 
-                        .Txt_Medical_Exp_Date.Text = myRow.Item("MED_EXP_DATE")
+                        .Txt_Medical_Exp_Date.Text = Format(CDate(myRow.Item("MED_EXP_DATE")), "dd-MMM-yyyy")
 
                         If myRow.Item("WITH_FINDINGS") = "Yes" Then
                             .Chk_Medical_Findings.Checked = True
@@ -361,7 +366,7 @@ Module Mod_FRM_HR_EMP_UPDATE_REC
                     For Each myRow In dt.Rows
 
                         .Items.Add(iROw)
-                        .Items(.Items.Count - 1).SubItems.Add(myRow.Item("MED_DATE"))
+                        .Items(.Items.Count - 1).SubItems.Add(Format(CDate(myRow.Item("MED_DATE")), "dd-MMM-yyyy"))
                         .Items(.Items.Count - 1).SubItems.Add(myRow.Item("MED_TYPE"))
                         .Items(.Items.Count - 1).SubItems.Add(myRow.Item("REMARKS"))
                         .Items(.Items.Count - 1).SubItems.Add(myRow.Item("ID"))
@@ -432,39 +437,48 @@ Module Mod_FRM_HR_EMP_UPDATE_REC
 
     End Sub
 
-    Public Sub Update_Medical_Record(sEmployee_ID As String)
+    Public Sub Update_Medical_Record(sId As String)
         Dim SQL As String
         Connect_to_MDB()
 
         Try
             With FRM_EMP_UPDATE_REC
 
-                Dim sWithFindings As String
-                If .Chk_Medical_Findings.Checked = True Then
-                    sWithFindings = "Yes"
-                Else
-                    sWithFindings = "None"
-                End If
+                Dim sWithFindings As String = If(.Chk_Medical_Findings.Checked, "Yes", "None")
 
-                SQL = ""
-                SQL = "UPDATE HR_MEDICAL_RECORDS_DTL SET MED_TYPE = '" & .Cmb_Medical_Type.Text & "', WITH_FINDINGS = '" & sWithFindings & "', REMARKS = '" & .Txt_Medical_Remarks.Text & "'"
-                SQL = SQL & ", MED_DATE= '" & .Txt_Medical_Date.Text & "', DRUG_TEST = '" & .Cmb_Drug_Test.Text & "', HOSPITAL_NAME = '" & .Cmb_Hospital.Text & "', MED_EXP_DATE = '" & .Txt_Medical_Exp_Date.Text & "'"
+                SQL = "UPDATE HR_MEDICAL_RECORDS_DTL SET " &
+                  "MED_TYPE = ?, " &
+                  "WITH_FINDINGS = ?, " &
+                  "REMARKS = ?, " &
+                  "MED_DATE = ?, " &
+                  "DRUG_TEST = ?, " &
+                  "HOSPITAL_NAME = ?, " &
+                  "MED_EXP_DATE = ? " &
+                  "WHERE ID = ?"
 
-                Dim SQLcmd As OleDbCommand = New OleDbCommand(SQL, GlobalVariables.GlobalCon)
-                SQLcmd.ExecuteNonQuery()
-                SQLcmd.Dispose()
+                Using SQLcmd As New OleDbCommand(SQL, GlobalVariables.GlobalCon)
+                    SQLcmd.Parameters.AddWithValue("?", .Cmb_Medical_Type.Text)
+                    SQLcmd.Parameters.AddWithValue("?", sWithFindings)
+                    SQLcmd.Parameters.AddWithValue("?", .Txt_Medical_Remarks.Text)
+                    SQLcmd.Parameters.AddWithValue("?", .Txt_Medical_Date.Text)
+                    SQLcmd.Parameters.AddWithValue("?", .Cmb_Drug_Test.Text)
+                    SQLcmd.Parameters.AddWithValue("?", .Cmb_Hospital.Text)
+                    SQLcmd.Parameters.AddWithValue("?", .Txt_Medical_Exp_Date.Text)
+                    SQLcmd.Parameters.AddWithValue("?", sId)
 
+                    SQLcmd.ExecuteNonQuery()
+                End Using
 
                 MsgBox("Medical record was successfully updated!", vbInformation, "Saved")
-
             End With
+
         Catch ex As Exception
             MsgBox(ex.Message, vbCritical, "Error Updating Medical Record")
-
         End Try
 
         GlobalVariables.GlobalCon.Close()
     End Sub
+
 
     Public Sub Insert_New_Medical_Record(sEmployee_ID As String)
 
@@ -640,12 +654,12 @@ Module Mod_FRM_HR_EMP_UPDATE_REC
                         .Items.Add(myRow.Item("A.SUB_CLIENT_ID"))
                         .Items(.Items.Count - 1).SubItems.Add(myRow.Item("SUB_CLIENT_NAME"))
                         .Items(.Items.Count - 1).SubItems.Add(myRow.Item("ADDRESS"))
-                        .Items(.Items.Count - 1).SubItems.Add(Format(myRow.Item("DATE_STARTED"), "dd-MMM-yyyy"))
+                        .Items(.Items.Count - 1).SubItems.Add(Format(CDate(myRow.Item("DATE_STARTED")), "dd-MMM-yyyy"))
 
                         If myRow.Item("DATE_STARTED") = myRow.Item("DATE_ENDED") Then ' If equal then I should display "Up to Present"
                             .Items(.Items.Count - 1).SubItems.Add("Up to present")
                         Else
-                            .Items(.Items.Count - 1).SubItems.Add(Format(myRow.Item("DATE_ENDED"), "dd-MMM-yyyy"))
+                            .Items(.Items.Count - 1).SubItems.Add(Format(CDate(myRow.Item("DATE_ENDED")), "dd-MMM-yyyy"))
                         End If
 
                         .Items(.Items.Count - 1).SubItems.Add(myRow.Item("ID"))
@@ -843,7 +857,7 @@ Module Mod_FRM_HR_EMP_UPDATE_REC
 
                     For Each myRow In dt.Rows
                         .Txt_License_Number.Text = myRow.Item("SEC_LICENSE_NO")
-                        .Txt_License_Expiry.Text = myRow.Item("SEC_EXP_DATE")
+                        .Txt_License_Expiry.Text = Format(CDate(myRow.Item("SEC_EXP_DATE")), "dd-MMM-yyyy")
                         .Cmb_LicenseType.Text = myRow.Item("SEC_LICENSE_TYPE")
                         .Txt_License_Attachment.Text = myRow.Item("SEC_LICENSE_PATH")
 
@@ -892,7 +906,7 @@ Module Mod_FRM_HR_EMP_UPDATE_REC
                         .Items.Add(iRow)
                         .Items(.Items.Count - 1).SubItems.Add(myRow.Item("SEC_LICENSE_NO"))
                         .Items(.Items.Count - 1).SubItems.Add(myRow.Item("SEC_LICENSE_TYPE"))
-                        .Items(.Items.Count - 1).SubItems.Add(Format(myRow.Item("SEC_EXP_DATE"), "dd-MMM-yyyy"))
+                        .Items(.Items.Count - 1).SubItems.Add(Format(CDate(myRow.Item("SEC_EXP_DATE")), "dd-MMM-yyyy"))
                         .Items(.Items.Count - 1).SubItems.Add(myRow.Item("ID"))
 
                         iRow = iRow + 1
@@ -1092,8 +1106,8 @@ Module Mod_FRM_HR_EMP_UPDATE_REC
                     For Each myRow In dt.Rows
 
                         .Cmb_LeaveType.Text = myRow.Item("LEAVE_TYPE")
-                        .Txt_Leave_DateFrom.Text = myRow.Item("DATE_FROM")
-                        .Txt_Leave_DateTo.Text = myRow.Item("DATE_TO")
+                        .Txt_Leave_DateFrom.Text = Format(CDate(myRow.Item("DATE_FROM")), "dd-MMM-yyyy")
+                        .Txt_Leave_DateTo.Text = Format(CDate(myRow.Item("DATE_TO")), "dd-MMM-yyyy")
                         .Cmb_Notification.Text = myRow.Item("NOTIFY")
                         .Txt_Leave_Reason.Text = myRow.Item("REASON")
                         .Cmb_Leave_Status.Text = myRow.Item("STATUS")
@@ -1142,8 +1156,8 @@ Module Mod_FRM_HR_EMP_UPDATE_REC
 
                         .Items.Add(iRow)
                         .Items(.Items.Count - 1).SubItems.Add(myRow.Item("LEAVE_TYPE"))
-                        .Items(.Items.Count - 1).SubItems.Add(myRow.Item("DATE_FROM"))
-                        .Items(.Items.Count - 1).SubItems.Add(myRow.Item("DATE_TO"))
+                        .Items(.Items.Count - 1).SubItems.Add(Format(CDate(myRow.Item("DATE_FROM")), "dd-MMM-yyyy"))
+                        .Items(.Items.Count - 1).SubItems.Add(Format(CDate(myRow.Item("DATE_TO")), "dd-MMM-yyyy"))
                         .Items(.Items.Count - 1).SubItems.Add(myRow.Item("STATUS"))
                         .Items(.Items.Count - 1).SubItems.Add(myRow.Item("ID"))
 
@@ -1151,8 +1165,9 @@ Module Mod_FRM_HR_EMP_UPDATE_REC
                         iRow = iRow + 1
                     Next
                 End With
-            Else
 
+            Else
+                FRM_EMP_UPDATE_REC.LV_Leave.Items.Clear()
 
             End If
 

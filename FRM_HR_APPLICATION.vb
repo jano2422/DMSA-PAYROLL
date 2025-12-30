@@ -226,7 +226,7 @@ Public Class FRM_HRIS_APPLICATION
         '    Exit Sub
         'End If
 
-        Txt_Birthday.Text = DP_Bday.Value.ToShortDateString()
+        Txt_Birthday.Text = DP_Bday.Value.ToString("yyyy-MMM-dd")
     End Sub
 
 
@@ -313,11 +313,11 @@ Public Class FRM_HRIS_APPLICATION
     End Sub
 
     Private Sub DT_Interview1_Date_ValueChanged(sender As Object, e As EventArgs) Handles DT_Interview1_Date.ValueChanged
-        TxtInterviewHR_Date.Text = DT_Interview1_Date.Value.ToShortDateString
+        TxtInterviewHR_Date.Text = DT_Interview1_Date.Value.ToString("yyyy-MMM-dd")
     End Sub
 
     Private Sub DT_Interview2_Date_ValueChanged(sender As Object, e As EventArgs) Handles DT_Interview2_Date.ValueChanged
-        Txt_Interview_OP_Date.Text = DT_Interview2_Date.Value.ToShortDateString
+        Txt_Interview_OP_Date.Text = DT_Interview2_Date.Value.ToString("yyyy-MMM-dd")
     End Sub
 
     Private Sub Btn_Interview_Cancel_Click(sender As Object, e As EventArgs) Handles Btn_Interview_Cancel.Click
@@ -502,7 +502,7 @@ Public Class FRM_HRIS_APPLICATION
             MsgBox("Can not move to For Completion status. There is not even one requiremtent being submitted.", vbCritical, "0 requirement submitted")
             Exit Sub
         ElseIf Check_ctr <= Me.LV_Requirement_List.Items.Count - 1 Then
-            sResponse= MsgBox("Requirements are not complete yet. Do you really want to move this to For Completion Status?", vbQuestion + vbYesNo, "Are you sure?")
+            sResponse = MsgBox("Requirements are not complete yet. Do you really want to move this to For Completion Status?", vbQuestion + vbYesNo, "Are you sure?")
             If sResponse = vbNo Then
                 Exit Sub
             End If
@@ -521,7 +521,7 @@ Public Class FRM_HRIS_APPLICATION
         '    Exit Sub
         'End If
 
-        Me.TxtDate_Hired.Text = Me.DP_Date_Hired.Value.ToShortDateString
+        Me.TxtDate_Hired.Text = Me.DP_Date_Hired.Value.ToString("yyyy-MMM-dd")
     End Sub
 
     Private Sub Btn_ShowClientList_Click(sender As Object, e As EventArgs) Handles Btn_ShowClientList.Click
@@ -553,10 +553,15 @@ Public Class FRM_HRIS_APPLICATION
             End If
         End If
 
+        If Txt_Employee_ID.Text = "" Then
 
+            MsgBox("No Employee ID", vbExclamation, "Employee ID Error")
+            Exit Sub
+        End If
         Try
             If Me.Lbl_Complete_App_ID.Text = "" Then
                 Call Insert_Record_To_HR_EMPLOYEE_RECORD_HDR(Me.Lbl_Req_App_ID.Text)
+                Call Reg_ATM_Info(Txt_Employee_ID.Text.ToString)
                 Lbl_Complete_App_ID.Text = Me.Lbl_Req_App_ID.Text ' So no need to close the form for refresh ( to select an employee and get the updated app_id )
             Else
                 Call Update_For_Completion_record(Me.Lbl_Complete_App_ID.Text)
@@ -705,7 +710,7 @@ Public Class FRM_HRIS_APPLICATION
     End Sub
 
     Private Sub DP_CLient_Start_Date_ValueChanged(sender As Object, e As EventArgs) Handles DP_Client_Start_Date.ValueChanged
-        Me.Txt_Client_Start_Date.Text = DP_Client_Start_Date.Value.ToShortDateString
+        Me.Txt_Client_Start_Date.Text = DP_Client_Start_Date.Value.ToString("yyyy-MMM-dd")
     End Sub
 
     Private Sub Tab_Recruitment_SelectedIndexChanged(sender As Object, e As EventArgs) Handles Tab_Recruitment.SelectedIndexChanged
@@ -742,7 +747,7 @@ Public Class FRM_HRIS_APPLICATION
     End Sub
 
     Private Sub DT_Interview3_Date_ValueChanged(sender As Object, e As EventArgs) Handles DT_Interview3_Date.ValueChanged
-        Txt_Interview_Dir_Date.Text = DT_Interview3_Date.Value.ToShortDateString
+        Txt_Interview_Dir_Date.Text = DT_Interview3_Date.Value.ToString("yyyy-MMM-dd")
     End Sub
 
     Private Sub Btn_Manual_ID_Click(sender As Object, e As EventArgs) Handles Btn_Manual_ID.Click

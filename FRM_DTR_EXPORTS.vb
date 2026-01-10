@@ -82,7 +82,7 @@ Public Class FRM_DTR_EXPORTS
             End If
 
             ' Call export function
-            Export_DTR_Per_Client_to_Excell(Lbl_ClientID.Text, Lbl_Client_Address.Text, sCut_Off)
+            Export_DTR_Per_Client_to_Excell(Lbl_Client_Name.Text, Lbl_Client_Address.Text, sCut_Off)
 
         Catch ex As Exception
             MessageBox.Show("An unexpected error occurred: " & ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error)

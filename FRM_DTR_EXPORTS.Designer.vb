@@ -35,6 +35,9 @@ Partial Class FRM_DTR_EXPORTS
         Me.SH = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
         Me.LH = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
         Me.OT_REG = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
+        Me.CB = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
+        Me.SSS_Loan = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
+        Me.PI_Loan = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
         Me.TabPage2 = New System.Windows.Forms.TabPage()
         Me.DGV_DTR_MATRIX = New System.Windows.Forms.DataGridView()
         Me.PictureBox1 = New System.Windows.Forms.PictureBox()
@@ -54,9 +57,6 @@ Partial Class FRM_DTR_EXPORTS
         Me.Lbl_Client_Address = New System.Windows.Forms.Label()
         Me.Lbl_ClientID = New System.Windows.Forms.Label()
         Me.Label7 = New System.Windows.Forms.Label()
-        Me.CB = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
-        Me.SSS_Loan = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
-        Me.PI_Loan = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
         Me.TabControl1.SuspendLayout()
         Me.TabPage1.SuspendLayout()
         Me.TabPage2.SuspendLayout()
@@ -154,6 +154,21 @@ Partial Class FRM_DTR_EXPORTS
         '
         Me.OT_REG.Text = "OT REG"
         Me.OT_REG.Width = 90
+        '
+        'CB
+        '
+        Me.CB.Text = "Cash Bond"
+        Me.CB.Width = 115
+        '
+        'SSS_Loan
+        '
+        Me.SSS_Loan.Text = "SSS Loan"
+        Me.SSS_Loan.Width = 118
+        '
+        'PI_Loan
+        '
+        Me.PI_Loan.Text = "PI Loan"
+        Me.PI_Loan.Width = 104
         '
         'TabPage2
         '
@@ -371,21 +386,6 @@ Partial Class FRM_DTR_EXPORTS
         Me.Label7.Size = New System.Drawing.Size(104, 23)
         Me.Label7.TabIndex = 610
         Me.Label7.Text = "Client ID:"
-        '
-        'CB
-        '
-        Me.CB.Text = "Cash Bond"
-        Me.CB.Width = 115
-        '
-        'SSS_Loan
-        '
-        Me.SSS_Loan.Text = "SSS Loan"
-        Me.SSS_Loan.Width = 118
-        '
-        'PI_Loan
-        '
-        Me.PI_Loan.Text = "PI Loan"
-        Me.PI_Loan.Width = 104
         '
         'FRM_DTR_EXPORTS
         '

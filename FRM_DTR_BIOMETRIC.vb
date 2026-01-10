@@ -8,14 +8,10 @@ Public Class FRM_DTR_BIOMETRIC
 
     ' Variable to store the selected directory
     Private selectedDirectory As String = String.Empty
-    'Dim DefaultDTRDir As String = "\\DMSAC-SERVER\Files\MASTER_DTR"
-    Dim DefaultDTRDir As String = "C:\MASTER_DTR"
+    Dim DefaultDTRDir As String = "\\DMSAC-SERVER\Files\MASTER_DTR"
+    'Dim DefaultDTRDir As String = "C:\MASTER_DTR"
     Private Sub Btn_DTR_Click(sender As Object, e As EventArgs) Handles Btn_DTR.Click
-        ' Check if the trial period has ended
-        If Now.Year = 2026 Then
-            MsgBox("Trial Period Ends")
-            Exit Sub ' Exit the subroutine if the trial period has ended
-        End If
+
 
         ' Clear the schedule grid and reset UI
         GView_Schedule.Rows.Clear()

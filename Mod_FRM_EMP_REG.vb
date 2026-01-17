@@ -1,6 +1,7 @@
 ﻿Imports System.Data.OleDb
-Imports Microsoft.Office.Interop
-Imports ClosedXML.Excel
+Imports System.IO
+Imports System.Linq
+Imports System.Text
 Module Mod_FRM_EMP_REG
 
 
@@ -799,27 +800,44 @@ Module Mod_FRM_EMP_REG
 
         Return dt
     End Function
-    Public Sub ExportDataTableToExcel(dt As DataTable, filePath As String)
+    Public Sub ExportDataTableToCsv(dt As DataTable, filePath As String)
         Try
-            Using wb As New XLWorkbook()
-                Dim ws = wb.Worksheets.Add("Employee List")
+            Using writer As New StreamWriter(filePath, False, Encoding.UTF8)
+                Dim headers = dt.Columns.Cast(Of DataColumn)().
+                    Select(Function(column) EscapeCsvValue(column.ColumnName))
+                writer.WriteLine(String.Join(",", headers))
 
-                ' === Load DataTable to worksheet ===
-                ws.Cell(1, 1).InsertTable(dt, "EmployeeTable", True)
-
-                ' === Auto-fit columns ===
-                ws.Columns().AdjustToContents()
-
-                ' === Save file ===
-                wb.SaveAs(filePath)
+                For Each row As DataRow In dt.Rows
+                    Dim fields = dt.Columns.Cast(Of DataColumn)().
+                        Select(Function(column) EscapeCsvValue(Convert.ToString(row(column))))
+                    writer.WriteLine(String.Join(",", fields))
+                Next
             End Using
 
-            MsgBox("Excel file saved successfully!", vbInformation)
+            MsgBox("CSV file saved successfully!", vbInformation)
 
         Catch ex As Exception
-            MsgBox("Error exporting to Excel: " & ex.Message, vbCritical)
+            MsgBox("Error exporting to CSV: " & ex.Message, vbCritical)
         End Try
     End Sub
+
+    Private Function EscapeCsvValue(value As String) As String
+        If value Is Nothing Then
+            Return ""
+        End If
+
+        Dim escapedValue As String = value.Replace("""", """""")
+        Dim needsQuotes As Boolean = escapedValue.Contains(",") OrElse
+            escapedValue.Contains("""") OrElse
+            escapedValue.Contains(vbCr) OrElse
+            escapedValue.Contains(vbLf)
+
+        If needsQuotes Then
+            Return """" & escapedValue & """"
+        End If
+
+        Return escapedValue
+    End Function
     Public Sub Show_Search(sCategory As String, sSearchString As String)
 
 

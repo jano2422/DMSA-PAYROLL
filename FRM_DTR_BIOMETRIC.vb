@@ -65,6 +65,24 @@ Public Class FRM_DTR_BIOMETRIC
 
         ' Process the selected PDF file
         ProcessSelectedPDF(selectedFile)
+
+        Dim cutoff As String = GlobalVariables.sPayroll_Cutoff
+
+        If IsFirstCutoff(cutoff) Then
+            ' 1st cutoff (1–15) → loans/other default zero
+            SetLoanDeductionsToZero()
+
+
+        ElseIf IsSecondCutoff(cutoff) Then
+            ' 2nd cutoff (16–30) → gov deductions default zero
+            SetGovernmentDeductionsToZero()
+            SetLoanDeductionsToZero()
+
+        Else
+            MsgBox("Invalid cutoff format: " & cutoff, vbExclamation, "Cutoff Error")
+            Exit Sub
+        End If
+
     End Sub
 
 
@@ -645,17 +663,72 @@ Public Class FRM_DTR_BIOMETRIC
 
         Return 0D
     End Function
+    Private Function IsFirstCutoff(cutoff As String) As Boolean
+        If String.IsNullOrWhiteSpace(cutoff) Then Return False
+        Return cutoff.IndexOf("_1st_", StringComparison.OrdinalIgnoreCase) >= 0
+    End Function
+
+    Private Function IsSecondCutoff(cutoff As String) As Boolean
+        If String.IsNullOrWhiteSpace(cutoff) Then Return False
+        Return cutoff.IndexOf("_2nd_", StringComparison.OrdinalIgnoreCase) >= 0
+    End Function
+
+
 
     Private Sub Btn_Save_DTR_Click(sender As Object, e As EventArgs) Handles Btn_Save_DTR.Click
-        ' Get cut off period from Lbl_Period
+
+        Dim cutoff As String = GlobalVariables.sPayroll_Cutoff
+
+        If IsFirstCutoff(cutoff) Then
+
+            'require gov deductions (only if you want this rule)
+            If IsTextBoxNullOrEmpty(szPhilhealthDeduct) _
+                OrElse IsTextBoxNullOrEmpty(szSSSDeduct) _
+                OrElse IsTextBoxNullOrEmpty(szPagibigDeduct) Then
+
+                MsgBox("PhilHealth, SSS, and Pag-Ibig deductions are required before saving.", vbExclamation, "Missing Deductions")
+                Exit Sub
+            End If
+
+        ElseIf IsSecondCutoff(cutoff) Then
+
+        Else
+            MsgBox("Invalid cutoff format: " & cutoff, vbExclamation, "Cutoff Error")
+            Exit Sub
+        End If
+
+        ' === Read values ===
         Dim cbDeduct As Decimal = GetDecimalFromTextBox(szCashBond)
         Dim sssLoanDeduct As Decimal = GetDecimalFromTextBox(szSSSLoan)
         Dim piLoanDeduct As Decimal = GetDecimalFromTextBox(szPILoan)
 
-        Call Save_DTR_Total_Hours(GlobalVariables.DTR_Selected_SubClient_ID, GlobalVariables.DTR_Selected_Employee_ID, GlobalVariables.sPayroll_Cutoff, CInt(Me.Lbl_Num_of_Reporting_Days.Text), cbDeduct, sssLoanDeduct, piLoanDeduct)
-        Call Save_DTR_Hours_Per_Day(GlobalVariables.DTR_Selected_SubClient_ID, GlobalVariables.DTR_Selected_Employee_ID)
+        Dim sssCalLoanDeduct As Decimal = GetDecimalFromTextBox(szSSSCalLoan)
+        Dim piCalLoanDeduct As Decimal = GetDecimalFromTextBox(szPICalLoan)
+
+        Dim philhealthDeduct As Decimal = GetDecimalFromTextBox(szPhilhealthDeduct)
+        Dim sssDeduct As Decimal = GetDecimalFromTextBox(szSSSDeduct)
+        Dim pagibigDeduct As Decimal = GetDecimalFromTextBox(szPagibigDeduct)
+
+        ' === Save ===
+        Save_DTR_Total_Hours(GlobalVariables.DTR_Selected_SubClient_ID,
+                         GlobalVariables.DTR_Selected_Employee_ID,
+                         cutoff,
+                         CInt(Me.Lbl_Num_of_Reporting_Days.Text),
+                         cbDeduct,
+                         sssLoanDeduct,
+                         sssCalLoanDeduct,
+                         piLoanDeduct,
+                         piCalLoanDeduct,
+                         philhealthDeduct,
+                         sssDeduct,
+                         pagibigDeduct)
+
+        Save_DTR_Hours_Per_Day(GlobalVariables.DTR_Selected_SubClient_ID,
+                           GlobalVariables.DTR_Selected_Employee_ID)
 
     End Sub
+
+
     Private Sub BtnSH_Click(sender As Object, e As EventArgs) Handles BtnSH.Click
         GView_DTR.Rows(GView_DTR.CurrentCell.RowIndex).DefaultCellStyle.BackColor = Color.Yellow
         ProcessHoursBreakdown()
@@ -680,5 +753,26 @@ Public Class FRM_DTR_BIOMETRIC
         ProcessHoursBreakdown()
         DuplicateAndHideDtrDGView()
         TabControl2.SelectedTab = dtrBreakDownPage
+    End Sub
+    Private Function IsTextBoxNullOrEmpty(txt As TextBox) As Boolean
+        Return txt Is Nothing OrElse String.IsNullOrWhiteSpace(txt.Text)
+    End Function
+
+    Private Sub SetLoanDeductionsToZero()
+        szCashBond.Text = "0"
+        szSSSLoan.Text = "0"
+        szPILoan.Text = "0"
+        szSSSCalLoan.Text = "0"
+        szPICalLoan.Text = "0"
+    End Sub
+
+    Private Sub SetGovernmentDeductionsToZero()
+        szPhilhealthDeduct.Text = "0"
+        szSSSDeduct.Text = "0"
+        szPagibigDeduct.Text = "0"
+    End Sub
+
+    Private Sub dtrBreakDownPage_Click(sender As Object, e As EventArgs) Handles dtrBreakDownPage.Click
+
     End Sub
 End Class

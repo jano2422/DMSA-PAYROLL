@@ -529,7 +529,12 @@ Module Mod_Biometric_DTR
     iNumber_of_Days As Integer,
     cbDeduct As Decimal,
     sssLoanDeduct As Decimal,
-    piLoanDeduct As Decimal
+    sssCalLoanDeduct As Decimal,
+    piLoanDeduct As Decimal,
+    piCalLoanDeduct As Decimal,
+    philhealthDeduct As Decimal,
+    sssDeduct As Decimal,
+    pagibigDeduct As Decimal
 )
 
         Dim SQL As String = ""
@@ -541,8 +546,9 @@ Module Mod_Biometric_DTR
                 SQL = "INSERT INTO PRL_DTR_TOTAL_HOURS " &
                   "(EMPLOYEE_ID, SUB_CLIENT_ID, CUTOFF_PERIOD, NUM_OF_DAYS, " &
                   "TOTAL_HOURS, REG, SUN, SH, LH, OT_REG, " &
-                  "CB_DEDUCT, SSS_LOAN_DEDUCT, PI_LOAN_DEDUCT) " &
-                  "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"
+                  "CB_DEDUCT, SSS_LOAN_DEDUCT, PI_LOAN_DEDUCT, PH_DEDUCT, SSS_DEDUCT, PI_DEDUCT, SSS_CAL_LOAN_DEDUCT, PI_CAL_LOAN_DEDUCT) " &
+                  "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"
+
 
                 Using SQLcmd As New OleDbCommand(SQL, GlobalVariables.GlobalCon)
 
@@ -561,6 +567,11 @@ Module Mod_Biometric_DTR
                     SQLcmd.Parameters.AddWithValue("?", cbDeduct)
                     SQLcmd.Parameters.AddWithValue("?", sssLoanDeduct)
                     SQLcmd.Parameters.AddWithValue("?", piLoanDeduct)
+                    SQLcmd.Parameters.AddWithValue("?", philhealthDeduct)
+                    SQLcmd.Parameters.AddWithValue("?", sssDeduct)
+                    SQLcmd.Parameters.AddWithValue("?", pagibigDeduct)
+                    SQLcmd.Parameters.AddWithValue("?", sssCalLoanDeduct)
+                    SQLcmd.Parameters.AddWithValue("?", piCalLoanDeduct)
 
                     SQLcmd.ExecuteNonQuery()
                 End Using

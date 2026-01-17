@@ -38,6 +38,9 @@ Partial Class FRM_DTR_EXPORTS
         Me.CB = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
         Me.SSS_Loan = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
         Me.PI_Loan = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
+        Me.SSSDeduct = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
+        Me.PhilHealthDeduct = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
+        Me.PagIBIGDeduct = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
         Me.TabPage2 = New System.Windows.Forms.TabPage()
         Me.DGV_DTR_MATRIX = New System.Windows.Forms.DataGridView()
         Me.PictureBox1 = New System.Windows.Forms.PictureBox()
@@ -57,6 +60,8 @@ Partial Class FRM_DTR_EXPORTS
         Me.Lbl_Client_Address = New System.Windows.Forms.Label()
         Me.Lbl_ClientID = New System.Windows.Forms.Label()
         Me.Label7 = New System.Windows.Forms.Label()
+        Me.SSS_CAL_Loan = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
+        Me.PI_CAL_Loan = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
         Me.TabControl1.SuspendLayout()
         Me.TabPage1.SuspendLayout()
         Me.TabPage2.SuspendLayout()
@@ -98,7 +103,7 @@ Partial Class FRM_DTR_EXPORTS
         'LV_DTR_Per_Client_List
         '
         Me.LV_DTR_Per_Client_List.BackColor = System.Drawing.Color.FromArgb(CType(CType(255, Byte), Integer), CType(CType(224, Byte), Integer), CType(CType(192, Byte), Integer))
-        Me.LV_DTR_Per_Client_List.Columns.AddRange(New System.Windows.Forms.ColumnHeader() {Me.Item, Me.Employee_Name, Me.Total_Days, Me.Total_Hours, Me.Reg, Me.Sun, Me.SH, Me.LH, Me.OT_REG, Me.CB, Me.SSS_Loan, Me.PI_Loan})
+        Me.LV_DTR_Per_Client_List.Columns.AddRange(New System.Windows.Forms.ColumnHeader() {Me.Item, Me.Employee_Name, Me.Total_Days, Me.Total_Hours, Me.Reg, Me.Sun, Me.SH, Me.LH, Me.OT_REG, Me.CB, Me.SSS_Loan, Me.SSS_CAL_Loan, Me.PI_Loan, Me.PI_CAL_Loan, Me.SSSDeduct, Me.PhilHealthDeduct, Me.PagIBIGDeduct})
         Me.LV_DTR_Per_Client_List.Font = New System.Drawing.Font("Verdana", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.LV_DTR_Per_Client_List.FullRowSelect = True
         Me.LV_DTR_Per_Client_List.GridLines = True
@@ -133,22 +138,22 @@ Partial Class FRM_DTR_EXPORTS
         'Reg
         '
         Me.Reg.Text = "REG"
-        Me.Reg.Width = 50
+        Me.Reg.Width = 41
         '
         'Sun
         '
         Me.Sun.Text = "SUN"
-        Me.Sun.Width = 50
+        Me.Sun.Width = 39
         '
         'SH
         '
         Me.SH.Text = "SH"
-        Me.SH.Width = 50
+        Me.SH.Width = 31
         '
         'LH
         '
         Me.LH.Text = "LH"
-        Me.LH.Width = 50
+        Me.LH.Width = 32
         '
         'OT_REG
         '
@@ -158,17 +163,32 @@ Partial Class FRM_DTR_EXPORTS
         'CB
         '
         Me.CB.Text = "Cash Bond"
-        Me.CB.Width = 115
+        Me.CB.Width = 92
         '
         'SSS_Loan
         '
         Me.SSS_Loan.Text = "SSS Loan"
-        Me.SSS_Loan.Width = 118
+        Me.SSS_Loan.Width = 75
         '
         'PI_Loan
         '
         Me.PI_Loan.Text = "PI Loan"
-        Me.PI_Loan.Width = 104
+        Me.PI_Loan.Width = 64
+        '
+        'SSSDeduct
+        '
+        Me.SSSDeduct.Text = "SSS"
+        Me.SSSDeduct.Width = 50
+        '
+        'PhilHealthDeduct
+        '
+        Me.PhilHealthDeduct.Text = "PhilHealth"
+        Me.PhilHealthDeduct.Width = 81
+        '
+        'PagIBIGDeduct
+        '
+        Me.PagIBIGDeduct.Text = "Pag-IBIG"
+        Me.PagIBIGDeduct.Width = 79
         '
         'TabPage2
         '
@@ -387,6 +407,16 @@ Partial Class FRM_DTR_EXPORTS
         Me.Label7.TabIndex = 610
         Me.Label7.Text = "Client ID:"
         '
+        'SSS_CAL_Loan
+        '
+        Me.SSS_CAL_Loan.Text = "SSS Cal Loan"
+        Me.SSS_CAL_Loan.Width = 111
+        '
+        'PI_CAL_Loan
+        '
+        Me.PI_CAL_Loan.Text = "PI Cal Loan"
+        Me.PI_CAL_Loan.Width = 93
+        '
         'FRM_DTR_EXPORTS
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
@@ -460,4 +490,9 @@ Partial Class FRM_DTR_EXPORTS
     Friend WithEvents CB As ColumnHeader
     Friend WithEvents SSS_Loan As ColumnHeader
     Friend WithEvents PI_Loan As ColumnHeader
+    Friend WithEvents SSSDeduct As ColumnHeader
+    Friend WithEvents PhilHealthDeduct As ColumnHeader
+    Friend WithEvents PagIBIGDeduct As ColumnHeader
+    Friend WithEvents SSS_CAL_Loan As ColumnHeader
+    Friend WithEvents PI_CAL_Loan As ColumnHeader
 End Class

@@ -68,6 +68,15 @@ Module Mod_FRM_DTR_EXPORTS
     End Function
 
 
+    Private Function IsFirstCutoff(cutoff As String) As Boolean
+        If String.IsNullOrWhiteSpace(cutoff) Then Return False
+        Return cutoff.IndexOf("_1st_", StringComparison.OrdinalIgnoreCase) >= 0
+    End Function
+
+    Private Function IsSecondCutoff(cutoff As String) As Boolean
+        If String.IsNullOrWhiteSpace(cutoff) Then Return False
+        Return cutoff.IndexOf("_2nd_", StringComparison.OrdinalIgnoreCase) >= 0
+    End Function
 
     Public Sub Export_DTR_Per_Client_to_Excell(sClient As String, sAddress As String, sCutOff As String)
 
@@ -78,9 +87,6 @@ Module Mod_FRM_DTR_EXPORTS
         Dim payslipSheet As Excel.Worksheet = Nothing
 
         Try
-            '========================================
-            ' 0) Excel app
-            '========================================
             xlApp = New Excel.Application With {
             .Visible = True,
             .WindowState = Excel.XlWindowState.xlMaximized,
@@ -88,9 +94,19 @@ Module Mod_FRM_DTR_EXPORTS
         }
 
             '========================================
-            ' 1) Copy template workbook -> output file
+            ' 1) Choose template workbook based on cutoff
             '========================================
-            Dim templatePath As String = Path.Combine(Application.StartupPath, "PayrollTemplate.xlsx")
+            Dim templateFileName As String
+
+            If IsFirstCutoff(sCutOff) Then
+                templateFileName = "PayrollTemplate_1st.xlsx"
+            ElseIf IsSecondCutoff(sCutOff) Then
+                templateFileName = "PayrollTemplate_2nd.xlsx"
+            Else
+                Throw New Exception("Invalid cutoff format: " & sCutOff)
+            End If
+
+            Dim templatePath As String = Path.Combine(Application.StartupPath, templateFileName)
             If Not File.Exists(templatePath) Then
                 Throw New FileNotFoundException("Template not found: " & templatePath)
             End If
@@ -98,14 +114,13 @@ Module Mod_FRM_DTR_EXPORTS
             Dim safeClient As String = MakeSafeFileName(sClient)
             Dim safeCutoff As String = MakeSafeFileName(sCutOff)
 
-            'Put output beside exe (change to Documents if you like)
             Dim outPath As String = Path.Combine(Application.StartupPath,
-                                            $"Payroll_{safeClient}_{safeCutoff}_{DateTime.Now:yyyyMMdd_HHmmss}.xlsx")
+            $"Payroll_{safeClient}_{safeCutoff}_{DateTime.Now:yyyyMMdd_HHmmss}.xlsx")
 
             File.Copy(templatePath, outPath, True)
 
             '========================================
-            ' 2) Open copied workbook (this is now the output)
+            ' 2) Open copied workbook (output)
             '========================================
             wbOut = xlApp.Workbooks.Open(outPath)
 
@@ -113,11 +128,9 @@ Module Mod_FRM_DTR_EXPORTS
             payslipSheet = CType(wbOut.Worksheets("PAYSLIP"), Excel.Worksheet)
 
             '========================================
-            ' 3) Fill PAYROLL fixed header fields
+            ' 3) Fill header fields
             '========================================
-            Dim rawCutOff As String = sCutOff
-
-            Dim readableCutOff As String = ConvertCutOffStringToReadable(rawCutOff)
+            Dim readableCutOff As String = ConvertCutOffStringToReadable(sCutOff)
 
             payrollSheet.Range("B7").Value = sClient
             payrollSheet.Range("B8").Value = sAddress
@@ -127,6 +140,9 @@ Module Mod_FRM_DTR_EXPORTS
             ' 4) Write rows from ListView
             '========================================
             Dim payrollDataStartRow As Integer = 15
+
+            Dim firstCutoff As Boolean = IsFirstCutoff(sCutOff)
+
 
             With FRM_DTR_EXPORTS.LV_DTR_Per_Client_List
                 For iRow As Integer = 0 To .Items.Count - 1
@@ -143,9 +159,20 @@ Module Mod_FRM_DTR_EXPORTS
                     payrollSheet.Cells(r, 11).Value = item.SubItems(8).Text 'OT/HRS
 
                     'Deductions
-                    payrollSheet.Cells(r, 20).Value = item.SubItems(9).Text  'CB
-                    payrollSheet.Cells(r, 21).Value = item.SubItems(10).Text 'SSS LOAN
-                    payrollSheet.Cells(r, 22).Value = item.SubItems(11).Text 'PI LOAN
+                    If firstCutoff Then
+                        '1st cutoff → Government deductions go to columns 12,13,14
+                        payrollSheet.Cells(r, 20).Value = item.SubItems(12).Text 'SSS
+                        payrollSheet.Cells(r, 21).Value = item.SubItems(13).Text 'PH
+                        payrollSheet.Cells(r, 22).Value = item.SubItems(14).Text 'PI
+                    Else
+                        '2nd cutoff → Loans/other deductions go to columns 20,21,22
+                        payrollSheet.Cells(r, 20).Value = item.SubItems(9).Text  'CB
+                        payrollSheet.Cells(r, 21).Value = item.SubItems(10).Text 'SSS LOAN
+                        payrollSheet.Cells(r, 22).Value = item.SubItems(11).Text 'SSS CAL LOAN
+                        payrollSheet.Cells(r, 23).Value = item.SubItems(12).Text 'PI LOAN
+                        payrollSheet.Cells(r, 24).Value = item.SubItems(13).Text 'PI CAL LOAN
+                    End If
+
                 Next
             End With
 
@@ -154,28 +181,19 @@ Module Mod_FRM_DTR_EXPORTS
             '========================================
             payrollSheet.Calculate()
             payslipSheet.Calculate()
-
             wbOut.Save()
 
         Catch ex As Exception
             MsgBox(ex.ToString)
         Finally
-
-
-            Try
-                If wbOut IsNot Nothing Then
-                End If
-            Catch
-            End Try
-
             ReleaseCom(payslipSheet)
             ReleaseCom(payrollSheet)
             ReleaseCom(wbOut)
-
             ReleaseCom(xlApp)
         End Try
 
     End Sub
+
 
     '--------------------------
     ' Helpers
@@ -217,7 +235,7 @@ Module Mod_FRM_DTR_EXPORTS
             'SQL = "select LAST_NAME, FIRST_NAME, MIDDLE_NAME, NUM_OF_DAYS, TOTAL_HOURS, REG, SUN,SH,LH, RD_SUN_SH, RD_SUN_LH, ND_REG, ND_SUN, ND_SH, ND_LH, ND_RD_SUN_SH, ND_RD_SUN_LH, OT_REG from VIEW_DTR_PER_SUB_CLIENT"
             'SQL = SQL & " where A.SUB_CLIENT_ID = " & iClient_ID & " and CUTOFF_PERIOD = '" & sCut_Off & "'"
 
-            SQL = "SELECT LAST_NAME, FIRST_NAME, MIDDLE_NAME, NUM_OF_DAYS, TOTAL_HOURS, REG, SUN, SH, LH, OT_REG, CB_DEDUCT, SSS_LOAN_DEDUCT, PI_LOAN_DEDUCT "
+            SQL = "SELECT LAST_NAME, FIRST_NAME, MIDDLE_NAME, NUM_OF_DAYS, TOTAL_HOURS, REG, SUN, SH, LH, OT_REG, CB_DEDUCT, SSS_LOAN_DEDUCT, SSS_CAL_LOAN_DEDUCT, PI_LOAN_DEDUCT, PI_CAL_LOAN_DEDUCT,SSS_DEDUCT, PH_DEDUCT, PI_DEDUCT "
             SQL = SQL & "FROM VIEW_DTR_PER_SUB_CLIENT A "
             SQL = SQL & "WHERE A.A.SUB_CLIENT_ID = " & iClient_ID & " AND A.CUTOFF_PERIOD = '" & sCut_Off & "' "
             SQL = SQL & "AND A.D.ID = (SELECT MAX(D.ID) FROM PRL_DTR_TOTAL_HOURS D WHERE D.EMPLOYEE_ID = A.A.EMPLOYEE_ID AND D.CUTOFF_PERIOD = A.CUTOFF_PERIOD) "
@@ -239,21 +257,30 @@ Module Mod_FRM_DTR_EXPORTS
 
                     .Items.Clear()
                     For Each myRow In dt.Rows
-                        .Items.Add(iRow.ToString()) ' item count
-                        .Items(.Items.Count - 1).SubItems.Add(myRow.Item("LAST_NAME") & ", " & myRow.Item("FIRST_NAME"))
-                        .Items(.Items.Count - 1).SubItems.Add(myRow.Item("NUM_OF_DAYS"))
-                        .Items(.Items.Count - 1).SubItems.Add(myRow.Item("TOTAL_HOURS"))
-                        .Items(.Items.Count - 1).SubItems.Add(myRow.Item("REG"))
-                        .Items(.Items.Count - 1).SubItems.Add(myRow.Item("SUN"))
-                        .Items(.Items.Count - 1).SubItems.Add(myRow.Item("SH"))
-                        .Items(.Items.Count - 1).SubItems.Add(myRow.Item("LH"))
-                        .Items(.Items.Count - 1).SubItems.Add(myRow.Item("OT_REG"))
-                        .Items(.Items.Count - 1).SubItems.Add(myRow.Item("CB_DEDUCT"))
-                        .Items(.Items.Count - 1).SubItems.Add(myRow.Item("SSS_LOAN_DEDUCT"))
-                        .Items(.Items.Count - 1).SubItems.Add(myRow.Item("PI_LOAN_DEDUCT"))
+                        .Items.Add(iRow.ToString())
 
-                        iRow += 1 ' Increment the row counter
+                        .Items(.Items.Count - 1).SubItems.Add($"{NzText(myRow, "LAST_NAME")}, {NzText(myRow, "FIRST_NAME")}")
+
+                        .Items(.Items.Count - 1).SubItems.Add(NzZero(myRow, "NUM_OF_DAYS"))
+                        .Items(.Items.Count - 1).SubItems.Add(NzZero(myRow, "TOTAL_HOURS"))
+                        .Items(.Items.Count - 1).SubItems.Add(NzZero(myRow, "REG"))
+                        .Items(.Items.Count - 1).SubItems.Add(NzZero(myRow, "SUN"))
+                        .Items(.Items.Count - 1).SubItems.Add(NzZero(myRow, "SH"))
+                        .Items(.Items.Count - 1).SubItems.Add(NzZero(myRow, "LH"))
+                        .Items(.Items.Count - 1).SubItems.Add(NzZero(myRow, "OT_REG"))
+
+                        .Items(.Items.Count - 1).SubItems.Add(NzZero(myRow, "CB_DEDUCT"))
+                        .Items(.Items.Count - 1).SubItems.Add(NzZero(myRow, "SSS_LOAN_DEDUCT"))
+                        .Items(.Items.Count - 1).SubItems.Add(NzZero(myRow, "SSS_CAL_LOAN_DEDUCT"))
+                        .Items(.Items.Count - 1).SubItems.Add(NzZero(myRow, "PI_LOAN_DEDUCT"))
+                        .Items(.Items.Count - 1).SubItems.Add(NzZero(myRow, "PI_CAL_LOAN_DEDUCT"))
+                        .Items(.Items.Count - 1).SubItems.Add(NzZero(myRow, "SSS_DEDUCT"))
+                        .Items(.Items.Count - 1).SubItems.Add(NzZero(myRow, "PH_DEDUCT"))
+                        .Items(.Items.Count - 1).SubItems.Add(NzZero(myRow, "PI_DEDUCT"))
+
+                        iRow += 1
                     Next
+
                 End With
             Else
                 FRM_DTR_EXPORTS.LV_DTR_Per_Client_List.Items.Clear()
@@ -268,6 +295,28 @@ Module Mod_FRM_DTR_EXPORTS
         GlobalVariables.GlobalCon.Close()
 
     End Sub
+
+    Private Function NzText(row As DataRow, col As String) As String
+        If row.IsNull(col) Then Return ""
+        Return Convert.ToString(row(col)).Trim()
+    End Function
+
+    Private Function NzZero(row As DataRow, col As String) As String
+        If row.IsNull(col) Then Return "0"
+
+        Dim s As String = Convert.ToString(row(col)).Trim()
+        If s = "" Then Return "0"
+
+        Dim d As Decimal
+        If Decimal.TryParse(s, d) Then
+            ' Optional: format how you want
+            Return d.ToString("0.##")
+        End If
+
+        ' If not numeric but not empty, return it (or return "0" if you prefer)
+        Return s
+    End Function
+
     Public Sub Generate_DTR_Hours_Matrix(iClient_ID As Integer, sCut_Off As String)
 
         Dim dt As New DataTable

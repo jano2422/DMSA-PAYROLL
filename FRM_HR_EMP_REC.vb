@@ -210,19 +210,19 @@ Public Class FRM_EMP_REG
         Dim timestamp As String = Format(Now, "yyyyMMdd_HHmmss")
 
         Dim sfd As New SaveFileDialog
-        sfd.Filter = "Excel Files (*.xlsx)|*.xlsx"
-        sfd.FileName = "Employee_List_" & timestamp
+        sfd.Filter = "CSV Files (*.csv)|*.csv"
+        sfd.FileName = "Employee_List_" & timestamp & ".csv"
 
         If sfd.ShowDialog() = DialogResult.OK Then
 
             ' 👉 SHOW PROCESSING WINDOW
-            Dim processing As New FrmProcessing("Saving Excel file, please wait...")
+            Dim processing As New FrmProcessing("Saving CSV file, please wait...")
             processing.Show()
             processing.Refresh()
 
             ' 👉 RUN EXPORT IN BACKGROUND
             Task.Run(Sub()
-                         ExportDataTableToExcel(dt, sfd.FileName)
+                         ExportDataTableToCsv(dt, sfd.FileName)
 
                          ' CLOSE PROCESSING WINDOW FROM UI THREAD
                          Me.Invoke(Sub()

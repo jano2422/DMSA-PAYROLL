@@ -22,18 +22,18 @@ Partial Class FRM_DTR_BIOMETRIC
     'Do not modify it using the code editor.
     <System.Diagnostics.DebuggerStepThrough()>
     Private Sub InitializeComponent()
-        Dim DataGridViewCellStyle35 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
-        Dim DataGridViewCellStyle25 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
-        Dim DataGridViewCellStyle26 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
-        Dim DataGridViewCellStyle27 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
-        Dim DataGridViewCellStyle28 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
-        Dim DataGridViewCellStyle29 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
-        Dim DataGridViewCellStyle30 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
-        Dim DataGridViewCellStyle31 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
-        Dim DataGridViewCellStyle32 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
-        Dim DataGridViewCellStyle33 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
-        Dim DataGridViewCellStyle34 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
-        Dim DataGridViewCellStyle36 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
+        Dim DataGridViewCellStyle11 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
+        Dim DataGridViewCellStyle1 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
+        Dim DataGridViewCellStyle2 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
+        Dim DataGridViewCellStyle3 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
+        Dim DataGridViewCellStyle4 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
+        Dim DataGridViewCellStyle5 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
+        Dim DataGridViewCellStyle6 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
+        Dim DataGridViewCellStyle7 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
+        Dim DataGridViewCellStyle8 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
+        Dim DataGridViewCellStyle9 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
+        Dim DataGridViewCellStyle10 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
+        Dim DataGridViewCellStyle12 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
         Me.Panel1 = New System.Windows.Forms.Panel()
         Me.Btn_DTR = New System.Windows.Forms.Button()
         Me.TabControl1 = New System.Windows.Forms.TabControl()
@@ -72,23 +72,24 @@ Partial Class FRM_DTR_BIOMETRIC
         Me.Label7 = New System.Windows.Forms.Label()
         Me.Label6 = New System.Windows.Forms.Label()
         Me.dtrBreakDownPage = New System.Windows.Forms.TabPage()
-        Me.Grp1stCutOff = New System.Windows.Forms.GroupBox()
-        Me.Label18 = New System.Windows.Forms.Label()
-        Me.Label19 = New System.Windows.Forms.Label()
-        Me.szSSSCalLoan = New System.Windows.Forms.TextBox()
+        Me.Grp2ndCutOff = New System.Windows.Forms.GroupBox()
         Me.szPICalLoan = New System.Windows.Forms.TextBox()
-        Me.Label15 = New System.Windows.Forms.Label()
-        Me.Label16 = New System.Windows.Forms.Label()
-        Me.Label17 = New System.Windows.Forms.Label()
-        Me.szPhilhealthDeduct = New System.Windows.Forms.TextBox()
-        Me.szPagibigDeduct = New System.Windows.Forms.TextBox()
-        Me.szSSSDeduct = New System.Windows.Forms.TextBox()
-        Me.Label14 = New System.Windows.Forms.Label()
-        Me.Label13 = New System.Windows.Forms.Label()
-        Me.Label12 = New System.Windows.Forms.Label()
-        Me.szSSSLoan = New System.Windows.Forms.TextBox()
-        Me.szPILoan = New System.Windows.Forms.TextBox()
         Me.szCashBond = New System.Windows.Forms.TextBox()
+        Me.Label18 = New System.Windows.Forms.Label()
+        Me.szPILoan = New System.Windows.Forms.TextBox()
+        Me.Label19 = New System.Windows.Forms.Label()
+        Me.szSSSLoan = New System.Windows.Forms.TextBox()
+        Me.szSSSCalLoan = New System.Windows.Forms.TextBox()
+        Me.Label12 = New System.Windows.Forms.Label()
+        Me.Label13 = New System.Windows.Forms.Label()
+        Me.Label14 = New System.Windows.Forms.Label()
+        Me.Grp1stCutOff = New System.Windows.Forms.GroupBox()
+        Me.Label17 = New System.Windows.Forms.Label()
+        Me.szSSSDeduct = New System.Windows.Forms.TextBox()
+        Me.szPhilhealthDeduct = New System.Windows.Forms.TextBox()
+        Me.Label16 = New System.Windows.Forms.Label()
+        Me.szPagibigDeduct = New System.Windows.Forms.TextBox()
+        Me.Label15 = New System.Windows.Forms.Label()
         Me.Btn_Save_DTR = New System.Windows.Forms.Button()
         Me.Btn_TimeDtlView = New System.Windows.Forms.Button()
         Me.DTR_TimeCalculationPanel = New System.Windows.Forms.Panel()
@@ -117,17 +118,16 @@ Partial Class FRM_DTR_BIOMETRIC
         Me.Col_Attendance = New System.Windows.Forms.DataGridViewTextBoxColumn()
         Me.OpenFileDialog1 = New System.Windows.Forms.OpenFileDialog()
         Me.Label8 = New System.Windows.Forms.Label()
-        Me.Grp2ndCutOff = New System.Windows.Forms.GroupBox()
         Me.TabControl1.SuspendLayout()
         Me.TabPage1.SuspendLayout()
         Me.TabControl2.SuspendLayout()
         Me.actualDtrPage.SuspendLayout()
         CType(Me.GView_DTR, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.dtrBreakDownPage.SuspendLayout()
+        Me.Grp2ndCutOff.SuspendLayout()
         Me.Grp1stCutOff.SuspendLayout()
         Me.TabPage2.SuspendLayout()
         CType(Me.GView_Schedule, System.ComponentModel.ISupportInitialize).BeginInit()
-        Me.Grp2ndCutOff.SuspendLayout()
         Me.SuspendLayout()
         '
         'Panel1
@@ -260,14 +260,14 @@ Partial Class FRM_DTR_BIOMETRIC
         Me.GView_DTR.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.DisplayedCells
         Me.GView_DTR.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize
         Me.GView_DTR.Columns.AddRange(New System.Windows.Forms.DataGridViewColumn() {Me.DataGridViewTextBoxColumn1, Me.DataGridViewTextBoxColumn2, Me.DataGridViewTextBoxColumn3, Me.DataGridViewTextBoxColumn4, Me.DataGridViewTextBoxColumn5, Me.DataGridViewTextBoxColumn6, Me.DataGridViewTextBoxColumn7, Me.DataGridViewTextBoxColumn8, Me.ExtraTimeIn1, Me.ExtraTimeOut1, Me.DataGridViewTextBoxColumn9, Me.DataGridViewTextBoxColumn10, Me.DataGridViewTextBoxColumn11, Me.DataGridViewTextBoxColumn12, Me.DataGridViewTextBoxColumn13, Me.REG_REG, Me.REG_SUN, Me.REG_SH, Me.REG_LH, Me.OT_REG, Me.FirstTimeIn, Me.LastTimeOut})
-        DataGridViewCellStyle35.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft
-        DataGridViewCellStyle35.BackColor = System.Drawing.Color.White
-        DataGridViewCellStyle35.Font = New System.Drawing.Font("Microsoft Sans Serif", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        DataGridViewCellStyle35.ForeColor = System.Drawing.SystemColors.ControlText
-        DataGridViewCellStyle35.SelectionBackColor = System.Drawing.SystemColors.Highlight
-        DataGridViewCellStyle35.SelectionForeColor = System.Drawing.SystemColors.HighlightText
-        DataGridViewCellStyle35.WrapMode = System.Windows.Forms.DataGridViewTriState.[False]
-        Me.GView_DTR.DefaultCellStyle = DataGridViewCellStyle35
+        DataGridViewCellStyle11.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft
+        DataGridViewCellStyle11.BackColor = System.Drawing.Color.White
+        DataGridViewCellStyle11.Font = New System.Drawing.Font("Microsoft Sans Serif", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        DataGridViewCellStyle11.ForeColor = System.Drawing.SystemColors.ControlText
+        DataGridViewCellStyle11.SelectionBackColor = System.Drawing.SystemColors.Highlight
+        DataGridViewCellStyle11.SelectionForeColor = System.Drawing.SystemColors.HighlightText
+        DataGridViewCellStyle11.WrapMode = System.Windows.Forms.DataGridViewTriState.[False]
+        Me.GView_DTR.DefaultCellStyle = DataGridViewCellStyle11
         Me.GView_DTR.GridColor = System.Drawing.SystemColors.ActiveCaptionText
         Me.GView_DTR.Location = New System.Drawing.Point(6, 84)
         Me.GView_DTR.MultiSelect = False
@@ -356,8 +356,8 @@ Partial Class FRM_DTR_BIOMETRIC
         '
         'DataGridViewTextBoxColumn9
         '
-        DataGridViewCellStyle25.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight
-        Me.DataGridViewTextBoxColumn9.DefaultCellStyle = DataGridViewCellStyle25
+        DataGridViewCellStyle1.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight
+        Me.DataGridViewTextBoxColumn9.DefaultCellStyle = DataGridViewCellStyle1
         Me.DataGridViewTextBoxColumn9.Frozen = True
         Me.DataGridViewTextBoxColumn9.HeaderText = "Late"
         Me.DataGridViewTextBoxColumn9.Name = "DataGridViewTextBoxColumn9"
@@ -367,8 +367,8 @@ Partial Class FRM_DTR_BIOMETRIC
         '
         'DataGridViewTextBoxColumn10
         '
-        DataGridViewCellStyle26.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight
-        Me.DataGridViewTextBoxColumn10.DefaultCellStyle = DataGridViewCellStyle26
+        DataGridViewCellStyle2.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight
+        Me.DataGridViewTextBoxColumn10.DefaultCellStyle = DataGridViewCellStyle2
         Me.DataGridViewTextBoxColumn10.Frozen = True
         Me.DataGridViewTextBoxColumn10.HeaderText = "Total Break"
         Me.DataGridViewTextBoxColumn10.Name = "DataGridViewTextBoxColumn10"
@@ -377,8 +377,8 @@ Partial Class FRM_DTR_BIOMETRIC
         '
         'DataGridViewTextBoxColumn11
         '
-        DataGridViewCellStyle27.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight
-        Me.DataGridViewTextBoxColumn11.DefaultCellStyle = DataGridViewCellStyle27
+        DataGridViewCellStyle3.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight
+        Me.DataGridViewTextBoxColumn11.DefaultCellStyle = DataGridViewCellStyle3
         Me.DataGridViewTextBoxColumn11.Frozen = True
         Me.DataGridViewTextBoxColumn11.HeaderText = "Over Break"
         Me.DataGridViewTextBoxColumn11.Name = "DataGridViewTextBoxColumn11"
@@ -387,8 +387,8 @@ Partial Class FRM_DTR_BIOMETRIC
         '
         'DataGridViewTextBoxColumn12
         '
-        DataGridViewCellStyle28.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight
-        Me.DataGridViewTextBoxColumn12.DefaultCellStyle = DataGridViewCellStyle28
+        DataGridViewCellStyle4.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight
+        Me.DataGridViewTextBoxColumn12.DefaultCellStyle = DataGridViewCellStyle4
         Me.DataGridViewTextBoxColumn12.Frozen = True
         Me.DataGridViewTextBoxColumn12.HeaderText = "Over Time"
         Me.DataGridViewTextBoxColumn12.Name = "DataGridViewTextBoxColumn12"
@@ -397,8 +397,8 @@ Partial Class FRM_DTR_BIOMETRIC
         '
         'DataGridViewTextBoxColumn13
         '
-        DataGridViewCellStyle29.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter
-        Me.DataGridViewTextBoxColumn13.DefaultCellStyle = DataGridViewCellStyle29
+        DataGridViewCellStyle5.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter
+        Me.DataGridViewTextBoxColumn13.DefaultCellStyle = DataGridViewCellStyle5
         Me.DataGridViewTextBoxColumn13.Frozen = True
         Me.DataGridViewTextBoxColumn13.HeaderText = "Total Hours"
         Me.DataGridViewTextBoxColumn13.Name = "DataGridViewTextBoxColumn13"
@@ -407,8 +407,8 @@ Partial Class FRM_DTR_BIOMETRIC
         '
         'REG_REG
         '
-        DataGridViewCellStyle30.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight
-        Me.REG_REG.DefaultCellStyle = DataGridViewCellStyle30
+        DataGridViewCellStyle6.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight
+        Me.REG_REG.DefaultCellStyle = DataGridViewCellStyle6
         Me.REG_REG.Frozen = True
         Me.REG_REG.HeaderText = "Reg"
         Me.REG_REG.Name = "REG_REG"
@@ -417,8 +417,8 @@ Partial Class FRM_DTR_BIOMETRIC
         '
         'REG_SUN
         '
-        DataGridViewCellStyle31.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight
-        Me.REG_SUN.DefaultCellStyle = DataGridViewCellStyle31
+        DataGridViewCellStyle7.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight
+        Me.REG_SUN.DefaultCellStyle = DataGridViewCellStyle7
         Me.REG_SUN.Frozen = True
         Me.REG_SUN.HeaderText = "Sun"
         Me.REG_SUN.Name = "REG_SUN"
@@ -427,8 +427,8 @@ Partial Class FRM_DTR_BIOMETRIC
         '
         'REG_SH
         '
-        DataGridViewCellStyle32.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight
-        Me.REG_SH.DefaultCellStyle = DataGridViewCellStyle32
+        DataGridViewCellStyle8.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight
+        Me.REG_SH.DefaultCellStyle = DataGridViewCellStyle8
         Me.REG_SH.Frozen = True
         Me.REG_SH.HeaderText = "SH"
         Me.REG_SH.Name = "REG_SH"
@@ -437,8 +437,8 @@ Partial Class FRM_DTR_BIOMETRIC
         '
         'REG_LH
         '
-        DataGridViewCellStyle33.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight
-        Me.REG_LH.DefaultCellStyle = DataGridViewCellStyle33
+        DataGridViewCellStyle9.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight
+        Me.REG_LH.DefaultCellStyle = DataGridViewCellStyle9
         Me.REG_LH.Frozen = True
         Me.REG_LH.HeaderText = "LH"
         Me.REG_LH.Name = "REG_LH"
@@ -447,8 +447,8 @@ Partial Class FRM_DTR_BIOMETRIC
         '
         'OT_REG
         '
-        DataGridViewCellStyle34.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight
-        Me.OT_REG.DefaultCellStyle = DataGridViewCellStyle34
+        DataGridViewCellStyle10.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight
+        Me.OT_REG.DefaultCellStyle = DataGridViewCellStyle10
         Me.OT_REG.Frozen = True
         Me.OT_REG.HeaderText = "OT Reg"
         Me.OT_REG.Name = "OT_REG"
@@ -522,12 +522,12 @@ Partial Class FRM_DTR_BIOMETRIC
         '
         'dtrBreakDownPage
         '
-        Me.dtrBreakDownPage.Controls.Add(Me.Grp2ndCutOff)
         Me.dtrBreakDownPage.Controls.Add(Me.Grp1stCutOff)
         Me.dtrBreakDownPage.Controls.Add(Me.Btn_Save_DTR)
         Me.dtrBreakDownPage.Controls.Add(Me.Btn_TimeDtlView)
         Me.dtrBreakDownPage.Controls.Add(Me.DTR_TimeCalculationPanel)
         Me.dtrBreakDownPage.Controls.Add(Me.btn_Breakdown)
+        Me.dtrBreakDownPage.Controls.Add(Me.Grp2ndCutOff)
         Me.dtrBreakDownPage.Location = New System.Drawing.Point(4, 29)
         Me.dtrBreakDownPage.Name = "dtrBreakDownPage"
         Me.dtrBreakDownPage.Padding = New System.Windows.Forms.Padding(3)
@@ -535,6 +535,106 @@ Partial Class FRM_DTR_BIOMETRIC
         Me.dtrBreakDownPage.TabIndex = 1
         Me.dtrBreakDownPage.Text = "Time Calculation"
         Me.dtrBreakDownPage.UseVisualStyleBackColor = True
+        '
+        'Grp2ndCutOff
+        '
+        Me.Grp2ndCutOff.Controls.Add(Me.szPICalLoan)
+        Me.Grp2ndCutOff.Controls.Add(Me.szCashBond)
+        Me.Grp2ndCutOff.Controls.Add(Me.Label18)
+        Me.Grp2ndCutOff.Controls.Add(Me.szPILoan)
+        Me.Grp2ndCutOff.Controls.Add(Me.Label19)
+        Me.Grp2ndCutOff.Controls.Add(Me.szSSSLoan)
+        Me.Grp2ndCutOff.Controls.Add(Me.szSSSCalLoan)
+        Me.Grp2ndCutOff.Controls.Add(Me.Label12)
+        Me.Grp2ndCutOff.Controls.Add(Me.Label13)
+        Me.Grp2ndCutOff.Controls.Add(Me.Label14)
+        Me.Grp2ndCutOff.Location = New System.Drawing.Point(1228, 108)
+        Me.Grp2ndCutOff.Name = "Grp2ndCutOff"
+        Me.Grp2ndCutOff.Size = New System.Drawing.Size(527, 440)
+        Me.Grp2ndCutOff.TabIndex = 91
+        Me.Grp2ndCutOff.TabStop = False
+        Me.Grp2ndCutOff.Text = "2nd Cut-off Deductions"
+        Me.Grp2ndCutOff.Visible = False
+        '
+        'szPICalLoan
+        '
+        Me.szPICalLoan.Location = New System.Drawing.Point(140, 349)
+        Me.szPICalLoan.Name = "szPICalLoan"
+        Me.szPICalLoan.Size = New System.Drawing.Size(321, 26)
+        Me.szPICalLoan.TabIndex = 81
+        '
+        'szCashBond
+        '
+        Me.szCashBond.Location = New System.Drawing.Point(140, 81)
+        Me.szCashBond.Name = "szCashBond"
+        Me.szCashBond.Size = New System.Drawing.Size(321, 26)
+        Me.szCashBond.TabIndex = 77
+        '
+        'Label18
+        '
+        Me.Label18.AutoSize = True
+        Me.Label18.Location = New System.Drawing.Point(31, 355)
+        Me.Label18.Name = "Label18"
+        Me.Label18.Size = New System.Drawing.Size(103, 20)
+        Me.Label18.TabIndex = 89
+        Me.Label18.Text = "PI CAL Loan:"
+        '
+        'szPILoan
+        '
+        Me.szPILoan.Location = New System.Drawing.Point(140, 282)
+        Me.szPILoan.Name = "szPILoan"
+        Me.szPILoan.Size = New System.Drawing.Size(321, 26)
+        Me.szPILoan.TabIndex = 80
+        '
+        'Label19
+        '
+        Me.Label19.AutoSize = True
+        Me.Label19.Location = New System.Drawing.Point(15, 221)
+        Me.Label19.Name = "Label19"
+        Me.Label19.Size = New System.Drawing.Size(121, 20)
+        Me.Label19.TabIndex = 88
+        Me.Label19.Text = "SSS CAL Loan:"
+        '
+        'szSSSLoan
+        '
+        Me.szSSSLoan.Location = New System.Drawing.Point(140, 148)
+        Me.szSSSLoan.Name = "szSSSLoan"
+        Me.szSSSLoan.Size = New System.Drawing.Size(321, 26)
+        Me.szSSSLoan.TabIndex = 78
+        '
+        'szSSSCalLoan
+        '
+        Me.szSSSCalLoan.Location = New System.Drawing.Point(140, 215)
+        Me.szSSSCalLoan.Name = "szSSSCalLoan"
+        Me.szSSSCalLoan.Size = New System.Drawing.Size(321, 26)
+        Me.szSSSCalLoan.TabIndex = 79
+        '
+        'Label12
+        '
+        Me.Label12.AutoSize = True
+        Me.Label12.Location = New System.Drawing.Point(44, 87)
+        Me.Label12.Name = "Label12"
+        Me.Label12.Size = New System.Drawing.Size(92, 20)
+        Me.Label12.TabIndex = 77
+        Me.Label12.Text = "Cash Bond:"
+        '
+        'Label13
+        '
+        Me.Label13.AutoSize = True
+        Me.Label13.Location = New System.Drawing.Point(48, 154)
+        Me.Label13.Name = "Label13"
+        Me.Label13.Size = New System.Drawing.Size(86, 20)
+        Me.Label13.TabIndex = 78
+        Me.Label13.Text = "SSS Loan:"
+        '
+        'Label14
+        '
+        Me.Label14.AutoSize = True
+        Me.Label14.Location = New System.Drawing.Point(66, 285)
+        Me.Label14.Name = "Label14"
+        Me.Label14.Size = New System.Drawing.Size(68, 20)
+        Me.Label14.TabIndex = 79
+        Me.Label14.Text = "PI Loan:"
         '
         'Grp1stCutOff
         '
@@ -552,46 +652,28 @@ Partial Class FRM_DTR_BIOMETRIC
         Me.Grp1stCutOff.Text = "1st Cut-off Deductions"
         Me.Grp1stCutOff.Visible = False
         '
-        'Label18
+        'Label17
         '
-        Me.Label18.AutoSize = True
-        Me.Label18.Location = New System.Drawing.Point(31, 355)
-        Me.Label18.Name = "Label18"
-        Me.Label18.Size = New System.Drawing.Size(103, 20)
-        Me.Label18.TabIndex = 89
-        Me.Label18.Text = "PI CAL Loan:"
+        Me.Label17.AutoSize = True
+        Me.Label17.Location = New System.Drawing.Point(44, 42)
+        Me.Label17.Name = "Label17"
+        Me.Label17.Size = New System.Drawing.Size(46, 20)
+        Me.Label17.TabIndex = 83
+        Me.Label17.Text = "SSS:"
         '
-        'Label19
+        'szSSSDeduct
         '
-        Me.Label19.AutoSize = True
-        Me.Label19.Location = New System.Drawing.Point(15, 221)
-        Me.Label19.Name = "Label19"
-        Me.Label19.Size = New System.Drawing.Size(121, 20)
-        Me.Label19.TabIndex = 88
-        Me.Label19.Text = "SSS CAL Loan:"
+        Me.szSSSDeduct.Location = New System.Drawing.Point(94, 36)
+        Me.szSSSDeduct.Name = "szSSSDeduct"
+        Me.szSSSDeduct.Size = New System.Drawing.Size(321, 26)
+        Me.szSSSDeduct.TabIndex = 74
         '
-        'szSSSCalLoan
+        'szPhilhealthDeduct
         '
-        Me.szSSSCalLoan.Location = New System.Drawing.Point(140, 215)
-        Me.szSSSCalLoan.Name = "szSSSCalLoan"
-        Me.szSSSCalLoan.Size = New System.Drawing.Size(321, 26)
-        Me.szSSSCalLoan.TabIndex = 79
-        '
-        'szPICalLoan
-        '
-        Me.szPICalLoan.Location = New System.Drawing.Point(140, 349)
-        Me.szPICalLoan.Name = "szPICalLoan"
-        Me.szPICalLoan.Size = New System.Drawing.Size(321, 26)
-        Me.szPICalLoan.TabIndex = 81
-        '
-        'Label15
-        '
-        Me.Label15.AutoSize = True
-        Me.Label15.Location = New System.Drawing.Point(10, 142)
-        Me.Label15.Name = "Label15"
-        Me.Label15.Size = New System.Drawing.Size(80, 20)
-        Me.Label15.TabIndex = 85
-        Me.Label15.Text = "Pag-IBIG:"
+        Me.szPhilhealthDeduct.Location = New System.Drawing.Point(96, 89)
+        Me.szPhilhealthDeduct.Name = "szPhilhealthDeduct"
+        Me.szPhilhealthDeduct.Size = New System.Drawing.Size(321, 26)
+        Me.szPhilhealthDeduct.TabIndex = 75
         '
         'Label16
         '
@@ -602,22 +684,6 @@ Partial Class FRM_DTR_BIOMETRIC
         Me.Label16.TabIndex = 84
         Me.Label16.Text = "PhilHealth:"
         '
-        'Label17
-        '
-        Me.Label17.AutoSize = True
-        Me.Label17.Location = New System.Drawing.Point(44, 42)
-        Me.Label17.Name = "Label17"
-        Me.Label17.Size = New System.Drawing.Size(46, 20)
-        Me.Label17.TabIndex = 83
-        Me.Label17.Text = "SSS:"
-        '
-        'szPhilhealthDeduct
-        '
-        Me.szPhilhealthDeduct.Location = New System.Drawing.Point(96, 89)
-        Me.szPhilhealthDeduct.Name = "szPhilhealthDeduct"
-        Me.szPhilhealthDeduct.Size = New System.Drawing.Size(321, 26)
-        Me.szPhilhealthDeduct.TabIndex = 75
-        '
         'szPagibigDeduct
         '
         Me.szPagibigDeduct.Location = New System.Drawing.Point(94, 136)
@@ -625,60 +691,14 @@ Partial Class FRM_DTR_BIOMETRIC
         Me.szPagibigDeduct.Size = New System.Drawing.Size(321, 26)
         Me.szPagibigDeduct.TabIndex = 76
         '
-        'szSSSDeduct
+        'Label15
         '
-        Me.szSSSDeduct.Location = New System.Drawing.Point(94, 36)
-        Me.szSSSDeduct.Name = "szSSSDeduct"
-        Me.szSSSDeduct.Size = New System.Drawing.Size(321, 26)
-        Me.szSSSDeduct.TabIndex = 74
-        '
-        'Label14
-        '
-        Me.Label14.AutoSize = True
-        Me.Label14.Location = New System.Drawing.Point(66, 285)
-        Me.Label14.Name = "Label14"
-        Me.Label14.Size = New System.Drawing.Size(68, 20)
-        Me.Label14.TabIndex = 79
-        Me.Label14.Text = "PI Loan:"
-        '
-        'Label13
-        '
-        Me.Label13.AutoSize = True
-        Me.Label13.Location = New System.Drawing.Point(48, 154)
-        Me.Label13.Name = "Label13"
-        Me.Label13.Size = New System.Drawing.Size(86, 20)
-        Me.Label13.TabIndex = 78
-        Me.Label13.Text = "SSS Loan:"
-        '
-        'Label12
-        '
-        Me.Label12.AutoSize = True
-        Me.Label12.Location = New System.Drawing.Point(44, 87)
-        Me.Label12.Name = "Label12"
-        Me.Label12.Size = New System.Drawing.Size(92, 20)
-        Me.Label12.TabIndex = 77
-        Me.Label12.Text = "Cash Bond:"
-        '
-        'szSSSLoan
-        '
-        Me.szSSSLoan.Location = New System.Drawing.Point(140, 148)
-        Me.szSSSLoan.Name = "szSSSLoan"
-        Me.szSSSLoan.Size = New System.Drawing.Size(321, 26)
-        Me.szSSSLoan.TabIndex = 78
-        '
-        'szPILoan
-        '
-        Me.szPILoan.Location = New System.Drawing.Point(140, 282)
-        Me.szPILoan.Name = "szPILoan"
-        Me.szPILoan.Size = New System.Drawing.Size(321, 26)
-        Me.szPILoan.TabIndex = 80
-        '
-        'szCashBond
-        '
-        Me.szCashBond.Location = New System.Drawing.Point(140, 81)
-        Me.szCashBond.Name = "szCashBond"
-        Me.szCashBond.Size = New System.Drawing.Size(321, 26)
-        Me.szCashBond.TabIndex = 77
+        Me.Label15.AutoSize = True
+        Me.Label15.Location = New System.Drawing.Point(10, 142)
+        Me.Label15.Name = "Label15"
+        Me.Label15.Size = New System.Drawing.Size(80, 20)
+        Me.Label15.TabIndex = 85
+        Me.Label15.Text = "Pag-IBIG:"
         '
         'Btn_Save_DTR
         '
@@ -919,8 +939,8 @@ Partial Class FRM_DTR_BIOMETRIC
         '
         'Col_Attendance
         '
-        DataGridViewCellStyle36.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter
-        Me.Col_Attendance.DefaultCellStyle = DataGridViewCellStyle36
+        DataGridViewCellStyle12.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter
+        Me.Col_Attendance.DefaultCellStyle = DataGridViewCellStyle12
         Me.Col_Attendance.HeaderText = "Attendance"
         Me.Col_Attendance.Name = "Col_Attendance"
         '
@@ -938,26 +958,6 @@ Partial Class FRM_DTR_BIOMETRIC
         Me.Label8.Size = New System.Drawing.Size(80, 20)
         Me.Label8.TabIndex = 68
         Me.Label8.Text = "Pure Gold"
-        '
-        'Grp2ndCutOff
-        '
-        Me.Grp2ndCutOff.Controls.Add(Me.szPICalLoan)
-        Me.Grp2ndCutOff.Controls.Add(Me.szCashBond)
-        Me.Grp2ndCutOff.Controls.Add(Me.Label18)
-        Me.Grp2ndCutOff.Controls.Add(Me.szPILoan)
-        Me.Grp2ndCutOff.Controls.Add(Me.Label19)
-        Me.Grp2ndCutOff.Controls.Add(Me.szSSSLoan)
-        Me.Grp2ndCutOff.Controls.Add(Me.szSSSCalLoan)
-        Me.Grp2ndCutOff.Controls.Add(Me.Label12)
-        Me.Grp2ndCutOff.Controls.Add(Me.Label13)
-        Me.Grp2ndCutOff.Controls.Add(Me.Label14)
-        Me.Grp2ndCutOff.Location = New System.Drawing.Point(1228, 108)
-        Me.Grp2ndCutOff.Name = "Grp2ndCutOff"
-        Me.Grp2ndCutOff.Size = New System.Drawing.Size(527, 440)
-        Me.Grp2ndCutOff.TabIndex = 91
-        Me.Grp2ndCutOff.TabStop = False
-        Me.Grp2ndCutOff.Text = "2nd Cut-off Deductions"
-        Me.Grp2ndCutOff.Visible = False
         '
         'FRM_DTR_BIOMETRIC
         '
@@ -979,13 +979,13 @@ Partial Class FRM_DTR_BIOMETRIC
         Me.actualDtrPage.PerformLayout()
         CType(Me.GView_DTR, System.ComponentModel.ISupportInitialize).EndInit()
         Me.dtrBreakDownPage.ResumeLayout(False)
+        Me.Grp2ndCutOff.ResumeLayout(False)
+        Me.Grp2ndCutOff.PerformLayout()
         Me.Grp1stCutOff.ResumeLayout(False)
         Me.Grp1stCutOff.PerformLayout()
         Me.TabPage2.ResumeLayout(False)
         Me.TabPage2.PerformLayout()
         CType(Me.GView_Schedule, System.ComponentModel.ISupportInitialize).EndInit()
-        Me.Grp2ndCutOff.ResumeLayout(False)
-        Me.Grp2ndCutOff.PerformLayout()
         Me.ResumeLayout(False)
         Me.PerformLayout()
 

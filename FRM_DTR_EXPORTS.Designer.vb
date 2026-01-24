@@ -37,7 +37,9 @@ Partial Class FRM_DTR_EXPORTS
         Me.OT_REG = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
         Me.CB = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
         Me.SSS_Loan = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
+        Me.SSS_CAL_Loan = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
         Me.PI_Loan = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
+        Me.PI_CAL_Loan = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
         Me.SSSDeduct = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
         Me.PhilHealthDeduct = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
         Me.PagIBIGDeduct = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
@@ -46,27 +48,29 @@ Partial Class FRM_DTR_EXPORTS
         Me.PictureBox1 = New System.Windows.Forms.PictureBox()
         Me.Label1 = New System.Windows.Forms.Label()
         Me.Label2 = New System.Windows.Forms.Label()
-        Me.Btn_Client = New System.Windows.Forms.Button()
         Me.Btn_Export_to_Excell = New FontAwesome.Sharp.IconButton()
-        Me.Cmb_CutOff = New System.Windows.Forms.ComboBox()
-        Me.Label10 = New System.Windows.Forms.Label()
-        Me.Cmb_Month = New System.Windows.Forms.ComboBox()
-        Me.Label3 = New System.Windows.Forms.Label()
-        Me.Cmb_Year = New System.Windows.Forms.ComboBox()
-        Me.Label4 = New System.Windows.Forms.Label()
-        Me.Btn_Show = New System.Windows.Forms.Button()
         Me.Label5 = New System.Windows.Forms.Label()
         Me.Lbl_Client_Name = New System.Windows.Forms.Label()
         Me.Lbl_Client_Address = New System.Windows.Forms.Label()
         Me.Lbl_ClientID = New System.Windows.Forms.Label()
         Me.Label7 = New System.Windows.Forms.Label()
-        Me.SSS_CAL_Loan = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
-        Me.PI_CAL_Loan = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
+        Me.btnDtrHrsExport = New FontAwesome.Sharp.IconButton()
+        Me.PictureBox2 = New System.Windows.Forms.PictureBox()
+        Me.IconButton1 = New FontAwesome.Sharp.IconButton()
+        Me.Btn_Show = New System.Windows.Forms.Button()
+        Me.Btn_Client = New System.Windows.Forms.Button()
+        Me.Label4 = New System.Windows.Forms.Label()
+        Me.Cmb_Year = New System.Windows.Forms.ComboBox()
+        Me.Cmb_Month = New System.Windows.Forms.ComboBox()
+        Me.Label3 = New System.Windows.Forms.Label()
+        Me.Cmb_CutOff = New System.Windows.Forms.ComboBox()
+        Me.Label10 = New System.Windows.Forms.Label()
         Me.TabControl1.SuspendLayout()
         Me.TabPage1.SuspendLayout()
         Me.TabPage2.SuspendLayout()
         CType(Me.DGV_DTR_MATRIX, System.ComponentModel.ISupportInitialize).BeginInit()
         CType(Me.PictureBox1, System.ComponentModel.ISupportInitialize).BeginInit()
+        CType(Me.PictureBox2, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.SuspendLayout()
         '
         'Panel1
@@ -91,6 +95,8 @@ Partial Class FRM_DTR_EXPORTS
         '
         'TabPage1
         '
+        Me.TabPage1.Controls.Add(Me.IconButton1)
+        Me.TabPage1.Controls.Add(Me.PictureBox2)
         Me.TabPage1.Controls.Add(Me.LV_DTR_Per_Client_List)
         Me.TabPage1.Location = New System.Drawing.Point(4, 29)
         Me.TabPage1.Name = "TabPage1"
@@ -110,7 +116,7 @@ Partial Class FRM_DTR_EXPORTS
         Me.LV_DTR_Per_Client_List.HideSelection = False
         Me.LV_DTR_Per_Client_List.Location = New System.Drawing.Point(6, 20)
         Me.LV_DTR_Per_Client_List.Name = "LV_DTR_Per_Client_List"
-        Me.LV_DTR_Per_Client_List.Size = New System.Drawing.Size(1376, 455)
+        Me.LV_DTR_Per_Client_List.Size = New System.Drawing.Size(1376, 398)
         Me.LV_DTR_Per_Client_List.TabIndex = 70
         Me.LV_DTR_Per_Client_List.UseCompatibleStateImageBehavior = False
         Me.LV_DTR_Per_Client_List.View = System.Windows.Forms.View.Details
@@ -170,10 +176,20 @@ Partial Class FRM_DTR_EXPORTS
         Me.SSS_Loan.Text = "SSS Loan"
         Me.SSS_Loan.Width = 75
         '
+        'SSS_CAL_Loan
+        '
+        Me.SSS_CAL_Loan.Text = "SSS Cal Loan"
+        Me.SSS_CAL_Loan.Width = 111
+        '
         'PI_Loan
         '
         Me.PI_Loan.Text = "PI Loan"
         Me.PI_Loan.Width = 64
+        '
+        'PI_CAL_Loan
+        '
+        Me.PI_CAL_Loan.Text = "PI Cal Loan"
+        Me.PI_CAL_Loan.Width = 93
         '
         'SSSDeduct
         '
@@ -245,110 +261,19 @@ Partial Class FRM_DTR_EXPORTS
         Me.Label2.TabIndex = 72
         Me.Label2.Text = "Client Address:"
         '
-        'Btn_Client
-        '
-        Me.Btn_Client.Font = New System.Drawing.Font("Verdana", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.Btn_Client.ForeColor = System.Drawing.Color.Black
-        Me.Btn_Client.Location = New System.Drawing.Point(297, 52)
-        Me.Btn_Client.Name = "Btn_Client"
-        Me.Btn_Client.Size = New System.Drawing.Size(176, 36)
-        Me.Btn_Client.TabIndex = 598
-        Me.Btn_Client.Text = "Select Client"
-        Me.Btn_Client.UseVisualStyleBackColor = True
-        '
         'Btn_Export_to_Excell
         '
         Me.Btn_Export_to_Excell.IconChar = FontAwesome.Sharp.IconChar.FileDownload
         Me.Btn_Export_to_Excell.IconColor = System.Drawing.Color.Green
         Me.Btn_Export_to_Excell.IconFont = FontAwesome.Sharp.IconFont.[Auto]
         Me.Btn_Export_to_Excell.IconSize = 40
-        Me.Btn_Export_to_Excell.Location = New System.Drawing.Point(1329, 186)
+        Me.Btn_Export_to_Excell.Location = New System.Drawing.Point(1274, 186)
         Me.Btn_Export_to_Excell.Name = "Btn_Export_to_Excell"
-        Me.Btn_Export_to_Excell.Size = New System.Drawing.Size(79, 67)
+        Me.Btn_Export_to_Excell.Size = New System.Drawing.Size(120, 67)
         Me.Btn_Export_to_Excell.TabIndex = 599
-        Me.Btn_Export_to_Excell.Text = "Export"
+        Me.Btn_Export_to_Excell.Text = "Export Payroll"
         Me.Btn_Export_to_Excell.TextAlign = System.Drawing.ContentAlignment.BottomCenter
         Me.Btn_Export_to_Excell.UseVisualStyleBackColor = True
-        '
-        'Cmb_CutOff
-        '
-        Me.Cmb_CutOff.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
-        Me.Cmb_CutOff.Font = New System.Drawing.Font("Microsoft Sans Serif", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.Cmb_CutOff.FormattingEnabled = True
-        Me.Cmb_CutOff.Items.AddRange(New Object() {"1st Cut-Off", "2nd Cut-Off"})
-        Me.Cmb_CutOff.Location = New System.Drawing.Point(130, 52)
-        Me.Cmb_CutOff.Name = "Cmb_CutOff"
-        Me.Cmb_CutOff.Size = New System.Drawing.Size(134, 28)
-        Me.Cmb_CutOff.TabIndex = 600
-        '
-        'Label10
-        '
-        Me.Label10.AutoSize = True
-        Me.Label10.BackColor = System.Drawing.Color.Black
-        Me.Label10.Font = New System.Drawing.Font("Verdana", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.Label10.ForeColor = System.Drawing.Color.Yellow
-        Me.Label10.Location = New System.Drawing.Point(49, 56)
-        Me.Label10.Name = "Label10"
-        Me.Label10.Size = New System.Drawing.Size(75, 18)
-        Me.Label10.TabIndex = 601
-        Me.Label10.Text = "Cut-Off:"
-        '
-        'Cmb_Month
-        '
-        Me.Cmb_Month.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
-        Me.Cmb_Month.Font = New System.Drawing.Font("Microsoft Sans Serif", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.Cmb_Month.FormattingEnabled = True
-        Me.Cmb_Month.Items.AddRange(New Object() {"JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL" & Global.Microsoft.VisualBasic.ChrW(9), "AUG", "SEP", "OCT", "NOV", "DEC"})
-        Me.Cmb_Month.Location = New System.Drawing.Point(130, 86)
-        Me.Cmb_Month.Name = "Cmb_Month"
-        Me.Cmb_Month.Size = New System.Drawing.Size(134, 28)
-        Me.Cmb_Month.TabIndex = 602
-        '
-        'Label3
-        '
-        Me.Label3.AutoSize = True
-        Me.Label3.BackColor = System.Drawing.Color.Black
-        Me.Label3.Font = New System.Drawing.Font("Verdana", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.Label3.ForeColor = System.Drawing.Color.Yellow
-        Me.Label3.Location = New System.Drawing.Point(49, 90)
-        Me.Label3.Name = "Label3"
-        Me.Label3.Size = New System.Drawing.Size(65, 18)
-        Me.Label3.TabIndex = 603
-        Me.Label3.Text = "Month:"
-        '
-        'Cmb_Year
-        '
-        Me.Cmb_Year.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
-        Me.Cmb_Year.Font = New System.Drawing.Font("Microsoft Sans Serif", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.Cmb_Year.FormattingEnabled = True
-        Me.Cmb_Year.Items.AddRange(New Object() {"2024", "2025", "2026"})
-        Me.Cmb_Year.Location = New System.Drawing.Point(130, 120)
-        Me.Cmb_Year.Name = "Cmb_Year"
-        Me.Cmb_Year.Size = New System.Drawing.Size(134, 28)
-        Me.Cmb_Year.TabIndex = 604
-        '
-        'Label4
-        '
-        Me.Label4.AutoSize = True
-        Me.Label4.BackColor = System.Drawing.Color.Black
-        Me.Label4.Font = New System.Drawing.Font("Verdana", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.Label4.ForeColor = System.Drawing.Color.Yellow
-        Me.Label4.Location = New System.Drawing.Point(49, 124)
-        Me.Label4.Name = "Label4"
-        Me.Label4.Size = New System.Drawing.Size(51, 18)
-        Me.Label4.TabIndex = 605
-        Me.Label4.Text = "Year:"
-        '
-        'Btn_Show
-        '
-        Me.Btn_Show.Font = New System.Drawing.Font("Verdana", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.Btn_Show.ForeColor = System.Drawing.Color.Black
-        Me.Btn_Show.Location = New System.Drawing.Point(297, 111)
-        Me.Btn_Show.Name = "Btn_Show"
-        Me.Btn_Show.Size = New System.Drawing.Size(176, 37)
-        Me.Btn_Show.TabIndex = 606
-        Me.Btn_Show.Text = "Show Records"
-        Me.Btn_Show.UseVisualStyleBackColor = True
         '
         'Label5
         '
@@ -407,15 +332,134 @@ Partial Class FRM_DTR_EXPORTS
         Me.Label7.TabIndex = 610
         Me.Label7.Text = "Client ID:"
         '
-        'SSS_CAL_Loan
+        'btnDtrHrsExport
         '
-        Me.SSS_CAL_Loan.Text = "SSS Cal Loan"
-        Me.SSS_CAL_Loan.Width = 111
+        Me.btnDtrHrsExport.IconChar = FontAwesome.Sharp.IconChar.Hourglass
+        Me.btnDtrHrsExport.IconColor = System.Drawing.Color.Green
+        Me.btnDtrHrsExport.IconFont = FontAwesome.Sharp.IconFont.[Auto]
+        Me.btnDtrHrsExport.IconSize = 40
+        Me.btnDtrHrsExport.Location = New System.Drawing.Point(1132, 186)
+        Me.btnDtrHrsExport.Name = "btnDtrHrsExport"
+        Me.btnDtrHrsExport.Size = New System.Drawing.Size(129, 67)
+        Me.btnDtrHrsExport.TabIndex = 612
+        Me.btnDtrHrsExport.Text = "Export DTR Hours"
+        Me.btnDtrHrsExport.TextAlign = System.Drawing.ContentAlignment.BottomCenter
+        Me.btnDtrHrsExport.UseVisualStyleBackColor = True
         '
-        'PI_CAL_Loan
+        'PictureBox2
         '
-        Me.PI_CAL_Loan.Text = "PI Cal Loan"
-        Me.PI_CAL_Loan.Width = 93
+        Me.PictureBox2.BackColor = System.Drawing.Color.Teal
+        Me.PictureBox2.Location = New System.Drawing.Point(3, 424)
+        Me.PictureBox2.Name = "PictureBox2"
+        Me.PictureBox2.Size = New System.Drawing.Size(1395, 66)
+        Me.PictureBox2.TabIndex = 613
+        Me.PictureBox2.TabStop = False
+        '
+        'IconButton1
+        '
+        Me.IconButton1.IconChar = FontAwesome.Sharp.IconChar.FileEdit
+        Me.IconButton1.IconColor = System.Drawing.Color.Green
+        Me.IconButton1.IconFont = FontAwesome.Sharp.IconFont.[Auto]
+        Me.IconButton1.IconSize = 40
+        Me.IconButton1.Location = New System.Drawing.Point(19, 432)
+        Me.IconButton1.Name = "IconButton1"
+        Me.IconButton1.Size = New System.Drawing.Size(212, 50)
+        Me.IconButton1.TabIndex = 613
+        Me.IconButton1.Text = "Update Deductions"
+        Me.IconButton1.TextAlign = System.Drawing.ContentAlignment.MiddleRight
+        Me.IconButton1.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText
+        Me.IconButton1.UseVisualStyleBackColor = True
+        '
+        'Btn_Show
+        '
+        Me.Btn_Show.Font = New System.Drawing.Font("Verdana", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.Btn_Show.ForeColor = System.Drawing.Color.Black
+        Me.Btn_Show.Location = New System.Drawing.Point(297, 111)
+        Me.Btn_Show.Name = "Btn_Show"
+        Me.Btn_Show.Size = New System.Drawing.Size(176, 37)
+        Me.Btn_Show.TabIndex = 606
+        Me.Btn_Show.Text = "Show Records"
+        Me.Btn_Show.UseVisualStyleBackColor = True
+        '
+        'Btn_Client
+        '
+        Me.Btn_Client.Font = New System.Drawing.Font("Verdana", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.Btn_Client.ForeColor = System.Drawing.Color.Black
+        Me.Btn_Client.Location = New System.Drawing.Point(297, 52)
+        Me.Btn_Client.Name = "Btn_Client"
+        Me.Btn_Client.Size = New System.Drawing.Size(176, 36)
+        Me.Btn_Client.TabIndex = 598
+        Me.Btn_Client.Text = "Select Client"
+        Me.Btn_Client.UseVisualStyleBackColor = True
+        '
+        'Label4
+        '
+        Me.Label4.AutoSize = True
+        Me.Label4.BackColor = System.Drawing.Color.Black
+        Me.Label4.Font = New System.Drawing.Font("Verdana", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.Label4.ForeColor = System.Drawing.Color.Yellow
+        Me.Label4.Location = New System.Drawing.Point(49, 124)
+        Me.Label4.Name = "Label4"
+        Me.Label4.Size = New System.Drawing.Size(51, 18)
+        Me.Label4.TabIndex = 605
+        Me.Label4.Text = "Year:"
+        '
+        'Cmb_Year
+        '
+        Me.Cmb_Year.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
+        Me.Cmb_Year.Font = New System.Drawing.Font("Microsoft Sans Serif", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.Cmb_Year.FormattingEnabled = True
+        Me.Cmb_Year.Items.AddRange(New Object() {"2024", "2025", "2026"})
+        Me.Cmb_Year.Location = New System.Drawing.Point(130, 120)
+        Me.Cmb_Year.Name = "Cmb_Year"
+        Me.Cmb_Year.Size = New System.Drawing.Size(134, 28)
+        Me.Cmb_Year.TabIndex = 604
+        '
+        'Cmb_Month
+        '
+        Me.Cmb_Month.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
+        Me.Cmb_Month.Font = New System.Drawing.Font("Microsoft Sans Serif", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.Cmb_Month.FormattingEnabled = True
+        Me.Cmb_Month.Items.AddRange(New Object() {"JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL" & Global.Microsoft.VisualBasic.ChrW(9), "AUG", "SEP", "OCT", "NOV", "DEC"})
+        Me.Cmb_Month.Location = New System.Drawing.Point(130, 86)
+        Me.Cmb_Month.Name = "Cmb_Month"
+        Me.Cmb_Month.Size = New System.Drawing.Size(134, 28)
+        Me.Cmb_Month.TabIndex = 602
+        '
+        'Label3
+        '
+        Me.Label3.AutoSize = True
+        Me.Label3.BackColor = System.Drawing.Color.Black
+        Me.Label3.Font = New System.Drawing.Font("Verdana", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.Label3.ForeColor = System.Drawing.Color.Yellow
+        Me.Label3.Location = New System.Drawing.Point(49, 90)
+        Me.Label3.Name = "Label3"
+        Me.Label3.Size = New System.Drawing.Size(65, 18)
+        Me.Label3.TabIndex = 603
+        Me.Label3.Text = "Month:"
+        '
+        'Cmb_CutOff
+        '
+        Me.Cmb_CutOff.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
+        Me.Cmb_CutOff.Font = New System.Drawing.Font("Microsoft Sans Serif", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.Cmb_CutOff.FormattingEnabled = True
+        Me.Cmb_CutOff.Items.AddRange(New Object() {"1st Cut-Off", "2nd Cut-Off"})
+        Me.Cmb_CutOff.Location = New System.Drawing.Point(130, 52)
+        Me.Cmb_CutOff.Name = "Cmb_CutOff"
+        Me.Cmb_CutOff.Size = New System.Drawing.Size(134, 28)
+        Me.Cmb_CutOff.TabIndex = 600
+        '
+        'Label10
+        '
+        Me.Label10.AutoSize = True
+        Me.Label10.BackColor = System.Drawing.Color.Black
+        Me.Label10.Font = New System.Drawing.Font("Verdana", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.Label10.ForeColor = System.Drawing.Color.Yellow
+        Me.Label10.Location = New System.Drawing.Point(49, 56)
+        Me.Label10.Name = "Label10"
+        Me.Label10.Size = New System.Drawing.Size(75, 18)
+        Me.Label10.TabIndex = 601
+        Me.Label10.Text = "Cut-Off:"
         '
         'FRM_DTR_EXPORTS
         '
@@ -423,6 +467,7 @@ Partial Class FRM_DTR_EXPORTS
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
         Me.BackColor = System.Drawing.Color.Black
         Me.ClientSize = New System.Drawing.Size(1460, 837)
+        Me.Controls.Add(Me.btnDtrHrsExport)
         Me.Controls.Add(Me.Lbl_ClientID)
         Me.Controls.Add(Me.Label7)
         Me.Controls.Add(Me.Lbl_Client_Address)
@@ -450,6 +495,7 @@ Partial Class FRM_DTR_EXPORTS
         Me.TabPage2.ResumeLayout(False)
         CType(Me.DGV_DTR_MATRIX, System.ComponentModel.ISupportInitialize).EndInit()
         CType(Me.PictureBox1, System.ComponentModel.ISupportInitialize).EndInit()
+        CType(Me.PictureBox2, System.ComponentModel.ISupportInitialize).EndInit()
         Me.ResumeLayout(False)
         Me.PerformLayout()
 
@@ -470,15 +516,7 @@ Partial Class FRM_DTR_EXPORTS
     Friend WithEvents LH As ColumnHeader
     Friend WithEvents Label1 As Label
     Friend WithEvents Label2 As Label
-    Friend WithEvents Btn_Client As Button
     Friend WithEvents Btn_Export_to_Excell As IconButton
-    Friend WithEvents Cmb_CutOff As ComboBox
-    Friend WithEvents Label10 As Label
-    Friend WithEvents Cmb_Month As ComboBox
-    Friend WithEvents Label3 As Label
-    Friend WithEvents Cmb_Year As ComboBox
-    Friend WithEvents Label4 As Label
-    Friend WithEvents Btn_Show As Button
     Friend WithEvents Label5 As Label
     Friend WithEvents Lbl_Client_Name As Label
     Friend WithEvents Lbl_Client_Address As Label
@@ -495,4 +533,15 @@ Partial Class FRM_DTR_EXPORTS
     Friend WithEvents PagIBIGDeduct As ColumnHeader
     Friend WithEvents SSS_CAL_Loan As ColumnHeader
     Friend WithEvents PI_CAL_Loan As ColumnHeader
+    Friend WithEvents btnDtrHrsExport As IconButton
+    Friend WithEvents IconButton1 As IconButton
+    Friend WithEvents PictureBox2 As PictureBox
+    Friend WithEvents Btn_Show As Button
+    Friend WithEvents Btn_Client As Button
+    Friend WithEvents Label4 As Label
+    Friend WithEvents Cmb_Year As ComboBox
+    Friend WithEvents Cmb_Month As ComboBox
+    Friend WithEvents Label3 As Label
+    Friend WithEvents Cmb_CutOff As ComboBox
+    Friend WithEvents Label10 As Label
 End Class

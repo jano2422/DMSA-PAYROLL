@@ -262,6 +262,94 @@ Module Mod_FRM_DTR_EXPORTS
     End Sub
 
 
+    Public Sub Export_DTR_Hours_Per_Client_to_Excell(sClient As String, sAddress As String, sCutOff As String)
+
+        Dim xlApp As Excel.Application = Nothing
+        Dim wbOut As Excel.Workbook = Nothing
+
+
+        Dim dtrHoursSheet As Excel.Worksheet = Nothing
+
+        Try
+            xlApp = New Excel.Application With {
+            .Visible = True,
+            .WindowState = Excel.XlWindowState.xlMaximized,
+            .DisplayAlerts = False
+        }
+
+            '========================================
+            ' 1) Choose template workbook based on cutoff
+            '========================================
+            Dim templateFileName As String
+
+            If IsFirstCutoff(sCutOff) Then
+                templateFileName = "DtrHoursTemplate_1st.xlsx"
+            ElseIf IsSecondCutoff(sCutOff) Then
+                templateFileName = "DtrHoursTemplate_2nd.xlsx"
+            Else
+                Throw New Exception("Invalid cutoff format: " & sCutOff)
+            End If
+
+            Dim templatePath As String = Path.Combine(Application.StartupPath, templateFileName)
+            If Not File.Exists(templatePath) Then
+                Throw New FileNotFoundException("Template not found: " & templatePath)
+            End If
+
+            Dim safeClient As String = MakeSafeFileName(sClient)
+            Dim safeCutoff As String = MakeSafeFileName(sCutOff)
+
+            Dim outPath As String = Path.Combine(Application.StartupPath,
+            $"DTR_Hours_{safeClient}_{safeCutoff}_{DateTime.Now:yyyyMMdd_HHmmss}.xlsx")
+
+            File.Copy(templatePath, outPath, True)
+
+            '========================================
+            ' 2) Open copied workbook (output)
+            '========================================
+            wbOut = xlApp.Workbooks.Open(outPath)
+
+
+            dtrHoursSheet = CType(wbOut.Worksheets("DTR_Hours"), Excel.Worksheet)
+
+            '========================================
+            ' 3) Fill header fields
+            '========================================
+            Dim readableCutOff As String = ConvertCutOffStringToReadable(sCutOff)
+
+
+            dtrHoursSheet.Range("B7").Value = sClient
+            dtrHoursSheet.Range("B8").Value = sAddress
+            dtrHoursSheet.Range("B10").Value = readableCutOff
+
+            '========================================
+            ' 4) Write rows from ListView
+            '========================================
+
+            Dim firstCutoff As Boolean = IsFirstCutoff(sCutOff)
+
+            '========================================
+            ' 4b) Write Hours Per Day matrix
+            '========================================
+            WriteDtrHoursMatrixToSheet(dtrHoursSheet, FRM_DTR_EXPORTS.DGV_DTR_MATRIX)
+
+            '========================================
+            ' 5) Calculate + save
+            '========================================
+            dtrHoursSheet.Calculate()
+            wbOut.Save()
+
+        Catch ex As Exception
+            MsgBox(ex.ToString)
+        Finally
+            ReleaseCom(dtrHoursSheet)
+
+            ReleaseCom(wbOut)
+            ReleaseCom(xlApp)
+        End Try
+
+    End Sub
+
+
     '--------------------------
     ' Helpers
     '--------------------------

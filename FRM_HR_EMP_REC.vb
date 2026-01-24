@@ -17,29 +17,28 @@ Public Class FRM_EMP_REG
     End Sub
 
 
-
     Private Sub Btn_Search_Click(sender As Object, e As EventArgs) Handles Btn_Search.Click
-
         Dim sCategory As String
-        sCategory = ""
 
-        If Me.Cmb_Category.SelectedIndex = 0 Then
-            sCategory = "B.EMPLOYEE_ID"
-        ElseIf Me.Cmb_Category.SelectedIndex = 1 Then
-            sCategory = "D.SUB_CLIENT_NAME"
-        ElseIf Me.Cmb_Category.SelectedIndex = 2 Then
-            sCategory = "A.LAST_NAME"
-        ElseIf Me.Cmb_Category.SelectedIndex = 3 Then
-            sCategory = "B.EMPLOYMENT_STATUS"
-        ElseIf Me.Cmb_Category.SelectedIndex = -1 Then
-            sCategory = "A.LAST_NAME"
-        End If
+        Select Case Cmb_Category.SelectedIndex
+            Case 0
+                sCategory = "B.EMPLOYEE_ID"
+            Case 1
+                sCategory = "E.SUB_CLIENT_NAME"   ' Sub client name (TBL_CLIENT_SUB alias E)
+            Case 2
+                sCategory = "A.LAST_NAME"
+            Case 3
+                sCategory = "B.EMPLOYMENT_STATUS"
+            Case Else
+                sCategory = "A.LAST_NAME"
+        End Select
 
+        Dim keyword As String = TxtSearch.Text.Trim().Replace("'", "''")
+        Dim activeOnly As Boolean = (sCategory = "E.SUB_CLIENT_NAME") ' ✅ Active only when searching by sub client name
 
-        Call Show_Search(sCategory, TxtSearch.Text)
-
-
+        Show_Search(sCategory, keyword, activeOnly)
     End Sub
+
 
 
 
@@ -207,6 +206,29 @@ Public Class FRM_EMP_REG
             Exit Sub
         End If
 
+        ' ✅ choose columns to export (must match dt column names)
+        Dim columnsToExport As String() = {
+        "empId",
+        "FIRST_NAME",
+        "MIDDLE_NAME",
+        "LAST_NAME",
+        "DATE_HIRED",
+        "SUB_CLIENT_NAME",
+        "BIRTH_DATE",
+        "CONTACT_NO",
+        "APPL_ADD",
+        "SSS_NO",
+        "PAGIBIG_NO",
+        "PHIL_HEALTH_NO",
+        "TIN_NO",
+        "CONTACT_PERSON",
+        "CONTACT_RELATIONSHIP",
+        "CONTACT_CP_NUMBER",
+        "EMPLOYMENT_STATUS"
+    }
+
+        Dim dtExport As DataTable = SelectColumns(dt, columnsToExport)
+
         Dim timestamp As String = Format(Now, "yyyyMMdd_HHmmss")
 
         Dim sfd As New SaveFileDialog
@@ -214,17 +236,13 @@ Public Class FRM_EMP_REG
         sfd.FileName = "Employee_List_" & timestamp & ".csv"
 
         If sfd.ShowDialog() = DialogResult.OK Then
-
-            ' 👉 SHOW PROCESSING WINDOW
             Dim processing As New FrmProcessing("Saving CSV file, please wait...")
             processing.Show()
             processing.Refresh()
 
-            ' 👉 RUN EXPORT IN BACKGROUND
             Task.Run(Sub()
-                         ExportDataTableToCsv(dt, sfd.FileName)
+                         ExportDataTableToCsv(dtExport, sfd.FileName)
 
-                         ' CLOSE PROCESSING WINDOW FROM UI THREAD
                          Me.Invoke(Sub()
                                        processing.Close()
                                        MsgBox("Export completed successfully!", vbInformation)
@@ -233,6 +251,27 @@ Public Class FRM_EMP_REG
         End If
     End Sub
 
+    Private Function SelectColumns(source As DataTable, columnNames As IEnumerable(Of String)) As DataTable
+        Dim result As New DataTable()
+
+        ' Add only requested columns that exist
+        For Each colName In columnNames
+            If source.Columns.Contains(colName) Then
+                result.Columns.Add(colName, source.Columns(colName).DataType)
+            End If
+        Next
+
+        ' Copy rows
+        For Each r As DataRow In source.Rows
+            Dim newRow As DataRow = result.NewRow()
+            For Each c As DataColumn In result.Columns
+                newRow(c.ColumnName) = r(c.ColumnName)
+            Next
+            result.Rows.Add(newRow)
+        Next
+
+        Return result
+    End Function
 
 
 
@@ -274,29 +313,42 @@ Public Class FRM_EMP_REG
     Private Sub Btn_LongList_Click(sender As Object, e As EventArgs) Handles Btn_LongList.Click
         Me.LV_Employee_List.Size = New Size(864, 777)
     End Sub
-
     Private Sub TxtSearch_KeyPress(sender As Object, e As KeyPressEventArgs) Handles TxtSearch.KeyPress
-        If e.KeyChar = Convert.ToChar(Keys.Enter) Then
-            Dim sCategory As String
-            sCategory = ""
+        If e.KeyChar <> ChrW(Keys.Enter) Then Exit Sub
 
-            If Me.Cmb_Category.SelectedIndex = 0 Then
+        e.Handled = True ' prevent beep / ding
+
+        Dim sCategory As String
+
+        Select Case Me.Cmb_Category.SelectedIndex
+            Case 0
                 sCategory = "B.EMPLOYEE_ID"
-            ElseIf Me.Cmb_Category.SelectedIndex = 1 Then
-                sCategory = "D.SUB_CLIENT_NAME"
-            ElseIf Me.Cmb_Category.SelectedIndex = 2 Then
+            Case 1
+                ' Sub Client Name now comes from TBL_CLIENT_SUB alias E
+                sCategory = "E.SUB_CLIENT_NAME"
+            Case 2
                 sCategory = "A.LAST_NAME"
-            ElseIf Me.Cmb_Category.SelectedIndex = 3 Then
+            Case 3
                 sCategory = "B.EMPLOYMENT_STATUS"
-            ElseIf Me.Cmb_Category.SelectedIndex = -1 Then
+            Case Else
                 sCategory = "A.LAST_NAME"
-            End If
+        End Select
 
+        Dim keyword As String = TxtSearch.Text.Trim()
 
-            Call Show_Search(sCategory, TxtSearch.Text)
-
+        ' Optional: allow Enter with blank text to show all (or just ignore)
+        If keyword = "" Then
+            Call Show_Search("A.LAST_NAME", "")
+            Exit Sub
         End If
+
+        ' Prevent SQL break when user types apostrophe (e.g., O'Connor)
+        keyword = keyword.Replace("'", "''")
+        Dim activeOnly As Boolean = (sCategory = "E.SUB_CLIENT_NAME") ' ✅ Active only when searching by sub client name
+
+        Call Show_Search(sCategory, keyword)
     End Sub
+
 
     Private Sub LV_Employee_List_MouseClick(sender As Object, e As MouseEventArgs) Handles LV_Employee_List.MouseClick
         Try

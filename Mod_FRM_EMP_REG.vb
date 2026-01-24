@@ -700,7 +700,7 @@ Module Mod_FRM_EMP_REG
                 .Items.Add(index.ToString())
                 Dim item = .Items(.Items.Count - 1)
 
-                item.SubItems.Add(row("EMPLOYEE_ID").ToString())
+                item.SubItems.Add(row("empId").ToString())
                 item.SubItems.Add(row("LAST_NAME") & " " &
                               row("FIRST_NAME") & " " &
                               row("MIDDLE_NAME"))
@@ -728,14 +728,33 @@ Module Mod_FRM_EMP_REG
 
         Try
             Dim SQL As String =
-    "SELECT * " &
-    "FROM ((HR_APPLICATION_DTL AS A " &
-    "INNER JOIN HR_EMPLOYEE_RECORD_HDR AS B ON A.APPLICATION_ID = B.APPLICATION_ID) " &
-    "INNER JOIN HR_APPLICATION_HDR AS C ON B.APPLICATION_ID = C.APPLICATION_ID) " &
-    "INNER JOIN TBL_CLIENT_SUB AS D ON B.SUB_CLIENT_ID = D.SUB_CLIENT_ID " &
-    "WHERE B.EMPLOYMENT_STATUS = 'Active' " &
-    "ORDER BY A.LAST_NAME ASC"
-
+"SELECT " &
+"    B.EMPLOYEE_ID AS EmpID, " &
+"    A.*, " &
+"    B.APPLICATION_ID, " &
+"    B.DATE_HIRED, " &
+"    B.SSS_NO, " &
+"    B.PAGIBIG_NO, " &
+"    B.PHIL_HEALTH_NO, " &
+"    B.TIN_NO, " &
+"    B.EMPLOYMENT_STATUS, " &
+"    D.SUB_CLIENT_ID AS LatestSubClientId, " &
+"    E.SUB_CLIENT_NAME, " &
+"    C.* " &
+"FROM (((HR_APPLICATION_DTL AS A " &
+"INNER JOIN HR_EMPLOYEE_RECORD_HDR AS B ON A.APPLICATION_ID = B.APPLICATION_ID) " &
+"INNER JOIN HR_APPLICATION_HDR AS C ON B.APPLICATION_ID = C.APPLICATION_ID) " &
+"INNER JOIN " &
+"   (HR_EMPLOYEE_CLIENT_TRANSFER_DTL AS D " &
+"    INNER JOIN " &
+"       (SELECT EMPLOYEE_ID, MAX(ID) AS MaxID " &
+"        FROM HR_EMPLOYEE_CLIENT_TRANSFER_DTL " &
+"        GROUP BY EMPLOYEE_ID) AS X " &
+"    ON D.EMPLOYEE_ID = X.EMPLOYEE_ID AND D.ID = X.MaxID) " &
+"ON B.EMPLOYEE_ID = D.EMPLOYEE_ID) " &
+"LEFT JOIN TBL_CLIENT_SUB AS E ON D.SUB_CLIENT_ID = E.SUB_CLIENT_ID " &
+"WHERE B.EMPLOYMENT_STATUS = 'Active' " &
+"ORDER BY A.LAST_NAME ASC;"
 
 
             Using da As New OleDb.OleDbDataAdapter(SQL, Mod_GlobalVariables.GlobalVariables.GlobalCon)
@@ -786,77 +805,99 @@ Module Mod_FRM_EMP_REG
 
         Return escapedValue
     End Function
-    Public Sub Show_Search(sCategory As String, sSearchString As String)
+    Public Sub Show_Search(sCategory As String, sSearchString As String, Optional onlyActive As Boolean = False)
 
-
-        Dim da As New OleDb.OleDbDataAdapter
-        Dim dt As New DataTable
-
-        dt.Clear()
-        dt.Reset()
-        Dim SQL As String
+        Dim dt As New DataTable()
 
         Try
+            Dim baseSql As String =
+"SELECT " &
+"    B.EMPLOYEE_ID AS EmpID, " &
+"    A.FIRST_NAME, A.MIDDLE_NAME, A.LAST_NAME, " &
+"    D.SUB_CLIENT_ID AS LatestSubClientId, " &
+"    E.SUB_CLIENT_NAME, " &
+"    B.DATE_HIRED, B.EMPLOYMENT_STATUS " &
+"FROM (((HR_APPLICATION_DTL AS A " &
+"INNER JOIN HR_EMPLOYEE_RECORD_HDR AS B ON A.APPLICATION_ID = B.APPLICATION_ID) " &
+"INNER JOIN HR_APPLICATION_HDR AS C ON B.APPLICATION_ID = C.APPLICATION_ID) " &
+"INNER JOIN " &
+"   (HR_EMPLOYEE_CLIENT_TRANSFER_DTL AS D " &
+"    INNER JOIN " &
+"       (SELECT EMPLOYEE_ID, MAX(ID) AS MaxID " &
+"        FROM HR_EMPLOYEE_CLIENT_TRANSFER_DTL " &
+"        GROUP BY EMPLOYEE_ID) AS X " &
+"    ON D.EMPLOYEE_ID = X.EMPLOYEE_ID AND D.ID = X.MaxID) " &
+"ON B.EMPLOYEE_ID = D.EMPLOYEE_ID) " &
+"LEFT JOIN TBL_CLIENT_SUB AS E ON D.SUB_CLIENT_ID = E.SUB_CLIENT_ID "
 
-            SQL = "Select B.EMPLOYEE_ID, A.FIRST_NAME, A.MIDDLE_NAME, A.LAST_NAME, B.SUB_CLIENT_ID,D.SUB_CLIENT_NAME, B.DATE_HIRED, B.EMPLOYMENT_STATUS"
-            SQL = SQL & " From HR_APPLICATION_DTL A, HR_EMPLOYEE_RECORD_HDR B, HR_APPLICATION_HDR C, TBL_CLIENT_SUB D"
-            SQL = SQL & " Where A.APPLICATION_ID = B.APPLICATION_ID AND B.APPLICATION_ID = C.APPLICATION_ID "
-            SQL = SQL & " AND B.SUB_CLIENT_ID = D.SUB_CLIENT_ID "
-            SQL = SQL & " And " & sCategory & " Like '%" & sSearchString & "%'"
-            SQL = SQL & " ORDER BY A.LAST_NAME ASC"
+            ' Build WHERE
+            Dim whereSql As String
 
-            da = New OleDbDataAdapter(SQL, Mod_GlobalVariables.GlobalVariables.GlobalCon)
-            da.Fill(dt)
+            ' EMPLOYEE_ID is numeric -> convert to string for LIKE
+            If sCategory.Trim().Equals("B.EMPLOYEE_ID", StringComparison.OrdinalIgnoreCase) Then
+                whereSql = " WHERE CStr(B.EMPLOYEE_ID) Like ? "
+            Else
+                whereSql = " WHERE " & sCategory & " Like ? "
+            End If
 
+            ' Apply "Active only" rule when requested
+            If onlyActive Then
+                whereSql &= " AND B.EMPLOYMENT_STATUS='Active' "
+            End If
 
-            If dt.Rows.Count > 0 Then ' SHOW DATAS
+            Dim finalSql As String = baseSql & whereSql & " ORDER BY A.LAST_NAME ASC;"
+
+            Using cmd As New OleDb.OleDbCommand(finalSql, Mod_GlobalVariables.GlobalVariables.GlobalCon)
+                ' OleDb uses positional parameters (?)
+                cmd.Parameters.AddWithValue("?", "%" & sSearchString.Trim() & "%")
+
+                Using da As New OleDb.OleDbDataAdapter(cmd)
+                    da.Fill(dt)
+                End Using
+            End Using
+
+            If dt.Rows.Count > 0 Then
                 With FRM_EMP_REG.LV_Employee_List
-
-                    Dim myRow As DataRow
-                    Dim iRow As Integer
-                    iRow = 1
-
                     .Items.Clear()
 
-                    For Each myRow In dt.Rows
+                    Dim iRow As Integer = 1
+                    For Each myRow As DataRow In dt.Rows
+                        .Items.Add(iRow.ToString())
+                        .Items(.Items.Count - 1).SubItems.Add(myRow("EmpID").ToString())
+                        .Items(.Items.Count - 1).SubItems.Add(
+                        myRow("LAST_NAME").ToString() & " " &
+                        myRow("FIRST_NAME").ToString() & " " &
+                        myRow("MIDDLE_NAME").ToString()
+                    )
+                        .Items(.Items.Count - 1).SubItems.Add(Format(CDate(myRow("DATE_HIRED")), "dd-MMM-yyyy"))
+                        .Items(.Items.Count - 1).SubItems.Add(myRow("SUB_CLIENT_NAME").ToString())
 
-                        .Items.Add(iRow) ' Company ID
-                        .Items(.Items.Count - 1).SubItems.Add(myRow.Item("EMPLOYEE_ID"))
-                        .Items(.Items.Count - 1).SubItems.Add(myRow.Item("Last_name") & " " & myRow.Item("First_Name") & " " & myRow.Item("Middle_Name")) ' Name
-
-                        .Items(.Items.Count - 1).SubItems.Add(Format(myRow.Item("DATE_HIRED"), "dd-MMM-yyyy"))
-                        .Items(.Items.Count - 1).SubItems.Add(myRow.Item("SUB_CLIENT_NAME")) ' Client name
-
-                        If myRow.Item("EMPLOYMENT_STATUS") <> "Active" Then
+                        If myRow("EMPLOYMENT_STATUS").ToString() <> "Active" Then
                             .Items(.Items.Count - 1).ForeColor = Color.Red
                         Else
                             .Items(.Items.Count - 1).ForeColor = Color.Black
                         End If
 
-                        .Items(.Items.Count - 1).SubItems.Add(myRow.Item("EMPLOYMENT_STATUS"))
+                        .Items(.Items.Count - 1).SubItems.Add(myRow("EMPLOYMENT_STATUS").ToString())
 
-                        iRow = iRow + 1
-
+                        iRow += 1
                     Next
                 End With
             Else
                 MsgBox("No records found from your filter", vbExclamation, "No records")
-                FRM_DTR.LV_EmployeeList.Items.Clear()
+                FRM_EMP_REG.LV_Employee_List.Items.Clear()
             End If
 
         Catch ex As Exception
-            MsgBox(ex.ToString)
+            MsgBox(ex.ToString())
+        Finally
+            If Mod_GlobalVariables.GlobalVariables.GlobalCon.State = ConnectionState.Open Then
+                Mod_GlobalVariables.GlobalVariables.GlobalCon.Close()
+            End If
         End Try
 
-        GlobalVariables.GlobalCon.Close()
-
-
-
-
-
-
-
     End Sub
+
 
 
 

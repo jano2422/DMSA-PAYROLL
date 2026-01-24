@@ -25,6 +25,8 @@ Partial Class FRM_DTR_EXPORTS
         Me.Panel1 = New System.Windows.Forms.Panel()
         Me.TabControl1 = New System.Windows.Forms.TabControl()
         Me.TabPage1 = New System.Windows.Forms.TabPage()
+        Me.btnShwUpDeducts = New FontAwesome.Sharp.IconButton()
+        Me.PictureBox2 = New System.Windows.Forms.PictureBox()
         Me.LV_DTR_Per_Client_List = New System.Windows.Forms.ListView()
         Me.Item = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
         Me.Employee_Name = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
@@ -55,8 +57,6 @@ Partial Class FRM_DTR_EXPORTS
         Me.Lbl_ClientID = New System.Windows.Forms.Label()
         Me.Label7 = New System.Windows.Forms.Label()
         Me.btnDtrHrsExport = New FontAwesome.Sharp.IconButton()
-        Me.PictureBox2 = New System.Windows.Forms.PictureBox()
-        Me.IconButton1 = New FontAwesome.Sharp.IconButton()
         Me.Btn_Show = New System.Windows.Forms.Button()
         Me.Btn_Client = New System.Windows.Forms.Button()
         Me.Label4 = New System.Windows.Forms.Label()
@@ -67,10 +67,10 @@ Partial Class FRM_DTR_EXPORTS
         Me.Label10 = New System.Windows.Forms.Label()
         Me.TabControl1.SuspendLayout()
         Me.TabPage1.SuspendLayout()
+        CType(Me.PictureBox2, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.TabPage2.SuspendLayout()
         CType(Me.DGV_DTR_MATRIX, System.ComponentModel.ISupportInitialize).BeginInit()
         CType(Me.PictureBox1, System.ComponentModel.ISupportInitialize).BeginInit()
-        CType(Me.PictureBox2, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.SuspendLayout()
         '
         'Panel1
@@ -95,7 +95,7 @@ Partial Class FRM_DTR_EXPORTS
         '
         'TabPage1
         '
-        Me.TabPage1.Controls.Add(Me.IconButton1)
+        Me.TabPage1.Controls.Add(Me.btnShwUpDeducts)
         Me.TabPage1.Controls.Add(Me.PictureBox2)
         Me.TabPage1.Controls.Add(Me.LV_DTR_Per_Client_List)
         Me.TabPage1.Location = New System.Drawing.Point(4, 29)
@@ -105,6 +105,30 @@ Partial Class FRM_DTR_EXPORTS
         Me.TabPage1.TabIndex = 0
         Me.TabPage1.Text = "Per Client"
         Me.TabPage1.UseVisualStyleBackColor = True
+        '
+        'btnShwUpDeducts
+        '
+        Me.btnShwUpDeducts.IconChar = FontAwesome.Sharp.IconChar.FileEdit
+        Me.btnShwUpDeducts.IconColor = System.Drawing.Color.Green
+        Me.btnShwUpDeducts.IconFont = FontAwesome.Sharp.IconFont.[Auto]
+        Me.btnShwUpDeducts.IconSize = 40
+        Me.btnShwUpDeducts.Location = New System.Drawing.Point(19, 432)
+        Me.btnShwUpDeducts.Name = "btnShwUpDeducts"
+        Me.btnShwUpDeducts.Size = New System.Drawing.Size(212, 50)
+        Me.btnShwUpDeducts.TabIndex = 613
+        Me.btnShwUpDeducts.Text = "Update Deductions"
+        Me.btnShwUpDeducts.TextAlign = System.Drawing.ContentAlignment.MiddleRight
+        Me.btnShwUpDeducts.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText
+        Me.btnShwUpDeducts.UseVisualStyleBackColor = True
+        '
+        'PictureBox2
+        '
+        Me.PictureBox2.BackColor = System.Drawing.Color.Teal
+        Me.PictureBox2.Location = New System.Drawing.Point(3, 424)
+        Me.PictureBox2.Name = "PictureBox2"
+        Me.PictureBox2.Size = New System.Drawing.Size(1395, 66)
+        Me.PictureBox2.TabIndex = 613
+        Me.PictureBox2.TabStop = False
         '
         'LV_DTR_Per_Client_List
         '
@@ -346,30 +370,6 @@ Partial Class FRM_DTR_EXPORTS
         Me.btnDtrHrsExport.TextAlign = System.Drawing.ContentAlignment.BottomCenter
         Me.btnDtrHrsExport.UseVisualStyleBackColor = True
         '
-        'PictureBox2
-        '
-        Me.PictureBox2.BackColor = System.Drawing.Color.Teal
-        Me.PictureBox2.Location = New System.Drawing.Point(3, 424)
-        Me.PictureBox2.Name = "PictureBox2"
-        Me.PictureBox2.Size = New System.Drawing.Size(1395, 66)
-        Me.PictureBox2.TabIndex = 613
-        Me.PictureBox2.TabStop = False
-        '
-        'IconButton1
-        '
-        Me.IconButton1.IconChar = FontAwesome.Sharp.IconChar.FileEdit
-        Me.IconButton1.IconColor = System.Drawing.Color.Green
-        Me.IconButton1.IconFont = FontAwesome.Sharp.IconFont.[Auto]
-        Me.IconButton1.IconSize = 40
-        Me.IconButton1.Location = New System.Drawing.Point(19, 432)
-        Me.IconButton1.Name = "IconButton1"
-        Me.IconButton1.Size = New System.Drawing.Size(212, 50)
-        Me.IconButton1.TabIndex = 613
-        Me.IconButton1.Text = "Update Deductions"
-        Me.IconButton1.TextAlign = System.Drawing.ContentAlignment.MiddleRight
-        Me.IconButton1.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText
-        Me.IconButton1.UseVisualStyleBackColor = True
-        '
         'Btn_Show
         '
         Me.Btn_Show.Font = New System.Drawing.Font("Verdana", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
@@ -492,10 +492,10 @@ Partial Class FRM_DTR_EXPORTS
         Me.Text = "DTR Exports"
         Me.TabControl1.ResumeLayout(False)
         Me.TabPage1.ResumeLayout(False)
+        CType(Me.PictureBox2, System.ComponentModel.ISupportInitialize).EndInit()
         Me.TabPage2.ResumeLayout(False)
         CType(Me.DGV_DTR_MATRIX, System.ComponentModel.ISupportInitialize).EndInit()
         CType(Me.PictureBox1, System.ComponentModel.ISupportInitialize).EndInit()
-        CType(Me.PictureBox2, System.ComponentModel.ISupportInitialize).EndInit()
         Me.ResumeLayout(False)
         Me.PerformLayout()
 
@@ -534,7 +534,7 @@ Partial Class FRM_DTR_EXPORTS
     Friend WithEvents SSS_CAL_Loan As ColumnHeader
     Friend WithEvents PI_CAL_Loan As ColumnHeader
     Friend WithEvents btnDtrHrsExport As IconButton
-    Friend WithEvents IconButton1 As IconButton
+    Friend WithEvents btnShwUpDeducts As IconButton
     Friend WithEvents PictureBox2 As PictureBox
     Friend WithEvents Btn_Show As Button
     Friend WithEvents Btn_Client As Button

@@ -53,8 +53,6 @@ Module Mod_FRM_DTR_EXPORTS
             dayColumns.Add(dgv.Columns(i))
         Next
 
-        Dim totalCol As DataGridViewColumn = dgv.Columns(dgv.Columns.Count - 1)
-
         Dim hasDayNameRow As Boolean = dgv.Rows.Count > 0 AndAlso Not dgv.Rows(0).IsNewRow
         If hasDayNameRow Then
             For i As Integer = 0 To dayColumns.Count - 1
@@ -82,9 +80,6 @@ Module Mod_FRM_DTR_EXPORTS
                 Dim rawValue As String = Convert.ToString(row.Cells(dayColumns(i).Index).Value)
                 dtrSheet.Cells(excelRow, dayStartCol + i).Value = TryGetNumericValue(rawValue)
             Next
-
-            Dim totalValue As String = Convert.ToString(row.Cells(totalCol.Index).Value)
-            dtrSheet.Cells(excelRow, dayStartCol + dayColumns.Count).Value = TryGetNumericValue(totalValue)
 
             excelRow += 1
         Next

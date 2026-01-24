@@ -134,7 +134,4 @@ Public Class FRM_DTR_EXPORTS
 
     End Sub
 
-    Private Sub LV_DTR_Per_Client_List_SelectedIndexChanged(sender As Object, e As EventArgs) Handles LV_DTR_Per_Client_List.SelectedIndexChanged
-
-    End Sub
 End Class

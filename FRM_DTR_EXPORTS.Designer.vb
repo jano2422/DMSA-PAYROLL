@@ -45,6 +45,7 @@ Partial Class FRM_DTR_EXPORTS
         Me.Lbl_Client_Address = New System.Windows.Forms.Label()
         Me.Lbl_ClientID = New System.Windows.Forms.Label()
         Me.Label7 = New System.Windows.Forms.Label()
+        Me.btnDtrHrsExport = New FontAwesome.Sharp.IconButton()
         Me.TabControl1.SuspendLayout()
         Me.TabPage1.SuspendLayout()
         CType(Me.DGV_DTR_Per_Client, System.ComponentModel.ISupportInitialize).BeginInit()
@@ -97,6 +98,7 @@ Partial Class FRM_DTR_EXPORTS
         Me.DGV_DTR_Per_Client.ReadOnly = True
         Me.DGV_DTR_Per_Client.Size = New System.Drawing.Size(1376, 455)
         Me.DGV_DTR_Per_Client.TabIndex = 70
+        '
         'TabPage2
         '
         Me.TabPage2.Controls.Add(Me.DGV_DTR_MATRIX)
@@ -169,11 +171,11 @@ Partial Class FRM_DTR_EXPORTS
         Me.Btn_Export_to_Excell.IconColor = System.Drawing.Color.Green
         Me.Btn_Export_to_Excell.IconFont = FontAwesome.Sharp.IconFont.[Auto]
         Me.Btn_Export_to_Excell.IconSize = 40
-        Me.Btn_Export_to_Excell.Location = New System.Drawing.Point(1329, 186)
+        Me.Btn_Export_to_Excell.Location = New System.Drawing.Point(1314, 186)
         Me.Btn_Export_to_Excell.Name = "Btn_Export_to_Excell"
-        Me.Btn_Export_to_Excell.Size = New System.Drawing.Size(79, 67)
+        Me.Btn_Export_to_Excell.Size = New System.Drawing.Size(94, 67)
         Me.Btn_Export_to_Excell.TabIndex = 599
-        Me.Btn_Export_to_Excell.Text = "Export"
+        Me.Btn_Export_to_Excell.Text = "Export Payroll"
         Me.Btn_Export_to_Excell.TextAlign = System.Drawing.ContentAlignment.BottomCenter
         Me.Btn_Export_to_Excell.UseVisualStyleBackColor = True
         '
@@ -314,12 +316,27 @@ Partial Class FRM_DTR_EXPORTS
         Me.Label7.TabIndex = 610
         Me.Label7.Text = "Client ID:"
         '
+        'btnDtrHrsExport
+        '
+        Me.btnDtrHrsExport.IconChar = FontAwesome.Sharp.IconChar.ClockFour
+        Me.btnDtrHrsExport.IconColor = System.Drawing.Color.Green
+        Me.btnDtrHrsExport.IconFont = FontAwesome.Sharp.IconFont.[Auto]
+        Me.btnDtrHrsExport.IconSize = 40
+        Me.btnDtrHrsExport.Location = New System.Drawing.Point(1194, 186)
+        Me.btnDtrHrsExport.Name = "btnDtrHrsExport"
+        Me.btnDtrHrsExport.Size = New System.Drawing.Size(102, 67)
+        Me.btnDtrHrsExport.TabIndex = 612
+        Me.btnDtrHrsExport.Text = "Export DTR Hours"
+        Me.btnDtrHrsExport.TextAlign = System.Drawing.ContentAlignment.BottomCenter
+        Me.btnDtrHrsExport.UseVisualStyleBackColor = True
+        '
         'FRM_DTR_EXPORTS
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
         Me.BackColor = System.Drawing.Color.Black
         Me.ClientSize = New System.Drawing.Size(1460, 837)
+        Me.Controls.Add(Me.btnDtrHrsExport)
         Me.Controls.Add(Me.Lbl_ClientID)
         Me.Controls.Add(Me.Label7)
         Me.Controls.Add(Me.Lbl_Client_Address)
@@ -376,4 +393,5 @@ Partial Class FRM_DTR_EXPORTS
     Friend WithEvents Label7 As Label
     Friend WithEvents TabPage2 As TabPage
     Friend WithEvents DGV_DTR_MATRIX As DataGridView
+    Friend WithEvents btnDtrHrsExport As IconButton
 End Class

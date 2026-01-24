@@ -646,7 +646,8 @@ Module Mod_FRM_DTR_EXPORTS
             ' Bind to DataGridView
             With FRM_DTR_EXPORTS.DGV_DTR_MATRIX
                 .DataSource = headerTable
-                .AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.AllCells
+                .AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill
+                .AutoResizeColumns()
             End With
 
         Catch ex As Exception

@@ -79,7 +79,7 @@ Partial Class FRM_DTR_EXPORTS
         Me.TabPage1.Controls.Add(Me.DGV_DTR_Per_Client)
         Me.TabPage1.Location = New System.Drawing.Point(4, 29)
         Me.TabPage1.Name = "TabPage1"
-        Me.TabPage1.Padding = New System.Windows.Forms.Padding(3)
+        Me.TabPage1.Padding = New System.Windows.Forms.Padding(0)
         Me.TabPage1.Size = New System.Drawing.Size(1391, 496)
         Me.TabPage1.TabIndex = 0
         Me.TabPage1.Text = "Per Client"
@@ -92,11 +92,12 @@ Partial Class FRM_DTR_EXPORTS
         Me.DGV_DTR_Per_Client.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.AllCells
         Me.DGV_DTR_Per_Client.BackgroundColor = System.Drawing.Color.FromArgb(CType(CType(255, Byte), Integer), CType(CType(224, Byte), Integer), CType(CType(192, Byte), Integer))
         Me.DGV_DTR_Per_Client.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize
+        Me.DGV_DTR_Per_Client.Dock = System.Windows.Forms.DockStyle.Fill
         Me.DGV_DTR_Per_Client.GridColor = System.Drawing.Color.FromArgb(CType(CType(255, Byte), Integer), CType(CType(224, Byte), Integer), CType(CType(192, Byte), Integer))
-        Me.DGV_DTR_Per_Client.Location = New System.Drawing.Point(6, 20)
+        Me.DGV_DTR_Per_Client.Location = New System.Drawing.Point(0, 0)
         Me.DGV_DTR_Per_Client.Name = "DGV_DTR_Per_Client"
         Me.DGV_DTR_Per_Client.ReadOnly = True
-        Me.DGV_DTR_Per_Client.Size = New System.Drawing.Size(1376, 455)
+        Me.DGV_DTR_Per_Client.Size = New System.Drawing.Size(1391, 496)
         Me.DGV_DTR_Per_Client.TabIndex = 70
         '
         'TabPage2

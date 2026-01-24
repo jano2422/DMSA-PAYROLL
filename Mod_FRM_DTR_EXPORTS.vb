@@ -136,11 +136,12 @@ Module Mod_FRM_DTR_EXPORTS
         Dim column As New DataGridViewTextBoxColumn With {
             .Name = name,
             .HeaderText = header,
-            .ReadOnly = True
+            .ReadOnly = True,
+            .AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill
         }
         If width > 0 Then
-            column.Width = width
-            column.AutoSizeMode = DataGridViewAutoSizeColumnMode.None
+            column.MinimumWidth = width
+            column.FillWeight = width
         End If
         dgv.Columns.Add(column)
     End Sub
@@ -150,6 +151,7 @@ Module Mod_FRM_DTR_EXPORTS
         dgv.Rows.Clear()
         dgv.Columns.Clear()
         dgv.AutoGenerateColumns = False
+        dgv.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill
         dgv.AllowUserToAddRows = False
         dgv.AllowUserToDeleteRows = False
 
@@ -644,7 +646,8 @@ Module Mod_FRM_DTR_EXPORTS
             ' Bind to DataGridView
             With FRM_DTR_EXPORTS.DGV_DTR_MATRIX
                 .DataSource = headerTable
-                .AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.AllCells
+                .AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill
+                .AutoResizeColumns()
             End With
 
         Catch ex As Exception

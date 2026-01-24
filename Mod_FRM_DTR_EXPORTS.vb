@@ -161,9 +161,9 @@ Module Mod_FRM_DTR_EXPORTS
                     'Deductions
                     If firstCutoff Then
                         '1st cutoff → Government deductions go to columns 12,13,14
-                        payrollSheet.Cells(r, 20).Value = item.SubItems(12).Text 'SSS
-                        payrollSheet.Cells(r, 21).Value = item.SubItems(13).Text 'PH
-                        payrollSheet.Cells(r, 22).Value = item.SubItems(14).Text 'PI
+                        payrollSheet.Cells(r, 20).Value = item.SubItems(14).Text 'SSS
+                        payrollSheet.Cells(r, 21).Value = item.SubItems(15).Text 'PH
+                        payrollSheet.Cells(r, 22).Value = item.SubItems(16).Text 'PI
                     Else
                         '2nd cutoff → Loans/other deductions go to columns 20,21,22
                         payrollSheet.Cells(r, 20).Value = item.SubItems(9).Text  'CB

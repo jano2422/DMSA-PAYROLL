@@ -72,9 +72,15 @@ Public Class FRM_DTR_BIOMETRIC
             ' 1st cutoff (1–15) → loans/other default zero
             SetLoanDeductionsToZero()
 
+            Grp1stCutOff.Visible = True
+            Grp2ndCutOff.Visible = False
+
+
 
         ElseIf IsSecondCutoff(cutoff) Then
             ' 2nd cutoff (16–30) → gov deductions default zero
+            Grp1stCutOff.Visible = False
+            Grp2ndCutOff.Visible = True
             SetGovernmentDeductionsToZero()
             SetLoanDeductionsToZero()
 
@@ -775,4 +781,6 @@ Public Class FRM_DTR_BIOMETRIC
     Private Sub dtrBreakDownPage_Click(sender As Object, e As EventArgs) Handles dtrBreakDownPage.Click
 
     End Sub
+
+
 End Class

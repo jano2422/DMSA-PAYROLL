@@ -107,58 +107,7 @@ Module Mod_FRM_EMP_REG
 
     End Sub
 
-    Public Sub Export_EMployee_Records_To_Excel()
 
-
-        Try
-
-            Dim objExcel As New Excel.Application
-            'Dim objWorkbook As Excel.Workbook
-            Dim objSheet As Excel.Worksheet
-            objExcel.Visible = True
-            objExcel.Workbooks.Add()
-
-            'objWorkbook = objExcel.Workbooks.Open("C:\Users\estiokojc\source\repos\DMSA_System_DotNet\DMSA_System\bin\Debug\Template1.xlsx")
-            'objWorkbook = objExcel.Workbooks.Open(Application.StartupPath & "\Exports\Employee_Records.xlsx")
-            objSheet = objExcel.Worksheets("Sheet1")
-
-            ' Detachment Info ( Header )
-            objSheet.Cells(1, 1).value = "EMPLOYEE ID"
-            objSheet.Cells(1, 2).value = "EMPLOYEE NAME"
-            objSheet.Cells(1, 3).value = "DATE HIRED"
-            objSheet.Cells(1, 4).value = "DETACHMENT"
-            objSheet.Cells(1, 5).value = "STATUS"
-
-
-            Dim testValue As String
-
-            With FRM_EMP_REG.LV_Employee_List
-                ' Employee List : A14
-                For iRow = 0 To .Items.Count - 1
-
-                    For iCol = 1 To 5
-
-                        testValue = .Items(iRow).SubItems(iCol).Text
-                        objSheet.Cells(2 + iRow, iCol).value = .Items(iRow).SubItems(iCol).Text
-
-                    Next iCol
-
-                Next iRow
-
-            End With
-
-
-            'objExcel.AlertBeforeOverwriting = False
-            'objExcel.SaveWorkspace()
-            'objExcel.Application.Quit()
-
-
-        Catch ex As Exception
-            'MsgBox(ex.ToString, vbCritical, "Error in Exporting to Excel")
-        End Try
-
-
-    End Sub
 
 
     Public Function Show_Photo_in_Employee_Rec(sEmployee_ID As String)
@@ -779,15 +728,14 @@ Module Mod_FRM_EMP_REG
 
         Try
             Dim SQL As String =
-    "SELECT A.FIRST_NAME, A.MIDDLE_NAME, A.LAST_NAME, " &
-            "B.EMPLOYEE_ID, B.DATE_HIRED, B.SUB_CLIENT_ID, B.EMPLOYMENT_STATUS, " &
-            "D.SUB_CLIENT_NAME " &
+    "SELECT * " &
     "FROM ((HR_APPLICATION_DTL AS A " &
     "INNER JOIN HR_EMPLOYEE_RECORD_HDR AS B ON A.APPLICATION_ID = B.APPLICATION_ID) " &
     "INNER JOIN HR_APPLICATION_HDR AS C ON B.APPLICATION_ID = C.APPLICATION_ID) " &
     "INNER JOIN TBL_CLIENT_SUB AS D ON B.SUB_CLIENT_ID = D.SUB_CLIENT_ID " &
     "WHERE B.EMPLOYMENT_STATUS = 'Active' " &
     "ORDER BY A.LAST_NAME ASC"
+
 
 
             Using da As New OleDb.OleDbDataAdapter(SQL, Mod_GlobalVariables.GlobalVariables.GlobalCon)
@@ -814,7 +762,7 @@ Module Mod_FRM_EMP_REG
                 Next
             End Using
 
-            MsgBox("CSV file saved successfully!", vbInformation)
+
 
         Catch ex As Exception
             MsgBox("Error exporting to CSV: " & ex.Message, vbCritical)

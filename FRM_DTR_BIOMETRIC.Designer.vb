@@ -72,6 +72,11 @@ Partial Class FRM_DTR_BIOMETRIC
         Me.Label7 = New System.Windows.Forms.Label()
         Me.Label6 = New System.Windows.Forms.Label()
         Me.dtrBreakDownPage = New System.Windows.Forms.TabPage()
+        Me.Grp1stCutOff = New System.Windows.Forms.GroupBox()
+        Me.Label18 = New System.Windows.Forms.Label()
+        Me.Label19 = New System.Windows.Forms.Label()
+        Me.szSSSCalLoan = New System.Windows.Forms.TextBox()
+        Me.szPICalLoan = New System.Windows.Forms.TextBox()
         Me.Label15 = New System.Windows.Forms.Label()
         Me.Label16 = New System.Windows.Forms.Label()
         Me.Label17 = New System.Windows.Forms.Label()
@@ -112,18 +117,17 @@ Partial Class FRM_DTR_BIOMETRIC
         Me.Col_Attendance = New System.Windows.Forms.DataGridViewTextBoxColumn()
         Me.OpenFileDialog1 = New System.Windows.Forms.OpenFileDialog()
         Me.Label8 = New System.Windows.Forms.Label()
-        Me.Label18 = New System.Windows.Forms.Label()
-        Me.Label19 = New System.Windows.Forms.Label()
-        Me.szSSSCalLoan = New System.Windows.Forms.TextBox()
-        Me.szPICalLoan = New System.Windows.Forms.TextBox()
+        Me.Grp2ndCutOff = New System.Windows.Forms.GroupBox()
         Me.TabControl1.SuspendLayout()
         Me.TabPage1.SuspendLayout()
         Me.TabControl2.SuspendLayout()
         Me.actualDtrPage.SuspendLayout()
         CType(Me.GView_DTR, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.dtrBreakDownPage.SuspendLayout()
+        Me.Grp1stCutOff.SuspendLayout()
         Me.TabPage2.SuspendLayout()
         CType(Me.GView_Schedule, System.ComponentModel.ISupportInitialize).BeginInit()
+        Me.Grp2ndCutOff.SuspendLayout()
         Me.SuspendLayout()
         '
         'Panel1
@@ -518,22 +522,8 @@ Partial Class FRM_DTR_BIOMETRIC
         '
         'dtrBreakDownPage
         '
-        Me.dtrBreakDownPage.Controls.Add(Me.Label18)
-        Me.dtrBreakDownPage.Controls.Add(Me.Label19)
-        Me.dtrBreakDownPage.Controls.Add(Me.szSSSCalLoan)
-        Me.dtrBreakDownPage.Controls.Add(Me.szPICalLoan)
-        Me.dtrBreakDownPage.Controls.Add(Me.Label15)
-        Me.dtrBreakDownPage.Controls.Add(Me.Label16)
-        Me.dtrBreakDownPage.Controls.Add(Me.Label17)
-        Me.dtrBreakDownPage.Controls.Add(Me.szPhilhealthDeduct)
-        Me.dtrBreakDownPage.Controls.Add(Me.szPagibigDeduct)
-        Me.dtrBreakDownPage.Controls.Add(Me.szSSSDeduct)
-        Me.dtrBreakDownPage.Controls.Add(Me.Label14)
-        Me.dtrBreakDownPage.Controls.Add(Me.Label13)
-        Me.dtrBreakDownPage.Controls.Add(Me.Label12)
-        Me.dtrBreakDownPage.Controls.Add(Me.szSSSLoan)
-        Me.dtrBreakDownPage.Controls.Add(Me.szPILoan)
-        Me.dtrBreakDownPage.Controls.Add(Me.szCashBond)
+        Me.dtrBreakDownPage.Controls.Add(Me.Grp2ndCutOff)
+        Me.dtrBreakDownPage.Controls.Add(Me.Grp1stCutOff)
         Me.dtrBreakDownPage.Controls.Add(Me.Btn_Save_DTR)
         Me.dtrBreakDownPage.Controls.Add(Me.Btn_TimeDtlView)
         Me.dtrBreakDownPage.Controls.Add(Me.DTR_TimeCalculationPanel)
@@ -546,10 +536,58 @@ Partial Class FRM_DTR_BIOMETRIC
         Me.dtrBreakDownPage.Text = "Time Calculation"
         Me.dtrBreakDownPage.UseVisualStyleBackColor = True
         '
+        'Grp1stCutOff
+        '
+        Me.Grp1stCutOff.Controls.Add(Me.Label17)
+        Me.Grp1stCutOff.Controls.Add(Me.szSSSDeduct)
+        Me.Grp1stCutOff.Controls.Add(Me.szPhilhealthDeduct)
+        Me.Grp1stCutOff.Controls.Add(Me.Label16)
+        Me.Grp1stCutOff.Controls.Add(Me.szPagibigDeduct)
+        Me.Grp1stCutOff.Controls.Add(Me.Label15)
+        Me.Grp1stCutOff.Location = New System.Drawing.Point(1228, 140)
+        Me.Grp1stCutOff.Name = "Grp1stCutOff"
+        Me.Grp1stCutOff.Size = New System.Drawing.Size(527, 189)
+        Me.Grp1stCutOff.TabIndex = 90
+        Me.Grp1stCutOff.TabStop = False
+        Me.Grp1stCutOff.Text = "1st Cut-off Deductions"
+        Me.Grp1stCutOff.Visible = False
+        '
+        'Label18
+        '
+        Me.Label18.AutoSize = True
+        Me.Label18.Location = New System.Drawing.Point(31, 355)
+        Me.Label18.Name = "Label18"
+        Me.Label18.Size = New System.Drawing.Size(103, 20)
+        Me.Label18.TabIndex = 89
+        Me.Label18.Text = "PI CAL Loan:"
+        '
+        'Label19
+        '
+        Me.Label19.AutoSize = True
+        Me.Label19.Location = New System.Drawing.Point(15, 221)
+        Me.Label19.Name = "Label19"
+        Me.Label19.Size = New System.Drawing.Size(121, 20)
+        Me.Label19.TabIndex = 88
+        Me.Label19.Text = "SSS CAL Loan:"
+        '
+        'szSSSCalLoan
+        '
+        Me.szSSSCalLoan.Location = New System.Drawing.Point(140, 215)
+        Me.szSSSCalLoan.Name = "szSSSCalLoan"
+        Me.szSSSCalLoan.Size = New System.Drawing.Size(321, 26)
+        Me.szSSSCalLoan.TabIndex = 79
+        '
+        'szPICalLoan
+        '
+        Me.szPICalLoan.Location = New System.Drawing.Point(140, 349)
+        Me.szPICalLoan.Name = "szPICalLoan"
+        Me.szPICalLoan.Size = New System.Drawing.Size(321, 26)
+        Me.szPICalLoan.TabIndex = 81
+        '
         'Label15
         '
         Me.Label15.AutoSize = True
-        Me.Label15.Location = New System.Drawing.Point(1309, 229)
+        Me.Label15.Location = New System.Drawing.Point(10, 142)
         Me.Label15.Name = "Label15"
         Me.Label15.Size = New System.Drawing.Size(80, 20)
         Me.Label15.TabIndex = 85
@@ -558,7 +596,7 @@ Partial Class FRM_DTR_BIOMETRIC
         'Label16
         '
         Me.Label16.AutoSize = True
-        Me.Label16.Location = New System.Drawing.Point(1304, 162)
+        Me.Label16.Location = New System.Drawing.Point(7, 95)
         Me.Label16.Name = "Label16"
         Me.Label16.Size = New System.Drawing.Size(85, 20)
         Me.Label16.TabIndex = 84
@@ -567,7 +605,7 @@ Partial Class FRM_DTR_BIOMETRIC
         'Label17
         '
         Me.Label17.AutoSize = True
-        Me.Label17.Location = New System.Drawing.Point(1343, 95)
+        Me.Label17.Location = New System.Drawing.Point(44, 42)
         Me.Label17.Name = "Label17"
         Me.Label17.Size = New System.Drawing.Size(46, 20)
         Me.Label17.TabIndex = 83
@@ -575,21 +613,21 @@ Partial Class FRM_DTR_BIOMETRIC
         '
         'szPhilhealthDeduct
         '
-        Me.szPhilhealthDeduct.Location = New System.Drawing.Point(1393, 156)
+        Me.szPhilhealthDeduct.Location = New System.Drawing.Point(96, 89)
         Me.szPhilhealthDeduct.Name = "szPhilhealthDeduct"
         Me.szPhilhealthDeduct.Size = New System.Drawing.Size(321, 26)
         Me.szPhilhealthDeduct.TabIndex = 75
         '
         'szPagibigDeduct
         '
-        Me.szPagibigDeduct.Location = New System.Drawing.Point(1393, 223)
+        Me.szPagibigDeduct.Location = New System.Drawing.Point(94, 136)
         Me.szPagibigDeduct.Name = "szPagibigDeduct"
         Me.szPagibigDeduct.Size = New System.Drawing.Size(321, 26)
         Me.szPagibigDeduct.TabIndex = 76
         '
         'szSSSDeduct
         '
-        Me.szSSSDeduct.Location = New System.Drawing.Point(1393, 89)
+        Me.szSSSDeduct.Location = New System.Drawing.Point(94, 36)
         Me.szSSSDeduct.Name = "szSSSDeduct"
         Me.szSSSDeduct.Size = New System.Drawing.Size(321, 26)
         Me.szSSSDeduct.TabIndex = 74
@@ -597,7 +635,7 @@ Partial Class FRM_DTR_BIOMETRIC
         'Label14
         '
         Me.Label14.AutoSize = True
-        Me.Label14.Location = New System.Drawing.Point(1319, 494)
+        Me.Label14.Location = New System.Drawing.Point(66, 285)
         Me.Label14.Name = "Label14"
         Me.Label14.Size = New System.Drawing.Size(68, 20)
         Me.Label14.TabIndex = 79
@@ -606,7 +644,7 @@ Partial Class FRM_DTR_BIOMETRIC
         'Label13
         '
         Me.Label13.AutoSize = True
-        Me.Label13.Location = New System.Drawing.Point(1301, 363)
+        Me.Label13.Location = New System.Drawing.Point(48, 154)
         Me.Label13.Name = "Label13"
         Me.Label13.Size = New System.Drawing.Size(86, 20)
         Me.Label13.TabIndex = 78
@@ -615,7 +653,7 @@ Partial Class FRM_DTR_BIOMETRIC
         'Label12
         '
         Me.Label12.AutoSize = True
-        Me.Label12.Location = New System.Drawing.Point(1297, 296)
+        Me.Label12.Location = New System.Drawing.Point(44, 87)
         Me.Label12.Name = "Label12"
         Me.Label12.Size = New System.Drawing.Size(92, 20)
         Me.Label12.TabIndex = 77
@@ -623,21 +661,21 @@ Partial Class FRM_DTR_BIOMETRIC
         '
         'szSSSLoan
         '
-        Me.szSSSLoan.Location = New System.Drawing.Point(1393, 357)
+        Me.szSSSLoan.Location = New System.Drawing.Point(140, 148)
         Me.szSSSLoan.Name = "szSSSLoan"
         Me.szSSSLoan.Size = New System.Drawing.Size(321, 26)
         Me.szSSSLoan.TabIndex = 78
         '
         'szPILoan
         '
-        Me.szPILoan.Location = New System.Drawing.Point(1393, 491)
+        Me.szPILoan.Location = New System.Drawing.Point(140, 282)
         Me.szPILoan.Name = "szPILoan"
         Me.szPILoan.Size = New System.Drawing.Size(321, 26)
         Me.szPILoan.TabIndex = 80
         '
         'szCashBond
         '
-        Me.szCashBond.Location = New System.Drawing.Point(1393, 290)
+        Me.szCashBond.Location = New System.Drawing.Point(140, 81)
         Me.szCashBond.Name = "szCashBond"
         Me.szCashBond.Size = New System.Drawing.Size(321, 26)
         Me.szCashBond.TabIndex = 77
@@ -901,37 +939,25 @@ Partial Class FRM_DTR_BIOMETRIC
         Me.Label8.TabIndex = 68
         Me.Label8.Text = "Pure Gold"
         '
-        'Label18
+        'Grp2ndCutOff
         '
-        Me.Label18.AutoSize = True
-        Me.Label18.Location = New System.Drawing.Point(1284, 564)
-        Me.Label18.Name = "Label18"
-        Me.Label18.Size = New System.Drawing.Size(103, 20)
-        Me.Label18.TabIndex = 89
-        Me.Label18.Text = "PI CAL Loan:"
-        '
-        'Label19
-        '
-        Me.Label19.AutoSize = True
-        Me.Label19.Location = New System.Drawing.Point(1268, 430)
-        Me.Label19.Name = "Label19"
-        Me.Label19.Size = New System.Drawing.Size(121, 20)
-        Me.Label19.TabIndex = 88
-        Me.Label19.Text = "SSS CAL Loan:"
-        '
-        'szSSSCalLoan
-        '
-        Me.szSSSCalLoan.Location = New System.Drawing.Point(1393, 424)
-        Me.szSSSCalLoan.Name = "szSSSCalLoan"
-        Me.szSSSCalLoan.Size = New System.Drawing.Size(321, 26)
-        Me.szSSSCalLoan.TabIndex = 79
-        '
-        'szPICalLoan
-        '
-        Me.szPICalLoan.Location = New System.Drawing.Point(1393, 558)
-        Me.szPICalLoan.Name = "szPICalLoan"
-        Me.szPICalLoan.Size = New System.Drawing.Size(321, 26)
-        Me.szPICalLoan.TabIndex = 81
+        Me.Grp2ndCutOff.Controls.Add(Me.szPICalLoan)
+        Me.Grp2ndCutOff.Controls.Add(Me.szCashBond)
+        Me.Grp2ndCutOff.Controls.Add(Me.Label18)
+        Me.Grp2ndCutOff.Controls.Add(Me.szPILoan)
+        Me.Grp2ndCutOff.Controls.Add(Me.Label19)
+        Me.Grp2ndCutOff.Controls.Add(Me.szSSSLoan)
+        Me.Grp2ndCutOff.Controls.Add(Me.szSSSCalLoan)
+        Me.Grp2ndCutOff.Controls.Add(Me.Label12)
+        Me.Grp2ndCutOff.Controls.Add(Me.Label13)
+        Me.Grp2ndCutOff.Controls.Add(Me.Label14)
+        Me.Grp2ndCutOff.Location = New System.Drawing.Point(1228, 108)
+        Me.Grp2ndCutOff.Name = "Grp2ndCutOff"
+        Me.Grp2ndCutOff.Size = New System.Drawing.Size(527, 440)
+        Me.Grp2ndCutOff.TabIndex = 91
+        Me.Grp2ndCutOff.TabStop = False
+        Me.Grp2ndCutOff.Text = "2nd Cut-off Deductions"
+        Me.Grp2ndCutOff.Visible = False
         '
         'FRM_DTR_BIOMETRIC
         '
@@ -953,10 +979,13 @@ Partial Class FRM_DTR_BIOMETRIC
         Me.actualDtrPage.PerformLayout()
         CType(Me.GView_DTR, System.ComponentModel.ISupportInitialize).EndInit()
         Me.dtrBreakDownPage.ResumeLayout(False)
-        Me.dtrBreakDownPage.PerformLayout()
+        Me.Grp1stCutOff.ResumeLayout(False)
+        Me.Grp1stCutOff.PerformLayout()
         Me.TabPage2.ResumeLayout(False)
         Me.TabPage2.PerformLayout()
         CType(Me.GView_Schedule, System.ComponentModel.ISupportInitialize).EndInit()
+        Me.Grp2ndCutOff.ResumeLayout(False)
+        Me.Grp2ndCutOff.PerformLayout()
         Me.ResumeLayout(False)
         Me.PerformLayout()
 
@@ -1044,4 +1073,6 @@ Partial Class FRM_DTR_BIOMETRIC
     Friend WithEvents Label19 As Label
     Friend WithEvents szSSSCalLoan As TextBox
     Friend WithEvents szPICalLoan As TextBox
+    Friend WithEvents Grp1stCutOff As GroupBox
+    Friend WithEvents Grp2ndCutOff As GroupBox
 End Class

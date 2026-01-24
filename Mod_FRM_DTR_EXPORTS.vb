@@ -132,6 +132,50 @@ Module Mod_FRM_DTR_EXPORTS
         Return cutoff.IndexOf("_2nd_", StringComparison.OrdinalIgnoreCase) >= 0
     End Function
 
+    Private Sub AddPerClientColumn(dgv As DataGridView, name As String, header As String, Optional width As Integer = 0)
+        Dim column As New DataGridViewTextBoxColumn With {
+            .Name = name,
+            .HeaderText = header,
+            .ReadOnly = True
+        }
+        If width > 0 Then
+            column.Width = width
+            column.AutoSizeMode = DataGridViewAutoSizeColumnMode.None
+        End If
+        dgv.Columns.Add(column)
+    End Sub
+
+    Private Sub ConfigurePerClientGrid(cutoff As String)
+        Dim dgv = FRM_DTR_EXPORTS.DGV_DTR_Per_Client
+        dgv.Rows.Clear()
+        dgv.Columns.Clear()
+        dgv.AutoGenerateColumns = False
+        dgv.AllowUserToAddRows = False
+        dgv.AllowUserToDeleteRows = False
+
+        AddPerClientColumn(dgv, "colItem", "Item", 50)
+        AddPerClientColumn(dgv, "colName", "Name", 200)
+        AddPerClientColumn(dgv, "colNumDays", "No. of Days", 90)
+        AddPerClientColumn(dgv, "colTotalHours", "Total Hours", 90)
+        AddPerClientColumn(dgv, "colReg", "REG", 50)
+        AddPerClientColumn(dgv, "colSun", "SUN", 50)
+        AddPerClientColumn(dgv, "colSh", "SH", 50)
+        AddPerClientColumn(dgv, "colLh", "LH", 50)
+        AddPerClientColumn(dgv, "colOtReg", "OT REG", 90)
+
+        If IsFirstCutoff(cutoff) Then
+            AddPerClientColumn(dgv, "colSss", "SSS", 70)
+            AddPerClientColumn(dgv, "colPhilHealth", "PhilHealth", 90)
+            AddPerClientColumn(dgv, "colPagIbig", "Pag-IBIG", 90)
+        ElseIf IsSecondCutoff(cutoff) Then
+            AddPerClientColumn(dgv, "colCb", "Cash Bond", 90)
+            AddPerClientColumn(dgv, "colSssLoan", "SSS Loan", 90)
+            AddPerClientColumn(dgv, "colSssCalLoan", "SSS Cal Loan", 110)
+            AddPerClientColumn(dgv, "colPiLoan", "PI Loan", 90)
+            AddPerClientColumn(dgv, "colPiCalLoan", "PI Cal Loan", 110)
+        End If
+    End Sub
+
     Public Sub Export_DTR_Per_Client_to_Excell(sClient As String, sAddress As String, sCutOff As String)
 
         Dim xlApp As Excel.Application = Nothing
@@ -204,37 +248,38 @@ Module Mod_FRM_DTR_EXPORTS
             Dim firstCutoff As Boolean = IsFirstCutoff(sCutOff)
 
 
-            With FRM_DTR_EXPORTS.LV_DTR_Per_Client_List
-                For iRow As Integer = 0 To .Items.Count - 1
-                    Dim r As Integer = payrollDataStartRow + iRow
-                    Dim item = .Items(iRow)
+            Dim dgv = FRM_DTR_EXPORTS.DGV_DTR_Per_Client
+            Dim rowIndex As Integer = 0
+            For Each row As DataGridViewRow In dgv.Rows
+                If row.IsNewRow Then Continue For
+                Dim r As Integer = payrollDataStartRow + rowIndex
 
-                    payrollSheet.Cells(r, 1).Value = item.SubItems(1).Text 'NAME
-                    payrollSheet.Cells(r, 2).Value = item.SubItems(2).Text 'NO DAYS
-                    payrollSheet.Cells(r, 3).Value = item.SubItems(3).Text 'TOTAL HOURS
-                    payrollSheet.Cells(r, 4).Value = item.SubItems(4).Text 'REG
-                    payrollSheet.Cells(r, 5).Value = item.SubItems(5).Text 'SUN
-                    payrollSheet.Cells(r, 8).Value = item.SubItems(7).Text 'LH
-                    payrollSheet.Cells(r, 9).Value = item.SubItems(6).Text 'SH
-                    payrollSheet.Cells(r, 11).Value = item.SubItems(8).Text 'OT/HRS
+                payrollSheet.Cells(r, 1).Value = row.Cells("colName").Value 'NAME
+                payrollSheet.Cells(r, 2).Value = row.Cells("colNumDays").Value 'NO DAYS
+                payrollSheet.Cells(r, 3).Value = row.Cells("colTotalHours").Value 'TOTAL HOURS
+                payrollSheet.Cells(r, 4).Value = row.Cells("colReg").Value 'REG
+                payrollSheet.Cells(r, 5).Value = row.Cells("colSun").Value 'SUN
+                payrollSheet.Cells(r, 8).Value = row.Cells("colLh").Value 'LH
+                payrollSheet.Cells(r, 9).Value = row.Cells("colSh").Value 'SH
+                payrollSheet.Cells(r, 11).Value = row.Cells("colOtReg").Value 'OT/HRS
 
-                    'Deductions
-                    If firstCutoff Then
-                        '1st cutoff → Government deductions go to columns 12,13,14
-                        payrollSheet.Cells(r, 20).Value = item.SubItems(14).Text 'SSS
-                        payrollSheet.Cells(r, 21).Value = item.SubItems(15).Text 'PH
-                        payrollSheet.Cells(r, 22).Value = item.SubItems(16).Text 'PI
-                    Else
-                        '2nd cutoff → Loans/other deductions go to columns 20,21,22
-                        payrollSheet.Cells(r, 20).Value = item.SubItems(9).Text  'CB
-                        payrollSheet.Cells(r, 21).Value = item.SubItems(10).Text 'SSS LOAN
-                        payrollSheet.Cells(r, 22).Value = item.SubItems(11).Text 'SSS CAL LOAN
-                        payrollSheet.Cells(r, 23).Value = item.SubItems(12).Text 'PI LOAN
-                        payrollSheet.Cells(r, 24).Value = item.SubItems(13).Text 'PI CAL LOAN
-                    End If
+                'Deductions
+                If firstCutoff Then
+                    '1st cutoff → Government deductions go to columns 12,13,14
+                    payrollSheet.Cells(r, 20).Value = row.Cells("colSss").Value 'SSS
+                    payrollSheet.Cells(r, 21).Value = row.Cells("colPhilHealth").Value 'PH
+                    payrollSheet.Cells(r, 22).Value = row.Cells("colPagIbig").Value 'PI
+                Else
+                    '2nd cutoff → Loans/other deductions go to columns 20,21,22
+                    payrollSheet.Cells(r, 20).Value = row.Cells("colCb").Value 'CB
+                    payrollSheet.Cells(r, 21).Value = row.Cells("colSssLoan").Value 'SSS LOAN
+                    payrollSheet.Cells(r, 22).Value = row.Cells("colSssCalLoan").Value 'SSS CAL LOAN
+                    payrollSheet.Cells(r, 23).Value = row.Cells("colPiLoan").Value 'PI LOAN
+                    payrollSheet.Cells(r, 24).Value = row.Cells("colPiCalLoan").Value 'PI CAL LOAN
+                End If
 
-                Next
-            End With
+                rowIndex += 1
+            Next
 
             '========================================
             ' 4b) Write Hours Per Day matrix
@@ -312,45 +357,61 @@ Module Mod_FRM_DTR_EXPORTS
             da = New OleDbDataAdapter(SQL, Mod_GlobalVariables.GlobalVariables.GlobalCon)
             da.Fill(dt)
 
-            With FRM_DTR_EXPORTS.LV_DTR_Per_Client_List
-                .Items.Clear()
+            With FRM_DTR_EXPORTS.DGV_DTR_Per_Client
+                .Rows.Clear()
+                .Columns.Clear()
             End With
 
+            ConfigurePerClientGrid(sCut_Off)
+
             If dt.Rows.Count > 0 Then ' SHOW DATAS
-                With FRM_DTR_EXPORTS.LV_DTR_Per_Client_List
+                With FRM_DTR_EXPORTS.DGV_DTR_Per_Client
                     Dim myRow As DataRow
                     Dim iRow As Integer
                     iRow = 1
 
-                    .Items.Clear()
                     For Each myRow In dt.Rows
-                        .Items.Add(iRow.ToString())
+                        Dim fullName As String = $"{NzText(myRow, "LAST_NAME")}, {NzText(myRow, "FIRST_NAME")}"
 
-                        .Items(.Items.Count - 1).SubItems.Add($"{NzText(myRow, "LAST_NAME")}, {NzText(myRow, "FIRST_NAME")}")
-
-                        .Items(.Items.Count - 1).SubItems.Add(NzZero(myRow, "NUM_OF_DAYS"))
-                        .Items(.Items.Count - 1).SubItems.Add(NzZero(myRow, "TOTAL_HOURS"))
-                        .Items(.Items.Count - 1).SubItems.Add(NzZero(myRow, "REG"))
-                        .Items(.Items.Count - 1).SubItems.Add(NzZero(myRow, "SUN"))
-                        .Items(.Items.Count - 1).SubItems.Add(NzZero(myRow, "SH"))
-                        .Items(.Items.Count - 1).SubItems.Add(NzZero(myRow, "LH"))
-                        .Items(.Items.Count - 1).SubItems.Add(NzZero(myRow, "OT_REG"))
-
-                        .Items(.Items.Count - 1).SubItems.Add(NzZero(myRow, "CB_DEDUCT"))
-                        .Items(.Items.Count - 1).SubItems.Add(NzZero(myRow, "SSS_LOAN_DEDUCT"))
-                        .Items(.Items.Count - 1).SubItems.Add(NzZero(myRow, "SSS_CAL_LOAN_DEDUCT"))
-                        .Items(.Items.Count - 1).SubItems.Add(NzZero(myRow, "PI_LOAN_DEDUCT"))
-                        .Items(.Items.Count - 1).SubItems.Add(NzZero(myRow, "PI_CAL_LOAN_DEDUCT"))
-                        .Items(.Items.Count - 1).SubItems.Add(NzZero(myRow, "SSS_DEDUCT"))
-                        .Items(.Items.Count - 1).SubItems.Add(NzZero(myRow, "PH_DEDUCT"))
-                        .Items(.Items.Count - 1).SubItems.Add(NzZero(myRow, "PI_DEDUCT"))
+                        If IsFirstCutoff(sCut_Off) Then
+                            .Rows.Add(
+                                iRow.ToString(),
+                                fullName,
+                                NzZero(myRow, "NUM_OF_DAYS"),
+                                NzZero(myRow, "TOTAL_HOURS"),
+                                NzZero(myRow, "REG"),
+                                NzZero(myRow, "SUN"),
+                                NzZero(myRow, "SH"),
+                                NzZero(myRow, "LH"),
+                                NzZero(myRow, "OT_REG"),
+                                NzZero(myRow, "SSS_DEDUCT"),
+                                NzZero(myRow, "PH_DEDUCT"),
+                                NzZero(myRow, "PI_DEDUCT")
+                            )
+                        Else
+                            .Rows.Add(
+                                iRow.ToString(),
+                                fullName,
+                                NzZero(myRow, "NUM_OF_DAYS"),
+                                NzZero(myRow, "TOTAL_HOURS"),
+                                NzZero(myRow, "REG"),
+                                NzZero(myRow, "SUN"),
+                                NzZero(myRow, "SH"),
+                                NzZero(myRow, "LH"),
+                                NzZero(myRow, "OT_REG"),
+                                NzZero(myRow, "CB_DEDUCT"),
+                                NzZero(myRow, "SSS_LOAN_DEDUCT"),
+                                NzZero(myRow, "SSS_CAL_LOAN_DEDUCT"),
+                                NzZero(myRow, "PI_LOAN_DEDUCT"),
+                                NzZero(myRow, "PI_CAL_LOAN_DEDUCT")
+                            )
+                        End If
 
                         iRow += 1
                     Next
-
                 End With
             Else
-                FRM_DTR_EXPORTS.LV_DTR_Per_Client_List.Items.Clear()
+                FRM_DTR_EXPORTS.DGV_DTR_Per_Client.Rows.Clear()
                 ' Handle cases where no rows exist in dt
             End If
 

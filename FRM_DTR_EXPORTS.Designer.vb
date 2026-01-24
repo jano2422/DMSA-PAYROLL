@@ -25,22 +25,7 @@ Partial Class FRM_DTR_EXPORTS
         Me.Panel1 = New System.Windows.Forms.Panel()
         Me.TabControl1 = New System.Windows.Forms.TabControl()
         Me.TabPage1 = New System.Windows.Forms.TabPage()
-        Me.LV_DTR_Per_Client_List = New System.Windows.Forms.ListView()
-        Me.Item = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
-        Me.Employee_Name = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
-        Me.Total_Days = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
-        Me.Total_Hours = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
-        Me.Reg = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
-        Me.Sun = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
-        Me.SH = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
-        Me.LH = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
-        Me.OT_REG = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
-        Me.CB = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
-        Me.SSS_Loan = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
-        Me.PI_Loan = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
-        Me.SSSDeduct = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
-        Me.PhilHealthDeduct = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
-        Me.PagIBIGDeduct = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
+        Me.DGV_DTR_Per_Client = New System.Windows.Forms.DataGridView()
         Me.TabPage2 = New System.Windows.Forms.TabPage()
         Me.DGV_DTR_MATRIX = New System.Windows.Forms.DataGridView()
         Me.PictureBox1 = New System.Windows.Forms.PictureBox()
@@ -60,10 +45,9 @@ Partial Class FRM_DTR_EXPORTS
         Me.Lbl_Client_Address = New System.Windows.Forms.Label()
         Me.Lbl_ClientID = New System.Windows.Forms.Label()
         Me.Label7 = New System.Windows.Forms.Label()
-        Me.SSS_CAL_Loan = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
-        Me.PI_CAL_Loan = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
         Me.TabControl1.SuspendLayout()
         Me.TabPage1.SuspendLayout()
+        CType(Me.DGV_DTR_Per_Client, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.TabPage2.SuspendLayout()
         CType(Me.DGV_DTR_MATRIX, System.ComponentModel.ISupportInitialize).BeginInit()
         CType(Me.PictureBox1, System.ComponentModel.ISupportInitialize).BeginInit()
@@ -91,7 +75,7 @@ Partial Class FRM_DTR_EXPORTS
         '
         'TabPage1
         '
-        Me.TabPage1.Controls.Add(Me.LV_DTR_Per_Client_List)
+        Me.TabPage1.Controls.Add(Me.DGV_DTR_Per_Client)
         Me.TabPage1.Location = New System.Drawing.Point(4, 29)
         Me.TabPage1.Name = "TabPage1"
         Me.TabPage1.Padding = New System.Windows.Forms.Padding(3)
@@ -100,96 +84,19 @@ Partial Class FRM_DTR_EXPORTS
         Me.TabPage1.Text = "Per Client"
         Me.TabPage1.UseVisualStyleBackColor = True
         '
-        'LV_DTR_Per_Client_List
+        'DGV_DTR_Per_Client
         '
-        Me.LV_DTR_Per_Client_List.BackColor = System.Drawing.Color.FromArgb(CType(CType(255, Byte), Integer), CType(CType(224, Byte), Integer), CType(CType(192, Byte), Integer))
-        Me.LV_DTR_Per_Client_List.Columns.AddRange(New System.Windows.Forms.ColumnHeader() {Me.Item, Me.Employee_Name, Me.Total_Days, Me.Total_Hours, Me.Reg, Me.Sun, Me.SH, Me.LH, Me.OT_REG, Me.CB, Me.SSS_Loan, Me.SSS_CAL_Loan, Me.PI_Loan, Me.PI_CAL_Loan, Me.SSSDeduct, Me.PhilHealthDeduct, Me.PagIBIGDeduct})
-        Me.LV_DTR_Per_Client_List.Font = New System.Drawing.Font("Verdana", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.LV_DTR_Per_Client_List.FullRowSelect = True
-        Me.LV_DTR_Per_Client_List.GridLines = True
-        Me.LV_DTR_Per_Client_List.HideSelection = False
-        Me.LV_DTR_Per_Client_List.Location = New System.Drawing.Point(6, 20)
-        Me.LV_DTR_Per_Client_List.Name = "LV_DTR_Per_Client_List"
-        Me.LV_DTR_Per_Client_List.Size = New System.Drawing.Size(1376, 455)
-        Me.LV_DTR_Per_Client_List.TabIndex = 70
-        Me.LV_DTR_Per_Client_List.UseCompatibleStateImageBehavior = False
-        Me.LV_DTR_Per_Client_List.View = System.Windows.Forms.View.Details
-        '
-        'Item
-        '
-        Me.Item.Text = "Item"
-        Me.Item.Width = 50
-        '
-        'Employee_Name
-        '
-        Me.Employee_Name.Text = "Name"
-        Me.Employee_Name.Width = 200
-        '
-        'Total_Days
-        '
-        Me.Total_Days.Text = "No. of Days"
-        Me.Total_Days.Width = 90
-        '
-        'Total_Hours
-        '
-        Me.Total_Hours.Text = "Total Hours"
-        Me.Total_Hours.Width = 90
-        '
-        'Reg
-        '
-        Me.Reg.Text = "REG"
-        Me.Reg.Width = 41
-        '
-        'Sun
-        '
-        Me.Sun.Text = "SUN"
-        Me.Sun.Width = 39
-        '
-        'SH
-        '
-        Me.SH.Text = "SH"
-        Me.SH.Width = 31
-        '
-        'LH
-        '
-        Me.LH.Text = "LH"
-        Me.LH.Width = 32
-        '
-        'OT_REG
-        '
-        Me.OT_REG.Text = "OT REG"
-        Me.OT_REG.Width = 90
-        '
-        'CB
-        '
-        Me.CB.Text = "Cash Bond"
-        Me.CB.Width = 92
-        '
-        'SSS_Loan
-        '
-        Me.SSS_Loan.Text = "SSS Loan"
-        Me.SSS_Loan.Width = 75
-        '
-        'PI_Loan
-        '
-        Me.PI_Loan.Text = "PI Loan"
-        Me.PI_Loan.Width = 64
-        '
-        'SSSDeduct
-        '
-        Me.SSSDeduct.Text = "SSS"
-        Me.SSSDeduct.Width = 50
-        '
-        'PhilHealthDeduct
-        '
-        Me.PhilHealthDeduct.Text = "PhilHealth"
-        Me.PhilHealthDeduct.Width = 81
-        '
-        'PagIBIGDeduct
-        '
-        Me.PagIBIGDeduct.Text = "Pag-IBIG"
-        Me.PagIBIGDeduct.Width = 79
-        '
+        Me.DGV_DTR_Per_Client.AllowUserToAddRows = False
+        Me.DGV_DTR_Per_Client.AllowUserToDeleteRows = False
+        Me.DGV_DTR_Per_Client.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.AllCells
+        Me.DGV_DTR_Per_Client.BackgroundColor = System.Drawing.Color.FromArgb(CType(CType(255, Byte), Integer), CType(CType(224, Byte), Integer), CType(CType(192, Byte), Integer))
+        Me.DGV_DTR_Per_Client.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize
+        Me.DGV_DTR_Per_Client.GridColor = System.Drawing.Color.FromArgb(CType(CType(255, Byte), Integer), CType(CType(224, Byte), Integer), CType(CType(192, Byte), Integer))
+        Me.DGV_DTR_Per_Client.Location = New System.Drawing.Point(6, 20)
+        Me.DGV_DTR_Per_Client.Name = "DGV_DTR_Per_Client"
+        Me.DGV_DTR_Per_Client.ReadOnly = True
+        Me.DGV_DTR_Per_Client.Size = New System.Drawing.Size(1376, 455)
+        Me.DGV_DTR_Per_Client.TabIndex = 70
         'TabPage2
         '
         Me.TabPage2.Controls.Add(Me.DGV_DTR_MATRIX)
@@ -407,16 +314,6 @@ Partial Class FRM_DTR_EXPORTS
         Me.Label7.TabIndex = 610
         Me.Label7.Text = "Client ID:"
         '
-        'SSS_CAL_Loan
-        '
-        Me.SSS_CAL_Loan.Text = "SSS Cal Loan"
-        Me.SSS_CAL_Loan.Width = 111
-        '
-        'PI_CAL_Loan
-        '
-        Me.PI_CAL_Loan.Text = "PI Cal Loan"
-        Me.PI_CAL_Loan.Width = 93
-        '
         'FRM_DTR_EXPORTS
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
@@ -447,6 +344,7 @@ Partial Class FRM_DTR_EXPORTS
         Me.Text = "DTR Exports"
         Me.TabControl1.ResumeLayout(False)
         Me.TabPage1.ResumeLayout(False)
+        CType(Me.DGV_DTR_Per_Client, System.ComponentModel.ISupportInitialize).EndInit()
         Me.TabPage2.ResumeLayout(False)
         CType(Me.DGV_DTR_MATRIX, System.ComponentModel.ISupportInitialize).EndInit()
         CType(Me.PictureBox1, System.ComponentModel.ISupportInitialize).EndInit()
@@ -458,16 +356,8 @@ Partial Class FRM_DTR_EXPORTS
     Friend WithEvents Panel1 As Panel
     Friend WithEvents TabControl1 As TabControl
     Friend WithEvents TabPage1 As TabPage
-    Friend WithEvents LV_DTR_Per_Client_List As ListView
-    Friend WithEvents Item As ColumnHeader
-    Friend WithEvents Employee_Name As ColumnHeader
-    Friend WithEvents Total_Days As ColumnHeader
+    Friend WithEvents DGV_DTR_Per_Client As DataGridView
     Friend WithEvents PictureBox1 As PictureBox
-    Friend WithEvents Total_Hours As ColumnHeader
-    Friend WithEvents Reg As ColumnHeader
-    Friend WithEvents Sun As ColumnHeader
-    Friend WithEvents SH As ColumnHeader
-    Friend WithEvents LH As ColumnHeader
     Friend WithEvents Label1 As Label
     Friend WithEvents Label2 As Label
     Friend WithEvents Btn_Client As Button
@@ -484,15 +374,6 @@ Partial Class FRM_DTR_EXPORTS
     Friend WithEvents Lbl_Client_Address As Label
     Friend WithEvents Lbl_ClientID As Label
     Friend WithEvents Label7 As Label
-    Friend WithEvents OT_REG As ColumnHeader
     Friend WithEvents TabPage2 As TabPage
     Friend WithEvents DGV_DTR_MATRIX As DataGridView
-    Friend WithEvents CB As ColumnHeader
-    Friend WithEvents SSS_Loan As ColumnHeader
-    Friend WithEvents PI_Loan As ColumnHeader
-    Friend WithEvents SSSDeduct As ColumnHeader
-    Friend WithEvents PhilHealthDeduct As ColumnHeader
-    Friend WithEvents PagIBIGDeduct As ColumnHeader
-    Friend WithEvents SSS_CAL_Loan As ColumnHeader
-    Friend WithEvents PI_CAL_Loan As ColumnHeader
 End Class

@@ -526,16 +526,7 @@ Module Mod_Biometric_DTR
     iSub_Client_ID As Integer,
     sEmployee_ID As String,
     sCutOff_Period As String,
-    iNumber_of_Days As Integer,
-    cbDeduct As Decimal,
-    sssLoanDeduct As Decimal,
-    sssCalLoanDeduct As Decimal,
-    piLoanDeduct As Decimal,
-    piCalLoanDeduct As Decimal,
-    philhealthDeduct As Decimal,
-    sssDeduct As Decimal,
-    pagibigDeduct As Decimal
-)
+    iNumber_of_Days As Integer)
 
         Dim SQL As String = ""
         Connect_to_MDB()
@@ -544,10 +535,10 @@ Module Mod_Biometric_DTR
             With FRM_DTR_BIOMETRIC.GView_DTR
 
                 SQL = "INSERT INTO PRL_DTR_TOTAL_HOURS " &
-                  "(EMPLOYEE_ID, SUB_CLIENT_ID, CUTOFF_PERIOD, NUM_OF_DAYS, " &
-                  "TOTAL_HOURS, REG, SUN, SH, LH, OT_REG, " &
-                  "CB_DEDUCT, SSS_LOAN_DEDUCT, PI_LOAN_DEDUCT, PH_DEDUCT, SSS_DEDUCT, PI_DEDUCT, SSS_CAL_LOAN_DEDUCT, PI_CAL_LOAN_DEDUCT) " &
-                  "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"
+      "(EMPLOYEE_ID, SUB_CLIENT_ID, CUTOFF_PERIOD, NUM_OF_DAYS, " &
+      "TOTAL_HOURS, REG, SUN, SH, LH, OT_REG) " &
+      "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"
+
 
 
                 Using SQLcmd As New OleDbCommand(SQL, GlobalVariables.GlobalCon)
@@ -563,15 +554,6 @@ Module Mod_Biometric_DTR
                     SQLcmd.Parameters.AddWithValue("?", ToDec(.Rows(17).Cells(17).Value))
                     SQLcmd.Parameters.AddWithValue("?", ToDec(.Rows(17).Cells(18).Value))
                     SQLcmd.Parameters.AddWithValue("?", ToDec(.Rows(17).Cells(19).Value))
-
-                    SQLcmd.Parameters.AddWithValue("?", cbDeduct)
-                    SQLcmd.Parameters.AddWithValue("?", sssLoanDeduct)
-                    SQLcmd.Parameters.AddWithValue("?", piLoanDeduct)
-                    SQLcmd.Parameters.AddWithValue("?", philhealthDeduct)
-                    SQLcmd.Parameters.AddWithValue("?", sssDeduct)
-                    SQLcmd.Parameters.AddWithValue("?", pagibigDeduct)
-                    SQLcmd.Parameters.AddWithValue("?", sssCalLoanDeduct)
-                    SQLcmd.Parameters.AddWithValue("?", piCalLoanDeduct)
 
                     SQLcmd.ExecuteNonQuery()
                 End Using

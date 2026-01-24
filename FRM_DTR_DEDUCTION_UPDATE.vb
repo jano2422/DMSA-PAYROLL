@@ -92,12 +92,11 @@ Public Class FRM_DTR_DEDUCTION_UPDATE
         AutoSizeMode = AutoSizeMode.GrowAndShrink
 
         Dim mainPanel As New TableLayoutPanel With {
-            .Dock = DockStyle.Fill,
-            .ColumnCount = 2,
-            .AutoSize = True,
-            .Padding = New Padding(16),
-            .RowStyles = {New RowStyle(SizeType.AutoSize)}
-        }
+    .Dock = DockStyle.Fill,
+    .ColumnCount = 2,
+    .AutoSize = True,
+    .Padding = New Padding(16)}
+
         mainPanel.ColumnStyles.Add(New ColumnStyle(SizeType.Percent, 45))
         mainPanel.ColumnStyles.Add(New ColumnStyle(SizeType.Percent, 55))
 

@@ -72,24 +72,6 @@ Partial Class FRM_DTR_BIOMETRIC
         Me.Label7 = New System.Windows.Forms.Label()
         Me.Label6 = New System.Windows.Forms.Label()
         Me.dtrBreakDownPage = New System.Windows.Forms.TabPage()
-        Me.Grp2ndCutOff = New System.Windows.Forms.GroupBox()
-        Me.szPICalLoan = New System.Windows.Forms.TextBox()
-        Me.szCashBond = New System.Windows.Forms.TextBox()
-        Me.Label18 = New System.Windows.Forms.Label()
-        Me.szPILoan = New System.Windows.Forms.TextBox()
-        Me.Label19 = New System.Windows.Forms.Label()
-        Me.szSSSLoan = New System.Windows.Forms.TextBox()
-        Me.szSSSCalLoan = New System.Windows.Forms.TextBox()
-        Me.Label12 = New System.Windows.Forms.Label()
-        Me.Label13 = New System.Windows.Forms.Label()
-        Me.Label14 = New System.Windows.Forms.Label()
-        Me.Grp1stCutOff = New System.Windows.Forms.GroupBox()
-        Me.Label17 = New System.Windows.Forms.Label()
-        Me.szSSSDeduct = New System.Windows.Forms.TextBox()
-        Me.szPhilhealthDeduct = New System.Windows.Forms.TextBox()
-        Me.Label16 = New System.Windows.Forms.Label()
-        Me.szPagibigDeduct = New System.Windows.Forms.TextBox()
-        Me.Label15 = New System.Windows.Forms.Label()
         Me.Btn_Save_DTR = New System.Windows.Forms.Button()
         Me.Btn_TimeDtlView = New System.Windows.Forms.Button()
         Me.DTR_TimeCalculationPanel = New System.Windows.Forms.Panel()
@@ -124,8 +106,6 @@ Partial Class FRM_DTR_BIOMETRIC
         Me.actualDtrPage.SuspendLayout()
         CType(Me.GView_DTR, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.dtrBreakDownPage.SuspendLayout()
-        Me.Grp2ndCutOff.SuspendLayout()
-        Me.Grp1stCutOff.SuspendLayout()
         Me.TabPage2.SuspendLayout()
         CType(Me.GView_Schedule, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.SuspendLayout()
@@ -522,12 +502,10 @@ Partial Class FRM_DTR_BIOMETRIC
         '
         'dtrBreakDownPage
         '
-        Me.dtrBreakDownPage.Controls.Add(Me.Grp1stCutOff)
         Me.dtrBreakDownPage.Controls.Add(Me.Btn_Save_DTR)
         Me.dtrBreakDownPage.Controls.Add(Me.Btn_TimeDtlView)
         Me.dtrBreakDownPage.Controls.Add(Me.DTR_TimeCalculationPanel)
         Me.dtrBreakDownPage.Controls.Add(Me.btn_Breakdown)
-        Me.dtrBreakDownPage.Controls.Add(Me.Grp2ndCutOff)
         Me.dtrBreakDownPage.Location = New System.Drawing.Point(4, 29)
         Me.dtrBreakDownPage.Name = "dtrBreakDownPage"
         Me.dtrBreakDownPage.Padding = New System.Windows.Forms.Padding(3)
@@ -535,170 +513,6 @@ Partial Class FRM_DTR_BIOMETRIC
         Me.dtrBreakDownPage.TabIndex = 1
         Me.dtrBreakDownPage.Text = "Time Calculation"
         Me.dtrBreakDownPage.UseVisualStyleBackColor = True
-        '
-        'Grp2ndCutOff
-        '
-        Me.Grp2ndCutOff.Controls.Add(Me.szPICalLoan)
-        Me.Grp2ndCutOff.Controls.Add(Me.szCashBond)
-        Me.Grp2ndCutOff.Controls.Add(Me.Label18)
-        Me.Grp2ndCutOff.Controls.Add(Me.szPILoan)
-        Me.Grp2ndCutOff.Controls.Add(Me.Label19)
-        Me.Grp2ndCutOff.Controls.Add(Me.szSSSLoan)
-        Me.Grp2ndCutOff.Controls.Add(Me.szSSSCalLoan)
-        Me.Grp2ndCutOff.Controls.Add(Me.Label12)
-        Me.Grp2ndCutOff.Controls.Add(Me.Label13)
-        Me.Grp2ndCutOff.Controls.Add(Me.Label14)
-        Me.Grp2ndCutOff.Location = New System.Drawing.Point(1228, 108)
-        Me.Grp2ndCutOff.Name = "Grp2ndCutOff"
-        Me.Grp2ndCutOff.Size = New System.Drawing.Size(527, 440)
-        Me.Grp2ndCutOff.TabIndex = 91
-        Me.Grp2ndCutOff.TabStop = False
-        Me.Grp2ndCutOff.Text = "2nd Cut-off Deductions"
-        Me.Grp2ndCutOff.Visible = False
-        '
-        'szPICalLoan
-        '
-        Me.szPICalLoan.Location = New System.Drawing.Point(140, 349)
-        Me.szPICalLoan.Name = "szPICalLoan"
-        Me.szPICalLoan.Size = New System.Drawing.Size(321, 26)
-        Me.szPICalLoan.TabIndex = 81
-        '
-        'szCashBond
-        '
-        Me.szCashBond.Location = New System.Drawing.Point(140, 81)
-        Me.szCashBond.Name = "szCashBond"
-        Me.szCashBond.Size = New System.Drawing.Size(321, 26)
-        Me.szCashBond.TabIndex = 77
-        '
-        'Label18
-        '
-        Me.Label18.AutoSize = True
-        Me.Label18.Location = New System.Drawing.Point(31, 355)
-        Me.Label18.Name = "Label18"
-        Me.Label18.Size = New System.Drawing.Size(103, 20)
-        Me.Label18.TabIndex = 89
-        Me.Label18.Text = "PI CAL Loan:"
-        '
-        'szPILoan
-        '
-        Me.szPILoan.Location = New System.Drawing.Point(140, 282)
-        Me.szPILoan.Name = "szPILoan"
-        Me.szPILoan.Size = New System.Drawing.Size(321, 26)
-        Me.szPILoan.TabIndex = 80
-        '
-        'Label19
-        '
-        Me.Label19.AutoSize = True
-        Me.Label19.Location = New System.Drawing.Point(15, 221)
-        Me.Label19.Name = "Label19"
-        Me.Label19.Size = New System.Drawing.Size(121, 20)
-        Me.Label19.TabIndex = 88
-        Me.Label19.Text = "SSS CAL Loan:"
-        '
-        'szSSSLoan
-        '
-        Me.szSSSLoan.Location = New System.Drawing.Point(140, 148)
-        Me.szSSSLoan.Name = "szSSSLoan"
-        Me.szSSSLoan.Size = New System.Drawing.Size(321, 26)
-        Me.szSSSLoan.TabIndex = 78
-        '
-        'szSSSCalLoan
-        '
-        Me.szSSSCalLoan.Location = New System.Drawing.Point(140, 215)
-        Me.szSSSCalLoan.Name = "szSSSCalLoan"
-        Me.szSSSCalLoan.Size = New System.Drawing.Size(321, 26)
-        Me.szSSSCalLoan.TabIndex = 79
-        '
-        'Label12
-        '
-        Me.Label12.AutoSize = True
-        Me.Label12.Location = New System.Drawing.Point(44, 87)
-        Me.Label12.Name = "Label12"
-        Me.Label12.Size = New System.Drawing.Size(92, 20)
-        Me.Label12.TabIndex = 77
-        Me.Label12.Text = "Cash Bond:"
-        '
-        'Label13
-        '
-        Me.Label13.AutoSize = True
-        Me.Label13.Location = New System.Drawing.Point(48, 154)
-        Me.Label13.Name = "Label13"
-        Me.Label13.Size = New System.Drawing.Size(86, 20)
-        Me.Label13.TabIndex = 78
-        Me.Label13.Text = "SSS Loan:"
-        '
-        'Label14
-        '
-        Me.Label14.AutoSize = True
-        Me.Label14.Location = New System.Drawing.Point(66, 285)
-        Me.Label14.Name = "Label14"
-        Me.Label14.Size = New System.Drawing.Size(68, 20)
-        Me.Label14.TabIndex = 79
-        Me.Label14.Text = "PI Loan:"
-        '
-        'Grp1stCutOff
-        '
-        Me.Grp1stCutOff.Controls.Add(Me.Label17)
-        Me.Grp1stCutOff.Controls.Add(Me.szSSSDeduct)
-        Me.Grp1stCutOff.Controls.Add(Me.szPhilhealthDeduct)
-        Me.Grp1stCutOff.Controls.Add(Me.Label16)
-        Me.Grp1stCutOff.Controls.Add(Me.szPagibigDeduct)
-        Me.Grp1stCutOff.Controls.Add(Me.Label15)
-        Me.Grp1stCutOff.Location = New System.Drawing.Point(1228, 140)
-        Me.Grp1stCutOff.Name = "Grp1stCutOff"
-        Me.Grp1stCutOff.Size = New System.Drawing.Size(527, 189)
-        Me.Grp1stCutOff.TabIndex = 90
-        Me.Grp1stCutOff.TabStop = False
-        Me.Grp1stCutOff.Text = "1st Cut-off Deductions"
-        Me.Grp1stCutOff.Visible = False
-        '
-        'Label17
-        '
-        Me.Label17.AutoSize = True
-        Me.Label17.Location = New System.Drawing.Point(44, 42)
-        Me.Label17.Name = "Label17"
-        Me.Label17.Size = New System.Drawing.Size(46, 20)
-        Me.Label17.TabIndex = 83
-        Me.Label17.Text = "SSS:"
-        '
-        'szSSSDeduct
-        '
-        Me.szSSSDeduct.Location = New System.Drawing.Point(94, 36)
-        Me.szSSSDeduct.Name = "szSSSDeduct"
-        Me.szSSSDeduct.Size = New System.Drawing.Size(321, 26)
-        Me.szSSSDeduct.TabIndex = 74
-        '
-        'szPhilhealthDeduct
-        '
-        Me.szPhilhealthDeduct.Location = New System.Drawing.Point(96, 89)
-        Me.szPhilhealthDeduct.Name = "szPhilhealthDeduct"
-        Me.szPhilhealthDeduct.Size = New System.Drawing.Size(321, 26)
-        Me.szPhilhealthDeduct.TabIndex = 75
-        '
-        'Label16
-        '
-        Me.Label16.AutoSize = True
-        Me.Label16.Location = New System.Drawing.Point(7, 95)
-        Me.Label16.Name = "Label16"
-        Me.Label16.Size = New System.Drawing.Size(85, 20)
-        Me.Label16.TabIndex = 84
-        Me.Label16.Text = "PhilHealth:"
-        '
-        'szPagibigDeduct
-        '
-        Me.szPagibigDeduct.Location = New System.Drawing.Point(94, 136)
-        Me.szPagibigDeduct.Name = "szPagibigDeduct"
-        Me.szPagibigDeduct.Size = New System.Drawing.Size(321, 26)
-        Me.szPagibigDeduct.TabIndex = 76
-        '
-        'Label15
-        '
-        Me.Label15.AutoSize = True
-        Me.Label15.Location = New System.Drawing.Point(10, 142)
-        Me.Label15.Name = "Label15"
-        Me.Label15.Size = New System.Drawing.Size(80, 20)
-        Me.Label15.TabIndex = 85
-        Me.Label15.Text = "Pag-IBIG:"
         '
         'Btn_Save_DTR
         '
@@ -979,10 +793,6 @@ Partial Class FRM_DTR_BIOMETRIC
         Me.actualDtrPage.PerformLayout()
         CType(Me.GView_DTR, System.ComponentModel.ISupportInitialize).EndInit()
         Me.dtrBreakDownPage.ResumeLayout(False)
-        Me.Grp2ndCutOff.ResumeLayout(False)
-        Me.Grp2ndCutOff.PerformLayout()
-        Me.Grp1stCutOff.ResumeLayout(False)
-        Me.Grp1stCutOff.PerformLayout()
         Me.TabPage2.ResumeLayout(False)
         Me.TabPage2.PerformLayout()
         CType(Me.GView_Schedule, System.ComponentModel.ISupportInitialize).EndInit()
@@ -1057,22 +867,4 @@ Partial Class FRM_DTR_BIOMETRIC
     Friend WithEvents Col_ID As DataGridViewTextBoxColumn
     Friend WithEvents Col_Attendance As DataGridViewTextBoxColumn
     Friend WithEvents Btn_Calc_DTR As Button
-    Friend WithEvents Label14 As Label
-    Friend WithEvents Label13 As Label
-    Friend WithEvents Label12 As Label
-    Friend WithEvents szSSSLoan As TextBox
-    Friend WithEvents szPILoan As TextBox
-    Friend WithEvents szCashBond As TextBox
-    Friend WithEvents Label15 As Label
-    Friend WithEvents Label16 As Label
-    Friend WithEvents Label17 As Label
-    Friend WithEvents szPhilhealthDeduct As TextBox
-    Friend WithEvents szPagibigDeduct As TextBox
-    Friend WithEvents szSSSDeduct As TextBox
-    Friend WithEvents Label18 As Label
-    Friend WithEvents Label19 As Label
-    Friend WithEvents szSSSCalLoan As TextBox
-    Friend WithEvents szPICalLoan As TextBox
-    Friend WithEvents Grp1stCutOff As GroupBox
-    Friend WithEvents Grp2ndCutOff As GroupBox
 End Class

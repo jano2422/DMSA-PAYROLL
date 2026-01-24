@@ -31,6 +31,14 @@ Module Mod_FRM_DTR_EXPORTS
         End With
     End Sub
 
+    Private Sub ApplySundayHeaderStyle(cell As Excel.Range)
+        If cell Is Nothing Then Return
+        With cell.Interior
+            .ThemeColor = Excel.XlThemeColor.xlThemeColorAccent2
+            .TintAndShade = 0.4
+        End With
+    End Sub
+
     Private Sub WriteDtrHoursMatrixToSheet(dtrSheet As Excel.Worksheet, dgv As DataGridView)
         If dtrSheet Is Nothing OrElse dgv Is Nothing OrElse dgv.Columns.Count = 0 Then Return
 
@@ -51,7 +59,12 @@ Module Mod_FRM_DTR_EXPORTS
         If hasDayNameRow Then
             For i As Integer = 0 To dayColumns.Count - 1
                 Dim dayNameValue = dgv.Rows(0).Cells(dayColumns(i).Index).Value
-                dtrSheet.Cells(dayHeaderRow, dayStartCol + i).Value = If(dayNameValue, "")
+                Dim displayValue As String = If(dayNameValue, "").ToString()
+                Dim headerCell As Excel.Range = dtrSheet.Cells(dayHeaderRow, dayStartCol + i)
+                headerCell.Value = displayValue
+                If displayValue.Trim().Equals("Sun", StringComparison.OrdinalIgnoreCase) Then
+                    ApplySundayHeaderStyle(headerCell)
+                End If
             Next
         End If
 

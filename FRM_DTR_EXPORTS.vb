@@ -1,5 +1,37 @@
-﻿Imports System.Globalization
+﻿Imports System.Data
+Imports System.Globalization
 Public Class FRM_DTR_EXPORTS
+    Private Function TryBuildCutoff(ByRef cutoff As String) As Boolean
+        cutoff = ""
+
+        If Cmb_CutOff.SelectedIndex < 0 Then
+            MsgBox("Please select a cutoff first!", vbExclamation, "Cut Off")
+            Return False
+        End If
+
+        If Cmb_Month.SelectedIndex < 0 Then
+            MsgBox("Please select a month first!", vbExclamation, "Month")
+            Return False
+        End If
+
+        If Cmb_Year.SelectedIndex < 0 Then
+            MsgBox("Please select a year first!", vbExclamation, "Year")
+            Return False
+        End If
+
+        Dim monthNumber As Integer = DateTime.ParseExact(Cmb_Month.Text.Trim().ToUpperInvariant(), "MMM", CultureInfo.InvariantCulture).Month
+        cutoff = monthNumber & "_" & Mid(Cmb_CutOff.Text, 1, 3) & "_" & Cmb_Year.Text
+        Return True
+    End Function
+
+    Private Function ReadDecimal(value As Object) As Decimal
+        If value Is Nothing OrElse value Is DBNull.Value Then Return 0D
+        Dim cleaned As String = value.ToString().Trim().Replace(",", "")
+        Dim parsed As Decimal
+        Decimal.TryParse(cleaned, parsed)
+        Return parsed
+    End Function
+
     Private Sub Btn_Client_Click(sender As Object, e As EventArgs) Handles Btn_Client.Click
         GlobalVariables.Client_Event = "Payslip_Per_Client"
         FRM_CLIENT_REG.ShowDialog()
@@ -132,6 +164,71 @@ Public Class FRM_DTR_EXPORTS
             MessageBox.Show("An unexpected error occurred: " & ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
         End Try
 
+    End Sub
+
+    Private Sub DGV_DTR_Per_Client_CellDoubleClick(sender As Object, e As DataGridViewCellEventArgs) Handles DGV_DTR_Per_Client.CellDoubleClick
+        If e.RowIndex < 0 Then Return
+
+        If String.IsNullOrWhiteSpace(Lbl_ClientID.Text) Then
+            MsgBox("Please select a client first!", vbExclamation, "Client ID")
+            Return
+        End If
+
+        Dim cutoff As String = ""
+        If Not TryBuildCutoff(cutoff) Then Return
+
+        Dim row As DataGridViewRow = DGV_DTR_Per_Client.Rows(e.RowIndex)
+        Dim employeeId As String = Convert.ToString(row.Cells("colEmployeeId").Value).Trim()
+        Dim employeeName As String = Convert.ToString(row.Cells("colName").Value).Trim()
+
+        If employeeId = "" Then
+            MsgBox("Unable to identify the selected employee.", vbExclamation, "Employee")
+            Return
+        End If
+
+        Dim numDays As Decimal = ReadDecimal(row.Cells("colNumDays").Value)
+        Dim totalHours As Decimal = ReadDecimal(row.Cells("colTotalHours").Value)
+        Dim regHours As Decimal = ReadDecimal(row.Cells("colReg").Value)
+        Dim sunHours As Decimal = ReadDecimal(row.Cells("colSun").Value)
+        Dim shHours As Decimal = ReadDecimal(row.Cells("colSh").Value)
+        Dim lhHours As Decimal = ReadDecimal(row.Cells("colLh").Value)
+        Dim otRegHours As Decimal = ReadDecimal(row.Cells("colOtReg").Value)
+
+        Dim latestTotals As DataRow = GetLatestDtrTotals(employeeId, cutoff)
+        Dim cbDeduct As Decimal = ReadDecimal(If(latestTotals Is Nothing, 0D, latestTotals("CB_DEDUCT")))
+        Dim sssLoanDeduct As Decimal = ReadDecimal(If(latestTotals Is Nothing, 0D, latestTotals("SSS_LOAN_DEDUCT")))
+        Dim sssCalLoanDeduct As Decimal = ReadDecimal(If(latestTotals Is Nothing, 0D, latestTotals("SSS_CAL_LOAN_DEDUCT")))
+        Dim piLoanDeduct As Decimal = ReadDecimal(If(latestTotals Is Nothing, 0D, latestTotals("PI_LOAN_DEDUCT")))
+        Dim piCalLoanDeduct As Decimal = ReadDecimal(If(latestTotals Is Nothing, 0D, latestTotals("PI_CAL_LOAN_DEDUCT")))
+        Dim philhealthDeduct As Decimal = ReadDecimal(If(latestTotals Is Nothing, 0D, latestTotals("PH_DEDUCT")))
+        Dim sssDeduct As Decimal = ReadDecimal(If(latestTotals Is Nothing, 0D, latestTotals("SSS_DEDUCT")))
+        Dim pagibigDeduct As Decimal = ReadDecimal(If(latestTotals Is Nothing, 0D, latestTotals("PI_DEDUCT")))
+
+        Using dialog As New FRM_DTR_DEDUCTION_UPDATE(
+            employeeId,
+            employeeName,
+            cutoff,
+            CInt(Lbl_ClientID.Text),
+            numDays,
+            totalHours,
+            regHours,
+            sunHours,
+            shHours,
+            lhHours,
+            otRegHours,
+            cbDeduct,
+            sssLoanDeduct,
+            sssCalLoanDeduct,
+            piLoanDeduct,
+            piCalLoanDeduct,
+            philhealthDeduct,
+            sssDeduct,
+            pagibigDeduct
+        )
+            If dialog.ShowDialog(Me) = DialogResult.OK Then
+                Get_DTR_Per_Client(CInt(Lbl_ClientID.Text), cutoff)
+            End If
+        End Using
     End Sub
 
 End Class

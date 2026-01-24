@@ -122,15 +122,24 @@ Module Mod_FRM_DTR_EXPORTS
     End Function
 
 
-    Private Function IsFirstCutoff(cutoff As String) As Boolean
+    Public Function IsFirstCutoff(cutoff As String) As Boolean
         If String.IsNullOrWhiteSpace(cutoff) Then Return False
         Return cutoff.IndexOf("_1st_", StringComparison.OrdinalIgnoreCase) >= 0
     End Function
 
-    Private Function IsSecondCutoff(cutoff As String) As Boolean
+    Public Function IsSecondCutoff(cutoff As String) As Boolean
         If String.IsNullOrWhiteSpace(cutoff) Then Return False
         Return cutoff.IndexOf("_2nd_", StringComparison.OrdinalIgnoreCase) >= 0
     End Function
+
+    Private Sub AddPerClientHiddenColumn(dgv As DataGridView, name As String)
+        Dim column As New DataGridViewTextBoxColumn With {
+            .Name = name,
+            .Visible = False,
+            .ReadOnly = True
+        }
+        dgv.Columns.Add(column)
+    End Sub
 
     Private Sub AddPerClientColumn(dgv As DataGridView, name As String, header As String, Optional width As Integer = 0)
         Dim column As New DataGridViewTextBoxColumn With {
@@ -155,6 +164,7 @@ Module Mod_FRM_DTR_EXPORTS
         dgv.AllowUserToAddRows = False
         dgv.AllowUserToDeleteRows = False
 
+        AddPerClientHiddenColumn(dgv, "colEmployeeId")
         AddPerClientColumn(dgv, "colItem", "Item", 50)
         AddPerClientColumn(dgv, "colName", "Name", 200)
         AddPerClientColumn(dgv, "colNumDays", "No. of Days", 90)
@@ -437,7 +447,7 @@ Module Mod_FRM_DTR_EXPORTS
             'SQL = "select LAST_NAME, FIRST_NAME, MIDDLE_NAME, NUM_OF_DAYS, TOTAL_HOURS, REG, SUN,SH,LH, RD_SUN_SH, RD_SUN_LH, ND_REG, ND_SUN, ND_SH, ND_LH, ND_RD_SUN_SH, ND_RD_SUN_LH, OT_REG from VIEW_DTR_PER_SUB_CLIENT"
             'SQL = SQL & " where A.SUB_CLIENT_ID = " & iClient_ID & " and CUTOFF_PERIOD = '" & sCut_Off & "'"
 
-            SQL = "SELECT LAST_NAME, FIRST_NAME, MIDDLE_NAME, NUM_OF_DAYS, TOTAL_HOURS, REG, SUN, SH, LH, OT_REG, CB_DEDUCT, SSS_LOAN_DEDUCT, SSS_CAL_LOAN_DEDUCT, PI_LOAN_DEDUCT, PI_CAL_LOAN_DEDUCT,SSS_DEDUCT, PH_DEDUCT, PI_DEDUCT "
+            SQL = "SELECT A.A.EMPLOYEE_ID AS EMPLOYEE_ID, LAST_NAME, FIRST_NAME, MIDDLE_NAME, NUM_OF_DAYS, TOTAL_HOURS, REG, SUN, SH, LH, OT_REG, CB_DEDUCT, SSS_LOAN_DEDUCT, SSS_CAL_LOAN_DEDUCT, PI_LOAN_DEDUCT, PI_CAL_LOAN_DEDUCT,SSS_DEDUCT, PH_DEDUCT, PI_DEDUCT "
             SQL = SQL & "FROM VIEW_DTR_PER_SUB_CLIENT A "
             SQL = SQL & "WHERE A.A.SUB_CLIENT_ID = " & iClient_ID & " AND A.CUTOFF_PERIOD = '" & sCut_Off & "' "
             SQL = SQL & "AND A.D.ID = (SELECT MAX(D.ID) FROM PRL_DTR_TOTAL_HOURS D WHERE D.EMPLOYEE_ID = A.A.EMPLOYEE_ID AND D.CUTOFF_PERIOD = A.CUTOFF_PERIOD) "
@@ -462,9 +472,11 @@ Module Mod_FRM_DTR_EXPORTS
 
                     For Each myRow In dt.Rows
                         Dim fullName As String = $"{NzText(myRow, "LAST_NAME")}, {NzText(myRow, "FIRST_NAME")}"
+                        Dim employeeId As String = NzText(myRow, "EMPLOYEE_ID")
 
                         If IsFirstCutoff(sCut_Off) Then
                             .Rows.Add(
+                                employeeId,
                                 iRow.ToString(),
                                 fullName,
                                 NzZero(myRow, "NUM_OF_DAYS"),
@@ -480,6 +492,7 @@ Module Mod_FRM_DTR_EXPORTS
                             )
                         Else
                             .Rows.Add(
+                                employeeId,
                                 iRow.ToString(),
                                 fullName,
                                 NzZero(myRow, "NUM_OF_DAYS"),
@@ -534,6 +547,88 @@ Module Mod_FRM_DTR_EXPORTS
         ' If not numeric but not empty, return it (or return "0" if you prefer)
         Return s
     End Function
+
+    Public Function GetLatestDtrTotals(employeeId As String, cutoff As String) As DataRow
+        If String.IsNullOrWhiteSpace(employeeId) OrElse String.IsNullOrWhiteSpace(cutoff) Then
+            Return Nothing
+        End If
+
+        Dim dt As New DataTable
+        Dim sql As String = "SELECT TOP 1 * FROM PRL_DTR_TOTAL_HOURS WHERE EMPLOYEE_ID = ? AND CUTOFF_PERIOD = ? ORDER BY ID DESC"
+
+        Try
+            Connect_to_MDB()
+            Using cmd As New OleDbCommand(sql, GlobalVariables.GlobalCon)
+                cmd.Parameters.AddWithValue("?", employeeId)
+                cmd.Parameters.AddWithValue("?", cutoff)
+                Using adapter As New OleDbDataAdapter(cmd)
+                    adapter.Fill(dt)
+                End Using
+            End Using
+        Catch ex As Exception
+            MsgBox(ex.Message, vbCritical, "Error Loading DTR Totals")
+        End Try
+
+        If dt.Rows.Count = 0 Then
+            Return Nothing
+        End If
+
+        Return dt.Rows(0)
+    End Function
+
+    Public Sub Save_DTR_Deductions_Update(
+        employeeId As String,
+        subClientId As Integer,
+        cutoff As String,
+        numDays As Decimal,
+        totalHours As Decimal,
+        regHours As Decimal,
+        sunHours As Decimal,
+        shHours As Decimal,
+        lhHours As Decimal,
+        otRegHours As Decimal,
+        cbDeduct As Decimal,
+        sssLoanDeduct As Decimal,
+        sssCalLoanDeduct As Decimal,
+        piLoanDeduct As Decimal,
+        piCalLoanDeduct As Decimal,
+        philhealthDeduct As Decimal,
+        sssDeduct As Decimal,
+        pagibigDeduct As Decimal
+    )
+        Dim sql As String = "INSERT INTO PRL_DTR_TOTAL_HOURS " &
+            "(EMPLOYEE_ID, SUB_CLIENT_ID, CUTOFF_PERIOD, NUM_OF_DAYS, " &
+            "TOTAL_HOURS, REG, SUN, SH, LH, OT_REG, " &
+            "CB_DEDUCT, SSS_LOAN_DEDUCT, PI_LOAN_DEDUCT, PH_DEDUCT, SSS_DEDUCT, PI_DEDUCT, SSS_CAL_LOAN_DEDUCT, PI_CAL_LOAN_DEDUCT) " &
+            "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"
+
+        Try
+            Connect_to_MDB()
+            Using cmd As New OleDbCommand(sql, GlobalVariables.GlobalCon)
+                cmd.Parameters.AddWithValue("?", employeeId)
+                cmd.Parameters.AddWithValue("?", subClientId)
+                cmd.Parameters.AddWithValue("?", cutoff)
+                cmd.Parameters.AddWithValue("?", numDays)
+                cmd.Parameters.AddWithValue("?", totalHours)
+                cmd.Parameters.AddWithValue("?", regHours)
+                cmd.Parameters.AddWithValue("?", sunHours)
+                cmd.Parameters.AddWithValue("?", shHours)
+                cmd.Parameters.AddWithValue("?", lhHours)
+                cmd.Parameters.AddWithValue("?", otRegHours)
+                cmd.Parameters.AddWithValue("?", cbDeduct)
+                cmd.Parameters.AddWithValue("?", sssLoanDeduct)
+                cmd.Parameters.AddWithValue("?", piLoanDeduct)
+                cmd.Parameters.AddWithValue("?", philhealthDeduct)
+                cmd.Parameters.AddWithValue("?", sssDeduct)
+                cmd.Parameters.AddWithValue("?", pagibigDeduct)
+                cmd.Parameters.AddWithValue("?", sssCalLoanDeduct)
+                cmd.Parameters.AddWithValue("?", piCalLoanDeduct)
+                cmd.ExecuteNonQuery()
+            End Using
+        Catch ex As Exception
+            MsgBox(ex.Message, vbCritical, "Error Saving Deductions")
+        End Try
+    End Sub
 
     Public Sub Generate_DTR_Hours_Matrix(iClient_ID As Integer, sCut_Off As String)
 

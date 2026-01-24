@@ -36,7 +36,7 @@ Module Mod_FRM_DTR_EXPORTS
 
         Dim dayHeaderRow As Integer = 12
         Dim dayNumberRow As Integer = 13
-        Dim dataStartRow As Integer = 14
+        Dim dataStartRow As Integer = 15
         Dim nameCol As Integer = 1
         Dim dayStartCol As Integer = 2
 
@@ -183,6 +183,10 @@ Module Mod_FRM_DTR_EXPORTS
             payrollSheet.Range("B7").Value = sClient
             payrollSheet.Range("B8").Value = sAddress
             payrollSheet.Range("B9").Value = readableCutOff
+
+            dtrHoursSheet.Range("B7").Value = sClient
+            dtrHoursSheet.Range("B8").Value = sAddress
+            dtrHoursSheet.Range("B10").Value = readableCutOff
 
             '========================================
             ' 4) Write rows from ListView

@@ -1,4 +1,5 @@
 ﻿Imports System.Drawing
+Imports System.Globalization
 Imports System.Windows.Forms
 
 Public Class FRM_DTR_DEDUCTION_UPDATE
@@ -101,7 +102,7 @@ Public Class FRM_DTR_DEDUCTION_UPDATE
         mainPanel.ColumnStyles.Add(New ColumnStyle(SizeType.Percent, 55))
 
         Dim header As New Label With {
-            .Text = $"Employee: {_employeeName}" & Environment.NewLine & $"Cutoff: {_cutoff}",
+            .Text = $"Employee: {_employeeName}" & Environment.NewLine & $"Cutoff: {FormatCutoff(_cutoff)}",
             .AutoSize = True,
             .Font = New Font("Segoe UI", 10.0F, FontStyle.Bold),
             .ForeColor = Color.FromArgb(30, 30, 30),
@@ -245,5 +246,30 @@ Public Class FRM_DTR_DEDUCTION_UPDATE
         MessageBox.Show($"Invalid value for {fieldName}.", "Input Error", MessageBoxButtons.OK, MessageBoxIcon.Warning)
         textBox.Focus()
         Return False
+    End Function
+
+    Private Function FormatCutoff(cutoff As String) As String
+        If String.IsNullOrWhiteSpace(cutoff) Then Return cutoff
+
+        Dim parts() As String = cutoff.Split("_"c)
+        If parts.Length <> 3 Then Return cutoff
+
+        Dim monthNumber As Integer
+        Dim yearNumber As Integer
+        If Not Integer.TryParse(parts(0), monthNumber) Then Return cutoff
+        If Not Integer.TryParse(parts(2), yearNumber) Then Return cutoff
+        If monthNumber < 1 OrElse monthNumber > 12 Then Return cutoff
+
+        Dim cutoffPart As String = parts(1).Trim()
+        If Not cutoffPart.Equals("1st", StringComparison.OrdinalIgnoreCase) AndAlso
+            Not cutoffPart.Equals("2nd", StringComparison.OrdinalIgnoreCase) Then
+            Return cutoff
+        End If
+
+        Dim monthName As String = CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName(monthNumber)
+        Dim normalizedCutoff As String = cutoffPart.ToLowerInvariant()
+        Dim cutoffLabel As String = Char.ToUpperInvariant(normalizedCutoff(0)) & normalizedCutoff.Substring(1)
+
+        Return $"{monthName} {yearNumber} ({cutoffLabel} Cutoff)"
     End Function
 End Class

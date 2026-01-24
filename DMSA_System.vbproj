@@ -165,6 +165,9 @@
     <Compile Include="FRM_DTR_EXPORTS.vb">
       <SubType>Form</SubType>
     </Compile>
+    <Compile Include="FRM_DTR_DEDUCTION_UPDATE.vb">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Include="FRM_DTR_INPUT_16_31.Designer.vb">
       <DependentUpon>FRM_DTR_INPUT_16_31.vb</DependentUpon>
     </Compile>

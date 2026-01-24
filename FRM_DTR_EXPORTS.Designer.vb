@@ -113,13 +113,14 @@ Partial Class FRM_DTR_EXPORTS
         '
         'DGV_DTR_MATRIX
         '
-        Me.DGV_DTR_MATRIX.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.AllCells
+        Me.DGV_DTR_MATRIX.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill
         Me.DGV_DTR_MATRIX.BackgroundColor = System.Drawing.Color.FromArgb(CType(CType(255, Byte), Integer), CType(CType(224, Byte), Integer), CType(CType(192, Byte), Integer))
         Me.DGV_DTR_MATRIX.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize
+        Me.DGV_DTR_MATRIX.Dock = System.Windows.Forms.DockStyle.Fill
         Me.DGV_DTR_MATRIX.GridColor = System.Drawing.Color.FromArgb(CType(CType(255, Byte), Integer), CType(CType(224, Byte), Integer), CType(CType(192, Byte), Integer))
-        Me.DGV_DTR_MATRIX.Location = New System.Drawing.Point(6, 6)
+        Me.DGV_DTR_MATRIX.Location = New System.Drawing.Point(0, 0)
         Me.DGV_DTR_MATRIX.Name = "DGV_DTR_MATRIX"
-        Me.DGV_DTR_MATRIX.Size = New System.Drawing.Size(1379, 484)
+        Me.DGV_DTR_MATRIX.Size = New System.Drawing.Size(1391, 496)
         Me.DGV_DTR_MATRIX.TabIndex = 72
         '
         'PictureBox1

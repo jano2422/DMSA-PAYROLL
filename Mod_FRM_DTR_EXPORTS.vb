@@ -31,6 +31,52 @@ Module Mod_FRM_DTR_EXPORTS
         End With
     End Sub
 
+    Private Sub WriteDtrHoursMatrixToSheet(dtrSheet As Excel.Worksheet, dgv As DataGridView)
+        If dtrSheet Is Nothing OrElse dgv Is Nothing OrElse dgv.Columns.Count = 0 Then Return
+
+        Dim dayHeaderRow As Integer = 12
+        Dim dayNumberRow As Integer = 13
+        Dim dataStartRow As Integer = 14
+        Dim nameCol As Integer = 1
+        Dim dayStartCol As Integer = 2
+
+        Dim dayColumns As New List(Of DataGridViewColumn)
+        For i As Integer = 1 To dgv.Columns.Count - 2
+            dayColumns.Add(dgv.Columns(i))
+        Next
+
+        Dim totalCol As DataGridViewColumn = dgv.Columns(dgv.Columns.Count - 1)
+
+        Dim hasDayNameRow As Boolean = dgv.Rows.Count > 0 AndAlso Not dgv.Rows(0).IsNewRow
+        If hasDayNameRow Then
+            For i As Integer = 0 To dayColumns.Count - 1
+                Dim dayNameValue = dgv.Rows(0).Cells(dayColumns(i).Index).Value
+                dtrSheet.Cells(dayHeaderRow, dayStartCol + i).Value = If(dayNameValue, "")
+            Next
+        End If
+
+        For i As Integer = 0 To dayColumns.Count - 1
+            dtrSheet.Cells(dayNumberRow, dayStartCol + i).Value = dayColumns(i).HeaderText
+        Next
+
+        Dim excelRow As Integer = dataStartRow
+        For Each row As DataGridViewRow In dgv.Rows
+            If row.IsNewRow Then Continue For
+            If hasDayNameRow AndAlso row.Index = 0 Then Continue For
+
+            dtrSheet.Cells(excelRow, nameCol).Value = row.Cells(0).Value
+            For i As Integer = 0 To dayColumns.Count - 1
+                Dim rawValue As String = Convert.ToString(row.Cells(dayColumns(i).Index).Value)
+                dtrSheet.Cells(excelRow, dayStartCol + i).Value = TryGetNumericValue(rawValue)
+            Next
+
+            Dim totalValue As String = Convert.ToString(row.Cells(totalCol.Index).Value)
+            dtrSheet.Cells(excelRow, dayStartCol + dayColumns.Count).Value = TryGetNumericValue(totalValue)
+
+            excelRow += 1
+        Next
+    End Sub
+
     Private Function ConvertCutOffStringToReadable(input As String) As String
         ' Input : "2_2nd_2025"
         ' Output: "16–28 FEBRUARY 2025"
@@ -85,6 +131,7 @@ Module Mod_FRM_DTR_EXPORTS
 
         Dim payrollSheet As Excel.Worksheet = Nothing
         Dim payslipSheet As Excel.Worksheet = Nothing
+        Dim dtrHoursSheet As Excel.Worksheet = Nothing
 
         Try
             xlApp = New Excel.Application With {
@@ -126,6 +173,7 @@ Module Mod_FRM_DTR_EXPORTS
 
             payrollSheet = CType(wbOut.Worksheets("PAYROLL"), Excel.Worksheet)
             payslipSheet = CType(wbOut.Worksheets("PAYSLIP"), Excel.Worksheet)
+            dtrHoursSheet = CType(wbOut.Worksheets("DTR_Hours"), Excel.Worksheet)
 
             '========================================
             ' 3) Fill header fields
@@ -177,15 +225,22 @@ Module Mod_FRM_DTR_EXPORTS
             End With
 
             '========================================
+            ' 4b) Write Hours Per Day matrix
+            '========================================
+            WriteDtrHoursMatrixToSheet(dtrHoursSheet, FRM_DTR_EXPORTS.DGV_DTR_MATRIX)
+
+            '========================================
             ' 5) Calculate + save
             '========================================
             payrollSheet.Calculate()
             payslipSheet.Calculate()
+            dtrHoursSheet.Calculate()
             wbOut.Save()
 
         Catch ex As Exception
             MsgBox(ex.ToString)
         Finally
+            ReleaseCom(dtrHoursSheet)
             ReleaseCom(payslipSheet)
             ReleaseCom(payrollSheet)
             ReleaseCom(wbOut)

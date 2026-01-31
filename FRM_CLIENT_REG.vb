@@ -37,10 +37,10 @@
             'Case "DTR_16_to_30"
 
             Case "Payslip_Per_Client"
+                FRM_DTR_EXPORTS.Lbl_ClientID.Text = Me.LV_Main_Client_List.SelectedItems(0).SubItems(0).Text
                 FRM_DTR_EXPORTS.Lbl_Client_Name.Text = Me.LV_Main_Client_List.SelectedItems(0).SubItems(1).Text
                 FRM_DTR_EXPORTS.Lbl_Client_Address.Text = Me.LV_Main_Client_List.SelectedItems(0).SubItems(2).Text
-                FRM_DTR_EXPORTS.Lbl_ClientID.Text = Me.LV_Main_Client_List.SelectedItems(0).SubItems(0).Text
-
+                FRM_DTR_EXPORTS.Lbl_Client_Daily_Wage.Text = Me.LV_Main_Client_List.SelectedItems(0).SubItems(3).Text
         End Select
 
 

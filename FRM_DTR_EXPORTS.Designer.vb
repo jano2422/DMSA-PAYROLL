@@ -46,12 +46,16 @@ Partial Class FRM_DTR_EXPORTS
         Me.Lbl_ClientID = New System.Windows.Forms.Label()
         Me.Label7 = New System.Windows.Forms.Label()
         Me.btnDtrHrsExport = New FontAwesome.Sharp.IconButton()
+        Me.PictureBox2 = New System.Windows.Forms.PictureBox()
+        Me.Label6 = New System.Windows.Forms.Label()
+        Me.Lbl_Client_Daily_Wage = New System.Windows.Forms.Label()
         Me.TabControl1.SuspendLayout()
         Me.TabPage1.SuspendLayout()
         CType(Me.DGV_DTR_Per_Client, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.TabPage2.SuspendLayout()
         CType(Me.DGV_DTR_MATRIX, System.ComponentModel.ISupportInitialize).BeginInit()
         CType(Me.PictureBox1, System.ComponentModel.ISupportInitialize).BeginInit()
+        CType(Me.PictureBox2, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.SuspendLayout()
         '
         'Panel1
@@ -68,10 +72,10 @@ Partial Class FRM_DTR_EXPORTS
         Me.TabControl1.Controls.Add(Me.TabPage1)
         Me.TabControl1.Controls.Add(Me.TabPage2)
         Me.TabControl1.Font = New System.Drawing.Font("Microsoft Sans Serif", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.TabControl1.Location = New System.Drawing.Point(29, 279)
+        Me.TabControl1.Location = New System.Drawing.Point(29, 318)
         Me.TabControl1.Name = "TabControl1"
         Me.TabControl1.SelectedIndex = 0
-        Me.TabControl1.Size = New System.Drawing.Size(1399, 529)
+        Me.TabControl1.Size = New System.Drawing.Size(1399, 490)
         Me.TabControl1.TabIndex = 7
         '
         'TabPage1
@@ -79,8 +83,7 @@ Partial Class FRM_DTR_EXPORTS
         Me.TabPage1.Controls.Add(Me.DGV_DTR_Per_Client)
         Me.TabPage1.Location = New System.Drawing.Point(4, 29)
         Me.TabPage1.Name = "TabPage1"
-        Me.TabPage1.Padding = New System.Windows.Forms.Padding(0)
-        Me.TabPage1.Size = New System.Drawing.Size(1391, 496)
+        Me.TabPage1.Size = New System.Drawing.Size(1391, 457)
         Me.TabPage1.TabIndex = 0
         Me.TabPage1.Text = "Per Client"
         Me.TabPage1.UseVisualStyleBackColor = True
@@ -95,9 +98,11 @@ Partial Class FRM_DTR_EXPORTS
         Me.DGV_DTR_Per_Client.Dock = System.Windows.Forms.DockStyle.Fill
         Me.DGV_DTR_Per_Client.GridColor = System.Drawing.Color.FromArgb(CType(CType(255, Byte), Integer), CType(CType(224, Byte), Integer), CType(CType(192, Byte), Integer))
         Me.DGV_DTR_Per_Client.Location = New System.Drawing.Point(0, 0)
+        Me.DGV_DTR_Per_Client.MultiSelect = False
         Me.DGV_DTR_Per_Client.Name = "DGV_DTR_Per_Client"
         Me.DGV_DTR_Per_Client.ReadOnly = True
-        Me.DGV_DTR_Per_Client.Size = New System.Drawing.Size(1391, 496)
+        Me.DGV_DTR_Per_Client.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect
+        Me.DGV_DTR_Per_Client.Size = New System.Drawing.Size(1391, 457)
         Me.DGV_DTR_Per_Client.TabIndex = 70
         '
         'TabPage2
@@ -106,7 +111,7 @@ Partial Class FRM_DTR_EXPORTS
         Me.TabPage2.Location = New System.Drawing.Point(4, 29)
         Me.TabPage2.Name = "TabPage2"
         Me.TabPage2.Padding = New System.Windows.Forms.Padding(3)
-        Me.TabPage2.Size = New System.Drawing.Size(1391, 496)
+        Me.TabPage2.Size = New System.Drawing.Size(1391, 457)
         Me.TabPage2.TabIndex = 1
         Me.TabPage2.Text = "Hours Per Day"
         Me.TabPage2.UseVisualStyleBackColor = True
@@ -118,9 +123,9 @@ Partial Class FRM_DTR_EXPORTS
         Me.DGV_DTR_MATRIX.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize
         Me.DGV_DTR_MATRIX.Dock = System.Windows.Forms.DockStyle.Fill
         Me.DGV_DTR_MATRIX.GridColor = System.Drawing.Color.FromArgb(CType(CType(255, Byte), Integer), CType(CType(224, Byte), Integer), CType(CType(192, Byte), Integer))
-        Me.DGV_DTR_MATRIX.Location = New System.Drawing.Point(0, 0)
+        Me.DGV_DTR_MATRIX.Location = New System.Drawing.Point(3, 3)
         Me.DGV_DTR_MATRIX.Name = "DGV_DTR_MATRIX"
-        Me.DGV_DTR_MATRIX.Size = New System.Drawing.Size(1391, 496)
+        Me.DGV_DTR_MATRIX.Size = New System.Drawing.Size(1385, 451)
         Me.DGV_DTR_MATRIX.TabIndex = 72
         '
         'PictureBox1
@@ -128,7 +133,7 @@ Partial Class FRM_DTR_EXPORTS
         Me.PictureBox1.BackColor = System.Drawing.Color.Teal
         Me.PictureBox1.Location = New System.Drawing.Point(29, 167)
         Me.PictureBox1.Name = "PictureBox1"
-        Me.PictureBox1.Size = New System.Drawing.Size(1395, 106)
+        Me.PictureBox1.Size = New System.Drawing.Size(1142, 133)
         Me.PictureBox1.TabIndex = 8
         Me.PictureBox1.TabStop = False
         '
@@ -160,7 +165,7 @@ Partial Class FRM_DTR_EXPORTS
         '
         Me.Btn_Client.Font = New System.Drawing.Font("Verdana", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.Btn_Client.ForeColor = System.Drawing.Color.Black
-        Me.Btn_Client.Location = New System.Drawing.Point(297, 52)
+        Me.Btn_Client.Location = New System.Drawing.Point(343, 60)
         Me.Btn_Client.Name = "Btn_Client"
         Me.Btn_Client.Size = New System.Drawing.Size(176, 36)
         Me.Btn_Client.TabIndex = 598
@@ -187,7 +192,7 @@ Partial Class FRM_DTR_EXPORTS
         Me.Cmb_CutOff.Font = New System.Drawing.Font("Microsoft Sans Serif", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.Cmb_CutOff.FormattingEnabled = True
         Me.Cmb_CutOff.Items.AddRange(New Object() {"1st Cut-Off", "2nd Cut-Off"})
-        Me.Cmb_CutOff.Location = New System.Drawing.Point(130, 52)
+        Me.Cmb_CutOff.Location = New System.Drawing.Point(127, 52)
         Me.Cmb_CutOff.Name = "Cmb_CutOff"
         Me.Cmb_CutOff.Size = New System.Drawing.Size(134, 28)
         Me.Cmb_CutOff.TabIndex = 600
@@ -198,7 +203,7 @@ Partial Class FRM_DTR_EXPORTS
         Me.Label10.BackColor = System.Drawing.Color.Black
         Me.Label10.Font = New System.Drawing.Font("Verdana", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.Label10.ForeColor = System.Drawing.Color.Yellow
-        Me.Label10.Location = New System.Drawing.Point(49, 56)
+        Me.Label10.Location = New System.Drawing.Point(51, 56)
         Me.Label10.Name = "Label10"
         Me.Label10.Size = New System.Drawing.Size(75, 18)
         Me.Label10.TabIndex = 601
@@ -210,7 +215,7 @@ Partial Class FRM_DTR_EXPORTS
         Me.Cmb_Month.Font = New System.Drawing.Font("Microsoft Sans Serif", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.Cmb_Month.FormattingEnabled = True
         Me.Cmb_Month.Items.AddRange(New Object() {"JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL" & Global.Microsoft.VisualBasic.ChrW(9), "AUG", "SEP", "OCT", "NOV", "DEC"})
-        Me.Cmb_Month.Location = New System.Drawing.Point(130, 86)
+        Me.Cmb_Month.Location = New System.Drawing.Point(127, 87)
         Me.Cmb_Month.Name = "Cmb_Month"
         Me.Cmb_Month.Size = New System.Drawing.Size(134, 28)
         Me.Cmb_Month.TabIndex = 602
@@ -221,7 +226,7 @@ Partial Class FRM_DTR_EXPORTS
         Me.Label3.BackColor = System.Drawing.Color.Black
         Me.Label3.Font = New System.Drawing.Font("Verdana", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.Label3.ForeColor = System.Drawing.Color.Yellow
-        Me.Label3.Location = New System.Drawing.Point(49, 90)
+        Me.Label3.Location = New System.Drawing.Point(61, 91)
         Me.Label3.Name = "Label3"
         Me.Label3.Size = New System.Drawing.Size(65, 18)
         Me.Label3.TabIndex = 603
@@ -233,7 +238,7 @@ Partial Class FRM_DTR_EXPORTS
         Me.Cmb_Year.Font = New System.Drawing.Font("Microsoft Sans Serif", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.Cmb_Year.FormattingEnabled = True
         Me.Cmb_Year.Items.AddRange(New Object() {"2024", "2025", "2026"})
-        Me.Cmb_Year.Location = New System.Drawing.Point(130, 120)
+        Me.Cmb_Year.Location = New System.Drawing.Point(127, 124)
         Me.Cmb_Year.Name = "Cmb_Year"
         Me.Cmb_Year.Size = New System.Drawing.Size(134, 28)
         Me.Cmb_Year.TabIndex = 604
@@ -244,7 +249,7 @@ Partial Class FRM_DTR_EXPORTS
         Me.Label4.BackColor = System.Drawing.Color.Black
         Me.Label4.Font = New System.Drawing.Font("Verdana", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.Label4.ForeColor = System.Drawing.Color.Yellow
-        Me.Label4.Location = New System.Drawing.Point(49, 124)
+        Me.Label4.Location = New System.Drawing.Point(74, 128)
         Me.Label4.Name = "Label4"
         Me.Label4.Size = New System.Drawing.Size(51, 18)
         Me.Label4.TabIndex = 605
@@ -254,7 +259,7 @@ Partial Class FRM_DTR_EXPORTS
         '
         Me.Btn_Show.Font = New System.Drawing.Font("Verdana", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.Btn_Show.ForeColor = System.Drawing.Color.Black
-        Me.Btn_Show.Location = New System.Drawing.Point(297, 111)
+        Me.Btn_Show.Location = New System.Drawing.Point(547, 59)
         Me.Btn_Show.Name = "Btn_Show"
         Me.Btn_Show.Size = New System.Drawing.Size(176, 37)
         Me.Btn_Show.TabIndex = 606
@@ -332,12 +337,46 @@ Partial Class FRM_DTR_EXPORTS
         Me.btnDtrHrsExport.TextAlign = System.Drawing.ContentAlignment.BottomCenter
         Me.btnDtrHrsExport.UseVisualStyleBackColor = True
         '
+        'PictureBox2
+        '
+        Me.PictureBox2.BackColor = System.Drawing.Color.Teal
+        Me.PictureBox2.Location = New System.Drawing.Point(302, 51)
+        Me.PictureBox2.Name = "PictureBox2"
+        Me.PictureBox2.Size = New System.Drawing.Size(484, 58)
+        Me.PictureBox2.TabIndex = 613
+        Me.PictureBox2.TabStop = False
+        '
+        'Label6
+        '
+        Me.Label6.AutoSize = True
+        Me.Label6.BackColor = System.Drawing.Color.Teal
+        Me.Label6.Font = New System.Drawing.Font("Verdana", 14.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.Label6.ForeColor = System.Drawing.Color.FromArgb(CType(CType(128, Byte), Integer), CType(CType(255, Byte), Integer), CType(CType(255, Byte), Integer))
+        Me.Label6.Location = New System.Drawing.Point(56, 266)
+        Me.Label6.Name = "Label6"
+        Me.Label6.Size = New System.Drawing.Size(127, 23)
+        Me.Label6.TabIndex = 615
+        Me.Label6.Text = "Daily Wage:"
+        '
+        'Lbl_Client_Daily_Wage
+        '
+        Me.Lbl_Client_Daily_Wage.AutoSize = True
+        Me.Lbl_Client_Daily_Wage.BackColor = System.Drawing.Color.Teal
+        Me.Lbl_Client_Daily_Wage.Font = New System.Drawing.Font("Verdana", 14.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.Lbl_Client_Daily_Wage.ForeColor = System.Drawing.Color.White
+        Me.Lbl_Client_Daily_Wage.Location = New System.Drawing.Point(184, 267)
+        Me.Lbl_Client_Daily_Wage.Name = "Lbl_Client_Daily_Wage"
+        Me.Lbl_Client_Daily_Wage.Size = New System.Drawing.Size(46, 23)
+        Me.Lbl_Client_Daily_Wage.TabIndex = 616
+        '
         'FRM_DTR_EXPORTS
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
         Me.BackColor = System.Drawing.Color.Black
         Me.ClientSize = New System.Drawing.Size(1460, 837)
+        Me.Controls.Add(Me.Lbl_Client_Daily_Wage)
+        Me.Controls.Add(Me.Label6)
         Me.Controls.Add(Me.btnDtrHrsExport)
         Me.Controls.Add(Me.Lbl_ClientID)
         Me.Controls.Add(Me.Label7)
@@ -358,6 +397,7 @@ Partial Class FRM_DTR_EXPORTS
         Me.Controls.Add(Me.PictureBox1)
         Me.Controls.Add(Me.TabControl1)
         Me.Controls.Add(Me.Panel1)
+        Me.Controls.Add(Me.PictureBox2)
         Me.Name = "FRM_DTR_EXPORTS"
         Me.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen
         Me.Text = "DTR Exports"
@@ -367,6 +407,7 @@ Partial Class FRM_DTR_EXPORTS
         Me.TabPage2.ResumeLayout(False)
         CType(Me.DGV_DTR_MATRIX, System.ComponentModel.ISupportInitialize).EndInit()
         CType(Me.PictureBox1, System.ComponentModel.ISupportInitialize).EndInit()
+        CType(Me.PictureBox2, System.ComponentModel.ISupportInitialize).EndInit()
         Me.ResumeLayout(False)
         Me.PerformLayout()
 
@@ -396,4 +437,7 @@ Partial Class FRM_DTR_EXPORTS
     Friend WithEvents TabPage2 As TabPage
     Friend WithEvents DGV_DTR_MATRIX As DataGridView
     Friend WithEvents btnDtrHrsExport As IconButton
+    Friend WithEvents PictureBox2 As PictureBox
+    Friend WithEvents Label6 As Label
+    Friend WithEvents Lbl_Client_Daily_Wage As Label
 End Class

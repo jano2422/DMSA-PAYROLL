@@ -346,7 +346,7 @@ Public Class FRM_EMP_REG
         keyword = keyword.Replace("'", "''")
         Dim activeOnly As Boolean = (sCategory = "E.SUB_CLIENT_NAME") ' ✅ Active only when searching by sub client name
 
-        Call Show_Search(sCategory, keyword)
+        Show_Search(sCategory, keyword, activeOnly)
     End Sub
 
 

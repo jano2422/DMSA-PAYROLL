@@ -584,7 +584,7 @@ Module Mod_FRM_CLIENT_HDR
             With FRM_CLIENT_HDR
 
 
-                SQL = "Update TBL_CLIENT_SUB set SUB_CLIENT_NAME = '" & .Txt_SubClientName.Text & "', ADDRESS = '" & .Txt_Sub_Client_Address.Text & "'"
+                SQL = "Update TBL_CLIENT_SUB set SUB_CLIENT_NAME = '" & .Txt_SubClientName.Text & "', ADDRESS = '" & .Txt_Sub_Client_Address.Text & "', DAILY_WAGE = '" & .Txt_Sub_Daily_Wage.Text & "'"
                 SQL = SQL & ", SCHED_TYPE = '" & .Cmb_SchedType.Text & "', CONTACT_PERSON = '" & .Txt_Contact_Person.Text & "', CONTACT_NUMBER = '" & .Txt_Contact_CPNumber.Text & "', CONTACT_EMAIL = '" & .Txt_Contact_Email.Text & "'"
                 SQL = SQL & " WHERE SUB_CLIENT_ID = " & iSubClient_ID & " "
 
@@ -672,35 +672,61 @@ Module Mod_FRM_CLIENT_HDR
 
     Public Sub Insert_New_Sub_Client_Record(iClient_ID As Integer, iMaint_Client_ID As Integer)
 
-        Dim SQL As String
-
         Connect_to_MDB()
 
-        With FRM_CLIENT_HDR
+        Try
+            With FRM_CLIENT_HDR
 
-            Try
+                '--- Basic validation (optional but recommended)
+                If String.IsNullOrWhiteSpace(.Txt_SubClientName.Text) Then
+                    MsgBox("Sub Client Name is required.", vbExclamation, "Validation")
+                    Exit Sub
+                End If
 
-                SQL = "INSERT INTO TBL_CLIENT_SUB (SUB_CLIENT_ID, MAIN_CLIENT_ID, SUB_CLIENT_NAME, ADDRESS, SUB_CLIENT_STATUS, SCHED_TYPE, CONTACT_PERSON, CONTACT_NUMBER, CONTACT_EMAIL)"
-                SQL = SQL & " VALUES (" & iClient_ID & "," & iMaint_Client_ID & ", '" & .Txt_SubClientName.Text & "', '" & .Txt_Sub_Client_Address.Text & "','Active', '" & .Cmb_SchedType.Text & "', '" & .Txt_Contact_Person.Text & "', '" & .Txt_Contact_CPNumber.Text & "', '" & .Txt_Contact_Email.Text & "')"
+                Dim dailyWage As Double
+                If Not Double.TryParse(.Txt_Sub_Daily_Wage.Text.Trim(), dailyWage) Then
+                    MsgBox("Daily Wage must be a valid number.", vbExclamation, "Validation")
+                    Exit Sub
+                End If
 
+                Dim sql As String =
+                "INSERT INTO TBL_CLIENT_SUB " &
+                "(SUB_CLIENT_ID, MAIN_CLIENT_ID, SUB_CLIENT_NAME, ADDRESS, DAILY_WAGE, SUB_CLIENT_STATUS, " &
+                " SCHED_TYPE, CONTACT_PERSON, CONTACT_NUMBER, CONTACT_EMAIL) " &
+                "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?);"
 
-                Dim SQLcmd As OleDbCommand = New OleDbCommand(SQL, GlobalVariables.GlobalCon)
-                SQLcmd.ExecuteNonQuery()
-                SQLcmd.Dispose()
+                Using cmd As New OleDbCommand(sql, GlobalVariables.GlobalCon)
+
+                    'IMPORTANT: OleDb uses positional parameters, order matters!
+                    cmd.Parameters.AddWithValue("?", iClient_ID)
+                    cmd.Parameters.AddWithValue("?", iMaint_Client_ID)
+                    cmd.Parameters.AddWithValue("?", .Txt_SubClientName.Text.Trim())
+                    cmd.Parameters.AddWithValue("?", .Txt_Sub_Client_Address.Text.Trim())
+                    cmd.Parameters.AddWithValue("?", dailyWage)                 'numeric
+                    cmd.Parameters.AddWithValue("?", "Active")
+                    cmd.Parameters.AddWithValue("?", .Cmb_SchedType.Text.Trim())
+                    cmd.Parameters.AddWithValue("?", .Txt_Contact_Person.Text.Trim())
+                    cmd.Parameters.AddWithValue("?", .Txt_Contact_CPNumber.Text.Trim())
+                    cmd.Parameters.AddWithValue("?", .Txt_Contact_Email.Text.Trim())
+
+                    cmd.ExecuteNonQuery()
+                End Using
 
                 MsgBox("New Sub Client was successfully saved.", vbInformation, "Saved")
 
+            End With
 
-            Catch ex As Exception
-                MsgBox(ex.Message, vbCritical, "Error Inserting New Sub Client Record")
+        Catch ex As Exception
+            MsgBox(ex.Message, vbCritical, "Error Inserting New Sub Client Record")
 
-            End Try
-
-            GlobalVariables.GlobalCon.Close()
-
-        End With
+        Finally
+            If GlobalVariables.GlobalCon IsNot Nothing AndAlso GlobalVariables.GlobalCon.State <> ConnectionState.Closed Then
+                GlobalVariables.GlobalCon.Close()
+            End If
+        End Try
 
     End Sub
+
 
     Public Function Generate_New_Client_ID()
         Dim da As New OleDb.OleDbDataAdapter
@@ -798,6 +824,8 @@ Module Mod_FRM_CLIENT_HDR
                         .Txt_SubClientName.Text = myRow.Item("SUB_CLIENT_NAME")
                         .Txt_Sub_Client_Address.Text = myRow.Item("ADDRESS")
                         .Cmb_SchedType.Text = myRow.Item("SCHED_TYPE")
+                        .Txt_Sub_Daily_Wage.Text = myRow.Item("DAILY_WAGE")
+
                         '.Cmb_ClientType.Text = myRow.Item("CLIENT_TYPE")
 
                         .Txt_Contact_Person.Text = myRow.Item("CONTACT_PERSON")

@@ -109,6 +109,8 @@ Partial Class FRM_CLIENT_HDR
         Me.Cmb_MainClient_Status = New System.Windows.Forms.ComboBox()
         Me.Panel1 = New System.Windows.Forms.Panel()
         Me.OpenFileDialog1 = New System.Windows.Forms.OpenFileDialog()
+        Me.Label7 = New System.Windows.Forms.Label()
+        Me.Txt_Sub_Daily_Wage = New System.Windows.Forms.TextBox()
         CType(Me.PictureBox2, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.Tab_Client_Info.SuspendLayout()
         Me.Tab_MainClient.SuspendLayout()
@@ -446,6 +448,8 @@ Partial Class FRM_CLIENT_HDR
         'Grp_Client_Info
         '
         Me.Grp_Client_Info.BackColor = System.Drawing.Color.Black
+        Me.Grp_Client_Info.Controls.Add(Me.Label7)
+        Me.Grp_Client_Info.Controls.Add(Me.Txt_Sub_Daily_Wage)
         Me.Grp_Client_Info.Controls.Add(Me.Label50)
         Me.Grp_Client_Info.Controls.Add(Me.Label19)
         Me.Grp_Client_Info.Controls.Add(Me.Txt_Contact_CPNumber)
@@ -476,7 +480,7 @@ Partial Class FRM_CLIENT_HDR
         Me.Label50.AutoSize = True
         Me.Label50.Font = New System.Drawing.Font("Microsoft Sans Serif", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.Label50.ForeColor = System.Drawing.Color.Lime
-        Me.Label50.Location = New System.Drawing.Point(182, 303)
+        Me.Label50.Location = New System.Drawing.Point(182, 308)
         Me.Label50.Name = "Label50"
         Me.Label50.Size = New System.Drawing.Size(36, 20)
         Me.Label50.TabIndex = 136
@@ -488,7 +492,7 @@ Partial Class FRM_CLIENT_HDR
         Me.Label19.BackColor = System.Drawing.Color.Black
         Me.Label19.Font = New System.Drawing.Font("Verdana", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.Label19.ForeColor = System.Drawing.Color.Aqua
-        Me.Label19.Location = New System.Drawing.Point(16, 303)
+        Me.Label19.Location = New System.Drawing.Point(16, 308)
         Me.Label19.Name = "Label19"
         Me.Label19.Size = New System.Drawing.Size(97, 18)
         Me.Label19.TabIndex = 114
@@ -497,7 +501,7 @@ Partial Class FRM_CLIENT_HDR
         'Txt_Contact_CPNumber
         '
         Me.Txt_Contact_CPNumber.Font = New System.Drawing.Font("Verdana", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.Txt_Contact_CPNumber.Location = New System.Drawing.Point(224, 300)
+        Me.Txt_Contact_CPNumber.Location = New System.Drawing.Point(224, 305)
         Me.Txt_Contact_CPNumber.Name = "Txt_Contact_CPNumber"
         Me.Txt_Contact_CPNumber.Size = New System.Drawing.Size(165, 27)
         Me.Txt_Contact_CPNumber.TabIndex = 115
@@ -508,7 +512,7 @@ Partial Class FRM_CLIENT_HDR
         Me.Label9.BackColor = System.Drawing.Color.Black
         Me.Label9.Font = New System.Drawing.Font("Verdana", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.Label9.ForeColor = System.Drawing.Color.Aqua
-        Me.Label9.Location = New System.Drawing.Point(16, 349)
+        Me.Label9.Location = New System.Drawing.Point(16, 354)
         Me.Label9.Name = "Label9"
         Me.Label9.Size = New System.Drawing.Size(131, 18)
         Me.Label9.TabIndex = 112
@@ -517,7 +521,7 @@ Partial Class FRM_CLIENT_HDR
         'Txt_Contact_Email
         '
         Me.Txt_Contact_Email.Font = New System.Drawing.Font("Verdana", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.Txt_Contact_Email.Location = New System.Drawing.Point(182, 346)
+        Me.Txt_Contact_Email.Location = New System.Drawing.Point(182, 351)
         Me.Txt_Contact_Email.Name = "Txt_Contact_Email"
         Me.Txt_Contact_Email.Size = New System.Drawing.Size(372, 27)
         Me.Txt_Contact_Email.TabIndex = 113
@@ -528,7 +532,7 @@ Partial Class FRM_CLIENT_HDR
         Me.Label8.BackColor = System.Drawing.Color.Black
         Me.Label8.Font = New System.Drawing.Font("Verdana", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.Label8.ForeColor = System.Drawing.Color.Aqua
-        Me.Label8.Location = New System.Drawing.Point(16, 261)
+        Me.Label8.Location = New System.Drawing.Point(16, 266)
         Me.Label8.Name = "Label8"
         Me.Label8.Size = New System.Drawing.Size(139, 18)
         Me.Label8.TabIndex = 110
@@ -537,7 +541,7 @@ Partial Class FRM_CLIENT_HDR
         'Txt_Contact_Person
         '
         Me.Txt_Contact_Person.Font = New System.Drawing.Font("Verdana", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.Txt_Contact_Person.Location = New System.Drawing.Point(182, 258)
+        Me.Txt_Contact_Person.Location = New System.Drawing.Point(182, 263)
         Me.Txt_Contact_Person.Name = "Txt_Contact_Person"
         Me.Txt_Contact_Person.Size = New System.Drawing.Size(281, 27)
         Me.Txt_Contact_Person.TabIndex = 111
@@ -1110,6 +1114,26 @@ Partial Class FRM_CLIENT_HDR
         '
         Me.OpenFileDialog1.FileName = "OpenFileDialog1"
         '
+        'Label7
+        '
+        Me.Label7.AutoSize = True
+        Me.Label7.BackColor = System.Drawing.Color.Black
+        Me.Label7.Font = New System.Drawing.Font("Verdana", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.Label7.ForeColor = System.Drawing.Color.Aqua
+        Me.Label7.Location = New System.Drawing.Point(15, 215)
+        Me.Label7.Name = "Label7"
+        Me.Label7.Size = New System.Drawing.Size(108, 18)
+        Me.Label7.TabIndex = 137
+        Me.Label7.Text = "Daily Wage:"
+        '
+        'Txt_Sub_Daily_Wage
+        '
+        Me.Txt_Sub_Daily_Wage.Font = New System.Drawing.Font("Verdana", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.Txt_Sub_Daily_Wage.Location = New System.Drawing.Point(181, 212)
+        Me.Txt_Sub_Daily_Wage.Name = "Txt_Sub_Daily_Wage"
+        Me.Txt_Sub_Daily_Wage.Size = New System.Drawing.Size(149, 27)
+        Me.Txt_Sub_Daily_Wage.TabIndex = 138
+        '
         'FRM_CLIENT_HDR
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
@@ -1238,4 +1262,6 @@ Partial Class FRM_CLIENT_HDR
     Friend WithEvents Label22 As Label
     Friend WithEvents TxtContract_Start_Date As TextBox
     Friend WithEvents Col_Contract_iRefID As ColumnHeader
+    Friend WithEvents Label7 As Label
+    Friend WithEvents Txt_Sub_Daily_Wage As TextBox
 End Class

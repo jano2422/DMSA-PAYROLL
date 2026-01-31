@@ -30,19 +30,20 @@ Partial Class FRM_CLIENT_REG
         Me.TxtSearch = New System.Windows.Forms.TextBox()
         Me.Cmb_Category = New System.Windows.Forms.ComboBox()
         Me.Label2 = New System.Windows.Forms.Label()
+        Me.Col_Daily_Wage = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
         Me.SuspendLayout()
         '
         'LV_Main_Client_List
         '
         Me.LV_Main_Client_List.BackColor = System.Drawing.Color.FromArgb(CType(CType(255, Byte), Integer), CType(CType(224, Byte), Integer), CType(CType(192, Byte), Integer))
-        Me.LV_Main_Client_List.Columns.AddRange(New System.Windows.Forms.ColumnHeader() {Me.Col_ClientID, Me.Col_ClientName, Me.Col_Address})
+        Me.LV_Main_Client_List.Columns.AddRange(New System.Windows.Forms.ColumnHeader() {Me.Col_ClientID, Me.Col_ClientName, Me.Col_Address, Me.Col_Daily_Wage})
         Me.LV_Main_Client_List.Font = New System.Drawing.Font("Verdana", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.LV_Main_Client_List.FullRowSelect = True
         Me.LV_Main_Client_List.GridLines = True
         Me.LV_Main_Client_List.HideSelection = False
         Me.LV_Main_Client_List.Location = New System.Drawing.Point(12, 61)
         Me.LV_Main_Client_List.Name = "LV_Main_Client_List"
-        Me.LV_Main_Client_List.Size = New System.Drawing.Size(734, 472)
+        Me.LV_Main_Client_List.Size = New System.Drawing.Size(1012, 472)
         Me.LV_Main_Client_List.TabIndex = 2
         Me.LV_Main_Client_List.UseCompatibleStateImageBehavior = False
         Me.LV_Main_Client_List.View = System.Windows.Forms.View.Details
@@ -60,7 +61,7 @@ Partial Class FRM_CLIENT_REG
         'Col_Address
         '
         Me.Col_Address.Text = "Address"
-        Me.Col_Address.Width = 250
+        Me.Col_Address.Width = 389
         '
         'Btn_Search
         '
@@ -103,12 +104,17 @@ Partial Class FRM_CLIENT_REG
         Me.Label2.TabIndex = 50
         Me.Label2.Text = "Category:"
         '
+        'Col_Daily_Wage
+        '
+        Me.Col_Daily_Wage.Text = "Daily Wage"
+        Me.Col_Daily_Wage.Width = 134
+        '
         'FRM_CLIENT_REG
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
         Me.BackColor = System.Drawing.Color.Black
-        Me.ClientSize = New System.Drawing.Size(761, 546)
+        Me.ClientSize = New System.Drawing.Size(1036, 546)
         Me.Controls.Add(Me.Btn_Search)
         Me.Controls.Add(Me.TxtSearch)
         Me.Controls.Add(Me.Cmb_Category)
@@ -131,4 +137,5 @@ Partial Class FRM_CLIENT_REG
     Friend WithEvents TxtSearch As TextBox
     Friend WithEvents Cmb_Category As ComboBox
     Friend WithEvents Label2 As Label
+    Friend WithEvents Col_Daily_Wage As ColumnHeader
 End Class

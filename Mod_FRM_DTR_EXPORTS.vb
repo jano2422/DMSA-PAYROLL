@@ -188,7 +188,7 @@ Module Mod_FRM_DTR_EXPORTS
         End If
     End Sub
 
-    Public Sub Export_DTR_Per_Client_to_Excell(sClient As String, sAddress As String, sCutOff As String)
+    Public Sub Export_DTR_Per_Client_to_Excell(sClient As String, sAddress As String, sDailyWage As String, sCutOff As String)
 
         Dim xlApp As Excel.Application = Nothing
         Dim wbOut As Excel.Workbook = Nothing
@@ -247,6 +247,7 @@ Module Mod_FRM_DTR_EXPORTS
             payrollSheet.Range("B7").Value = sClient
             payrollSheet.Range("B8").Value = sAddress
             payrollSheet.Range("B9").Value = readableCutOff
+            payslipSheet.Range("C11").Value = sDailyWage
 
             dtrHoursSheet.Range("B7").Value = sClient
             dtrHoursSheet.Range("B8").Value = sAddress

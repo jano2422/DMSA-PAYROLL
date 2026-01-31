@@ -667,7 +667,8 @@ Public Class FRM_DTR_BIOMETRIC
         Save_DTR_Total_Hours(GlobalVariables.DTR_Selected_SubClient_ID,
                          GlobalVariables.DTR_Selected_Employee_ID,
                          cutoff,
-                         CInt(Me.Lbl_Num_of_Reporting_Days.Text))
+                         CInt(Me.Lbl_Num_of_Reporting_Days.Text),
+                         CInt(Me.Lbl_ND_Days.Text))
 
         Save_DTR_Hours_Per_Day(GlobalVariables.DTR_Selected_SubClient_ID,
                            GlobalVariables.DTR_Selected_Employee_ID)

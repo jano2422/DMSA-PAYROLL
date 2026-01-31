@@ -162,6 +162,7 @@ Module Mod_Biometric_DTR
 
         ' Update UI elements showing the count of present and absent days
         FRM_DTR_BIOMETRIC.Lbl_Num_of_Reporting_Days.Text = presentCount
+        FRM_DTR_BIOMETRIC.Lbl_Actual_Rep_Days.Text = presentCount
         FRM_DTR_BIOMETRIC.Lbl_Absent_Count.Text = absentCount
     End Sub
 
@@ -526,7 +527,8 @@ Module Mod_Biometric_DTR
     iSub_Client_ID As Integer,
     sEmployee_ID As String,
     sCutOff_Period As String,
-    iNumber_of_Days As Integer)
+    iNumber_of_Days As Integer,
+    iNumber_of_ND_Days As Integer)
 
         Dim SQL As String = ""
         Connect_to_MDB()
@@ -536,7 +538,7 @@ Module Mod_Biometric_DTR
 
                 SQL = "INSERT INTO PRL_DTR_TOTAL_HOURS " &
       "(EMPLOYEE_ID, SUB_CLIENT_ID, CUTOFF_PERIOD, NUM_OF_DAYS, " &
-      "TOTAL_HOURS, REG, SUN, SH, LH, OT_REG) " &
+      "TOTAL_HOURS, REG, SUN, SH, LH, OT_REG, ND_DAYS) " &
       "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"
 
 
@@ -554,6 +556,7 @@ Module Mod_Biometric_DTR
                     SQLcmd.Parameters.AddWithValue("?", ToDec(.Rows(17).Cells(17).Value))
                     SQLcmd.Parameters.AddWithValue("?", ToDec(.Rows(17).Cells(18).Value))
                     SQLcmd.Parameters.AddWithValue("?", ToDec(.Rows(17).Cells(19).Value))
+                    SQLcmd.Parameters.AddWithValue("?", iNumber_of_ND_Days)
 
                     SQLcmd.ExecuteNonQuery()
                 End Using

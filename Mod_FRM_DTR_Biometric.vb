@@ -140,7 +140,7 @@ Module Mod_Biometric_DTR
 
             If isRowEmpty Then Continue For
 
-            Dim hasActualReport As Boolean = HasActualReport(row)
+            Dim hasActualReport As Boolean = RowHasActualReport(row)
             If hasActualReport Then
                 actualReportCount += 1
             End If
@@ -217,7 +217,7 @@ Module Mod_Biometric_DTR
         End If
     End Function
 
-    Private Function HasActualReport(row As DataGridViewRow) As Boolean
+    Private Function RowHasActualReport(row As DataGridViewRow) As Boolean
         Dim timeColumns As Integer() = {2, 3, 4, 5, 6, 7, 8, 9}
         For Each columnIndex As Integer In timeColumns
             If row.Cells.Count > columnIndex AndAlso

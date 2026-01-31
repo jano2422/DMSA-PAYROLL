@@ -129,6 +129,8 @@ Module Mod_Biometric_DTR
     Private Sub ProcessAttendance()
         Dim presentCount As Integer = 0
         Dim absentCount As Integer = 0
+        Dim actualReportCount As Integer = 0
+        Dim nightShiftCount As Integer = 0
 
         For Each row As DataGridViewRow In FRM_DTR_BIOMETRIC.GView_DTR.Rows
             ' Check if the entire row is empty (skip if true)
@@ -137,6 +139,11 @@ Module Mod_Biometric_DTR
         String.IsNullOrWhiteSpace(CStr(row.Cells(0)?.Value))
 
             If isRowEmpty Then Continue For
+
+            Dim hasActualReport As Boolean = HasActualReport(row)
+            If hasActualReport Then
+                actualReportCount += 1
+            End If
 
             ' Proceed with processing since this row contains data
             Dim firstDate As String = GetFirstDate(row.Cells(0)?.Value?.ToString())
@@ -150,6 +157,9 @@ Module Mod_Biometric_DTR
                 If scheduleRow.Cells(0)?.Value?.ToString() = dayOfMonth.ToString() Then
                     scheduleFound = True
                     ValidateAndCalculateAttendance(row, scheduleRow, presentCount)
+                    If hasActualReport AndAlso IsNightShiftRange(row) Then
+                        nightShiftCount += 1
+                    End If
                     Exit For
                 End If
             Next
@@ -163,6 +173,8 @@ Module Mod_Biometric_DTR
         ' Update UI elements showing the count of present and absent days
         FRM_DTR_BIOMETRIC.Lbl_Num_of_Reporting_Days.Text = presentCount
         FRM_DTR_BIOMETRIC.Lbl_Absent_Count.Text = absentCount
+        FRM_DTR_BIOMETRIC.Lbl_Actual_Rep_Days.Text = actualReportCount
+        FRM_DTR_BIOMETRIC.Lbl_ND_Days.Text = nightShiftCount
     End Sub
 
     ' Marks attendance as present and calculates late time
@@ -202,6 +214,44 @@ Module Mod_Biometric_DTR
         Else
             Return TimeSpan.Zero ' No lateness
         End If
+    End Function
+
+    Private Function HasActualReport(row As DataGridViewRow) As Boolean
+        Dim timeColumns As Integer() = {2, 3, 4, 5, 6, 7, 8, 9}
+        For Each columnIndex As Integer In timeColumns
+            If row.Cells.Count > columnIndex AndAlso
+            row.Cells(columnIndex).Value IsNot Nothing AndAlso
+            Not String.IsNullOrWhiteSpace(row.Cells(columnIndex).Value.ToString()) Then
+                Return True
+            End If
+        Next
+
+        Return False
+    End Function
+
+    Private Function IsNightShiftRange(row As DataGridViewRow) As Boolean
+        Dim timeInValue As Object = row.Cells(2)?.Value
+        If timeInValue Is Nothing OrElse String.IsNullOrWhiteSpace(timeInValue.ToString()) Then
+            Return False
+        End If
+
+        Dim parsedTimeIn As DateTime
+        Parsed_StrToDate(timeInValue.ToString(), parsedTimeIn)
+
+        Dim parsedTimeOut? As DateTime = ParseTimeOut(row)
+        If Not parsedTimeOut.HasValue Then
+            Return False
+        End If
+
+        Dim actualTimeOut As DateTime = parsedTimeOut.Value
+        If actualTimeOut < parsedTimeIn Then
+            actualTimeOut = actualTimeOut.AddDays(1)
+        End If
+
+        Dim nightStart As DateTime = New DateTime(parsedTimeIn.Year, parsedTimeIn.Month, parsedTimeIn.Day, 22, 0, 0)
+        Dim nightEnd As DateTime = nightStart.AddHours(8)
+
+        Return parsedTimeIn < nightEnd AndAlso actualTimeOut > nightStart
     End Function
 
     ' Calculates break durations and excess break time

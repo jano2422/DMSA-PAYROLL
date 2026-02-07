@@ -179,12 +179,14 @@ Module Mod_FRM_DTR_EXPORTS
             AddPerClientColumn(dgv, "colSss", "SSS", 70)
             AddPerClientColumn(dgv, "colPhilHealth", "PhilHealth", 90)
             AddPerClientColumn(dgv, "colPagIbig", "Pag-IBIG", 90)
+            AddPerClientColumn(dgv, "colOfficerAllo", "Officer Allo", 100)
         ElseIf IsSecondCutoff(cutoff) Then
             AddPerClientColumn(dgv, "colCb", "Cash Bond", 90)
             AddPerClientColumn(dgv, "colSssLoan", "SSS Loan", 90)
             AddPerClientColumn(dgv, "colSssCalLoan", "SSS Cal Loan", 110)
             AddPerClientColumn(dgv, "colPiLoan", "PI Loan", 90)
             AddPerClientColumn(dgv, "colPiCalLoan", "PI Cal Loan", 110)
+            AddPerClientColumn(dgv, "colOfficerAllo", "Officer Allo", 100)
         End If
     End Sub
 
@@ -283,6 +285,7 @@ Module Mod_FRM_DTR_EXPORTS
                     payrollSheet.Cells(r, 20).Value = row.Cells("colSss").Value 'SSS
                     payrollSheet.Cells(r, 21).Value = row.Cells("colPhilHealth").Value 'PH
                     payrollSheet.Cells(r, 22).Value = row.Cells("colPagIbig").Value 'PI
+                    payrollSheet.Cells(r, 23).Value = row.Cells("colOfficerAllo").Value 'Officer Allo
                 Else
                     '2nd cutoff → Loans/other deductions go to columns 20,21,22
                     payrollSheet.Cells(r, 20).Value = row.Cells("colCb").Value 'CB
@@ -290,6 +293,7 @@ Module Mod_FRM_DTR_EXPORTS
                     payrollSheet.Cells(r, 22).Value = row.Cells("colSssCalLoan").Value 'SSS CAL LOAN
                     payrollSheet.Cells(r, 23).Value = row.Cells("colPiLoan").Value 'PI LOAN
                     payrollSheet.Cells(r, 24).Value = row.Cells("colPiCalLoan").Value 'PI CAL LOAN
+                    payrollSheet.Cells(r, 25).Value = row.Cells("colOfficerAllo").Value 'Officer Allo
                 End If
 
                 rowIndex += 1
@@ -449,7 +453,7 @@ Module Mod_FRM_DTR_EXPORTS
             'SQL = "select LAST_NAME, FIRST_NAME, MIDDLE_NAME, NUM_OF_DAYS, TOTAL_HOURS, REG, SUN,SH,LH, RD_SUN_SH, RD_SUN_LH, ND_REG, ND_SUN, ND_SH, ND_LH, ND_RD_SUN_SH, ND_RD_SUN_LH, OT_REG from VIEW_DTR_PER_SUB_CLIENT"
             'SQL = SQL & " where A.SUB_CLIENT_ID = " & iClient_ID & " and CUTOFF_PERIOD = '" & sCut_Off & "'"
 
-            SQL = "SELECT A.A.EMPLOYEE_ID AS EMPLOYEE_ID, LAST_NAME, FIRST_NAME, MIDDLE_NAME, NUM_OF_DAYS, ND_DAYS, TOTAL_HOURS, REG, SUN, SH, LH, OT_REG, CB_DEDUCT, SSS_LOAN_DEDUCT, SSS_CAL_LOAN_DEDUCT, PI_LOAN_DEDUCT, PI_CAL_LOAN_DEDUCT,SSS_DEDUCT, PH_DEDUCT, PI_DEDUCT "
+            SQL = "SELECT A.A.EMPLOYEE_ID AS EMPLOYEE_ID, LAST_NAME, FIRST_NAME, MIDDLE_NAME, NUM_OF_DAYS, ND_DAYS, TOTAL_HOURS, REG, SUN, SH, LH, OT_REG, CB_DEDUCT, SSS_LOAN_DEDUCT, SSS_CAL_LOAN_DEDUCT, PI_LOAN_DEDUCT, PI_CAL_LOAN_DEDUCT, SSS_DEDUCT, PH_DEDUCT, PI_DEDUCT, OFFICERS_ALLOWANCE "
             SQL = SQL & "FROM VIEW_DTR_PER_SUB_CLIENT A "
             SQL = SQL & "WHERE A.A.SUB_CLIENT_ID = " & iClient_ID & " AND A.CUTOFF_PERIOD = '" & sCut_Off & "' "
             SQL = SQL & "AND A.D.ID = (SELECT MAX(D.ID) FROM PRL_DTR_TOTAL_HOURS D WHERE D.EMPLOYEE_ID = A.A.EMPLOYEE_ID AND D.CUTOFF_PERIOD = A.CUTOFF_PERIOD) "
@@ -491,7 +495,8 @@ Module Mod_FRM_DTR_EXPORTS
                                 NzZero(myRow, "OT_REG"),
                                 NzZero(myRow, "SSS_DEDUCT"),
                                 NzZero(myRow, "PH_DEDUCT"),
-                                NzZero(myRow, "PI_DEDUCT")
+                                NzZero(myRow, "PI_DEDUCT"),
+                                NzZero(myRow, "OFFICERS_ALLOWANCE")
                             )
                         Else
                             .Rows.Add(
@@ -510,7 +515,8 @@ Module Mod_FRM_DTR_EXPORTS
                                 NzZero(myRow, "SSS_LOAN_DEDUCT"),
                                 NzZero(myRow, "SSS_CAL_LOAN_DEDUCT"),
                                 NzZero(myRow, "PI_LOAN_DEDUCT"),
-                                NzZero(myRow, "PI_CAL_LOAN_DEDUCT")
+                                NzZero(myRow, "PI_CAL_LOAN_DEDUCT"),
+                                NzZero(myRow, "OFFICERS_ALLOWANCE")
                             )
                         End If
 

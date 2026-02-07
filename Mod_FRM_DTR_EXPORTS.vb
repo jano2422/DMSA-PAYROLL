@@ -604,13 +604,14 @@ Module Mod_FRM_DTR_EXPORTS
         piCalLoanDeduct As Decimal,
         philhealthDeduct As Decimal,
         sssDeduct As Decimal,
-        pagibigDeduct As Decimal
+        pagibigDeduct As Decimal,
+        officerAllowance As Decimal
     )
         Dim sql As String = "INSERT INTO PRL_DTR_TOTAL_HOURS " &
             "(EMPLOYEE_ID, SUB_CLIENT_ID, CUTOFF_PERIOD, NUM_OF_DAYS, " &
             "TOTAL_HOURS, REG, SUN, SH, LH, OT_REG, " &
-            "CB_DEDUCT, SSS_LOAN_DEDUCT, PI_LOAN_DEDUCT, PH_DEDUCT, SSS_DEDUCT, PI_DEDUCT, SSS_CAL_LOAN_DEDUCT, PI_CAL_LOAN_DEDUCT) " &
-            "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"
+            "CB_DEDUCT, SSS_LOAN_DEDUCT, PI_LOAN_DEDUCT, PH_DEDUCT, SSS_DEDUCT, PI_DEDUCT, SSS_CAL_LOAN_DEDUCT, PI_CAL_LOAN_DEDUCT, OFFICERS_ALLOWANCE) " &
+            "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"
 
         Try
             Connect_to_MDB()
@@ -633,6 +634,7 @@ Module Mod_FRM_DTR_EXPORTS
                 cmd.Parameters.AddWithValue("?", pagibigDeduct)
                 cmd.Parameters.AddWithValue("?", sssCalLoanDeduct)
                 cmd.Parameters.AddWithValue("?", piCalLoanDeduct)
+                cmd.Parameters.AddWithValue("?", officerAllowance)
                 cmd.ExecuteNonQuery()
             End Using
         Catch ex As Exception

@@ -1,8 +1,7 @@
 ﻿Imports System.Data.OleDb
-Imports Microsoft.Office.Interop
-Imports Excel = Microsoft.Office.Interop.Excel
-Imports System.Runtime.InteropServices
 Imports System.IO
+Imports System.Runtime.InteropServices
+Imports Excel = Microsoft.Office.Interop.Excel
 Module Mod_FRM_DTR_EXPORTS
 
     Private Sub WriteHeaderInfo(objSheet As Excel.Worksheet, sAddress As String, sCutOff As String)
@@ -168,6 +167,7 @@ Module Mod_FRM_DTR_EXPORTS
         AddPerClientColumn(dgv, "colItem", "Item", 50)
         AddPerClientColumn(dgv, "colName", "Name", 200)
         AddPerClientColumn(dgv, "colNumDays", "No. of Days", 90)
+        AddPerClientColumn(dgv, "colNumNdDays", "Night Diiferential Days", 90)
         AddPerClientColumn(dgv, "colTotalHours", "Total Hours", 90)
         AddPerClientColumn(dgv, "colReg", "REG", 50)
         AddPerClientColumn(dgv, "colSun", "SUN", 50)
@@ -274,6 +274,7 @@ Module Mod_FRM_DTR_EXPORTS
                 payrollSheet.Cells(r, 5).Value = row.Cells("colSun").Value 'SUN
                 payrollSheet.Cells(r, 8).Value = row.Cells("colLh").Value 'LH
                 payrollSheet.Cells(r, 9).Value = row.Cells("colSh").Value 'SH
+                payrollSheet.Cells(r, 10).Value = row.Cells("colNumNdDays").Value 'ND DAYS
                 payrollSheet.Cells(r, 11).Value = row.Cells("colOtReg").Value 'OT/HRS
 
                 'Deductions
@@ -448,7 +449,7 @@ Module Mod_FRM_DTR_EXPORTS
             'SQL = "select LAST_NAME, FIRST_NAME, MIDDLE_NAME, NUM_OF_DAYS, TOTAL_HOURS, REG, SUN,SH,LH, RD_SUN_SH, RD_SUN_LH, ND_REG, ND_SUN, ND_SH, ND_LH, ND_RD_SUN_SH, ND_RD_SUN_LH, OT_REG from VIEW_DTR_PER_SUB_CLIENT"
             'SQL = SQL & " where A.SUB_CLIENT_ID = " & iClient_ID & " and CUTOFF_PERIOD = '" & sCut_Off & "'"
 
-            SQL = "SELECT A.A.EMPLOYEE_ID AS EMPLOYEE_ID, LAST_NAME, FIRST_NAME, MIDDLE_NAME, NUM_OF_DAYS, TOTAL_HOURS, REG, SUN, SH, LH, OT_REG, CB_DEDUCT, SSS_LOAN_DEDUCT, SSS_CAL_LOAN_DEDUCT, PI_LOAN_DEDUCT, PI_CAL_LOAN_DEDUCT,SSS_DEDUCT, PH_DEDUCT, PI_DEDUCT "
+            SQL = "SELECT A.A.EMPLOYEE_ID AS EMPLOYEE_ID, LAST_NAME, FIRST_NAME, MIDDLE_NAME, NUM_OF_DAYS, ND_DAYS, TOTAL_HOURS, REG, SUN, SH, LH, OT_REG, CB_DEDUCT, SSS_LOAN_DEDUCT, SSS_CAL_LOAN_DEDUCT, PI_LOAN_DEDUCT, PI_CAL_LOAN_DEDUCT,SSS_DEDUCT, PH_DEDUCT, PI_DEDUCT "
             SQL = SQL & "FROM VIEW_DTR_PER_SUB_CLIENT A "
             SQL = SQL & "WHERE A.A.SUB_CLIENT_ID = " & iClient_ID & " AND A.CUTOFF_PERIOD = '" & sCut_Off & "' "
             SQL = SQL & "AND A.D.ID = (SELECT MAX(D.ID) FROM PRL_DTR_TOTAL_HOURS D WHERE D.EMPLOYEE_ID = A.A.EMPLOYEE_ID AND D.CUTOFF_PERIOD = A.CUTOFF_PERIOD) "
@@ -481,6 +482,7 @@ Module Mod_FRM_DTR_EXPORTS
                                 iRow.ToString(),
                                 fullName,
                                 NzZero(myRow, "NUM_OF_DAYS"),
+                                NzZero(myRow, "ND_DAYS"),
                                 NzZero(myRow, "TOTAL_HOURS"),
                                 NzZero(myRow, "REG"),
                                 NzZero(myRow, "SUN"),
@@ -497,6 +499,7 @@ Module Mod_FRM_DTR_EXPORTS
                                 iRow.ToString(),
                                 fullName,
                                 NzZero(myRow, "NUM_OF_DAYS"),
+                                NzZero(myRow, "ND_DAYS"),
                                 NzZero(myRow, "TOTAL_HOURS"),
                                 NzZero(myRow, "REG"),
                                 NzZero(myRow, "SUN"),

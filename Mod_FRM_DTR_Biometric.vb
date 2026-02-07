@@ -589,7 +589,7 @@ Module Mod_Biometric_DTR
                 SQL = "INSERT INTO PRL_DTR_TOTAL_HOURS " &
       "(EMPLOYEE_ID, SUB_CLIENT_ID, CUTOFF_PERIOD, NUM_OF_DAYS, " &
       "TOTAL_HOURS, REG, SUN, SH, LH, OT_REG, ND_DAYS) " &
-      "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"
+      "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"
 
 
 

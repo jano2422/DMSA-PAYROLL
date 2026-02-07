@@ -219,7 +219,7 @@ Module Mod_FRM_DTR_EXPORTS
                 Throw New Exception("Invalid cutoff format: " & sCutOff)
             End If
 
-            Dim templatePath As String = Path.Combine(Application.StartupPath, templateFileName)
+            Dim templatePath As String = Path.Combine(Application.StartupPath, "Templates", templateFileName)
             If Not File.Exists(templatePath) Then
                 Throw New FileNotFoundException("Template not found: " & templatePath)
             End If
@@ -353,7 +353,7 @@ Module Mod_FRM_DTR_EXPORTS
                 Throw New Exception("Invalid cutoff format: " & sCutOff)
             End If
 
-            Dim templatePath As String = Path.Combine(Application.StartupPath, templateFileName)
+            Dim templatePath As String = Path.Combine(Application.StartupPath, "Templates", templateFileName)
             If Not File.Exists(templatePath) Then
                 Throw New FileNotFoundException("Template not found: " & templatePath)
             End If

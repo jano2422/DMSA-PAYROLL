@@ -227,7 +227,8 @@ Module Mod_FRM_DTR_EXPORTS
             Dim safeClient As String = MakeSafeFileName(sClient)
             Dim safeCutoff As String = MakeSafeFileName(sCutOff)
 
-            Dim outPath As String = Path.Combine(Application.StartupPath,
+            Dim exportFolder As String = BuildExportFolder("Payroll EXPORTS", sClient, sCutOff)
+            Dim outPath As String = Path.Combine(exportFolder,
             $"Payroll_{safeClient}_{safeCutoff}_{DateTime.Now:yyyyMMdd_HHmmss}.xlsx")
 
             File.Copy(templatePath, outPath, True)
@@ -361,7 +362,8 @@ Module Mod_FRM_DTR_EXPORTS
             Dim safeClient As String = MakeSafeFileName(sClient)
             Dim safeCutoff As String = MakeSafeFileName(sCutOff)
 
-            Dim outPath As String = Path.Combine(Application.StartupPath,
+            Dim exportFolder As String = BuildExportFolder("DTR EXPORTS", sClient, sCutOff)
+            Dim outPath As String = Path.Combine(exportFolder,
             $"DTR_Hours_{safeClient}_{safeCutoff}_{DateTime.Now:yyyyMMdd_HHmmss}.xlsx")
 
             File.Copy(templatePath, outPath, True)
@@ -423,6 +425,38 @@ Module Mod_FRM_DTR_EXPORTS
         cleaned = cleaned.Trim()
         If cleaned.Length = 0 Then cleaned = "NA"
         Return cleaned
+    End Function
+
+    Private Function BuildExportFolder(baseFolderName As String, clientName As String, cutoff As String) As String
+        If String.IsNullOrWhiteSpace(baseFolderName) Then
+            Throw New ArgumentException("Base folder name is required.", NameOf(baseFolderName))
+        End If
+
+        If String.IsNullOrWhiteSpace(cutoff) Then
+            Throw New ArgumentException("Cutoff is required.", NameOf(cutoff))
+        End If
+
+        Dim parts = cutoff.Split("_"c)
+        If parts.Length <> 3 Then
+            Throw New FormatException("Invalid cutoff format. Expected: M_1st|2nd_YYYY")
+        End If
+
+        Dim monthNum As Integer = Integer.Parse(parts(0))
+        Dim cutOffPart As String = parts(1).ToLowerInvariant()
+        Dim yearNum As Integer = Integer.Parse(parts(2))
+
+        If cutOffPart <> "1st" AndAlso cutOffPart <> "2nd" Then
+            Throw New FormatException("Cutoff must be '1st' or '2nd'")
+        End If
+
+        Dim safeClient As String = MakeSafeFileName(clientName)
+        Dim yearFolder As String = yearNum.ToString()
+        Dim monthFolder As String = New DateTime(yearNum, monthNum, 1).ToString("MMMM").ToUpperInvariant()
+        Dim cutoffFolder As String = cutOffPart
+
+        Dim exportFolder As String = Path.Combine(Application.StartupPath, baseFolderName, safeClient, yearFolder, monthFolder, cutoffFolder)
+        Directory.CreateDirectory(exportFolder)
+        Return exportFolder
     End Function
 
     Private Sub ReleaseCom(ByVal obj As Object)

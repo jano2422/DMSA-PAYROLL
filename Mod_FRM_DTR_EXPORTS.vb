@@ -313,7 +313,6 @@ Module Mod_FRM_DTR_EXPORTS
         Catch ex As Exception
             MsgBox(ex.ToString)
         Finally
-            CloseWorkbook(wbOut, createdNewExcel)
             ReleaseCom(dtrHoursSheet)
             ReleaseCom(payslipSheet)
             ReleaseCom(payrollSheet)
@@ -401,7 +400,6 @@ Module Mod_FRM_DTR_EXPORTS
         Catch ex As Exception
             MsgBox(ex.ToString)
         Finally
-            CloseWorkbook(wbOut, createdNewExcel)
             ReleaseCom(dtrHoursSheet)
 
             ReleaseCom(wbOut)

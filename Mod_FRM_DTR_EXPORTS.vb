@@ -316,21 +316,23 @@ Module Mod_FRM_DTR_EXPORTS
             ReleaseCom(dtrHoursSheet)
             ReleaseCom(payslipSheet)
             ReleaseCom(payrollSheet)
-            ReleaseCom(wbOut)
-            ReleaseCom(xlApp)
+            ' Keep Excel alive for user interaction
+            wbOut = Nothing
+            xlApp = Nothing
         End Try
 
     End Sub
 
 
-    Public Sub Export_DTR_Hours_Per_Client_to_Excell(sClient As String, sAddress As String, sCutOff As String)
+    Public Sub Export_DTR_Hours_Per_Client_to_Excell(
+    sClient As String,
+    sAddress As String,
+    sCutOff As String)
 
         Dim xlApp As Excel.Application = Nothing
         Dim wbOut As Excel.Workbook = Nothing
-        Dim createdNewExcel As Boolean = False
-
-
         Dim dtrHoursSheet As Excel.Worksheet = Nothing
+        Dim createdNewExcel As Boolean = False
 
         Try
             xlApp = GetOrCreateExcelApp(createdNewExcel)
@@ -348,46 +350,39 @@ Module Mod_FRM_DTR_EXPORTS
                 Throw New Exception("Invalid cutoff format: " & sCutOff)
             End If
 
-            Dim templatePath As String = Path.Combine(Application.StartupPath, "Templates", templateFileName)
+            Dim templatePath As String =
+            Path.Combine(Application.StartupPath, "Templates", templateFileName)
+
             If Not File.Exists(templatePath) Then
                 Throw New FileNotFoundException("Template not found: " & templatePath)
             End If
 
-            Dim safeClient As String = MakeSafeFileName(sClient)
-            Dim safeCutoff As String = MakeSafeFileName(sCutOff)
+            Dim safeClient = MakeSafeFileName(sClient)
+            Dim safeCutoff = MakeSafeFileName(sCutOff)
 
-            Dim exportFolder As String = BuildExportFolder("DTR EXPORTS", sClient, sCutOff)
-            Dim outPath As String = Path.Combine(exportFolder,
+            Dim exportFolder = BuildExportFolder("DTR EXPORTS", sClient, sCutOff)
+            Dim outPath = Path.Combine(exportFolder,
             $"DTR_Hours_{safeClient}_{safeCutoff}_{DateTime.Now:yyyyMMdd_HHmmss}.xlsx")
 
             File.Copy(templatePath, outPath, True)
 
             '========================================
-            ' 2) Open copied workbook (output)
+            ' 2) Open workbook
             '========================================
             wbOut = xlApp.Workbooks.Open(outPath)
-
-
             dtrHoursSheet = CType(wbOut.Worksheets("DTR_Hours"), Excel.Worksheet)
 
             '========================================
-            ' 3) Fill header fields
+            ' 3) Fill header fields (SAFE RANGE HANDLING)
             '========================================
-            Dim readableCutOff As String = ConvertCutOffStringToReadable(sCutOff)
+            Dim readableCutOff = ConvertCutOffStringToReadable(sCutOff)
 
-
-            dtrHoursSheet.Range("B7").Value = sClient
-            dtrHoursSheet.Range("B8").Value = sAddress
-            dtrHoursSheet.Range("B10").Value = readableCutOff
-
-            '========================================
-            ' 4) Write rows from ListView
-            '========================================
-
-            Dim firstCutoff As Boolean = IsFirstCutoff(sCutOff)
+            WriteCell(dtrHoursSheet, "B7", sClient)
+            WriteCell(dtrHoursSheet, "B8", sAddress)
+            WriteCell(dtrHoursSheet, "B10", readableCutOff)
 
             '========================================
-            ' 4b) Write Hours Per Day matrix
+            ' 4) Write DTR matrix
             '========================================
             WriteDtrHoursMatrixToSheet(dtrHoursSheet, FRM_DTR_EXPORTS.DGV_DTR_MATRIX)
 
@@ -397,15 +392,31 @@ Module Mod_FRM_DTR_EXPORTS
             dtrHoursSheet.Calculate()
             wbOut.Save()
 
+            xlApp.Visible = True
+            wbOut.Activate()
+
+
         Catch ex As Exception
-            MsgBox(ex.ToString)
+            MsgBox(ex.Message, vbCritical, "Export Error")
+
         Finally
+            ' 🔥 Release ONLY inner objects
             ReleaseCom(dtrHoursSheet)
 
-            ReleaseCom(wbOut)
-            ReleaseCom(xlApp)
+            ' Do NOT release Workbook / Excel
+            ' Let user close Excel manually
+            wbOut = Nothing
+            xlApp = Nothing
         End Try
-
+    End Sub
+    Private Sub WriteCell(ws As Excel.Worksheet, address As String, value As Object)
+        Dim rng As Excel.Range = Nothing
+        Try
+            rng = ws.Range(address)
+            rng.Value = value
+        Finally
+            ReleaseCom(rng)
+        End Try
     End Sub
 
     Private Function GetOrCreateExcelApp(ByRef createdNew As Boolean) As Excel.Application
@@ -414,7 +425,12 @@ Module Mod_FRM_DTR_EXPORTS
 
         Try
             excelApp = CType(Marshal.GetActiveObject("Excel.Application"), Excel.Application)
-        Catch ex As Exception
+
+            ' 🔥 Validate Excel is truly alive
+            Dim hwnd = excelApp.Hwnd
+            Dim cnt = excelApp.Workbooks.Count
+
+        Catch
             excelApp = New Excel.Application()
             createdNew = True
         End Try
@@ -472,16 +488,17 @@ Module Mod_FRM_DTR_EXPORTS
         Return exportFolder
     End Function
 
-    Private Sub ReleaseCom(ByVal obj As Object)
+    Private Sub ReleaseCom(ByRef obj As Object)
         Try
-            If obj IsNot Nothing AndAlso Marshal.IsComObject(obj) Then
-                Marshal.FinalReleaseComObject(obj)
+            If obj IsNot Nothing Then
+                Marshal.ReleaseComObject(obj)
             End If
         Catch
         Finally
             obj = Nothing
         End Try
     End Sub
+
 
     Private Sub CloseWorkbook(ByVal workbook As Excel.Workbook, ByVal ownsExcelInstance As Boolean)
         If workbook Is Nothing Then

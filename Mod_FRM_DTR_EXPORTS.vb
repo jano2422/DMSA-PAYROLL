@@ -313,6 +313,7 @@ Module Mod_FRM_DTR_EXPORTS
         Catch ex As Exception
             MsgBox(ex.ToString)
         Finally
+            CloseWorkbook(wbOut, createdNewExcel)
             ReleaseCom(dtrHoursSheet)
             ReleaseCom(payslipSheet)
             ReleaseCom(payrollSheet)
@@ -400,6 +401,7 @@ Module Mod_FRM_DTR_EXPORTS
         Catch ex As Exception
             MsgBox(ex.ToString)
         Finally
+            CloseWorkbook(wbOut, createdNewExcel)
             ReleaseCom(dtrHoursSheet)
 
             ReleaseCom(wbOut)
@@ -480,6 +482,34 @@ Module Mod_FRM_DTR_EXPORTS
         Catch
         Finally
             obj = Nothing
+        End Try
+    End Sub
+
+    Private Sub CloseWorkbook(ByVal workbook As Excel.Workbook, ByVal ownsExcelInstance As Boolean)
+        If workbook Is Nothing Then
+            If ownsExcelInstance Then
+                CloseExcelInstance()
+            End If
+            Return
+        End If
+
+        Try
+            workbook.Close(False)
+        Catch
+        Finally
+            If ownsExcelInstance Then
+                CloseExcelInstance()
+            End If
+        End Try
+    End Sub
+
+    Private Sub CloseExcelInstance()
+        Try
+            Dim excelApp = CType(Marshal.GetActiveObject("Excel.Application"), Excel.Application)
+            If excelApp IsNot Nothing Then
+                excelApp.Quit()
+            End If
+        Catch
         End Try
     End Sub
 

@@ -194,17 +194,14 @@ Module Mod_FRM_DTR_EXPORTS
 
         Dim xlApp As Excel.Application = Nothing
         Dim wbOut As Excel.Workbook = Nothing
+        Dim createdNewExcel As Boolean = False
 
         Dim payrollSheet As Excel.Worksheet = Nothing
         Dim payslipSheet As Excel.Worksheet = Nothing
         Dim dtrHoursSheet As Excel.Worksheet = Nothing
 
         Try
-            xlApp = New Excel.Application With {
-            .Visible = True,
-            .WindowState = Excel.XlWindowState.xlMaximized,
-            .DisplayAlerts = False
-        }
+            xlApp = GetOrCreateExcelApp(createdNewExcel)
 
             '========================================
             ' 1) Choose template workbook based on cutoff
@@ -330,16 +327,13 @@ Module Mod_FRM_DTR_EXPORTS
 
         Dim xlApp As Excel.Application = Nothing
         Dim wbOut As Excel.Workbook = Nothing
+        Dim createdNewExcel As Boolean = False
 
 
         Dim dtrHoursSheet As Excel.Worksheet = Nothing
 
         Try
-            xlApp = New Excel.Application With {
-            .Visible = True,
-            .WindowState = Excel.XlWindowState.xlMaximized,
-            .DisplayAlerts = False
-        }
+            xlApp = GetOrCreateExcelApp(createdNewExcel)
 
             '========================================
             ' 1) Choose template workbook based on cutoff
@@ -414,6 +408,25 @@ Module Mod_FRM_DTR_EXPORTS
 
     End Sub
 
+    Private Function GetOrCreateExcelApp(ByRef createdNew As Boolean) As Excel.Application
+        Dim excelApp As Excel.Application = Nothing
+        createdNew = False
+
+        Try
+            excelApp = CType(Marshal.GetActiveObject("Excel.Application"), Excel.Application)
+        Catch ex As Exception
+            excelApp = New Excel.Application()
+            createdNew = True
+        End Try
+
+        If createdNew Then
+            excelApp.Visible = True
+            excelApp.WindowState = Excel.XlWindowState.xlMaximized
+            excelApp.DisplayAlerts = False
+        End If
+
+        Return excelApp
+    End Function
 
     '--------------------------
     ' Helpers

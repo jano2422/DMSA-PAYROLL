@@ -24,6 +24,7 @@ Public Class FRM_DTR_DEDUCTION_UPDATE
     Private ReadOnly _defaultPhilhealthDeduct As Decimal
     Private ReadOnly _defaultSssDeduct As Decimal
     Private ReadOnly _defaultPagibigDeduct As Decimal
+    Private ReadOnly _defaultOfficerAllowance As Decimal
 
     Private ReadOnly _isFirstCutoff As Boolean
 
@@ -35,6 +36,7 @@ Public Class FRM_DTR_DEDUCTION_UPDATE
     Private txtSssCalLoan As TextBox
     Private txtPiLoan As TextBox
     Private txtPiCalLoan As TextBox
+    Private txtOfficerAllowance As TextBox
 
     Public Sub New(
         employeeId As String,
@@ -55,7 +57,8 @@ Public Class FRM_DTR_DEDUCTION_UPDATE
         piCalLoanDeduct As Decimal,
         philhealthDeduct As Decimal,
         sssDeduct As Decimal,
-        pagibigDeduct As Decimal
+        pagibigDeduct As Decimal,
+        officerAllowance As Decimal
     )
         _employeeId = employeeId
         _employeeName = employeeName
@@ -76,6 +79,7 @@ Public Class FRM_DTR_DEDUCTION_UPDATE
         _defaultPhilhealthDeduct = philhealthDeduct
         _defaultSssDeduct = sssDeduct
         _defaultPagibigDeduct = pagibigDeduct
+        _defaultOfficerAllowance = officerAllowance
 
         _isFirstCutoff = IsFirstCutoff(cutoff)
 
@@ -121,6 +125,8 @@ Public Class FRM_DTR_DEDUCTION_UPDATE
             rowIndex += 1
             txtPagibig = AddField(mainPanel, rowIndex, "Pag-IBIG Deduction", _defaultPagibigDeduct)
             rowIndex += 1
+            txtOfficerAllowance = AddField(mainPanel, rowIndex, "Officer's Allowance", _defaultOfficerAllowance)
+            rowIndex += 1
         Else
             txtCashBond = AddField(mainPanel, rowIndex, "Cash Bond Deduction", _defaultCbDeduct)
             rowIndex += 1
@@ -131,6 +137,8 @@ Public Class FRM_DTR_DEDUCTION_UPDATE
             txtPiLoan = AddField(mainPanel, rowIndex, "Pag-IBIG Loan Deduction", _defaultPiLoanDeduct)
             rowIndex += 1
             txtPiCalLoan = AddField(mainPanel, rowIndex, "Pag-IBIG Cal Loan Deduction", _defaultPiCalLoanDeduct)
+            rowIndex += 1
+            txtOfficerAllowance = AddField(mainPanel, rowIndex, "Officer's Allowance", _defaultOfficerAllowance)
             rowIndex += 1
         End If
 
@@ -197,17 +205,20 @@ Public Class FRM_DTR_DEDUCTION_UPDATE
         Dim philhealthDeduct As Decimal = _defaultPhilhealthDeduct
         Dim sssDeduct As Decimal = _defaultSssDeduct
         Dim pagibigDeduct As Decimal = _defaultPagibigDeduct
+        Dim officerAllowance As Decimal = _defaultOfficerAllowance
 
         If _isFirstCutoff Then
             If Not TryReadDecimal(txtSss, sssDeduct, "SSS Deduction") Then Return
             If Not TryReadDecimal(txtPhilhealth, philhealthDeduct, "PhilHealth Deduction") Then Return
             If Not TryReadDecimal(txtPagibig, pagibigDeduct, "Pag-IBIG Deduction") Then Return
+            If Not TryReadDecimal(txtOfficerAllowance, officerAllowance, "Officer's Allowance") Then Return
         Else
             If Not TryReadDecimal(txtCashBond, cbDeduct, "Cash Bond Deduction") Then Return
             If Not TryReadDecimal(txtSssLoan, sssLoanDeduct, "SSS Loan Deduction") Then Return
             If Not TryReadDecimal(txtSssCalLoan, sssCalLoanDeduct, "SSS Cal Loan Deduction") Then Return
             If Not TryReadDecimal(txtPiLoan, piLoanDeduct, "Pag-IBIG Loan Deduction") Then Return
             If Not TryReadDecimal(txtPiCalLoan, piCalLoanDeduct, "Pag-IBIG Cal Loan Deduction") Then Return
+            If Not TryReadDecimal(txtOfficerAllowance, officerAllowance, "Officer's Allowance") Then Return
         End If
 
         Save_DTR_Deductions_Update(
@@ -228,7 +239,8 @@ Public Class FRM_DTR_DEDUCTION_UPDATE
             piCalLoanDeduct,
             philhealthDeduct,
             sssDeduct,
-            pagibigDeduct
+            pagibigDeduct,
+            officerAllowance
         )
 
         MessageBox.Show("Deductions updated successfully.", "Saved", MessageBoxButtons.OK, MessageBoxIcon.Information)

@@ -285,7 +285,7 @@ Module Mod_FRM_DTR_EXPORTS
                     payrollSheet.Cells(r, 20).Value = row.Cells("colSss").Value 'SSS
                     payrollSheet.Cells(r, 21).Value = row.Cells("colPhilHealth").Value 'PH
                     payrollSheet.Cells(r, 22).Value = row.Cells("colPagIbig").Value 'PI
-                    payrollSheet.Cells(r, 23).Value = row.Cells("colOfficerAllo").Value 'Officer Allo
+                    payrollSheet.Cells(r, 18).Value = row.Cells("colOfficerAllo").Value 'Officer Allo
                 Else
                     '2nd cutoff → Loans/other deductions go to columns 20,21,22
                     payrollSheet.Cells(r, 20).Value = row.Cells("colCb").Value 'CB
@@ -293,7 +293,7 @@ Module Mod_FRM_DTR_EXPORTS
                     payrollSheet.Cells(r, 22).Value = row.Cells("colSssCalLoan").Value 'SSS CAL LOAN
                     payrollSheet.Cells(r, 23).Value = row.Cells("colPiLoan").Value 'PI LOAN
                     payrollSheet.Cells(r, 24).Value = row.Cells("colPiCalLoan").Value 'PI CAL LOAN
-                    payrollSheet.Cells(r, 25).Value = row.Cells("colOfficerAllo").Value 'Officer Allo
+                    payrollSheet.Cells(r, 17).Value = row.Cells("colOfficerAllo").Value 'Officer Allo
                 End If
 
                 rowIndex += 1

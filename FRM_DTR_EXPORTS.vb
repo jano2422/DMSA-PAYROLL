@@ -118,7 +118,9 @@ Public Class FRM_DTR_EXPORTS
             End If
 
             ' Call export function
-            Export_DTR_Per_Client_to_Excell(Lbl_Client_Name.Text, Lbl_Client_Address.Text, Lbl_Client_Daily_Wage.Text, sCut_Off)
+            RunWithProcessing("Exporting payroll to Excel...", Sub()
+                                                                   Export_DTR_Per_Client_to_Excell(Lbl_Client_Name.Text, Lbl_Client_Address.Text, Lbl_Client_Daily_Wage.Text, sCut_Off)
+                                                               End Sub)
 
         Catch ex As Exception
             MessageBox.Show("An unexpected error occurred: " & ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
@@ -159,11 +161,26 @@ Public Class FRM_DTR_EXPORTS
             End If
 
             ' Call export function
-            Export_DTR_Hours_Per_Client_to_Excell(Lbl_Client_Name.Text, Lbl_Client_Address.Text, sCut_Off)
+            RunWithProcessing("Exporting DTR hours to Excel...", Sub()
+                                                                     Export_DTR_Hours_Per_Client_to_Excell(Lbl_Client_Name.Text, Lbl_Client_Address.Text, sCut_Off)
+                                                                 End Sub)
         Catch ex As Exception
             MessageBox.Show("An unexpected error occurred: " & ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
         End Try
 
+    End Sub
+
+    Private Sub RunWithProcessing(message As String, exportAction As Action)
+        Dim processingForm As New FrmProcessing(message)
+        Try
+            processingForm.Show(Me)
+            processingForm.Refresh()
+            Application.DoEvents()
+            exportAction()
+        Finally
+            processingForm.Close()
+            processingForm.Dispose()
+        End Try
     End Sub
 
     Private Sub DGV_DTR_Per_Client_CellDoubleClick(sender As Object, e As DataGridViewCellEventArgs) Handles DGV_DTR_Per_Client.CellDoubleClick

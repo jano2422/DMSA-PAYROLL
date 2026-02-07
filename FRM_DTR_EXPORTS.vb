@@ -203,10 +203,7 @@ Public Class FRM_DTR_EXPORTS
         Dim philhealthDeduct As Decimal = ReadDecimal(If(latestTotals Is Nothing, 0D, latestTotals("PH_DEDUCT")))
         Dim sssDeduct As Decimal = ReadDecimal(If(latestTotals Is Nothing, 0D, latestTotals("SSS_DEDUCT")))
         Dim pagibigDeduct As Decimal = ReadDecimal(If(latestTotals Is Nothing, 0D, latestTotals("PI_DEDUCT")))
-        Dim officerAllowance As Decimal = ReadDecimal(row.Cells("colOfficerAllo").Value)
-        If latestTotals IsNot Nothing AndAlso latestTotals.Table.Columns.Contains("OFFICERS_ALLOWANCE") Then
-            officerAllowance = ReadDecimal(latestTotals("OFFICERS_ALLOWANCE"))
-        End If
+        Dim officerAllowance As Decimal = ReadDecimal(If(latestTotals Is Nothing, 0D, latestTotals("OFFICERS_ALLOWANCE")))
 
         Using dialog As New FRM_DTR_DEDUCTION_UPDATE(
             employeeId,

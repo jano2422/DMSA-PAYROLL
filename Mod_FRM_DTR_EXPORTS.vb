@@ -427,16 +427,17 @@ Module Mod_FRM_DTR_EXPORTS
         Dim excelApp As Excel.Application = Nothing
         createdNew = False
 
+        ' Prefer creating a fresh instance so export starts cleanly.
+        ' If COM activation fails (0x80080005), fall back to attaching to an active
+        ' Excel instance using a timed background call to avoid UI hangs.
         Try
-            excelApp = CType(Marshal.GetActiveObject("Excel.Application"), Excel.Application)
-
-            ' Validate Excel is truly alive before reusing it.
-            Dim hwnd = excelApp.Hwnd
-            Dim cnt = excelApp.Workbooks.Count
-
-        Catch
             excelApp = CreateExcelAppWithRetry()
             createdNew = True
+        Catch ex As Exception
+            excelApp = TryGetActiveExcelAppWithTimeout(3000)
+            If excelApp Is Nothing Then
+                Throw
+            End If
         End Try
 
         excelApp.Visible = True
@@ -444,6 +445,38 @@ Module Mod_FRM_DTR_EXPORTS
         excelApp.DisplayAlerts = False
 
         Return excelApp
+    End Function
+
+    Private Function TryGetActiveExcelAppWithTimeout(timeoutMs As Integer) As Excel.Application
+        Dim activeExcel As Excel.Application = Nothing
+        Dim workerEx As Exception = Nothing
+
+        Dim worker As New Threading.Thread(
+            Sub()
+                Try
+                    Dim app = CType(Marshal.GetActiveObject("Excel.Application"), Excel.Application)
+
+                    ' Force COM round-trip to ensure instance is usable.
+                    Dim workbookCount As Integer = app.Workbooks.Count
+                    activeExcel = app
+                Catch ex As Exception
+                    workerEx = ex
+                End Try
+            End Sub)
+
+        worker.IsBackground = True
+        worker.SetApartmentState(Threading.ApartmentState.STA)
+        worker.Start()
+
+        If Not worker.Join(timeoutMs) Then
+            Return Nothing
+        End If
+
+        If workerEx IsNot Nothing Then
+            Return Nothing
+        End If
+
+        Return activeExcel
     End Function
 
     Private Function CreateExcelAppWithRetry() As Excel.Application

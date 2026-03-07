@@ -246,11 +246,11 @@ Partial Class FRM_MAIN
         Me.Label2.AutoSize = True
         Me.Label2.Font = New System.Drawing.Font("Microsoft Sans Serif", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.Label2.ForeColor = System.Drawing.Color.Maroon
-        Me.Label2.Location = New System.Drawing.Point(1424, 27)
+        Me.Label2.Location = New System.Drawing.Point(1365, 39)
         Me.Label2.Name = "Label2"
-        Me.Label2.Size = New System.Drawing.Size(223, 20)
+        Me.Label2.Size = New System.Drawing.Size(265, 20)
         Me.Label2.TabIndex = 24
-        Me.Label2.Text = "Delta Maroon Security Agency"
+        Me.Label2.Text = "Delta Maroon Security Agency Corp."
         '
         'Panel1
         '
@@ -382,7 +382,7 @@ Partial Class FRM_MAIN
         'PictureBox2
         '
         Me.PictureBox2.BackColor = System.Drawing.Color.Transparent
-        Me.PictureBox2.Image = Global.DMSA_System.My.Resources.Resources.DeltaMaroon_NoBg
+        Me.PictureBox2.Image = Global.DMSA_System.My.Resources.Resources.DMSA_Logo
         Me.PictureBox2.Location = New System.Drawing.Point(41, 15)
         Me.PictureBox2.Name = "PictureBox2"
         Me.PictureBox2.Size = New System.Drawing.Size(200, 200)
@@ -431,7 +431,7 @@ Partial Class FRM_MAIN
         Me.MainMenuStrip = Me.MenuStrip1
         Me.Name = "FRM_MAIN"
         Me.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen
-        Me.Text = "Delta Maroon Business System"
+        Me.Text = "Delta Maroon Security Agency Corp"
         Me.WindowState = System.Windows.Forms.FormWindowState.Maximized
         Me.Grp_HR_Menu.ResumeLayout(False)
         Me.GRP_Payroll.ResumeLayout(False)

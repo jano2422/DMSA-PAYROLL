@@ -637,21 +637,30 @@
             MsgBox("Only Administrator can delete records.", vbExclamation, "Delete not allowed")
             Exit Sub
 
-            Dim sResponse As String
-            sResponse = MsgBox("Are you sure you want to delete this record?", vbQuestion + vbYesNo, "Delete?")
-            If sResponse = vbYes Then
-                Call Delete_Client_History(Me.Lbl_Client_Ref_ID.Text)
-                Call Show_Employee_Client_History_at_Client_Change(Me.Lbl_Employee_ID.Text)
-                Call Clear_Client_Textboxes()
+            ' Control: 08-Feb-26 --> Do not allow delete when there is only one record left. The target employee will be removed from the Employee List since it is requiring a record from Client Transfer table
+            If Me.LV_Client_History.Items.Count = 1 Then
+                MsgBox("Can not delete this record. One record should remain in the history list.", vbExclamation, "Delete is not allowed")
+                Exit Sub
             Else
 
             End If
 
-            ' System bug --> What if an old record was selected and then changed the Client ID, it will treat like the Client was changed and will accept the change.
-            ' Need to get the latest Client and then compare it with the selected Client ID.
 
-        Else ' Cancel
-            Btn_Client_Delete.Text = "Delete"
+            Dim sResponse As String
+                sResponse = MsgBox("Are you sure you want to delete this record?", vbQuestion + vbYesNo, "Delete?")
+                If sResponse = vbYes Then
+                    Call Delete_Client_History(Me.Lbl_Client_Ref_ID.Text)
+                    Call Show_Employee_Client_History_at_Client_Change(Me.Lbl_Employee_ID.Text)
+                    Call Clear_Client_Textboxes()
+                Else
+
+                End If
+
+                ' System bug --> What if an old record was selected and then changed the Client ID, it will treat like the Client was changed and will accept the change.
+                ' Need to get the latest Client and then compare it with the selected Client ID.
+
+            Else ' Cancel
+                Btn_Client_Delete.Text = "Delete"
             Btn_Client_Delete.Enabled = False
             Btn_Client_Change.Text = "Change Assignment"
             Grp_Client_Info.Enabled = False

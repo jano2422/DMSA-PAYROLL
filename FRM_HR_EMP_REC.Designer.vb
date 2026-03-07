@@ -113,10 +113,10 @@ Partial Class FRM_EMP_REG
         Me.Label1 = New System.Windows.Forms.Label()
         Me.Txt_ATM_Number = New System.Windows.Forms.TextBox()
         Me.Label23 = New System.Windows.Forms.Label()
-        Me.PictureBox2 = New System.Windows.Forms.PictureBox()
         Me.OpenFileDialog1 = New System.Windows.Forms.OpenFileDialog()
         Me.Btn_LongList = New FontAwesome.Sharp.IconButton()
         Me.Btn_ShortList = New FontAwesome.Sharp.IconButton()
+        Me.PictureBox2 = New System.Windows.Forms.PictureBox()
         Me.MenuStrip1.SuspendLayout()
         Me.Grp_BasicInfo.SuspendLayout()
         Me.GroupBox1.SuspendLayout()
@@ -969,7 +969,7 @@ Partial Class FRM_EMP_REG
         '
         Me.Pic_Employee_Photo.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D
         Me.Pic_Employee_Photo.Image = Global.DMSA_System.My.Resources.Resources.DMSA_Logo
-        Me.Pic_Employee_Photo.Location = New System.Drawing.Point(17, 28)
+        Me.Pic_Employee_Photo.Location = New System.Drawing.Point(17, 29)
         Me.Pic_Employee_Photo.Name = "Pic_Employee_Photo"
         Me.Pic_Employee_Photo.Size = New System.Drawing.Size(241, 241)
         Me.Pic_Employee_Photo.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage
@@ -1079,16 +1079,6 @@ Partial Class FRM_EMP_REG
         Me.Label23.TabIndex = 143
         Me.Label23.Text = "ATM Account #:"
         '
-        'PictureBox2
-        '
-        Me.PictureBox2.BackColor = System.Drawing.Color.FromArgb(CType(CType(128, Byte), Integer), CType(CType(255, Byte), Integer), CType(CType(128, Byte), Integer))
-        Me.PictureBox2.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle
-        Me.PictureBox2.Location = New System.Drawing.Point(24, 873)
-        Me.PictureBox2.Name = "PictureBox2"
-        Me.PictureBox2.Size = New System.Drawing.Size(1454, 69)
-        Me.PictureBox2.TabIndex = 3
-        Me.PictureBox2.TabStop = False
-        '
         'OpenFileDialog1
         '
         Me.OpenFileDialog1.FileName = "OpenFileDialog1"
@@ -1117,6 +1107,16 @@ Partial Class FRM_EMP_REG
         Me.Btn_ShortList.Size = New System.Drawing.Size(55, 44)
         Me.Btn_ShortList.TabIndex = 159
         Me.Btn_ShortList.UseVisualStyleBackColor = False
+        '
+        'PictureBox2
+        '
+        Me.PictureBox2.BackColor = System.Drawing.Color.FromArgb(CType(CType(128, Byte), Integer), CType(CType(255, Byte), Integer), CType(CType(128, Byte), Integer))
+        Me.PictureBox2.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle
+        Me.PictureBox2.Location = New System.Drawing.Point(24, 873)
+        Me.PictureBox2.Name = "PictureBox2"
+        Me.PictureBox2.Size = New System.Drawing.Size(1454, 69)
+        Me.PictureBox2.TabIndex = 3
+        Me.PictureBox2.TabStop = False
         '
         'FRM_EMP_REG
         '

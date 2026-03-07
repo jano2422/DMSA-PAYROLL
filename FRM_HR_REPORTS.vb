@@ -1,7 +1,7 @@
 ﻿Imports Microsoft.Office.Interop
 Public Class FRM_HR_REPORTS
-    Private Sub Btn_Load_Chart_Data_Click(sender As Object, e As EventArgs) Handles Btn_Load_Chart_Data.Click
 
+    Private Sub Btn_Load_Chart_Data_Click_1(sender As Object, e As EventArgs) Handles Btn_Load_Chart_Data.Click
         Call Show_Employee_Status_in_Chart() ' Breakdown per status
 
         Me.CH_Emp_Status.Series("Count").Points.Clear()
@@ -9,20 +9,122 @@ Public Class FRM_HR_REPORTS
         For i = 0 To Me.LV_Report_Statistics1.Items.Count - 1
             Me.CH_Emp_Status.Series("Count").Points.AddXY(Me.LV_Report_Statistics1.Items(i).Text, Me.LV_Report_Statistics1.Items(i).SubItems(1).Text)
         Next i
+    End Sub
+    Private Sub Btn_Hired_Per_Year_Click_1(sender As Object, e As EventArgs) Handles Btn_Hired_Per_Year.Click
+        Call Show_in_Chart_Hired_Per_Year("Active") ' Breakdown per Year
+
+        ' Clear previous points
+        Me.CH_Emp_Status.Series("Count").Points.Clear()
+
+        ' Add new points from ListView
+        For i = 0 To Me.LV_Report_Statistics1.Items.Count - 1
+            Me.CH_Emp_Status.Series("Count").Points.AddXY(
+        Me.LV_Report_Statistics1.Items(i).Text.ToString(),
+        CInt(Me.LV_Report_Statistics1.Items(i).SubItems(1).Text))
+        Next i
+
+        ' Configure X-axis to show all labels
+        With Me.CH_Emp_Status.ChartAreas(0).AxisX
+            .Interval = 1                     ' Show every X value
+            .IsLabelAutoFit = False            ' Disable automatic label fitting
+            .LabelStyle.Angle = 0              ' Optional: rotate if needed
+        End With
+
+        ' Ensure X values are treated as string categories
+        Me.CH_Emp_Status.Series("Count").XValueType = DataVisualization.Charting.ChartValueType.String
+        Me.CH_Emp_Status.Series("Count").YValueType = DataVisualization.Charting.ChartValueType.Int32
+        Me.CH_Emp_Status.Series("Count").ChartType = DataVisualization.Charting.SeriesChartType.Column
+    End Sub
+    Private Sub Btn_Hired_Per_Month_Click_1(sender As Object, e As EventArgs) Handles Btn_Hired_Per_Month.Click
+        Dim sEmp_Status As String
+
+        If Cmb_Emp_Status.SelectedIndex = -1 Then
+            Cmb_Emp_Status.SelectedIndex = 0
+        End If
+
+        Select Case Cmb_Emp_Status.Text
+            Case "Hired" ' Set to empty so all status will be covered ( Active or already resigned, ther are all HIRED in that month ) 
+                sEmp_Status = ""
+            Case Else
+                sEmp_Status = Cmb_Emp_Status.Text
+        End Select
+
+        Call Show_in_Chart_Hired_Per_Month(sEmp_Status) ' Breakdown per Month
+
+        ' Clear previous points
+        Me.CH_Emp_Status.Series("Count").Points.Clear()
+
+        ' Add new points from ListView
+        For i = 0 To Me.LV_Report_Statistics1.Items.Count - 1
+            Me.CH_Emp_Status.Series("Count").Points.AddXY(
+        Me.LV_Report_Statistics1.Items(i).Text.ToString(),
+        CInt(Me.LV_Report_Statistics1.Items(i).SubItems(1).Text))
+        Next i
+
+        ' Configure X-axis to show all labels
+        With Me.CH_Emp_Status.ChartAreas(0).AxisX
+            .Interval = 1                     ' Show every X value
+            .IsLabelAutoFit = False            ' Disable automatic label fitting
+            .LabelStyle.Angle = 0              ' Optional: rotate if needed
+        End With
+
+        ' Ensure X values are treated as string categories
+        Me.CH_Emp_Status.Series("Count").XValueType = DataVisualization.Charting.ChartValueType.String
+        Me.CH_Emp_Status.Series("Count").YValueType = DataVisualization.Charting.ChartValueType.Int32
+        Me.CH_Emp_Status.Series("Count").ChartType = DataVisualization.Charting.SeriesChartType.Column
+    End Sub
+    Private Sub Btn_Gender_Count_Click(sender As Object, e As EventArgs) Handles Btn_Gender_Count.Click
+        Call Show_in_Chart_Gender_statistics("Active")
+
+        ' Clear previous points
+        Me.CH_Emp_Status.Series("Count").Points.Clear()
+
+        ' Add new points from ListView
+        For i = 0 To Me.LV_Report_Statistics1.Items.Count - 1
+            Me.CH_Emp_Status.Series("Count").Points.AddXY(
+        Me.LV_Report_Statistics1.Items(i).Text.ToString(),
+        CInt(Me.LV_Report_Statistics1.Items(i).SubItems(1).Text))
+        Next i
+
+        ' Configure X-axis to show all labels
+        With Me.CH_Emp_Status.ChartAreas(0).AxisX
+            .Interval = 1                     ' Show every X value
+            .IsLabelAutoFit = False            ' Disable automatic label fitting
+            .LabelStyle.Angle = 0              ' Optional: rotate if needed
+        End With
+
+        ' Ensure X values are treated as string categories
+        Me.CH_Emp_Status.Series("Count").XValueType = DataVisualization.Charting.ChartValueType.String
+        Me.CH_Emp_Status.Series("Count").YValueType = DataVisualization.Charting.ChartValueType.Int32
+        Me.CH_Emp_Status.Series("Count").ChartType = DataVisualization.Charting.SeriesChartType.Pie
 
 
     End Sub
 
-    Private Sub Btn_Hired_Per_Year_Click(sender As Object, e As EventArgs) Handles Btn_Hired_Per_Year.Click
+    Private Sub Btn_Age_Count_Click(sender As Object, e As EventArgs) Handles Btn_Age_Count.Click
+        Call Show_in_Chart_Age_Statistics("Active")
 
-        Call Show_in_Chart_Hired_Per_Year(Me.Cmb_Status.Text) ' Breakdown per Year
-
+        ' Clear previous points
         Me.CH_Emp_Status.Series("Count").Points.Clear()
 
+        ' Add new points from ListView
         For i = 0 To Me.LV_Report_Statistics1.Items.Count - 1
-            Me.CH_Emp_Status.Series("Count").Points.AddXY(Me.LV_Report_Statistics1.Items(i).Text, Me.LV_Report_Statistics1.Items(i).SubItems(1).Text)
+            Me.CH_Emp_Status.Series("Count").Points.AddXY(
+        Me.LV_Report_Statistics1.Items(i).Text.ToString(),
+        CInt(Me.LV_Report_Statistics1.Items(i).SubItems(1).Text))
         Next i
 
+        ' Configure X-axis to show all labels
+        With Me.CH_Emp_Status.ChartAreas(0).AxisX
+            .Interval = 1                     ' Show every X value
+            .IsLabelAutoFit = False            ' Disable automatic label fitting
+            .LabelStyle.Angle = 0              ' Optional: rotate if needed
+        End With
+
+        ' Ensure X values are treated as string categories
+        Me.CH_Emp_Status.Series("Count").XValueType = DataVisualization.Charting.ChartValueType.String
+        Me.CH_Emp_Status.Series("Count").YValueType = DataVisualization.Charting.ChartValueType.Int32
+        Me.CH_Emp_Status.Series("Count").ChartType = DataVisualization.Charting.SeriesChartType.Bar
     End Sub
 
     Private Sub Cmb_Expiry_Status_SelectedIndexChanged_1(sender As Object, e As EventArgs) Handles Cmb_Expiry_Status.SelectedIndexChanged
@@ -272,14 +374,9 @@ Public Class FRM_HR_REPORTS
         Cmb_Expiry_Status.SelectedIndex = 3 'Expired
         Cmb_Client_Expiration.SelectedIndex = 4 'All
         Cmb_LeaveType.SelectedItem = "All"
-        Cmb_Status.SelectedIndex = 0
         Cmb_Pending_Category.SelectedIndex = 0
 
 
-
-    End Sub
-
-    Private Sub Cmb_LeaveType_SelectedIndexChanged(sender As Object, e As EventArgs) Handles Cmb_LeaveType.SelectedIndexChanged
 
     End Sub
 

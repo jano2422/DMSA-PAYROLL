@@ -366,7 +366,7 @@ Partial Class FRM_DTR_EXPORTS
         Me.Lbl_Client_Daily_Wage.ForeColor = System.Drawing.Color.White
         Me.Lbl_Client_Daily_Wage.Location = New System.Drawing.Point(184, 267)
         Me.Lbl_Client_Daily_Wage.Name = "Lbl_Client_Daily_Wage"
-        Me.Lbl_Client_Daily_Wage.Size = New System.Drawing.Size(46, 23)
+        Me.Lbl_Client_Daily_Wage.Size = New System.Drawing.Size(0, 23)
         Me.Lbl_Client_Daily_Wage.TabIndex = 616
         '
         'FRM_DTR_EXPORTS

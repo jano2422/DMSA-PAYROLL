@@ -327,6 +327,9 @@
     <EmbeddedResource Include="FRM_DTR_BIOMETRIC_WINDOW.resx">
       <DependentUpon>FRM_DTR_BIOMETRIC_WINDOW.vb</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="FRM_DTR_DEDUCTION_UPDATE.resx">
+      <DependentUpon>FRM_DTR_DEDUCTION_UPDATE.vb</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="FRM_DTR_EMPLOYEE_LIST.resx">
       <DependentUpon>FRM_DTR_EMPLOYEE_LIST.vb</DependentUpon>
     </EmbeddedResource>
@@ -433,6 +436,7 @@
     <None Include="bin\Debug\Arrow_Left.png" />
     <None Include="bin\Debug\DeltaMaroon_NoBg.png" />
     <None Include="Resources\Recruitment.PNG" />
+    <None Include="Resources\eagle_security_services_logo.jpg" />
     <Content Include="SqlServerTypes\x64\msvcr120.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>

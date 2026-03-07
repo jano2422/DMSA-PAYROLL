@@ -98,7 +98,7 @@ Partial Class FRM_LOGIN
         'PictureBox2
         '
         Me.PictureBox2.BackColor = System.Drawing.Color.Transparent
-        Me.PictureBox2.Image = Global.DMSA_System.My.Resources.Resources.DeltaMaroon_NoBg
+        Me.PictureBox2.Image = Global.DMSA_System.My.Resources.Resources.DMSA_Logo
         Me.PictureBox2.Location = New System.Drawing.Point(31, 37)
         Me.PictureBox2.Name = "PictureBox2"
         Me.PictureBox2.Size = New System.Drawing.Size(200, 200)

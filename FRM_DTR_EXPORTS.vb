@@ -253,4 +253,8 @@ Public Class FRM_DTR_EXPORTS
     Private Sub Label7_Click(sender As Object, e As EventArgs) Handles Label7.Click
 
     End Sub
+
+    Private Sub DGV_DTR_Per_Client_CellContentClick(sender As Object, e As DataGridViewCellEventArgs) Handles DGV_DTR_Per_Client.CellContentClick
+
+    End Sub
 End Class

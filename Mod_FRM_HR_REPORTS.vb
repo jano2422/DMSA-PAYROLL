@@ -664,6 +664,109 @@ WHERE
 
 
     End Sub
+    Public Sub Show_in_Chart_Gender_statistics(sStatus As String)
+
+
+        Dim da As New OleDb.OleDbDataAdapter
+        Dim dt As New DataTable
+
+        dt.Clear()
+        dt.Reset()
+        Dim SQL As String
+
+        Try
+
+            SQL = "Select [GENDER], Count(*) As TotalCount"
+            SQL = SQL & " From HR_APPLICATION_DTL A, HR_EMPLOYEE_RECORD_HDR B"
+            SQL = SQL & " Where A.APPLICATION_ID = B.APPLICATION_ID And B.EMPLOYMENT_STATUS = 'Active'"
+            SQL = SQL & " GROUP BY [GENDER] ORDER BY [GENDER]"
+
+            da = New OleDbDataAdapter(SQL, Mod_GlobalVariables.GlobalVariables.GlobalCon)
+            da.Fill(dt)
+
+
+            If dt.Rows.Count > 0 Then ' SHOW DATAS
+                With FRM_HR_REPORTS.LV_Report_Statistics1
+
+                    Dim myRow As DataRow
+                    .Items.Clear()
+                    For Each myRow In dt.Rows
+
+                        .Items.Add(myRow.Item("GENDER")) ' Company ID
+                        .Items(.Items.Count - 1).SubItems.Add(myRow.Item("TotalCount"))
+
+
+                    Next
+
+                End With
+            Else
+                FRM_HR_REPORTS.LV_Report_Statistics1.Items.Clear()
+            End If
+
+        Catch ex As Exception
+            MsgBox(ex.ToString)
+        End Try
+
+        GlobalVariables.GlobalCon.Close()
+
+    End Sub
+
+    Public Sub Show_in_Chart_Age_Statistics(sStatus As String)
+
+
+        Dim da As New OleDb.OleDbDataAdapter
+        Dim dt As New DataTable
+
+        dt.Clear()
+        dt.Reset()
+        Dim SQL As String
+
+        Try
+            SQL = "SELECT "
+            SQL = SQL & "DateDiff(""yyyy"", dtl.BIRTH_DATE, Date()) "
+            SQL = SQL & "- IIf(Format(Date(), ""mmdd"") < Format(dtl.BIRTH_DATE, ""mmdd""), 1, 0) AS Age, "
+            SQL = SQL & "Count(*) AS TotalCount "
+            SQL = SQL & "FROM HR_EMPLOYEE_RECORD_HDR AS hdr "
+            SQL = SQL & "INNER JOIN HR_APPLICATION_DTL AS dtl "
+            SQL = SQL & "ON hdr.APPLICATION_ID = dtl.APPLICATION_ID "
+            SQL = SQL & "WHERE hdr.EMPLOYMENT_STATUS = 'Active' "
+            SQL = SQL & "AND dtl.BIRTH_DATE Is Not Null "
+            SQL = SQL & "GROUP BY "
+            SQL = SQL & "DateDiff(""yyyy"", dtl.BIRTH_DATE, Date()) "
+            SQL = SQL & "- IIf(Format(Date(), ""mmdd"") < Format(dtl.BIRTH_DATE, ""mmdd""), 1, 0) "
+            SQL = SQL & "ORDER BY "
+            SQL = SQL & "DateDiff(""yyyy"", dtl.BIRTH_DATE, Date()) "
+            SQL = SQL & "- IIf(Format(Date(), ""mmdd"") < Format(dtl.BIRTH_DATE, ""mmdd""), 1, 0)"
+
+            da = New OleDbDataAdapter(SQL, Mod_GlobalVariables.GlobalVariables.GlobalCon)
+            da.Fill(dt)
+
+
+            If dt.Rows.Count > 0 Then ' SHOW DATAS
+                With FRM_HR_REPORTS.LV_Report_Statistics1
+
+                    Dim myRow As DataRow
+                    .Items.Clear()
+                    For Each myRow In dt.Rows
+
+                        .Items.Add(myRow.Item("Age")) ' Company ID
+                        .Items(.Items.Count - 1).SubItems.Add(myRow.Item("TotalCount"))
+
+
+                    Next
+
+                End With
+            Else
+                FRM_HR_REPORTS.LV_Report_Statistics1.Items.Clear()
+            End If
+
+        Catch ex As Exception
+            MsgBox(ex.ToString)
+        End Try
+
+        GlobalVariables.GlobalCon.Close()
+
+    End Sub
 
     Public Sub Show_in_Chart_Hired_Per_Year(sStatus As String)
 
@@ -677,7 +780,11 @@ WHERE
 
         Try
 
-            SQL = "Select FORMAT(DATE_HIRED,'yyyy') AS YEAR_VALUE, count(*) as status_count From HR_EMPLOYEE_RECORD_HDR WHERE EMPLOYMENT_STATUS = '" & sStatus & "' Group By FORMAT(DATE_HIRED,'yyyy') order by 2 desc"
+            'SQL = "Select FORMAT(DATE_HIRED,'yyyy') AS YEAR_VALUE, count(*) as status_count From HR_EMPLOYEE_RECORD_HDR WHERE EMPLOYMENT_STATUS = '" & sStatus & "' Group By FORMAT(DATE_HIRED,'yyyy') order by 2 desc"
+
+            ' I Removed the Status, since status can change over time
+            SQL = "Select FORMAT(DATE_HIRED,'yyyy') AS YEAR_VALUE, count(*) as status_count From HR_EMPLOYEE_RECORD_HDR Group By FORMAT(DATE_HIRED,'yyyy') order by 2 desc"
+
             da = New OleDbDataAdapter(SQL, Mod_GlobalVariables.GlobalVariables.GlobalCon)
             da.Fill(dt)
 
@@ -694,6 +801,7 @@ WHERE
 
 
                     Next
+
                 End With
             Else
                 FRM_HR_REPORTS.LV_Report_Statistics1.Items.Clear()
@@ -705,10 +813,58 @@ WHERE
 
         GlobalVariables.GlobalCon.Close()
 
+    End Sub
+
+    Public Sub Show_in_Chart_Hired_Per_Month(sStatus As String)
+
+        Dim da As New OleDb.OleDbDataAdapter
+        Dim dt As New DataTable
+
+        dt.Clear()
+        dt.Reset()
+        Dim SQL As String
+
+        Try
+
+            'SQL = "Select FORMAT(DATE_HIRED,'yyyy') AS YEAR_VALUE, count(*) as status_count From HR_EMPLOYEE_RECORD_HDR WHERE EMPLOYMENT_STATUS = '" & sStatus & "' Group By FORMAT(DATE_HIRED,'yyyy') order by 2 desc"
+
+            SQL = "SELECT Format([DATE_HIRED], ""yyyy-mm"") AS HireMonth, Count(*) AS TotalHired"
+            SQL = SQL & " From HR_EMPLOYEE_RECORD_HDR"
+            SQL = SQL & "  Where DATE_HIRED Is Not NULL AND Year([DATE_HIRED]) IN (Year(Date()), Year(Date()) - 1)"
+            SQL = SQL & "  AND UCase(EMPLOYMENT_STATUS) like '%" & sStatus & "%'"
+            SQL = SQL & " GROUP BY Format([DATE_HIRED], ""yyyy-mm"")"
+            SQL = SQL & "  ORDER BY Format([DATE_HIRED], ""yyyy-mm"")"
+
+            da = New OleDbDataAdapter(SQL, Mod_GlobalVariables.GlobalVariables.GlobalCon)
+            da.Fill(dt)
 
 
+            If dt.Rows.Count > 0 Then ' SHOW DATAS
+                With FRM_HR_REPORTS.LV_Report_Statistics1
+
+                    Dim myRow As DataRow
+                    .Items.Clear()
+                    For Each myRow In dt.Rows
+
+                        .Items.Add(myRow.Item("HireMonth")) ' Company ID
+                        .Items(.Items.Count - 1).SubItems.Add(myRow.Item("TotalHired"))
+
+
+                    Next
+
+                End With
+            Else
+                FRM_HR_REPORTS.LV_Report_Statistics1.Items.Clear()
+            End If
+
+        Catch ex As Exception
+            MsgBox(ex.ToString)
+        End Try
+
+        GlobalVariables.GlobalCon.Close()
 
     End Sub
+
     Public Sub Show_Employee_Status_in_Chart()
 
         Dim da As New OleDb.OleDbDataAdapter
@@ -719,7 +875,7 @@ WHERE
         Dim SQL As String
 
         Try
-            SQL = "Select STATUS, COUNT(*) As status_count From HR_APPLICAtion_hdr Group By STATUS order by 2 DESC"
+            SQL = "Select STATUS, COUNT(*) As status_count From HR_APPLICAtion_hdr WHERE STATUS IN ('Active','Floating','Interview','Requirement','For Completion') Group By STATUS order by 2 DESC"
             da = New OleDbDataAdapter(SQL, Mod_GlobalVariables.GlobalVariables.GlobalCon)
             da.Fill(dt)
 

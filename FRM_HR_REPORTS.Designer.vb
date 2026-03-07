@@ -22,9 +22,9 @@ Partial Class FRM_HR_REPORTS
     'Do not modify it using the code editor.
     <System.Diagnostics.DebuggerStepThrough()>
     Private Sub InitializeComponent()
-        Dim ChartArea1 As System.Windows.Forms.DataVisualization.Charting.ChartArea = New System.Windows.Forms.DataVisualization.Charting.ChartArea()
-        Dim Legend1 As System.Windows.Forms.DataVisualization.Charting.Legend = New System.Windows.Forms.DataVisualization.Charting.Legend()
-        Dim Series1 As System.Windows.Forms.DataVisualization.Charting.Series = New System.Windows.Forms.DataVisualization.Charting.Series()
+        Dim ChartArea2 As System.Windows.Forms.DataVisualization.Charting.ChartArea = New System.Windows.Forms.DataVisualization.Charting.ChartArea()
+        Dim Legend2 As System.Windows.Forms.DataVisualization.Charting.Legend = New System.Windows.Forms.DataVisualization.Charting.Legend()
+        Dim Series2 As System.Windows.Forms.DataVisualization.Charting.Series = New System.Windows.Forms.DataVisualization.Charting.Series()
         Me.MenuStrip1 = New System.Windows.Forms.MenuStrip()
         Me.Label2 = New System.Windows.Forms.Label()
         Me.Tab_Logs = New System.Windows.Forms.TabPage()
@@ -68,15 +68,19 @@ Partial Class FRM_HR_REPORTS
         Me.ColumnHeader24 = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
         Me.Col_Client_ID = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
         Me.Tab_HR1 = New System.Windows.Forms.TabPage()
-        Me.GroupBox1 = New System.Windows.Forms.GroupBox()
-        Me.Cmb_Status = New System.Windows.Forms.ComboBox()
-        Me.Label8 = New System.Windows.Forms.Label()
+        Me.TabControl4 = New System.Windows.Forms.TabControl()
+        Me.TabPage9 = New System.Windows.Forms.TabPage()
+        Me.Cmb_Emp_Status = New System.Windows.Forms.ComboBox()
+        Me.Btn_Age_Count = New System.Windows.Forms.Button()
+        Me.Btn_Hired_Per_Month = New System.Windows.Forms.Button()
+        Me.Btn_Gender_Count = New System.Windows.Forms.Button()
         Me.Btn_Hired_Per_Year = New System.Windows.Forms.Button()
         Me.LV_Report_Statistics1 = New System.Windows.Forms.ListView()
         Me.Col_Status = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
         Me.Col_Count = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
         Me.Btn_Load_Chart_Data = New System.Windows.Forms.Button()
         Me.CH_Emp_Status = New System.Windows.Forms.DataVisualization.Charting.Chart()
+        Me.TabPage10 = New System.Windows.Forms.TabPage()
         Me.Tab_Recruitment = New System.Windows.Forms.TabControl()
         Me.Tab_Pending_Docs = New System.Windows.Forms.TabPage()
         Me.Cmb_Pending_Category = New System.Windows.Forms.ComboBox()
@@ -144,7 +148,8 @@ Partial Class FRM_HR_REPORTS
         Me.TabPage1.SuspendLayout()
         Me.TabPage7.SuspendLayout()
         Me.Tab_HR1.SuspendLayout()
-        Me.GroupBox1.SuspendLayout()
+        Me.TabControl4.SuspendLayout()
+        Me.TabPage9.SuspendLayout()
         CType(Me.CH_Emp_Status, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.Tab_Recruitment.SuspendLayout()
         Me.Tab_Pending_Docs.SuspendLayout()
@@ -552,10 +557,7 @@ Partial Class FRM_HR_REPORTS
         '
         Me.Tab_HR1.BackColor = System.Drawing.Color.FromArgb(CType(CType(255, Byte), Integer), CType(CType(224, Byte), Integer), CType(CType(192, Byte), Integer))
         Me.Tab_HR1.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle
-        Me.Tab_HR1.Controls.Add(Me.GroupBox1)
-        Me.Tab_HR1.Controls.Add(Me.LV_Report_Statistics1)
-        Me.Tab_HR1.Controls.Add(Me.Btn_Load_Chart_Data)
-        Me.Tab_HR1.Controls.Add(Me.CH_Emp_Status)
+        Me.Tab_HR1.Controls.Add(Me.TabControl4)
         Me.Tab_HR1.Location = New System.Drawing.Point(4, 29)
         Me.Tab_HR1.Name = "Tab_HR1"
         Me.Tab_HR1.Padding = New System.Windows.Forms.Padding(3)
@@ -563,50 +565,80 @@ Partial Class FRM_HR_REPORTS
         Me.Tab_HR1.TabIndex = 7
         Me.Tab_HR1.Text = "HR Statistics"
         '
-        'GroupBox1
+        'TabControl4
         '
-        Me.GroupBox1.Controls.Add(Me.Cmb_Status)
-        Me.GroupBox1.Controls.Add(Me.Label8)
-        Me.GroupBox1.Controls.Add(Me.Btn_Hired_Per_Year)
-        Me.GroupBox1.ForeColor = System.Drawing.Color.Blue
-        Me.GroupBox1.Location = New System.Drawing.Point(21, 305)
-        Me.GroupBox1.Name = "GroupBox1"
-        Me.GroupBox1.Size = New System.Drawing.Size(260, 140)
-        Me.GroupBox1.TabIndex = 51
-        Me.GroupBox1.TabStop = False
-        Me.GroupBox1.Text = "Active / In-active"
+        Me.TabControl4.Controls.Add(Me.TabPage9)
+        Me.TabControl4.Controls.Add(Me.TabPage10)
+        Me.TabControl4.Location = New System.Drawing.Point(6, 9)
+        Me.TabControl4.Name = "TabControl4"
+        Me.TabControl4.SelectedIndex = 0
+        Me.TabControl4.Size = New System.Drawing.Size(1236, 604)
+        Me.TabControl4.TabIndex = 52
         '
-        'Cmb_Status
+        'TabPage9
         '
-        Me.Cmb_Status.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
-        Me.Cmb_Status.Font = New System.Drawing.Font("Microsoft Sans Serif", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.Cmb_Status.FormattingEnabled = True
-        Me.Cmb_Status.Items.AddRange(New Object() {"Active", "Resigned", "Terminated", "Finished Contract", "AWOL", "Floating", "Terminated", "Suspended"})
-        Me.Cmb_Status.Location = New System.Drawing.Point(95, 46)
-        Me.Cmb_Status.Name = "Cmb_Status"
-        Me.Cmb_Status.Size = New System.Drawing.Size(140, 28)
-        Me.Cmb_Status.TabIndex = 49
+        Me.TabPage9.Controls.Add(Me.Cmb_Emp_Status)
+        Me.TabPage9.Controls.Add(Me.Btn_Age_Count)
+        Me.TabPage9.Controls.Add(Me.Btn_Hired_Per_Month)
+        Me.TabPage9.Controls.Add(Me.Btn_Gender_Count)
+        Me.TabPage9.Controls.Add(Me.Btn_Hired_Per_Year)
+        Me.TabPage9.Controls.Add(Me.LV_Report_Statistics1)
+        Me.TabPage9.Controls.Add(Me.Btn_Load_Chart_Data)
+        Me.TabPage9.Controls.Add(Me.CH_Emp_Status)
+        Me.TabPage9.Location = New System.Drawing.Point(4, 29)
+        Me.TabPage9.Name = "TabPage9"
+        Me.TabPage9.Padding = New System.Windows.Forms.Padding(3)
+        Me.TabPage9.Size = New System.Drawing.Size(1228, 571)
+        Me.TabPage9.TabIndex = 1
+        Me.TabPage9.Text = "Statistics 1"
+        Me.TabPage9.UseVisualStyleBackColor = True
         '
-        'Label8
+        'Cmb_Emp_Status
         '
-        Me.Label8.AutoSize = True
-        Me.Label8.BackColor = System.Drawing.Color.FromArgb(CType(CType(255, Byte), Integer), CType(CType(224, Byte), Integer), CType(CType(192, Byte), Integer))
-        Me.Label8.Font = New System.Drawing.Font("Verdana", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.Label8.ForeColor = System.Drawing.Color.Red
-        Me.Label8.Location = New System.Drawing.Point(21, 50)
-        Me.Label8.Name = "Label8"
-        Me.Label8.Size = New System.Drawing.Size(68, 18)
-        Me.Label8.TabIndex = 50
-        Me.Label8.Text = "Status:"
+        Me.Cmb_Emp_Status.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
+        Me.Cmb_Emp_Status.FormattingEnabled = True
+        Me.Cmb_Emp_Status.Items.AddRange(New Object() {"Hired", "Active", "Resigned", "AWOL", "Floating"})
+        Me.Cmb_Emp_Status.Location = New System.Drawing.Point(146, 449)
+        Me.Cmb_Emp_Status.Name = "Cmb_Emp_Status"
+        Me.Cmb_Emp_Status.Size = New System.Drawing.Size(126, 28)
+        Me.Cmb_Emp_Status.TabIndex = 58
+        '
+        'Btn_Age_Count
+        '
+        Me.Btn_Age_Count.Location = New System.Drawing.Point(12, 525)
+        Me.Btn_Age_Count.Name = "Btn_Age_Count"
+        Me.Btn_Age_Count.Size = New System.Drawing.Size(260, 34)
+        Me.Btn_Age_Count.TabIndex = 57
+        Me.Btn_Age_Count.Text = "Show Age Count"
+        Me.Btn_Age_Count.UseVisualStyleBackColor = True
+        '
+        'Btn_Hired_Per_Month
+        '
+        Me.Btn_Hired_Per_Month.ForeColor = System.Drawing.Color.Black
+        Me.Btn_Hired_Per_Month.Location = New System.Drawing.Point(12, 445)
+        Me.Btn_Hired_Per_Month.Name = "Btn_Hired_Per_Month"
+        Me.Btn_Hired_Per_Month.Size = New System.Drawing.Size(128, 34)
+        Me.Btn_Hired_Per_Month.TabIndex = 51
+        Me.Btn_Hired_Per_Month.Text = "Status Status:"
+        Me.Btn_Hired_Per_Month.UseVisualStyleBackColor = True
+        '
+        'Btn_Gender_Count
+        '
+        Me.Btn_Gender_Count.Location = New System.Drawing.Point(12, 485)
+        Me.Btn_Gender_Count.Name = "Btn_Gender_Count"
+        Me.Btn_Gender_Count.Size = New System.Drawing.Size(260, 34)
+        Me.Btn_Gender_Count.TabIndex = 56
+        Me.Btn_Gender_Count.Text = "Show Gender Count"
+        Me.Btn_Gender_Count.UseVisualStyleBackColor = True
         '
         'Btn_Hired_Per_Year
         '
         Me.Btn_Hired_Per_Year.ForeColor = System.Drawing.Color.Black
-        Me.Btn_Hired_Per_Year.Location = New System.Drawing.Point(20, 80)
+        Me.Btn_Hired_Per_Year.Location = New System.Drawing.Point(12, 405)
         Me.Btn_Hired_Per_Year.Name = "Btn_Hired_Per_Year"
-        Me.Btn_Hired_Per_Year.Size = New System.Drawing.Size(215, 34)
+        Me.Btn_Hired_Per_Year.Size = New System.Drawing.Size(260, 34)
         Me.Btn_Hired_Per_Year.TabIndex = 3
-        Me.Btn_Hired_Per_Year.Text = "Show Statistics / Year"
+        Me.Btn_Hired_Per_Year.Text = "Show Hired / Year"
         Me.Btn_Hired_Per_Year.UseVisualStyleBackColor = True
         '
         'LV_Report_Statistics1
@@ -617,16 +649,16 @@ Partial Class FRM_HR_REPORTS
         Me.LV_Report_Statistics1.FullRowSelect = True
         Me.LV_Report_Statistics1.GridLines = True
         Me.LV_Report_Statistics1.HideSelection = False
-        Me.LV_Report_Statistics1.Location = New System.Drawing.Point(17, 75)
+        Me.LV_Report_Statistics1.Location = New System.Drawing.Point(8, 19)
         Me.LV_Report_Statistics1.Name = "LV_Report_Statistics1"
-        Me.LV_Report_Statistics1.Size = New System.Drawing.Size(264, 224)
-        Me.LV_Report_Statistics1.TabIndex = 5
+        Me.LV_Report_Statistics1.Size = New System.Drawing.Size(264, 340)
+        Me.LV_Report_Statistics1.TabIndex = 54
         Me.LV_Report_Statistics1.UseCompatibleStateImageBehavior = False
         Me.LV_Report_Statistics1.View = System.Windows.Forms.View.Details
         '
         'Col_Status
         '
-        Me.Col_Status.Text = "Status"
+        Me.Col_Status.Text = "Parameter"
         Me.Col_Status.Width = 160
         '
         'Col_Count
@@ -637,10 +669,10 @@ Partial Class FRM_HR_REPORTS
         '
         'Btn_Load_Chart_Data
         '
-        Me.Btn_Load_Chart_Data.Location = New System.Drawing.Point(21, 35)
+        Me.Btn_Load_Chart_Data.Location = New System.Drawing.Point(12, 365)
         Me.Btn_Load_Chart_Data.Name = "Btn_Load_Chart_Data"
         Me.Btn_Load_Chart_Data.Size = New System.Drawing.Size(260, 34)
-        Me.Btn_Load_Chart_Data.TabIndex = 1
+        Me.Btn_Load_Chart_Data.TabIndex = 53
         Me.Btn_Load_Chart_Data.Text = "Overall Employment Status"
         Me.Btn_Load_Chart_Data.UseVisualStyleBackColor = True
         '
@@ -651,23 +683,33 @@ Partial Class FRM_HR_REPORTS
         Me.CH_Emp_Status.BorderlineColor = System.Drawing.Color.FromArgb(CType(CType(255, Byte), Integer), CType(CType(128, Byte), Integer), CType(CType(0, Byte), Integer))
         Me.CH_Emp_Status.BorderlineDashStyle = System.Windows.Forms.DataVisualization.Charting.ChartDashStyle.Solid
         Me.CH_Emp_Status.BorderlineWidth = 5
-        ChartArea1.Name = "ChartArea1"
-        Me.CH_Emp_Status.ChartAreas.Add(ChartArea1)
-        Legend1.Name = "L_Hired"
-        Me.CH_Emp_Status.Legends.Add(Legend1)
-        Me.CH_Emp_Status.Location = New System.Drawing.Point(301, 35)
+        ChartArea2.Name = "ChartArea1"
+        Me.CH_Emp_Status.ChartAreas.Add(ChartArea2)
+        Legend2.Name = "L_Hired"
+        Me.CH_Emp_Status.Legends.Add(Legend2)
+        Me.CH_Emp_Status.Location = New System.Drawing.Point(278, 19)
         Me.CH_Emp_Status.Name = "CH_Emp_Status"
-        Series1.ChartArea = "ChartArea1"
-        Series1.Color = System.Drawing.Color.Black
-        Series1.IsValueShownAsLabel = True
-        Series1.LabelBackColor = System.Drawing.Color.Cyan
-        Series1.Legend = "L_Hired"
-        Series1.Name = "Count"
-        Series1.Palette = System.Windows.Forms.DataVisualization.Charting.ChartColorPalette.Chocolate
-        Me.CH_Emp_Status.Series.Add(Series1)
-        Me.CH_Emp_Status.Size = New System.Drawing.Size(928, 578)
-        Me.CH_Emp_Status.TabIndex = 0
+        Series2.ChartArea = "ChartArea1"
+        Series2.Color = System.Drawing.Color.Black
+        Series2.IsValueShownAsLabel = True
+        Series2.LabelBackColor = System.Drawing.Color.Cyan
+        Series2.Legend = "L_Hired"
+        Series2.Name = "Count"
+        Series2.Palette = System.Windows.Forms.DataVisualization.Charting.ChartColorPalette.Chocolate
+        Me.CH_Emp_Status.Series.Add(Series2)
+        Me.CH_Emp_Status.Size = New System.Drawing.Size(944, 540)
+        Me.CH_Emp_Status.TabIndex = 52
         Me.CH_Emp_Status.Text = "Chart1"
+        '
+        'TabPage10
+        '
+        Me.TabPage10.Location = New System.Drawing.Point(4, 29)
+        Me.TabPage10.Name = "TabPage10"
+        Me.TabPage10.Padding = New System.Windows.Forms.Padding(3)
+        Me.TabPage10.Size = New System.Drawing.Size(1228, 571)
+        Me.TabPage10.TabIndex = 2
+        Me.TabPage10.Text = "Statistics 2"
+        Me.TabPage10.UseVisualStyleBackColor = True
         '
         'Tab_Recruitment
         '
@@ -1297,8 +1339,8 @@ Partial Class FRM_HR_REPORTS
         Me.TabPage7.ResumeLayout(False)
         Me.TabPage7.PerformLayout()
         Me.Tab_HR1.ResumeLayout(False)
-        Me.GroupBox1.ResumeLayout(False)
-        Me.GroupBox1.PerformLayout()
+        Me.TabControl4.ResumeLayout(False)
+        Me.TabPage9.ResumeLayout(False)
         CType(Me.CH_Emp_Status, System.ComponentModel.ISupportInitialize).EndInit()
         Me.Tab_Recruitment.ResumeLayout(False)
         Me.Tab_Pending_Docs.ResumeLayout(False)
@@ -1324,15 +1366,6 @@ Partial Class FRM_HR_REPORTS
     Friend WithEvents Tab_Logs As TabPage
     Friend WithEvents Tab_Security_License As TabPage
     Friend WithEvents Tab_HR1 As TabPage
-    Friend WithEvents GroupBox1 As GroupBox
-    Friend WithEvents Cmb_Status As ComboBox
-    Friend WithEvents Label8 As Label
-    Friend WithEvents Btn_Hired_Per_Year As Button
-    Friend WithEvents LV_Report_Statistics1 As ListView
-    Friend WithEvents Col_Status As ColumnHeader
-    Friend WithEvents Col_Count As ColumnHeader
-    Friend WithEvents Btn_Load_Chart_Data As Button
-    Friend WithEvents CH_Emp_Status As DataVisualization.Charting.Chart
     Friend WithEvents Tab_Recruitment As TabControl
     Friend WithEvents LV_SystemLogs As ListView
     Friend WithEvents ColumnHeader1 As ColumnHeader
@@ -1432,4 +1465,17 @@ Partial Class FRM_HR_REPORTS
     Friend WithEvents ColumnHeader24 As ColumnHeader
     Friend WithEvents Col_Client_ID As ColumnHeader
     Friend WithEvents Lbl_Export_Client_Contract_Exp As Label
+    Friend WithEvents TabControl4 As TabControl
+    Friend WithEvents TabPage9 As TabPage
+    Friend WithEvents Btn_Gender_Count As Button
+    Friend WithEvents Btn_Hired_Per_Month As Button
+    Friend WithEvents Btn_Hired_Per_Year As Button
+    Friend WithEvents LV_Report_Statistics1 As ListView
+    Friend WithEvents Col_Status As ColumnHeader
+    Friend WithEvents Col_Count As ColumnHeader
+    Friend WithEvents Btn_Load_Chart_Data As Button
+    Friend WithEvents CH_Emp_Status As DataVisualization.Charting.Chart
+    Friend WithEvents TabPage10 As TabPage
+    Friend WithEvents Btn_Age_Count As Button
+    Friend WithEvents Cmb_Emp_Status As ComboBox
 End Class

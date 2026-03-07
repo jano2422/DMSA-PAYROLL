@@ -157,6 +157,7 @@ Partial Class FRM_EMP_UPDATE_REC
         Me.Col_Client_Ref_ID = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
         Me.PictureBox9 = New System.Windows.Forms.PictureBox()
         Me.TabPage6 = New System.Windows.Forms.TabPage()
+        Me.Btn_UpRemarks = New System.Windows.Forms.Button()
         Me.LV_Status_History = New System.Windows.Forms.ListView()
         Me.ColumnHeader2 = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
         Me.Col_DeclaredStatus = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
@@ -188,7 +189,6 @@ Partial Class FRM_EMP_UPDATE_REC
         Me.Btn_Leave_Filing = New FontAwesome.Sharp.IconButton()
         Me.Panel3 = New System.Windows.Forms.Panel()
         Me.Pic_Employee_Photo = New System.Windows.Forms.PictureBox()
-        Me.Btn_UpRemarks = New System.Windows.Forms.Button()
         Me.Tab_Employee_Transactions.SuspendLayout()
         Me.Tab_Leave_Filing.SuspendLayout()
         Me.Grp_Leave_Info.SuspendLayout()
@@ -228,7 +228,7 @@ Partial Class FRM_EMP_UPDATE_REC
         Me.Tab_Employee_Transactions.Location = New System.Drawing.Point(248, 146)
         Me.Tab_Employee_Transactions.Name = "Tab_Employee_Transactions"
         Me.Tab_Employee_Transactions.SelectedIndex = 0
-        Me.Tab_Employee_Transactions.Size = New System.Drawing.Size(801, 683)
+        Me.Tab_Employee_Transactions.Size = New System.Drawing.Size(797, 683)
         Me.Tab_Employee_Transactions.TabIndex = 69
         '
         'Tab_Leave_Filing
@@ -245,7 +245,7 @@ Partial Class FRM_EMP_UPDATE_REC
         Me.Tab_Leave_Filing.Location = New System.Drawing.Point(4, 32)
         Me.Tab_Leave_Filing.Name = "Tab_Leave_Filing"
         Me.Tab_Leave_Filing.Padding = New System.Windows.Forms.Padding(3)
-        Me.Tab_Leave_Filing.Size = New System.Drawing.Size(793, 647)
+        Me.Tab_Leave_Filing.Size = New System.Drawing.Size(789, 647)
         Me.Tab_Leave_Filing.TabIndex = 0
         Me.Tab_Leave_Filing.Text = "  Leave Filing  "
         '
@@ -1294,7 +1294,7 @@ Partial Class FRM_EMP_UPDATE_REC
         Me.Tab_Client.Location = New System.Drawing.Point(4, 32)
         Me.Tab_Client.Name = "Tab_Client"
         Me.Tab_Client.Padding = New System.Windows.Forms.Padding(3)
-        Me.Tab_Client.Size = New System.Drawing.Size(793, 647)
+        Me.Tab_Client.Size = New System.Drawing.Size(789, 647)
         Me.Tab_Client.TabIndex = 6
         Me.Tab_Client.Text = "Client Change"
         '
@@ -1630,6 +1630,16 @@ Partial Class FRM_EMP_UPDATE_REC
         Me.TabPage6.TabIndex = 5
         Me.TabPage6.Text = "Employment Status"
         '
+        'Btn_UpRemarks
+        '
+        Me.Btn_UpRemarks.Font = New System.Drawing.Font("Microsoft Sans Serif", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.Btn_UpRemarks.Location = New System.Drawing.Point(50, 437)
+        Me.Btn_UpRemarks.Name = "Btn_UpRemarks"
+        Me.Btn_UpRemarks.Size = New System.Drawing.Size(657, 34)
+        Me.Btn_UpRemarks.TabIndex = 168
+        Me.Btn_UpRemarks.Text = "Update Remarks"
+        Me.Btn_UpRemarks.UseVisualStyleBackColor = True
+        '
         'LV_Status_History
         '
         Me.LV_Status_History.BackColor = System.Drawing.Color.FromArgb(CType(CType(255, Byte), Integer), CType(CType(224, Byte), Integer), CType(CType(192, Byte), Integer))
@@ -1824,7 +1834,7 @@ Partial Class FRM_EMP_UPDATE_REC
         Me.Panel1.Dock = System.Windows.Forms.DockStyle.Top
         Me.Panel1.Location = New System.Drawing.Point(0, 0)
         Me.Panel1.Name = "Panel1"
-        Me.Panel1.Size = New System.Drawing.Size(1075, 41)
+        Me.Panel1.Size = New System.Drawing.Size(1071, 41)
         Me.Panel1.TabIndex = 75
         '
         'Panel2
@@ -1978,7 +1988,7 @@ Partial Class FRM_EMP_UPDATE_REC
         Me.Panel3.Dock = System.Windows.Forms.DockStyle.Top
         Me.Panel3.Location = New System.Drawing.Point(230, 41)
         Me.Panel3.Name = "Panel3"
-        Me.Panel3.Size = New System.Drawing.Size(845, 99)
+        Me.Panel3.Size = New System.Drawing.Size(841, 99)
         Me.Panel3.TabIndex = 77
         '
         'Pic_Employee_Photo
@@ -1992,22 +2002,12 @@ Partial Class FRM_EMP_UPDATE_REC
         Me.Pic_Employee_Photo.TabIndex = 74
         Me.Pic_Employee_Photo.TabStop = False
         '
-        'Btn_UpRemarks
-        '
-        Me.Btn_UpRemarks.Font = New System.Drawing.Font("Microsoft Sans Serif", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.Btn_UpRemarks.Location = New System.Drawing.Point(50, 437)
-        Me.Btn_UpRemarks.Name = "Btn_UpRemarks"
-        Me.Btn_UpRemarks.Size = New System.Drawing.Size(657, 34)
-        Me.Btn_UpRemarks.TabIndex = 168
-        Me.Btn_UpRemarks.Text = "Update Remarks"
-        Me.Btn_UpRemarks.UseVisualStyleBackColor = True
-        '
         'FRM_EMP_UPDATE_REC
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
         Me.BackColor = System.Drawing.Color.Black
-        Me.ClientSize = New System.Drawing.Size(1075, 860)
+        Me.ClientSize = New System.Drawing.Size(1071, 860)
         Me.Controls.Add(Me.Panel3)
         Me.Controls.Add(Me.Panel2)
         Me.Controls.Add(Me.Panel1)

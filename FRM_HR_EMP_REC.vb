@@ -375,6 +375,7 @@ Public Class FRM_EMP_REG
         Try
             GlobalVariables.Photo_Path_from_DB = Show_Photo_in_Employee_Rec(GlobalVariables.Selected_Employee_ID)
             If GlobalVariables.Photo_Path_from_DB = "0" Then
+                'Me.Pic_Employee_Photo.Image = My.Resources.DMSA_Logo
                 Me.Pic_Employee_Photo.Image = My.Resources.DMSA_Logo
             Else ' with Path from DB
                 Me.Pic_Employee_Photo.Image = Image.FromFile(GlobalVariables.Photo_Path_from_DB)
@@ -398,5 +399,7 @@ Public Class FRM_EMP_REG
 
     End Sub
 
+    Private Sub LV_Employee_List_SelectedIndexChanged(sender As Object, e As EventArgs) Handles LV_Employee_List.SelectedIndexChanged
 
+    End Sub
 End Class

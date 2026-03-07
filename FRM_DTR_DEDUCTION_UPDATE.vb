@@ -284,4 +284,19 @@ Public Class FRM_DTR_DEDUCTION_UPDATE
 
         Return $"{monthName} {yearNumber} ({cutoffLabel} Cutoff)"
     End Function
+
+    Private Sub InitializeComponent()
+        Me.SuspendLayout()
+        '
+        'FRM_DTR_DEDUCTION_UPDATE
+        '
+        Me.ClientSize = New System.Drawing.Size(284, 261)
+        Me.Name = "FRM_DTR_DEDUCTION_UPDATE"
+        Me.ResumeLayout(False)
+
+    End Sub
+
+    Private Sub FRM_DTR_DEDUCTION_UPDATE_Load(sender As Object, e As EventArgs) Handles MyBase.Load
+
+    End Sub
 End Class

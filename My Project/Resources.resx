@@ -121,19 +121,22 @@
   <data name="R_Status" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\R_Status.PNG;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="DMSA_Logo" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\bin\Debug\DMSA_Logo.jpg;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
   <data name="DTR16_31" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\bin\Debug\DTR16_31.PNG;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="DMSA_Logo" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\bin\Debug\DMSA_Logo.jpg;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="DeltaMaroon_NoBg" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\bin\Debug\DeltaMaroon_NoBg.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
+  <data name="Recruitment" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Recruitment.PNG;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
   <data name="DTR15_3" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\bin\Debug\DTR15_3.PNG;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="Recruitment" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\Recruitment.PNG;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  <data name="eagle_security_services_logo" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\eagle_security_services_logo.jpg;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
 </root>

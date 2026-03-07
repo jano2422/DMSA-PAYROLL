@@ -424,20 +424,14 @@ Module Mod_FRM_DTR_EXPORTS
     End Sub
 
     Private Function GetOrCreateExcelApp(ByRef createdNew As Boolean) As Excel.Application
-        Dim excelApp As Excel.Application = Nothing
-        createdNew = False
-
-        Try
-            excelApp = CType(Marshal.GetActiveObject("Excel.Application"), Excel.Application)
-
-            ' Validate Excel is truly alive before reusing it.
-            Dim hwnd = excelApp.Hwnd
-            Dim cnt = excelApp.Workbooks.Count
-
-        Catch
-            excelApp = CreateExcelAppWithRetry()
-            createdNew = True
-        End Try
+        ' NOTE:
+        ' Reusing an active Excel instance through Marshal.GetActiveObject can block
+        ' indefinitely when Excel is busy/unresponsive, which makes the app appear hung
+        ' on the "Exporting payroll to Excel..." processing dialog.
+        ' Always creating a fresh Excel instance avoids that COM call and keeps export
+        ' startup predictable.
+        Dim excelApp As Excel.Application = CreateExcelAppWithRetry()
+        createdNew = True
 
         excelApp.Visible = True
         excelApp.WindowState = Excel.XlWindowState.xlMaximized

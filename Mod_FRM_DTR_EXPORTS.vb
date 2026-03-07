@@ -310,6 +310,9 @@ Module Mod_FRM_DTR_EXPORTS
             dtrHoursSheet.Calculate()
             wbOut.Save()
 
+            xlApp.Visible = True
+            wbOut.Activate()
+
         Catch ex As Exception
             MsgBox(ex.ToString)
         Finally

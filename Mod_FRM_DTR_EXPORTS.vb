@@ -1,4 +1,5 @@
 ﻿Imports System.Data.OleDb
+Imports System.Diagnostics
 Imports System.IO
 Imports System.Runtime.InteropServices
 Imports Excel = Microsoft.Office.Interop.Excel
@@ -429,23 +430,61 @@ Module Mod_FRM_DTR_EXPORTS
         Try
             excelApp = CType(Marshal.GetActiveObject("Excel.Application"), Excel.Application)
 
-            ' 🔥 Validate Excel is truly alive
+            ' Validate Excel is truly alive before reusing it.
             Dim hwnd = excelApp.Hwnd
             Dim cnt = excelApp.Workbooks.Count
 
         Catch
-            excelApp = New Excel.Application()
+            excelApp = CreateExcelAppWithRetry()
             createdNew = True
         End Try
 
-        If createdNew Then
-            excelApp.Visible = True
-            excelApp.WindowState = Excel.XlWindowState.xlMaximized
-            excelApp.DisplayAlerts = False
-        End If
+        excelApp.Visible = True
+        excelApp.WindowState = Excel.XlWindowState.xlMaximized
+        excelApp.DisplayAlerts = False
 
         Return excelApp
     End Function
+
+    Private Function CreateExcelAppWithRetry() As Excel.Application
+        Dim lastException As Exception = Nothing
+
+        For attempt As Integer = 1 To 3
+            Try
+                Return New Excel.Application()
+            Catch ex As COMException
+                lastException = ex
+
+                If ex.ErrorCode = &H80080005 Then
+                    TryTerminateOrphanedExcelProcesses()
+                End If
+
+                Threading.Thread.Sleep(350)
+            Catch ex As Exception
+                lastException = ex
+                Threading.Thread.Sleep(350)
+            End Try
+        Next
+
+        Throw New Exception("Unable to start Microsoft Excel (HRESULT 0x80080005). Please close all Excel windows and try again.", lastException)
+    End Function
+
+    Private Sub TryTerminateOrphanedExcelProcesses()
+        Try
+            For Each proc In Process.GetProcessesByName("EXCEL")
+                Try
+                    If proc.MainWindowHandle = IntPtr.Zero Then
+                        proc.Kill()
+                        proc.WaitForExit(1000)
+                    End If
+                Catch
+                Finally
+                    proc.Dispose()
+                End Try
+            Next
+        Catch
+        End Try
+    End Sub
 
     '--------------------------
     ' Helpers

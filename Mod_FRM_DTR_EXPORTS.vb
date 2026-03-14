@@ -152,6 +152,7 @@ Module Mod_FRM_DTR_EXPORTS
             AddPerClientColumn(dgv, "colPhilHealth", "PhilHealth", 90)
             AddPerClientColumn(dgv, "colPagIbig", "Pag-IBIG", 90)
             AddPerClientColumn(dgv, "colOfficerAllo", "Officer Allo", 100)
+            AddPerClientColumn(dgv, "colSgUniformAllowance", "sguniformallowance", 120)
         ElseIf IsSecondCutoff(cutoff) Then
             AddPerClientColumn(dgv, "colCb", "Cash Bond", 90)
             AddPerClientColumn(dgv, "colSssLoan", "SSS Loan", 90)
@@ -159,6 +160,7 @@ Module Mod_FRM_DTR_EXPORTS
             AddPerClientColumn(dgv, "colPiLoan", "PI Loan", 90)
             AddPerClientColumn(dgv, "colPiCalLoan", "PI Cal Loan", 110)
             AddPerClientColumn(dgv, "colOfficerAllo", "Officer Allo", 100)
+            AddPerClientColumn(dgv, "colSgUniformAllowance", "sguniformallowance", 120)
         End If
     End Sub
 
@@ -351,7 +353,7 @@ Module Mod_FRM_DTR_EXPORTS
             'SQL = "select LAST_NAME, FIRST_NAME, MIDDLE_NAME, NUM_OF_DAYS, TOTAL_HOURS, REG, SUN,SH,LH, RD_SUN_SH, RD_SUN_LH, ND_REG, ND_SUN, ND_SH, ND_LH, ND_RD_SUN_SH, ND_RD_SUN_LH, OT_REG from VIEW_DTR_PER_SUB_CLIENT"
             'SQL = SQL & " where A.SUB_CLIENT_ID = " & iClient_ID & " and CUTOFF_PERIOD = '" & sCut_Off & "'"
 
-            SQL = "SELECT A.A.EMPLOYEE_ID AS EMPLOYEE_ID, LAST_NAME, FIRST_NAME, MIDDLE_NAME, NUM_OF_DAYS, ND_DAYS, TOTAL_HOURS, REG, SUN, SH, LH, OT_REG, CB_DEDUCT, SSS_LOAN_DEDUCT, SSS_CAL_LOAN_DEDUCT, PI_LOAN_DEDUCT, PI_CAL_LOAN_DEDUCT, SSS_DEDUCT, PH_DEDUCT, PI_DEDUCT, OFFICERS_ALLOWANCE "
+            SQL = "SELECT A.A.EMPLOYEE_ID AS EMPLOYEE_ID, LAST_NAME, FIRST_NAME, MIDDLE_NAME, NUM_OF_DAYS, ND_DAYS, TOTAL_HOURS, REG, SUN, SH, LH, OT_REG, CB_DEDUCT, SSS_LOAN_DEDUCT, SSS_CAL_LOAN_DEDUCT, PI_LOAN_DEDUCT, PI_CAL_LOAN_DEDUCT, SSS_DEDUCT, PH_DEDUCT, PI_DEDUCT, OFFICERS_ALLOWANCE, SGUNIFORMALLOWANCE "
             SQL = SQL & "FROM VIEW_DTR_PER_SUB_CLIENT A "
             SQL = SQL & "WHERE A.A.SUB_CLIENT_ID = " & iClient_ID & " AND A.CUTOFF_PERIOD = '" & sCut_Off & "' "
             SQL = SQL & "AND A.D.ID = (SELECT MAX(D.ID) FROM PRL_DTR_TOTAL_HOURS D WHERE D.EMPLOYEE_ID = A.A.EMPLOYEE_ID AND D.CUTOFF_PERIOD = A.CUTOFF_PERIOD) "
@@ -394,7 +396,8 @@ Module Mod_FRM_DTR_EXPORTS
                                 NzZero(myRow, "SSS_DEDUCT"),
                                 NzZero(myRow, "PH_DEDUCT"),
                                 NzZero(myRow, "PI_DEDUCT"),
-                                NzZero(myRow, "OFFICERS_ALLOWANCE")
+                                NzZero(myRow, "OFFICERS_ALLOWANCE"),
+                                NzZero(myRow, "SGUNIFORMALLOWANCE")
                             )
                         Else
                             .Rows.Add(
@@ -414,7 +417,8 @@ Module Mod_FRM_DTR_EXPORTS
                                 NzZero(myRow, "SSS_CAL_LOAN_DEDUCT"),
                                 NzZero(myRow, "PI_LOAN_DEDUCT"),
                                 NzZero(myRow, "PI_CAL_LOAN_DEDUCT"),
-                                NzZero(myRow, "OFFICERS_ALLOWANCE")
+                                NzZero(myRow, "OFFICERS_ALLOWANCE"),
+                                NzZero(myRow, "SGUNIFORMALLOWANCE")
                             )
                         End If
 
@@ -503,13 +507,14 @@ Module Mod_FRM_DTR_EXPORTS
         philhealthDeduct As Decimal,
         sssDeduct As Decimal,
         pagibigDeduct As Decimal,
-        officerAllowance As Decimal
+        officerAllowance As Decimal,
+        sguniformallowance As Decimal
     )
         Dim sql As String = "INSERT INTO PRL_DTR_TOTAL_HOURS " &
             "(EMPLOYEE_ID, SUB_CLIENT_ID, CUTOFF_PERIOD, NUM_OF_DAYS, " &
             "TOTAL_HOURS, REG, SUN, SH, LH, OT_REG, " &
-            "CB_DEDUCT, SSS_LOAN_DEDUCT, PI_LOAN_DEDUCT, PH_DEDUCT, SSS_DEDUCT, PI_DEDUCT, SSS_CAL_LOAN_DEDUCT, PI_CAL_LOAN_DEDUCT, OFFICERS_ALLOWANCE) " &
-            "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"
+            "CB_DEDUCT, SSS_LOAN_DEDUCT, PI_LOAN_DEDUCT, PH_DEDUCT, SSS_DEDUCT, PI_DEDUCT, SSS_CAL_LOAN_DEDUCT, PI_CAL_LOAN_DEDUCT, OFFICERS_ALLOWANCE, SGUNIFORMALLOWANCE) " &
+            "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"
 
         Try
             Connect_to_MDB()
@@ -533,6 +538,7 @@ Module Mod_FRM_DTR_EXPORTS
                 cmd.Parameters.AddWithValue("?", sssCalLoanDeduct)
                 cmd.Parameters.AddWithValue("?", piCalLoanDeduct)
                 cmd.Parameters.AddWithValue("?", officerAllowance)
+                cmd.Parameters.AddWithValue("?", sguniformallowance)
                 cmd.ExecuteNonQuery()
             End Using
         Catch ex As Exception

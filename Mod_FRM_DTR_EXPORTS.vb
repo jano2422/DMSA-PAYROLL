@@ -233,6 +233,7 @@ Module Mod_FRM_DTR_EXPORTS
             '========================================
             ' 2) Open copied workbook (output)
             '========================================
+            WaitForExcelReady(xlApp, 10000)
             wbOut = xlApp.Workbooks.Open(outPath)
 
             payrollSheet = CType(wbOut.Worksheets("PAYROLL"), Excel.Worksheet)
@@ -305,6 +306,7 @@ Module Mod_FRM_DTR_EXPORTS
             '========================================
             ' 5) Calculate + save
             '========================================
+            WaitForExcelReady(xlApp, 10000)
             payrollSheet.Calculate()
             payslipSheet.Calculate()
             dtrHoursSheet.Calculate()
@@ -372,6 +374,7 @@ Module Mod_FRM_DTR_EXPORTS
             '========================================
             ' 2) Open workbook
             '========================================
+            WaitForExcelReady(xlApp, 10000)
             wbOut = xlApp.Workbooks.Open(outPath)
             dtrHoursSheet = CType(wbOut.Worksheets("DTR_Hours"), Excel.Worksheet)
 
@@ -392,6 +395,7 @@ Module Mod_FRM_DTR_EXPORTS
             '========================================
             ' 5) Calculate + save
             '========================================
+            WaitForExcelReady(xlApp, 10000)
             dtrHoursSheet.Calculate()
             wbOut.Save()
 
@@ -428,7 +432,7 @@ Module Mod_FRM_DTR_EXPORTS
 
         ' Prefer the current running Excel instance so manual opens and exports share
         ' the same process/window. If none exists, create a new one.
-        excelApp = TryGetActiveExcelAppWithTimeout(3000)
+        excelApp = TryGetActiveExcelAppWithTimeout(1500)
 
         If excelApp Is Nothing Then
             excelApp = CreateExcelAppWithRetry()
@@ -444,35 +448,41 @@ Module Mod_FRM_DTR_EXPORTS
 
     Private Function TryGetActiveExcelAppWithTimeout(timeoutMs As Integer) As Excel.Application
         Dim activeExcel As Excel.Application = Nothing
-        Dim workerEx As Exception = Nothing
+        Dim startedAt As DateTime = DateTime.UtcNow
 
-        Dim worker As New Threading.Thread(
-            Sub()
-                Try
-                    Dim app = CType(Marshal.GetActiveObject("Excel.Application"), Excel.Application)
+        Do
+            Try
+                activeExcel = CType(Marshal.GetActiveObject("Excel.Application"), Excel.Application)
+                WaitForExcelReady(activeExcel, 1500)
+                Return activeExcel
+            Catch
+                Threading.Thread.Sleep(120)
+                Application.DoEvents()
+            End Try
+        Loop While (DateTime.UtcNow - startedAt).TotalMilliseconds < timeoutMs
 
-                    ' Force COM round-trip to ensure instance is usable.
-                    Dim workbookCount As Integer = app.Workbooks.Count
-                    activeExcel = app
-                Catch ex As Exception
-                    workerEx = ex
-                End Try
-            End Sub)
-
-        worker.IsBackground = True
-        worker.SetApartmentState(Threading.ApartmentState.STA)
-        worker.Start()
-
-        If Not worker.Join(timeoutMs) Then
-            Return Nothing
-        End If
-
-        If workerEx IsNot Nothing Then
-            Return Nothing
-        End If
-
-        Return activeExcel
+        Return Nothing
     End Function
+
+    Private Sub WaitForExcelReady(excelApp As Excel.Application, timeoutMs As Integer)
+        If excelApp Is Nothing Then Throw New ArgumentNullException(NameOf(excelApp))
+
+        Dim startedAt As DateTime = DateTime.UtcNow
+        Do
+            Try
+                If excelApp.Ready Then
+                    Return
+                End If
+            Catch
+                ' Excel may be temporarily busy; keep waiting within timeout.
+            End Try
+
+            Threading.Thread.Sleep(120)
+            Application.DoEvents()
+        Loop While (DateTime.UtcNow - startedAt).TotalMilliseconds < timeoutMs
+
+        Throw New TimeoutException("Excel is busy (possibly in cell edit mode or with an open dialog). Please close any Excel dialogs and try exporting again.")
+    End Sub
 
     Private Function CreateExcelAppWithRetry() As Excel.Application
         Dim lastException As Exception = Nothing

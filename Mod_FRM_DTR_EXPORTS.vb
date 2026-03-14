@@ -1,5 +1,4 @@
 ﻿Imports System.Data.OleDb
-Imports System.Diagnostics
 Imports System.IO
 Imports System.Runtime.InteropServices
 Imports Excel = Microsoft.Office.Interop.Excel
@@ -234,6 +233,7 @@ Module Mod_FRM_DTR_EXPORTS
             '========================================
             ' 2) Open copied workbook (output)
             '========================================
+            WaitForExcelReady(xlApp, 10000)
             wbOut = xlApp.Workbooks.Open(outPath)
 
             payrollSheet = CType(wbOut.Worksheets("PAYROLL"), Excel.Worksheet)
@@ -306,6 +306,7 @@ Module Mod_FRM_DTR_EXPORTS
             '========================================
             ' 5) Calculate + save
             '========================================
+            WaitForExcelReady(xlApp, 10000)
             payrollSheet.Calculate()
             payslipSheet.Calculate()
             dtrHoursSheet.Calculate()
@@ -373,6 +374,7 @@ Module Mod_FRM_DTR_EXPORTS
             '========================================
             ' 2) Open workbook
             '========================================
+            WaitForExcelReady(xlApp, 10000)
             wbOut = xlApp.Workbooks.Open(outPath)
             dtrHoursSheet = CType(wbOut.Worksheets("DTR_Hours"), Excel.Worksheet)
 
@@ -393,6 +395,7 @@ Module Mod_FRM_DTR_EXPORTS
             '========================================
             ' 5) Calculate + save
             '========================================
+            WaitForExcelReady(xlApp, 10000)
             dtrHoursSheet.Calculate()
             wbOut.Save()
 
@@ -427,18 +430,14 @@ Module Mod_FRM_DTR_EXPORTS
         Dim excelApp As Excel.Application = Nothing
         createdNew = False
 
-        ' Prefer creating a fresh instance so export starts cleanly.
-        ' If COM activation fails (0x80080005), fall back to attaching to an active
-        ' Excel instance using a timed background call to avoid UI hangs.
-        Try
+        ' Prefer the current running Excel instance so manual opens and exports share
+        ' the same process/window. If none exists, create a new one.
+        excelApp = TryGetActiveExcelAppWithTimeout(1500)
+
+        If excelApp Is Nothing Then
             excelApp = CreateExcelAppWithRetry()
             createdNew = True
-        Catch ex As Exception
-            excelApp = TryGetActiveExcelAppWithTimeout(3000)
-            If excelApp Is Nothing Then
-                Throw
-            End If
-        End Try
+        End If
 
         excelApp.Visible = True
         excelApp.WindowState = Excel.XlWindowState.xlMaximized
@@ -449,35 +448,41 @@ Module Mod_FRM_DTR_EXPORTS
 
     Private Function TryGetActiveExcelAppWithTimeout(timeoutMs As Integer) As Excel.Application
         Dim activeExcel As Excel.Application = Nothing
-        Dim workerEx As Exception = Nothing
+        Dim startedAt As DateTime = DateTime.UtcNow
 
-        Dim worker As New Threading.Thread(
-            Sub()
-                Try
-                    Dim app = CType(Marshal.GetActiveObject("Excel.Application"), Excel.Application)
+        Do
+            Try
+                activeExcel = CType(Marshal.GetActiveObject("Excel.Application"), Excel.Application)
+                WaitForExcelReady(activeExcel, 1500)
+                Return activeExcel
+            Catch
+                Threading.Thread.Sleep(120)
+                Application.DoEvents()
+            End Try
+        Loop While (DateTime.UtcNow - startedAt).TotalMilliseconds < timeoutMs
 
-                    ' Force COM round-trip to ensure instance is usable.
-                    Dim workbookCount As Integer = app.Workbooks.Count
-                    activeExcel = app
-                Catch ex As Exception
-                    workerEx = ex
-                End Try
-            End Sub)
-
-        worker.IsBackground = True
-        worker.SetApartmentState(Threading.ApartmentState.STA)
-        worker.Start()
-
-        If Not worker.Join(timeoutMs) Then
-            Return Nothing
-        End If
-
-        If workerEx IsNot Nothing Then
-            Return Nothing
-        End If
-
-        Return activeExcel
+        Return Nothing
     End Function
+
+    Private Sub WaitForExcelReady(excelApp As Excel.Application, timeoutMs As Integer)
+        If excelApp Is Nothing Then Throw New ArgumentNullException(NameOf(excelApp))
+
+        Dim startedAt As DateTime = DateTime.UtcNow
+        Do
+            Try
+                If excelApp.Ready Then
+                    Return
+                End If
+            Catch
+                ' Excel may be temporarily busy; keep waiting within timeout.
+            End Try
+
+            Threading.Thread.Sleep(120)
+            Application.DoEvents()
+        Loop While (DateTime.UtcNow - startedAt).TotalMilliseconds < timeoutMs
+
+        Throw New TimeoutException("Excel is busy (possibly in cell edit mode or with an open dialog). Please close any Excel dialogs and try exporting again.")
+    End Sub
 
     Private Function CreateExcelAppWithRetry() As Excel.Application
         Dim lastException As Exception = Nothing
@@ -487,11 +492,6 @@ Module Mod_FRM_DTR_EXPORTS
                 Return New Excel.Application()
             Catch ex As COMException
                 lastException = ex
-
-                If ex.ErrorCode = &H80080005 Then
-                    TryTerminateOrphanedExcelProcesses()
-                End If
-
                 Threading.Thread.Sleep(350)
             Catch ex As Exception
                 lastException = ex
@@ -501,23 +501,6 @@ Module Mod_FRM_DTR_EXPORTS
 
         Throw New Exception("Unable to start Microsoft Excel (HRESULT 0x80080005). Please close all Excel windows and try again.", lastException)
     End Function
-
-    Private Sub TryTerminateOrphanedExcelProcesses()
-        Try
-            For Each proc In Process.GetProcessesByName("EXCEL")
-                Try
-                    If proc.MainWindowHandle = IntPtr.Zero Then
-                        proc.Kill()
-                        proc.WaitForExit(1000)
-                    End If
-                Catch
-                Finally
-                    proc.Dispose()
-                End Try
-            Next
-        Catch
-        End Try
-    End Sub
 
     '--------------------------
     ' Helpers

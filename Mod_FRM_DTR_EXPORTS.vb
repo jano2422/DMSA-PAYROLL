@@ -1,5 +1,4 @@
 ﻿Imports System.Data.OleDb
-Imports System.Diagnostics
 Imports System.IO
 Imports System.Runtime.InteropServices
 Imports Excel = Microsoft.Office.Interop.Excel
@@ -427,18 +426,14 @@ Module Mod_FRM_DTR_EXPORTS
         Dim excelApp As Excel.Application = Nothing
         createdNew = False
 
-        ' Prefer creating a fresh instance so export starts cleanly.
-        ' If COM activation fails (0x80080005), fall back to attaching to an active
-        ' Excel instance using a timed background call to avoid UI hangs.
-        Try
+        ' Prefer the current running Excel instance so manual opens and exports share
+        ' the same process/window. If none exists, create a new one.
+        excelApp = TryGetActiveExcelAppWithTimeout(3000)
+
+        If excelApp Is Nothing Then
             excelApp = CreateExcelAppWithRetry()
             createdNew = True
-        Catch ex As Exception
-            excelApp = TryGetActiveExcelAppWithTimeout(3000)
-            If excelApp Is Nothing Then
-                Throw
-            End If
-        End Try
+        End If
 
         excelApp.Visible = True
         excelApp.WindowState = Excel.XlWindowState.xlMaximized
@@ -487,11 +482,6 @@ Module Mod_FRM_DTR_EXPORTS
                 Return New Excel.Application()
             Catch ex As COMException
                 lastException = ex
-
-                If ex.ErrorCode = &H80080005 Then
-                    TryTerminateOrphanedExcelProcesses()
-                End If
-
                 Threading.Thread.Sleep(350)
             Catch ex As Exception
                 lastException = ex
@@ -501,23 +491,6 @@ Module Mod_FRM_DTR_EXPORTS
 
         Throw New Exception("Unable to start Microsoft Excel (HRESULT 0x80080005). Please close all Excel windows and try again.", lastException)
     End Function
-
-    Private Sub TryTerminateOrphanedExcelProcesses()
-        Try
-            For Each proc In Process.GetProcessesByName("EXCEL")
-                Try
-                    If proc.MainWindowHandle = IntPtr.Zero Then
-                        proc.Kill()
-                        proc.WaitForExit(1000)
-                    End If
-                Catch
-                Finally
-                    proc.Dispose()
-                End Try
-            Next
-        Catch
-        End Try
-    End Sub
 
     '--------------------------
     ' Helpers

@@ -221,6 +221,7 @@ Public Class FRM_DTR_EXPORTS
         Dim sssDeduct As Decimal = ReadDecimal(If(latestTotals Is Nothing, 0D, latestTotals("SSS_DEDUCT")))
         Dim pagibigDeduct As Decimal = ReadDecimal(If(latestTotals Is Nothing, 0D, latestTotals("PI_DEDUCT")))
         Dim officerAllowance As Decimal = ReadDecimal(If(latestTotals Is Nothing, 0D, latestTotals("OFFICERS_ALLOWANCE")))
+        Dim sguniformallowance As Decimal = ReadDecimal(If(latestTotals Is Nothing, 0D, latestTotals("SGUNIFORMALLOWANCE")))
 
         Using dialog As New FRM_DTR_DEDUCTION_UPDATE(
             employeeId,
@@ -242,7 +243,8 @@ Public Class FRM_DTR_EXPORTS
             philhealthDeduct,
             sssDeduct,
             pagibigDeduct,
-            officerAllowance
+            officerAllowance,
+            sguniformallowance
         )
             If dialog.ShowDialog(Me) = DialogResult.OK Then
                 Get_DTR_Per_Client(CInt(Lbl_ClientID.Text), cutoff)

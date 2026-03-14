@@ -25,6 +25,7 @@ Public Class FRM_DTR_DEDUCTION_UPDATE
     Private ReadOnly _defaultSssDeduct As Decimal
     Private ReadOnly _defaultPagibigDeduct As Decimal
     Private ReadOnly _defaultOfficerAllowance As Decimal
+    Private ReadOnly _defaultSgUniformAllowance As Decimal
 
     Private ReadOnly _isFirstCutoff As Boolean
 
@@ -37,6 +38,7 @@ Public Class FRM_DTR_DEDUCTION_UPDATE
     Private txtPiLoan As TextBox
     Private txtPiCalLoan As TextBox
     Private txtOfficerAllowance As TextBox
+    Private txtSgUniformAllowance As TextBox
 
     Private lblRegValue As Label
     Private lblSunValue As Label
@@ -70,7 +72,8 @@ Public Class FRM_DTR_DEDUCTION_UPDATE
         philhealthDeduct As Decimal,
         sssDeduct As Decimal,
         pagibigDeduct As Decimal,
-        officerAllowance As Decimal
+        officerAllowance As Decimal,
+        sguniformallowance As Decimal
     )
         _employeeId = employeeId
         _employeeName = employeeName
@@ -96,6 +99,7 @@ Public Class FRM_DTR_DEDUCTION_UPDATE
         _defaultSssDeduct = sssDeduct
         _defaultPagibigDeduct = pagibigDeduct
         _defaultOfficerAllowance = officerAllowance
+        _defaultSgUniformAllowance = sguniformallowance
         _unallocatedHours = 0D
 
         _isFirstCutoff = IsFirstCutoff(cutoff)
@@ -148,6 +152,8 @@ Public Class FRM_DTR_DEDUCTION_UPDATE
             rowIndex += 1
             txtOfficerAllowance = AddField(mainPanel, rowIndex, "Officer's Allowance", _defaultOfficerAllowance)
             rowIndex += 1
+            txtSgUniformAllowance = AddField(mainPanel, rowIndex, "sguniformallowance", _defaultSgUniformAllowance)
+            rowIndex += 1
         Else
             txtCashBond = AddField(mainPanel, rowIndex, "Cash Bond Deduction", _defaultCbDeduct)
             rowIndex += 1
@@ -160,6 +166,8 @@ Public Class FRM_DTR_DEDUCTION_UPDATE
             txtPiCalLoan = AddField(mainPanel, rowIndex, "Pag-IBIG Cal Loan Deduction", _defaultPiCalLoanDeduct)
             rowIndex += 1
             txtOfficerAllowance = AddField(mainPanel, rowIndex, "Officer's Allowance", _defaultOfficerAllowance)
+            rowIndex += 1
+            txtSgUniformAllowance = AddField(mainPanel, rowIndex, "sguniformallowance", _defaultSgUniformAllowance)
             rowIndex += 1
         End If
 
@@ -458,12 +466,14 @@ Public Class FRM_DTR_DEDUCTION_UPDATE
         Dim sssDeduct As Decimal = _defaultSssDeduct
         Dim pagibigDeduct As Decimal = _defaultPagibigDeduct
         Dim officerAllowance As Decimal = _defaultOfficerAllowance
+        Dim sguniformallowance As Decimal = _defaultSgUniformAllowance
 
         If _isFirstCutoff Then
             If Not TryReadDecimal(txtSss, sssDeduct, "SSS Deduction") Then Return
             If Not TryReadDecimal(txtPhilhealth, philhealthDeduct, "PhilHealth Deduction") Then Return
             If Not TryReadDecimal(txtPagibig, pagibigDeduct, "Pag-IBIG Deduction") Then Return
             If Not TryReadDecimal(txtOfficerAllowance, officerAllowance, "Officer's Allowance") Then Return
+            If Not TryReadDecimal(txtSgUniformAllowance, sguniformallowance, "sguniformallowance") Then Return
         Else
             If Not TryReadDecimal(txtCashBond, cbDeduct, "Cash Bond Deduction") Then Return
             If Not TryReadDecimal(txtSssLoan, sssLoanDeduct, "SSS Loan Deduction") Then Return
@@ -471,6 +481,7 @@ Public Class FRM_DTR_DEDUCTION_UPDATE
             If Not TryReadDecimal(txtPiLoan, piLoanDeduct, "Pag-IBIG Loan Deduction") Then Return
             If Not TryReadDecimal(txtPiCalLoan, piCalLoanDeduct, "Pag-IBIG Cal Loan Deduction") Then Return
             If Not TryReadDecimal(txtOfficerAllowance, officerAllowance, "Officer's Allowance") Then Return
+            If Not TryReadDecimal(txtSgUniformAllowance, sguniformallowance, "sguniformallowance") Then Return
         End If
 
         If _unallocatedHours > 0D Then
@@ -497,7 +508,8 @@ Public Class FRM_DTR_DEDUCTION_UPDATE
             philhealthDeduct,
             sssDeduct,
             pagibigDeduct,
-            officerAllowance
+            officerAllowance,
+            sguniformallowance
         )
 
         MessageBox.Show("Deductions updated successfully.", "Saved", MessageBoxButtons.OK, MessageBoxIcon.Information)

@@ -275,14 +275,7 @@ Public Class FRM_DTR_DEDUCTION_UPDATE
         }
         AddHandler btnResetAll.Click, AddressOf HandleResetToOriginal
 
-        Dim btnRestoreAll As New Button With {
-            .Text = "Restore Distribution from Unallocated",
-            .AutoSize = True
-        }
-        AddHandler btnRestoreAll.Click, AddressOf HandleRestoreAll
-
         actionPanel.Controls.Add(btnResetAll)
-        actionPanel.Controls.Add(btnRestoreAll)
         sectionPanel.Controls.Add(actionPanel)
 
         Return sectionPanel
@@ -384,36 +377,6 @@ Public Class FRM_DTR_DEDUCTION_UPDATE
 
         SetAllocationValue(allocationName, GetAllocationValue(allocationName) + _unallocatedHours)
         _unallocatedHours = 0D
-        RefreshAllocationLabels()
-    End Sub
-
-    Private Sub HandleRestoreAll(sender As Object, e As EventArgs)
-        Dim totalAdjustableHours As Decimal = _regHours + _sunHours + _shHours + _lhHours + _unallocatedHours
-        Dim initialTotal As Decimal = _initialRegHours + _initialSunHours + _initialShHours + _initialLhHours
-
-        If totalAdjustableHours <= 0D Then
-            RefreshAllocationLabels()
-            Return
-        End If
-
-        _regHours = Math.Min(_initialRegHours, totalAdjustableHours)
-        totalAdjustableHours -= _regHours
-
-        _sunHours = Math.Min(_initialSunHours, totalAdjustableHours)
-        totalAdjustableHours -= _sunHours
-
-        _shHours = Math.Min(_initialShHours, totalAdjustableHours)
-        totalAdjustableHours -= _shHours
-
-        _lhHours = Math.Min(_initialLhHours, totalAdjustableHours)
-        totalAdjustableHours -= _lhHours
-
-        If totalAdjustableHours > 0D Then
-            _regHours += totalAdjustableHours
-            totalAdjustableHours = 0D
-        End If
-
-        _unallocatedHours = Math.Max(0D, initialTotal - (_regHours + _sunHours + _shHours + _lhHours))
         RefreshAllocationLabels()
     End Sub
 

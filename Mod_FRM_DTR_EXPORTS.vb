@@ -1,18 +1,8 @@
 ﻿Imports System.Data.OleDb
 Imports System.IO
-Imports System.Runtime.InteropServices
-Imports Excel = Microsoft.Office.Interop.Excel
+Imports ClosedXML.Excel
+
 Module Mod_FRM_DTR_EXPORTS
-
-    Private Sub WriteHeaderInfo(objSheet As Excel.Worksheet, sAddress As String, sCutOff As String)
-        objSheet.Cells(2, 1).value = "Client ID:"
-        objSheet.Cells(3, 1).value = "Client Address:"
-        objSheet.Cells(4, 1).value = "Period:"
-
-        objSheet.Cells(2, 2).value = UCase(FRM_DTR_EXPORTS.Lbl_Client_Name.Text)
-        objSheet.Cells(3, 2).value = sAddress
-        objSheet.Cells(4, 2).value = sCutOff
-    End Sub
 
     Private Function TryGetNumericValue(value As String) As Double
         Dim parsedValue As Double
@@ -23,22 +13,12 @@ Module Mod_FRM_DTR_EXPORTS
         Return 0
     End Function
 
-    Private Sub FormatRangeAsTable(range As Excel.Range)
-        With range.Borders
-            .LineStyle = Excel.XlLineStyle.xlContinuous
-            .Weight = Excel.XlBorderWeight.xlThin
-        End With
-    End Sub
-
-    Private Sub ApplySundayHeaderStyle(cell As Excel.Range)
+    Private Sub ApplySundayHeaderStyle(cell As IXLCell)
         If cell Is Nothing Then Return
-        With cell.Interior
-            .ThemeColor = Excel.XlThemeColor.xlThemeColorAccent2
-            .TintAndShade = 0.4
-        End With
+        cell.Style.Fill.BackgroundColor = XLColor.LightGreen
     End Sub
 
-    Private Sub WriteDtrHoursMatrixToSheet(dtrSheet As Excel.Worksheet, dgv As DataGridView)
+    Private Sub WriteDtrHoursMatrixToSheet(dtrSheet As IXLWorksheet, dgv As DataGridView)
         If dtrSheet Is Nothing OrElse dgv Is Nothing OrElse dgv.Columns.Count = 0 Then Return
 
         Dim dayHeaderRow As Integer = 12
@@ -57,7 +37,7 @@ Module Mod_FRM_DTR_EXPORTS
             For i As Integer = 0 To dayColumns.Count - 1
                 Dim dayNameValue = dgv.Rows(0).Cells(dayColumns(i).Index).Value
                 Dim displayValue As String = If(dayNameValue, "").ToString()
-                Dim headerCell As Excel.Range = dtrSheet.Cells(dayHeaderRow, dayStartCol + i)
+                Dim headerCell = dtrSheet.Cell(dayHeaderRow, dayStartCol + i)
                 headerCell.Value = displayValue
                 If displayValue.Trim().Equals("Sun", StringComparison.OrdinalIgnoreCase) Then
                     ApplySundayHeaderStyle(headerCell)
@@ -66,7 +46,7 @@ Module Mod_FRM_DTR_EXPORTS
         End If
 
         For i As Integer = 0 To dayColumns.Count - 1
-            dtrSheet.Cells(dayNumberRow, dayStartCol + i).Value = dayColumns(i).HeaderText
+            dtrSheet.Cell(dayNumberRow, dayStartCol + i).Value = dayColumns(i).HeaderText
         Next
 
         Dim excelRow As Integer = dataStartRow
@@ -74,10 +54,10 @@ Module Mod_FRM_DTR_EXPORTS
             If row.IsNewRow Then Continue For
             If hasDayNameRow AndAlso row.Index = 0 Then Continue For
 
-            dtrSheet.Cells(excelRow, nameCol).Value = row.Cells(0).Value
+            dtrSheet.Cell(excelRow, nameCol).Value = Convert.ToString(row.Cells(0).Value)
             For i As Integer = 0 To dayColumns.Count - 1
                 Dim rawValue As String = Convert.ToString(row.Cells(dayColumns(i).Index).Value)
-                dtrSheet.Cells(excelRow, dayStartCol + i).Value = TryGetNumericValue(rawValue)
+                dtrSheet.Cell(excelRow, dayStartCol + i).Value = TryGetNumericValue(rawValue)
             Next
 
             excelRow += 1
@@ -85,9 +65,6 @@ Module Mod_FRM_DTR_EXPORTS
     End Sub
 
     Private Function ConvertCutOffStringToReadable(input As String) As String
-        ' Input : "2_2nd_2025"
-        ' Output: "16–28 FEBRUARY 2025"
-
         If String.IsNullOrWhiteSpace(input) Then Return ""
 
         Dim parts = input.Split("_"c)
@@ -106,20 +83,15 @@ Module Mod_FRM_DTR_EXPORTS
             Case "1st"
                 startDate = New Date(yearNum, monthNum, 1)
                 endDate = New Date(yearNum, monthNum, 15)
-
             Case "2nd"
                 startDate = New Date(yearNum, monthNum, 16)
-                endDate = New Date(yearNum, monthNum,
-                               Date.DaysInMonth(yearNum, monthNum))
-
+                endDate = New Date(yearNum, monthNum, Date.DaysInMonth(yearNum, monthNum))
             Case Else
                 Throw New FormatException("Cutoff must be '1st' or '2nd'")
         End Select
 
-        ' Format result
         Return $"{startDate.Day}-{endDate.Day} {startDate:MMMM yyyy}".ToUpper()
     End Function
-
 
     Public Function IsFirstCutoff(cutoff As String) As Boolean
         If String.IsNullOrWhiteSpace(cutoff) Then Return False
@@ -191,21 +163,7 @@ Module Mod_FRM_DTR_EXPORTS
     End Sub
 
     Public Sub Export_DTR_Per_Client_to_Excell(sClient As String, sAddress As String, sDailyWage As String, sCutOff As String)
-
-        Dim xlApp As Excel.Application = Nothing
-        Dim wbOut As Excel.Workbook = Nothing
-        Dim createdNewExcel As Boolean = False
-
-        Dim payrollSheet As Excel.Worksheet = Nothing
-        Dim payslipSheet As Excel.Worksheet = Nothing
-        Dim dtrHoursSheet As Excel.Worksheet = Nothing
-
         Try
-            xlApp = GetOrCreateExcelApp(createdNewExcel)
-
-            '========================================
-            ' 1) Choose template workbook based on cutoff
-            '========================================
             Dim templateFileName As String
 
             If IsFirstCutoff(sCutOff) Then
@@ -228,123 +186,73 @@ Module Mod_FRM_DTR_EXPORTS
             Dim outPath As String = Path.Combine(exportFolder,
             $"Payroll_{safeClient}_{safeCutoff}_{DateTime.Now:yyyyMMdd_HHmmss}.xlsx")
 
-            File.Copy(templatePath, outPath, True)
+            Using workbook As New XLWorkbook(templatePath)
+                Dim payrollSheet = workbook.Worksheet("PAYROLL")
+                Dim payslipSheet = workbook.Worksheet("PAYSLIP")
+                Dim dtrHoursSheet = workbook.Worksheet("DTR_Hours")
 
-            '========================================
-            ' 2) Open copied workbook (output)
-            '========================================
-            WaitForExcelReady(xlApp, 10000)
-            wbOut = xlApp.Workbooks.Open(outPath)
+                Dim readableCutOff As String = ConvertCutOffStringToReadable(sCutOff)
 
-            payrollSheet = CType(wbOut.Worksheets("PAYROLL"), Excel.Worksheet)
-            payslipSheet = CType(wbOut.Worksheets("PAYSLIP"), Excel.Worksheet)
-            dtrHoursSheet = CType(wbOut.Worksheets("DTR_Hours"), Excel.Worksheet)
+                payrollSheet.Cell("B7").Value = sClient
+                payrollSheet.Cell("B8").Value = sAddress
+                payrollSheet.Cell("B9").Value = readableCutOff
+                payslipSheet.Cell("C11").Value = sDailyWage
 
-            '========================================
-            ' 3) Fill header fields
-            '========================================
-            Dim readableCutOff As String = ConvertCutOffStringToReadable(sCutOff)
+                dtrHoursSheet.Cell("B7").Value = sClient
+                dtrHoursSheet.Cell("B8").Value = sAddress
+                dtrHoursSheet.Cell("B10").Value = readableCutOff
 
-            payrollSheet.Range("B7").Value = sClient
-            payrollSheet.Range("B8").Value = sAddress
-            payrollSheet.Range("B9").Value = readableCutOff
-            payslipSheet.Range("C11").Value = sDailyWage
+                Dim payrollDataStartRow As Integer = 15
+                Dim firstCutoff As Boolean = IsFirstCutoff(sCutOff)
 
-            dtrHoursSheet.Range("B7").Value = sClient
-            dtrHoursSheet.Range("B8").Value = sAddress
-            dtrHoursSheet.Range("B10").Value = readableCutOff
+                Dim dgv = FRM_DTR_EXPORTS.DGV_DTR_Per_Client
+                Dim rowIndex As Integer = 0
+                For Each row As DataGridViewRow In dgv.Rows
+                    If row.IsNewRow Then Continue For
+                    Dim r As Integer = payrollDataStartRow + rowIndex
 
-            '========================================
-            ' 4) Write rows from ListView
-            '========================================
-            Dim payrollDataStartRow As Integer = 15
+                    payrollSheet.Cell(r, 1).Value = Convert.ToString(row.Cells("colName").Value)
+                    payrollSheet.Cell(r, 2).Value = row.Cells("colNumDays").Value
+                    payrollSheet.Cell(r, 3).Value = row.Cells("colTotalHours").Value
+                    payrollSheet.Cell(r, 4).Value = row.Cells("colReg").Value
+                    payrollSheet.Cell(r, 5).Value = row.Cells("colSun").Value
+                    payrollSheet.Cell(r, 8).Value = row.Cells("colLh").Value
+                    payrollSheet.Cell(r, 9).Value = row.Cells("colSh").Value
+                    payrollSheet.Cell(r, 10).Value = row.Cells("colNumNdDays").Value
+                    payrollSheet.Cell(r, 11).Value = row.Cells("colOtReg").Value
 
-            Dim firstCutoff As Boolean = IsFirstCutoff(sCutOff)
+                    If firstCutoff Then
+                        payrollSheet.Cell(r, 20).Value = row.Cells("colSss").Value
+                        payrollSheet.Cell(r, 21).Value = row.Cells("colPhilHealth").Value
+                        payrollSheet.Cell(r, 22).Value = row.Cells("colPagIbig").Value
+                        payrollSheet.Cell(r, 18).Value = row.Cells("colOfficerAllo").Value
+                    Else
+                        payrollSheet.Cell(r, 20).Value = row.Cells("colCb").Value
+                        payrollSheet.Cell(r, 21).Value = row.Cells("colSssLoan").Value
+                        payrollSheet.Cell(r, 22).Value = row.Cells("colSssCalLoan").Value
+                        payrollSheet.Cell(r, 23).Value = row.Cells("colPiLoan").Value
+                        payrollSheet.Cell(r, 24).Value = row.Cells("colPiCalLoan").Value
+                        payrollSheet.Cell(r, 17).Value = row.Cells("colOfficerAllo").Value
+                    End If
 
+                    rowIndex += 1
+                Next
 
-            Dim dgv = FRM_DTR_EXPORTS.DGV_DTR_Per_Client
-            Dim rowIndex As Integer = 0
-            For Each row As DataGridViewRow In dgv.Rows
-                If row.IsNewRow Then Continue For
-                Dim r As Integer = payrollDataStartRow + rowIndex
+                WriteDtrHoursMatrixToSheet(dtrHoursSheet, FRM_DTR_EXPORTS.DGV_DTR_MATRIX)
+                workbook.SaveAs(outPath)
+            End Using
 
-                payrollSheet.Cells(r, 1).Value = row.Cells("colName").Value 'NAME
-                payrollSheet.Cells(r, 2).Value = row.Cells("colNumDays").Value 'NO DAYS
-                payrollSheet.Cells(r, 3).Value = row.Cells("colTotalHours").Value 'TOTAL HOURS
-                payrollSheet.Cells(r, 4).Value = row.Cells("colReg").Value 'REG
-                payrollSheet.Cells(r, 5).Value = row.Cells("colSun").Value 'SUN
-                payrollSheet.Cells(r, 8).Value = row.Cells("colLh").Value 'LH
-                payrollSheet.Cells(r, 9).Value = row.Cells("colSh").Value 'SH
-                payrollSheet.Cells(r, 10).Value = row.Cells("colNumNdDays").Value 'ND DAYS
-                payrollSheet.Cells(r, 11).Value = row.Cells("colOtReg").Value 'OT/HRS
-
-                'Deductions
-                If firstCutoff Then
-                    '1st cutoff → Government deductions go to columns 12,13,14
-                    payrollSheet.Cells(r, 20).Value = row.Cells("colSss").Value 'SSS
-                    payrollSheet.Cells(r, 21).Value = row.Cells("colPhilHealth").Value 'PH
-                    payrollSheet.Cells(r, 22).Value = row.Cells("colPagIbig").Value 'PI
-                    payrollSheet.Cells(r, 18).Value = row.Cells("colOfficerAllo").Value 'Officer Allo
-                Else
-                    '2nd cutoff → Loans/other deductions go to columns 20,21,22
-                    payrollSheet.Cells(r, 20).Value = row.Cells("colCb").Value 'CB
-                    payrollSheet.Cells(r, 21).Value = row.Cells("colSssLoan").Value 'SSS LOAN
-                    payrollSheet.Cells(r, 22).Value = row.Cells("colSssCalLoan").Value 'SSS CAL LOAN
-                    payrollSheet.Cells(r, 23).Value = row.Cells("colPiLoan").Value 'PI LOAN
-                    payrollSheet.Cells(r, 24).Value = row.Cells("colPiCalLoan").Value 'PI CAL LOAN
-                    payrollSheet.Cells(r, 17).Value = row.Cells("colOfficerAllo").Value 'Officer Allo
-                End If
-
-                rowIndex += 1
-            Next
-
-            '========================================
-            ' 4b) Write Hours Per Day matrix
-            '========================================
-            WriteDtrHoursMatrixToSheet(dtrHoursSheet, FRM_DTR_EXPORTS.DGV_DTR_MATRIX)
-
-            '========================================
-            ' 5) Calculate + save
-            '========================================
-            WaitForExcelReady(xlApp, 10000)
-            payrollSheet.Calculate()
-            payslipSheet.Calculate()
-            dtrHoursSheet.Calculate()
-            wbOut.Save()
-
-            xlApp.Visible = True
-            wbOut.Activate()
-
+            Process.Start(outPath)
         Catch ex As Exception
             MsgBox(ex.ToString)
-        Finally
-            ReleaseCom(dtrHoursSheet)
-            ReleaseCom(payslipSheet)
-            ReleaseCom(payrollSheet)
-            ' Keep Excel alive for user interaction
-            wbOut = Nothing
-            xlApp = Nothing
         End Try
-
     End Sub
-
 
     Public Sub Export_DTR_Hours_Per_Client_to_Excell(
     sClient As String,
     sAddress As String,
     sCutOff As String)
-
-        Dim xlApp As Excel.Application = Nothing
-        Dim wbOut As Excel.Workbook = Nothing
-        Dim dtrHoursSheet As Excel.Worksheet = Nothing
-        Dim createdNewExcel As Boolean = False
-
         Try
-            xlApp = GetOrCreateExcelApp(createdNewExcel)
-
-            '========================================
-            ' 1) Choose template workbook based on cutoff
-            '========================================
             Dim templateFileName As String
 
             If IsFirstCutoff(sCutOff) Then
@@ -369,142 +277,25 @@ Module Mod_FRM_DTR_EXPORTS
             Dim outPath = Path.Combine(exportFolder,
             $"DTR_Hours_{safeClient}_{safeCutoff}_{DateTime.Now:yyyyMMdd_HHmmss}.xlsx")
 
-            File.Copy(templatePath, outPath, True)
+            Using workbook As New XLWorkbook(templatePath)
+                Dim dtrHoursSheet = workbook.Worksheet("DTR_Hours")
+                Dim readableCutOff = ConvertCutOffStringToReadable(sCutOff)
 
-            '========================================
-            ' 2) Open workbook
-            '========================================
-            WaitForExcelReady(xlApp, 10000)
-            wbOut = xlApp.Workbooks.Open(outPath)
-            dtrHoursSheet = CType(wbOut.Worksheets("DTR_Hours"), Excel.Worksheet)
+                dtrHoursSheet.Cell("B7").Value = sClient
+                dtrHoursSheet.Cell("B8").Value = sAddress
+                dtrHoursSheet.Cell("B10").Value = readableCutOff
 
-            '========================================
-            ' 3) Fill header fields (SAFE RANGE HANDLING)
-            '========================================
-            Dim readableCutOff = ConvertCutOffStringToReadable(sCutOff)
+                WriteDtrHoursMatrixToSheet(dtrHoursSheet, FRM_DTR_EXPORTS.DGV_DTR_MATRIX)
+                workbook.SaveAs(outPath)
+            End Using
 
-            WriteCell(dtrHoursSheet, "B7", sClient)
-            WriteCell(dtrHoursSheet, "B8", sAddress)
-            WriteCell(dtrHoursSheet, "B10", readableCutOff)
-
-            '========================================
-            ' 4) Write DTR matrix
-            '========================================
-            WriteDtrHoursMatrixToSheet(dtrHoursSheet, FRM_DTR_EXPORTS.DGV_DTR_MATRIX)
-
-            '========================================
-            ' 5) Calculate + save
-            '========================================
-            WaitForExcelReady(xlApp, 10000)
-            dtrHoursSheet.Calculate()
-            wbOut.Save()
-
-            xlApp.Visible = True
-            wbOut.Activate()
-
+            Process.Start(outPath)
 
         Catch ex As Exception
             MsgBox(ex.Message, vbCritical, "Export Error")
-
-        Finally
-            ' 🔥 Release ONLY inner objects
-            ReleaseCom(dtrHoursSheet)
-
-            ' Do NOT release Workbook / Excel
-            ' Let user close Excel manually
-            wbOut = Nothing
-            xlApp = Nothing
-        End Try
-    End Sub
-    Private Sub WriteCell(ws As Excel.Worksheet, address As String, value As Object)
-        Dim rng As Excel.Range = Nothing
-        Try
-            rng = ws.Range(address)
-            rng.Value = value
-        Finally
-            ReleaseCom(rng)
         End Try
     End Sub
 
-    Private Function GetOrCreateExcelApp(ByRef createdNew As Boolean) As Excel.Application
-        Dim excelApp As Excel.Application = Nothing
-        createdNew = False
-
-        ' Prefer the current running Excel instance so manual opens and exports share
-        ' the same process/window. If none exists, create a new one.
-        excelApp = TryGetActiveExcelAppWithTimeout(1500)
-
-        If excelApp Is Nothing Then
-            excelApp = CreateExcelAppWithRetry()
-            createdNew = True
-        End If
-
-        excelApp.Visible = True
-        excelApp.WindowState = Excel.XlWindowState.xlMaximized
-        excelApp.DisplayAlerts = False
-
-        Return excelApp
-    End Function
-
-    Private Function TryGetActiveExcelAppWithTimeout(timeoutMs As Integer) As Excel.Application
-        Dim activeExcel As Excel.Application = Nothing
-        Dim startedAt As DateTime = DateTime.UtcNow
-
-        Do
-            Try
-                activeExcel = CType(Marshal.GetActiveObject("Excel.Application"), Excel.Application)
-                WaitForExcelReady(activeExcel, 1500)
-                Return activeExcel
-            Catch
-                Threading.Thread.Sleep(120)
-                Application.DoEvents()
-            End Try
-        Loop While (DateTime.UtcNow - startedAt).TotalMilliseconds < timeoutMs
-
-        Return Nothing
-    End Function
-
-    Private Sub WaitForExcelReady(excelApp As Excel.Application, timeoutMs As Integer)
-        If excelApp Is Nothing Then Throw New ArgumentNullException(NameOf(excelApp))
-
-        Dim startedAt As DateTime = DateTime.UtcNow
-        Do
-            Try
-                If excelApp.Ready Then
-                    Return
-                End If
-            Catch
-                ' Excel may be temporarily busy; keep waiting within timeout.
-            End Try
-
-            Threading.Thread.Sleep(120)
-            Application.DoEvents()
-        Loop While (DateTime.UtcNow - startedAt).TotalMilliseconds < timeoutMs
-
-        Throw New TimeoutException("Excel is busy (possibly in cell edit mode or with an open dialog). Please close any Excel dialogs and try exporting again.")
-    End Sub
-
-    Private Function CreateExcelAppWithRetry() As Excel.Application
-        Dim lastException As Exception = Nothing
-
-        For attempt As Integer = 1 To 3
-            Try
-                Return New Excel.Application()
-            Catch ex As COMException
-                lastException = ex
-                Threading.Thread.Sleep(350)
-            Catch ex As Exception
-                lastException = ex
-                Threading.Thread.Sleep(350)
-            End Try
-        Next
-
-        Throw New Exception("Unable to start Microsoft Excel (HRESULT 0x80080005). Please close all Excel windows and try again.", lastException)
-    End Function
-
-    '--------------------------
-    ' Helpers
-    '--------------------------
     Private Function MakeSafeFileName(text As String) As String
         If String.IsNullOrWhiteSpace(text) Then Return "NA"
         Dim invalid = Path.GetInvalidFileNameChars()
@@ -545,49 +336,6 @@ Module Mod_FRM_DTR_EXPORTS
         Directory.CreateDirectory(exportFolder)
         Return exportFolder
     End Function
-
-    Private Sub ReleaseCom(ByRef obj As Object)
-        Try
-            If obj IsNot Nothing Then
-                Marshal.ReleaseComObject(obj)
-            End If
-        Catch
-        Finally
-            obj = Nothing
-        End Try
-    End Sub
-
-
-    Private Sub CloseWorkbook(ByVal workbook As Excel.Workbook, ByVal ownsExcelInstance As Boolean)
-        If workbook Is Nothing Then
-            If ownsExcelInstance Then
-                CloseExcelInstance()
-            End If
-            Return
-        End If
-
-        Try
-            workbook.Close(False)
-        Catch
-        Finally
-            If ownsExcelInstance Then
-                CloseExcelInstance()
-            End If
-        End Try
-    End Sub
-
-    Private Sub CloseExcelInstance()
-        Try
-            Dim excelApp = CType(Marshal.GetActiveObject("Excel.Application"), Excel.Application)
-            If excelApp IsNot Nothing Then
-                excelApp.Quit()
-            End If
-        Catch
-        End Try
-    End Sub
-
-
-
 
     Public Sub Get_DTR_Per_Client(iClient_ID As Integer, sCut_Off As String)
 

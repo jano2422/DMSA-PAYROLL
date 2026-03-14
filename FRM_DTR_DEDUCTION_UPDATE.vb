@@ -213,7 +213,7 @@ Public Class FRM_DTR_DEDUCTION_UPDATE
         sectionPanel.Controls.Add(sectionTitle)
 
         Dim grid As New TableLayoutPanel With {
-            .ColumnCount = 4,
+            .ColumnCount = 6,
             .RowCount = 6,
             .AutoSize = True,
             .Dock = DockStyle.Fill
@@ -223,6 +223,8 @@ Public Class FRM_DTR_DEDUCTION_UPDATE
         grid.ColumnStyles.Add(New ColumnStyle(SizeType.Absolute, 90))
         grid.ColumnStyles.Add(New ColumnStyle(SizeType.Absolute, 55))
         grid.ColumnStyles.Add(New ColumnStyle(SizeType.Absolute, 55))
+        grid.ColumnStyles.Add(New ColumnStyle(SizeType.Absolute, 120))
+        grid.ColumnStyles.Add(New ColumnStyle(SizeType.Absolute, 170))
 
         grid.Controls.Add(New Label With {.Text = "Type", .AutoSize = True, .Font = New Font("Segoe UI", 9.0F, FontStyle.Bold)}, 0, 0)
         grid.Controls.Add(New Label With {.Text = "Hours", .AutoSize = True, .Font = New Font("Segoe UI", 9.0F, FontStyle.Bold)}, 1, 0)
@@ -267,19 +269,19 @@ Public Class FRM_DTR_DEDUCTION_UPDATE
             .Margin = New Padding(0, 8, 0, 0)
         }
 
-        Dim btnUnallocateAll As New Button With {
-            .Text = "Unallocate All Hours",
+        Dim btnResetAll As New Button With {
+            .Text = "Reset to Original",
             .AutoSize = True
         }
-        AddHandler btnUnallocateAll.Click, AddressOf HandleUnallocateAll
+        AddHandler btnResetAll.Click, AddressOf HandleResetToOriginal
 
         Dim btnRestoreAll As New Button With {
-            .Text = "Allocate All Unallocated (Restore)",
+            .Text = "Restore Distribution from Unallocated",
             .AutoSize = True
         }
         AddHandler btnRestoreAll.Click, AddressOf HandleRestoreAll
 
-        actionPanel.Controls.Add(btnUnallocateAll)
+        actionPanel.Controls.Add(btnResetAll)
         actionPanel.Controls.Add(btnRestoreAll)
         sectionPanel.Controls.Add(actionPanel)
 
@@ -315,10 +317,26 @@ Public Class FRM_DTR_DEDUCTION_UPDATE
         }
         AddHandler btnPlus.Click, Sub() onPlus()
 
+        Dim btnUnallocateAll As New Button With {
+            .Text = "Unallocate All",
+            .AutoSize = True,
+            .Margin = New Padding(0, 2, 6, 2)
+        }
+        AddHandler btnUnallocateAll.Click, Sub() HandleUnallocateAllForType(allocationName)
+
+        Dim btnAllocateAll As New Button With {
+            .Text = "Allocate All Unallocated",
+            .AutoSize = True,
+            .Margin = New Padding(0, 2, 0, 2)
+        }
+        AddHandler btnAllocateAll.Click, Sub() HandleAllocateAllUnallocatedForType(allocationName)
+
         grid.Controls.Add(lblName, 0, row)
         grid.Controls.Add(lblValue, 1, row)
         grid.Controls.Add(btnMinus, 2, row)
         grid.Controls.Add(btnPlus, 3, row)
+        grid.Controls.Add(btnUnallocateAll, 4, row)
+        grid.Controls.Add(btnAllocateAll, 5, row)
 
         Return lblValue
     End Function
@@ -348,12 +366,24 @@ Public Class FRM_DTR_DEDUCTION_UPDATE
         RefreshAllocationLabels()
     End Sub
 
-    Private Sub HandleUnallocateAll(sender As Object, e As EventArgs)
-        _unallocatedHours += _regHours + _sunHours + _shHours + _lhHours
-        _regHours = 0D
-        _sunHours = 0D
-        _shHours = 0D
-        _lhHours = 0D
+    Private Sub HandleUnallocateAllForType(allocationName As String)
+        Dim currentValue As Decimal = GetAllocationValue(allocationName)
+        If currentValue <= 0D Then
+            Return
+        End If
+
+        SetAllocationValue(allocationName, 0D)
+        _unallocatedHours += currentValue
+        RefreshAllocationLabels()
+    End Sub
+
+    Private Sub HandleAllocateAllUnallocatedForType(allocationName As String)
+        If _unallocatedHours <= 0D Then
+            Return
+        End If
+
+        SetAllocationValue(allocationName, GetAllocationValue(allocationName) + _unallocatedHours)
+        _unallocatedHours = 0D
         RefreshAllocationLabels()
     End Sub
 
@@ -384,6 +414,15 @@ Public Class FRM_DTR_DEDUCTION_UPDATE
         End If
 
         _unallocatedHours = Math.Max(0D, initialTotal - (_regHours + _sunHours + _shHours + _lhHours))
+        RefreshAllocationLabels()
+    End Sub
+
+    Private Sub HandleResetToOriginal(sender As Object, e As EventArgs)
+        _regHours = _initialRegHours
+        _sunHours = _initialSunHours
+        _shHours = _initialShHours
+        _lhHours = _initialLhHours
+        _unallocatedHours = 0D
         RefreshAllocationLabels()
     End Sub
 
@@ -469,6 +508,11 @@ Public Class FRM_DTR_DEDUCTION_UPDATE
             If Not TryReadDecimal(txtPiLoan, piLoanDeduct, "Pag-IBIG Loan Deduction") Then Return
             If Not TryReadDecimal(txtPiCalLoan, piCalLoanDeduct, "Pag-IBIG Cal Loan Deduction") Then Return
             If Not TryReadDecimal(txtOfficerAllowance, officerAllowance, "Officer's Allowance") Then Return
+        End If
+
+        If _unallocatedHours > 0D Then
+            MessageBox.Show("Unable to save while there are unallocated hours. Please allocate all hours or reset to original first.", "Unallocated Hours", MessageBoxButtons.OK, MessageBoxIcon.Warning)
+            Return
         End If
 
         Save_DTR_Deductions_Update(

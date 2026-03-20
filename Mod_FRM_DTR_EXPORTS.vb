@@ -152,7 +152,7 @@ Module Mod_FRM_DTR_EXPORTS
             AddPerClientColumn(dgv, "colPhilHealth", "PhilHealth", 90)
             AddPerClientColumn(dgv, "colPagIbig", "Pag-IBIG", 90)
             AddPerClientColumn(dgv, "colOfficerAllo", "Officer Allo", 100)
-            AddPerClientColumn(dgv, "colSgUniformAllowance", "sguniformallowance", 120)
+            AddPerClientColumn(dgv, "colSgUniformAllowance", "SG Uniform Allowance", 120)
         ElseIf IsSecondCutoff(cutoff) Then
             AddPerClientColumn(dgv, "colCb", "Cash Bond", 90)
             AddPerClientColumn(dgv, "colSssLoan", "SSS Loan", 90)
@@ -160,7 +160,7 @@ Module Mod_FRM_DTR_EXPORTS
             AddPerClientColumn(dgv, "colPiLoan", "PI Loan", 90)
             AddPerClientColumn(dgv, "colPiCalLoan", "PI Cal Loan", 110)
             AddPerClientColumn(dgv, "colOfficerAllo", "Officer Allo", 100)
-            AddPerClientColumn(dgv, "colSgUniformAllowance", "sguniformallowance", 120)
+            AddPerClientColumn(dgv, "colSgUniformAllowance", "SG Uniform Allowance", 120)
         End If
     End Sub
 
@@ -222,19 +222,20 @@ Module Mod_FRM_DTR_EXPORTS
                     payrollSheet.Cell(r, 9).Value = row.Cells("colSh").Value
                     payrollSheet.Cell(r, 10).Value = row.Cells("colNumNdDays").Value
                     payrollSheet.Cell(r, 11).Value = row.Cells("colOtReg").Value
+                    payrollSheet.Cell(r, 18).Value = row.Cells("colSgUniformAllowance").Value
+                    payrollSheet.Cell(r, 19).Value = row.Cells("colOfficerAllo").Value
 
                     If firstCutoff Then
-                        payrollSheet.Cell(r, 20).Value = row.Cells("colSss").Value
-                        payrollSheet.Cell(r, 21).Value = row.Cells("colPhilHealth").Value
-                        payrollSheet.Cell(r, 22).Value = row.Cells("colPagIbig").Value
-                        payrollSheet.Cell(r, 18).Value = row.Cells("colOfficerAllo").Value
+                        payrollSheet.Cell(r, 21).Value = row.Cells("colSss").Value
+                        payrollSheet.Cell(r, 22).Value = row.Cells("colPhilHealth").Value
+                        payrollSheet.Cell(r, 23).Value = row.Cells("colPagIbig").Value
                     Else
-                        payrollSheet.Cell(r, 20).Value = row.Cells("colCb").Value
-                        payrollSheet.Cell(r, 21).Value = row.Cells("colSssLoan").Value
-                        payrollSheet.Cell(r, 22).Value = row.Cells("colSssCalLoan").Value
-                        payrollSheet.Cell(r, 23).Value = row.Cells("colPiLoan").Value
-                        payrollSheet.Cell(r, 24).Value = row.Cells("colPiCalLoan").Value
-                        payrollSheet.Cell(r, 17).Value = row.Cells("colOfficerAllo").Value
+                        payrollSheet.Cell(r, 21).Value = row.Cells("colCb").Value
+                        payrollSheet.Cell(r, 22).Value = row.Cells("colSssLoan").Value
+                        payrollSheet.Cell(r, 23).Value = row.Cells("colSssCalLoan").Value
+                        payrollSheet.Cell(r, 24).Value = row.Cells("colPiLoan").Value
+                        payrollSheet.Cell(r, 25).Value = row.Cells("colPiCalLoan").Value
+
                     End If
 
                     rowIndex += 1

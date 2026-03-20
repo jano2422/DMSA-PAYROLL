@@ -152,7 +152,7 @@ Public Class FRM_DTR_DEDUCTION_UPDATE
             rowIndex += 1
             txtOfficerAllowance = AddField(mainPanel, rowIndex, "Officer's Allowance", _defaultOfficerAllowance)
             rowIndex += 1
-            txtSgUniformAllowance = AddField(mainPanel, rowIndex, "sguniformallowance", _defaultSgUniformAllowance)
+            txtSgUniformAllowance = AddField(mainPanel, rowIndex, "SG Uniform Allowance", _defaultSgUniformAllowance)
             rowIndex += 1
         Else
             txtCashBond = AddField(mainPanel, rowIndex, "Cash Bond Deduction", _defaultCbDeduct)
@@ -167,7 +167,7 @@ Public Class FRM_DTR_DEDUCTION_UPDATE
             rowIndex += 1
             txtOfficerAllowance = AddField(mainPanel, rowIndex, "Officer's Allowance", _defaultOfficerAllowance)
             rowIndex += 1
-            txtSgUniformAllowance = AddField(mainPanel, rowIndex, "sguniformallowance", _defaultSgUniformAllowance)
+            txtSgUniformAllowance = AddField(mainPanel, rowIndex, "SG Uniform Allowance", _defaultSgUniformAllowance)
             rowIndex += 1
         End If
 

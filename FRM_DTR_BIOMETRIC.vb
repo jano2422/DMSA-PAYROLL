@@ -521,7 +521,13 @@ Public Class FRM_DTR_BIOMETRIC
             Dim reportedTime As Integer = parsedTime_DTR_IN.Hour
             Dim totalHours As Double = CDbl(GView_DTR.Rows(iRow).Cells(14).Value)
 
-            Dim regHours As Double = 8 ' Standard regular hours
+            Dim firstDate As String = GetFirstDate(GView_DTR.Rows(iRow).Cells(0)?.Value?.ToString())
+            Dim parsedDate = ParseDate(firstDate)
+            If parsedDate Is Nothing Then Throw New Exception("Invalid Date")
+
+            Dim dayOfMonth As Integer = parsedDate.Value.Day
+            Dim schedTotalWorkHours As Integer = ParseScheduleTotalHours(dayOfMonth)
+            Dim regHours As Double = If(schedTotalWorkHours >= 16, 16, 8)
             Dim otHours As Double = 0
 
             ' Reset all current row columns (15 to 26) to 0

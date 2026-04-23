@@ -402,4 +402,8 @@ Public Class FRM_EMP_REG
     Private Sub LV_Employee_List_SelectedIndexChanged(sender As Object, e As EventArgs) Handles LV_Employee_List.SelectedIndexChanged
 
     End Sub
+
+    Private Sub Txt_MothersMaiden_TextChanged(sender As Object, e As EventArgs) Handles Txt_MothersMaiden.TextChanged
+
+    End Sub
 End Class

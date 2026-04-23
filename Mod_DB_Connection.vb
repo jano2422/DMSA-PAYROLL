@@ -15,8 +15,8 @@ Module Mod_DB_Connection
             End If
 
             ' Define the database file path
-            ' Dim dbfile As String = Path.Combine(Application.StartupPath, "DMSA.mdb")
-            Dim dbfile As String = "\\DMSAC-SERVER\Files\DMSA_SYSTEM\DMSA.mdb"
+            Dim dbfile As String = Path.Combine(Application.StartupPath, "DMSA.mdb")
+            'Dim dbfile As String = "\\DMSAC-SERVER\Files\DMSA_SYSTEM\DMSA.mdb"
 
             ' Ensure the database file exists before proceeding
             If Not File.Exists(dbfile) Then

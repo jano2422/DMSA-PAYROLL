@@ -8,8 +8,8 @@ Public Class FRM_DTR_BIOMETRIC
 
     ' Variable to store the selected directory
     Private selectedDirectory As String = String.Empty
-    Dim DefaultDTRDir As String = "\\DMSAC-SERVER\Files\MASTER_DTR"
-    'Dim DefaultDTRDir As String = "C:\MASTER_DTR"
+    'Dim DefaultDTRDir As String = "\\DMSAC-SERVER\Files\MASTER_DTR"
+    Dim DefaultDTRDir As String = "C:\MASTER_DTR"
     Private Sub Btn_DTR_Click(sender As Object, e As EventArgs) Handles Btn_DTR.Click
 
 

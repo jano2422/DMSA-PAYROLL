@@ -112,7 +112,7 @@ Module Mod_Biometric_DTR
         Return False
     End Function
     ' Parse date string into a DateTime object
-    Private Function ParseDate(dateStr As String) As DateTime?
+    Public Function ParseDate(dateStr As String) As DateTime?
         Dim parsedDate As DateTime
         If DateTime.TryParseExact(dateStr, "M/d/yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, parsedDate) Then
             Return parsedDate
@@ -121,7 +121,7 @@ Module Mod_Biometric_DTR
     End Function
 
     ' Get the first part of the date string
-    Private Function GetFirstDate(dateStr As String) As String
+    Public Function GetFirstDate(dateStr As String) As String
         Return If(dateStr.Contains("-"c), dateStr.Split("-"c)(0).Trim(), dateStr)
     End Function
 
@@ -503,7 +503,7 @@ Module Mod_Biometric_DTR
         Throw New Exception($"No schedule found for day {dayNumber}")
     End Function
 
-    Private Function ParseScheduleTotalHours(dayNumber As Integer) As Integer
+    Public Function ParseScheduleTotalHours(dayNumber As Integer) As Integer
         For Each schedRow As DataGridViewRow In FRM_DTR_BIOMETRIC.GView_Schedule.Rows
             If schedRow.Cells(0)?.Value?.ToString() = dayNumber.ToString() Then
                 Dim schedTotalHoursStr As String = schedRow.Cells(4)?.Value?.ToString()

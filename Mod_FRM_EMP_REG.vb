@@ -333,7 +333,7 @@ Module Mod_FRM_EMP_REG
                             .Lbl_Employee_Status.ForeColor = Color.Yellow
                         End If
 
-
+                        .Txt_MothersMaiden.Text = myRow.Item("MAIDEN_NAME")
                         .Txt_Birthday.Text = Format(myRow.Item("BIRTH_DATE"), "dd-MMM-yyyy")
                         .Txt_Gender.Text = myRow.Item("GENDER")
                         .Txt_BloodType.Text = myRow.Item("BLOOD_TYPE")
@@ -641,6 +641,7 @@ Module Mod_FRM_EMP_REG
         With FRM_EMP_REG
 
             FRM_EMP_REG.LV_Employee_List.Items.Clear()
+            .Txt_MothersMaiden.Text = ""
             .Txt_Sec_License.Text = ""
             .Txt_Sec_License_Exp.Text = ""
             .Txt_Birthday.Text = ""

@@ -117,6 +117,8 @@ Partial Class FRM_EMP_REG
         Me.Btn_LongList = New FontAwesome.Sharp.IconButton()
         Me.Btn_ShortList = New FontAwesome.Sharp.IconButton()
         Me.PictureBox2 = New System.Windows.Forms.PictureBox()
+        Me.Txt_MothersMaiden = New System.Windows.Forms.TextBox()
+        Me.Lbl_MothersMaiden = New System.Windows.Forms.Label()
         Me.MenuStrip1.SuspendLayout()
         Me.Grp_BasicInfo.SuspendLayout()
         Me.GroupBox1.SuspendLayout()
@@ -257,6 +259,8 @@ Partial Class FRM_EMP_REG
         'Grp_BasicInfo
         '
         Me.Grp_BasicInfo.BackColor = System.Drawing.Color.Black
+        Me.Grp_BasicInfo.Controls.Add(Me.Txt_MothersMaiden)
+        Me.Grp_BasicInfo.Controls.Add(Me.Lbl_MothersMaiden)
         Me.Grp_BasicInfo.Controls.Add(Me.Txt_Relationship)
         Me.Grp_BasicInfo.Controls.Add(Me.Label19)
         Me.Grp_BasicInfo.Controls.Add(Me.Label8)
@@ -292,7 +296,7 @@ Partial Class FRM_EMP_REG
         Me.Grp_BasicInfo.ForeColor = System.Drawing.Color.Yellow
         Me.Grp_BasicInfo.Location = New System.Drawing.Point(894, 434)
         Me.Grp_BasicInfo.Name = "Grp_BasicInfo"
-        Me.Grp_BasicInfo.Size = New System.Drawing.Size(584, 424)
+        Me.Grp_BasicInfo.Size = New System.Drawing.Size(584, 508)
         Me.Grp_BasicInfo.TabIndex = 121
         Me.Grp_BasicInfo.TabStop = False
         Me.Grp_BasicInfo.Text = "Basic Information"
@@ -300,7 +304,7 @@ Partial Class FRM_EMP_REG
         'Txt_Relationship
         '
         Me.Txt_Relationship.Font = New System.Drawing.Font("Microsoft Sans Serif", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.Txt_Relationship.Location = New System.Drawing.Point(147, 310)
+        Me.Txt_Relationship.Location = New System.Drawing.Point(147, 387)
         Me.Txt_Relationship.Name = "Txt_Relationship"
         Me.Txt_Relationship.Size = New System.Drawing.Size(138, 26)
         Me.Txt_Relationship.TabIndex = 161
@@ -310,7 +314,7 @@ Partial Class FRM_EMP_REG
         Me.Label19.AutoSize = True
         Me.Label19.Font = New System.Drawing.Font("Microsoft Sans Serif", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.Label19.ForeColor = System.Drawing.Color.White
-        Me.Label19.Location = New System.Drawing.Point(18, 316)
+        Me.Label19.Location = New System.Drawing.Point(18, 393)
         Me.Label19.Name = "Label19"
         Me.Label19.Size = New System.Drawing.Size(101, 20)
         Me.Label19.TabIndex = 160
@@ -321,7 +325,7 @@ Partial Class FRM_EMP_REG
         Me.Label8.AutoSize = True
         Me.Label8.Font = New System.Drawing.Font("Microsoft Sans Serif", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.Label8.ForeColor = System.Drawing.Color.Aqua
-        Me.Label8.Location = New System.Drawing.Point(131, 377)
+        Me.Label8.Location = New System.Drawing.Point(131, 454)
         Me.Label8.Name = "Label8"
         Me.Label8.Size = New System.Drawing.Size(36, 20)
         Me.Label8.TabIndex = 159
@@ -330,7 +334,7 @@ Partial Class FRM_EMP_REG
         'Txt_Contact_CPNumber
         '
         Me.Txt_Contact_CPNumber.Font = New System.Drawing.Font("Microsoft Sans Serif", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.Txt_Contact_CPNumber.Location = New System.Drawing.Point(167, 374)
+        Me.Txt_Contact_CPNumber.Location = New System.Drawing.Point(167, 451)
         Me.Txt_Contact_CPNumber.Name = "Txt_Contact_CPNumber"
         Me.Txt_Contact_CPNumber.Size = New System.Drawing.Size(118, 26)
         Me.Txt_Contact_CPNumber.TabIndex = 157
@@ -340,7 +344,7 @@ Partial Class FRM_EMP_REG
         Me.Label10.AutoSize = True
         Me.Label10.Font = New System.Drawing.Font("Microsoft Sans Serif", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.Label10.ForeColor = System.Drawing.Color.White
-        Me.Label10.Location = New System.Drawing.Point(19, 380)
+        Me.Label10.Location = New System.Drawing.Point(19, 457)
         Me.Label10.Name = "Label10"
         Me.Label10.Size = New System.Drawing.Size(97, 20)
         Me.Label10.TabIndex = 158
@@ -349,7 +353,7 @@ Partial Class FRM_EMP_REG
         'Txt_Contact_Address
         '
         Me.Txt_Contact_Address.Font = New System.Drawing.Font("Microsoft Sans Serif", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.Txt_Contact_Address.Location = New System.Drawing.Point(147, 342)
+        Me.Txt_Contact_Address.Location = New System.Drawing.Point(147, 419)
         Me.Txt_Contact_Address.Name = "Txt_Contact_Address"
         Me.Txt_Contact_Address.Size = New System.Drawing.Size(400, 26)
         Me.Txt_Contact_Address.TabIndex = 155
@@ -359,7 +363,7 @@ Partial Class FRM_EMP_REG
         Me.Label6.AutoSize = True
         Me.Label6.Font = New System.Drawing.Font("Microsoft Sans Serif", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.Label6.ForeColor = System.Drawing.Color.White
-        Me.Label6.Location = New System.Drawing.Point(17, 345)
+        Me.Label6.Location = New System.Drawing.Point(17, 422)
         Me.Label6.Name = "Label6"
         Me.Label6.Size = New System.Drawing.Size(132, 20)
         Me.Label6.TabIndex = 156
@@ -368,7 +372,7 @@ Partial Class FRM_EMP_REG
         'Txt_Contact_Person
         '
         Me.Txt_Contact_Person.Font = New System.Drawing.Font("Microsoft Sans Serif", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.Txt_Contact_Person.Location = New System.Drawing.Point(147, 278)
+        Me.Txt_Contact_Person.Location = New System.Drawing.Point(147, 355)
         Me.Txt_Contact_Person.Name = "Txt_Contact_Person"
         Me.Txt_Contact_Person.Size = New System.Drawing.Size(228, 26)
         Me.Txt_Contact_Person.TabIndex = 154
@@ -378,7 +382,7 @@ Partial Class FRM_EMP_REG
         Me.Label5.AutoSize = True
         Me.Label5.Font = New System.Drawing.Font("Microsoft Sans Serif", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.Label5.ForeColor = System.Drawing.Color.White
-        Me.Label5.Location = New System.Drawing.Point(18, 284)
+        Me.Label5.Location = New System.Drawing.Point(18, 361)
         Me.Label5.Name = "Label5"
         Me.Label5.Size = New System.Drawing.Size(123, 20)
         Me.Label5.TabIndex = 153
@@ -387,7 +391,7 @@ Partial Class FRM_EMP_REG
         'Txt_BloodType
         '
         Me.Txt_BloodType.Font = New System.Drawing.Font("Microsoft Sans Serif", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.Txt_BloodType.Location = New System.Drawing.Point(131, 139)
+        Me.Txt_BloodType.Location = New System.Drawing.Point(152, 187)
         Me.Txt_BloodType.Name = "Txt_BloodType"
         Me.Txt_BloodType.Size = New System.Drawing.Size(154, 26)
         Me.Txt_BloodType.TabIndex = 152
@@ -398,7 +402,7 @@ Partial Class FRM_EMP_REG
         Me.Label4.AutoSize = True
         Me.Label4.Font = New System.Drawing.Font("Microsoft Sans Serif", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.Label4.ForeColor = System.Drawing.Color.White
-        Me.Label4.Location = New System.Drawing.Point(19, 142)
+        Me.Label4.Location = New System.Drawing.Point(20, 190)
         Me.Label4.Name = "Label4"
         Me.Label4.Size = New System.Drawing.Size(92, 20)
         Me.Label4.TabIndex = 151
@@ -407,7 +411,7 @@ Partial Class FRM_EMP_REG
         'Txt_CivilStatus
         '
         Me.Txt_CivilStatus.Font = New System.Drawing.Font("Microsoft Sans Serif", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.Txt_CivilStatus.Location = New System.Drawing.Point(393, 73)
+        Me.Txt_CivilStatus.Location = New System.Drawing.Point(414, 122)
         Me.Txt_CivilStatus.Name = "Txt_CivilStatus"
         Me.Txt_CivilStatus.Size = New System.Drawing.Size(154, 26)
         Me.Txt_CivilStatus.TabIndex = 150
@@ -418,7 +422,7 @@ Partial Class FRM_EMP_REG
         Me.Label3.AutoSize = True
         Me.Label3.Font = New System.Drawing.Font("Microsoft Sans Serif", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.Label3.ForeColor = System.Drawing.Color.White
-        Me.Label3.Location = New System.Drawing.Point(296, 75)
+        Me.Label3.Location = New System.Drawing.Point(317, 124)
         Me.Label3.Name = "Label3"
         Me.Label3.Size = New System.Drawing.Size(91, 20)
         Me.Label3.TabIndex = 149
@@ -427,7 +431,7 @@ Partial Class FRM_EMP_REG
         'Txt_Height
         '
         Me.Txt_Height.Font = New System.Drawing.Font("Microsoft Sans Serif", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.Txt_Height.Location = New System.Drawing.Point(131, 106)
+        Me.Txt_Height.Location = New System.Drawing.Point(152, 154)
         Me.Txt_Height.Name = "Txt_Height"
         Me.Txt_Height.Size = New System.Drawing.Size(154, 26)
         Me.Txt_Height.TabIndex = 147
@@ -436,7 +440,7 @@ Partial Class FRM_EMP_REG
         'Txt_Gender
         '
         Me.Txt_Gender.Font = New System.Drawing.Font("Microsoft Sans Serif", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.Txt_Gender.Location = New System.Drawing.Point(131, 72)
+        Me.Txt_Gender.Location = New System.Drawing.Point(152, 120)
         Me.Txt_Gender.Name = "Txt_Gender"
         Me.Txt_Gender.Size = New System.Drawing.Size(154, 26)
         Me.Txt_Gender.TabIndex = 146
@@ -445,7 +449,7 @@ Partial Class FRM_EMP_REG
         'Txt_Religion
         '
         Me.Txt_Religion.Font = New System.Drawing.Font("Microsoft Sans Serif", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.Txt_Religion.Location = New System.Drawing.Point(393, 38)
+        Me.Txt_Religion.Location = New System.Drawing.Point(414, 87)
         Me.Txt_Religion.Name = "Txt_Religion"
         Me.Txt_Religion.Size = New System.Drawing.Size(154, 26)
         Me.Txt_Religion.TabIndex = 145
@@ -456,7 +460,7 @@ Partial Class FRM_EMP_REG
         Me.Label91.AutoSize = True
         Me.Label91.Font = New System.Drawing.Font("Microsoft Sans Serif", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.Label91.ForeColor = System.Drawing.Color.White
-        Me.Label91.Location = New System.Drawing.Point(317, 41)
+        Me.Label91.Location = New System.Drawing.Point(338, 90)
         Me.Label91.Name = "Label91"
         Me.Label91.Size = New System.Drawing.Size(70, 20)
         Me.Label91.TabIndex = 139
@@ -465,7 +469,7 @@ Partial Class FRM_EMP_REG
         'Txt_Weight
         '
         Me.Txt_Weight.Font = New System.Drawing.Font("Microsoft Sans Serif", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.Txt_Weight.Location = New System.Drawing.Point(393, 108)
+        Me.Txt_Weight.Location = New System.Drawing.Point(414, 157)
         Me.Txt_Weight.Name = "Txt_Weight"
         Me.Txt_Weight.Size = New System.Drawing.Size(81, 26)
         Me.Txt_Weight.TabIndex = 137
@@ -476,7 +480,7 @@ Partial Class FRM_EMP_REG
         Me.Label83.AutoSize = True
         Me.Label83.Font = New System.Drawing.Font("Microsoft Sans Serif", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.Label83.ForeColor = System.Drawing.Color.White
-        Me.Label83.Location = New System.Drawing.Point(291, 110)
+        Me.Label83.Location = New System.Drawing.Point(312, 159)
         Me.Label83.Name = "Label83"
         Me.Label83.Size = New System.Drawing.Size(96, 20)
         Me.Label83.TabIndex = 136
@@ -487,7 +491,7 @@ Partial Class FRM_EMP_REG
         Me.Label50.AutoSize = True
         Me.Label50.Font = New System.Drawing.Font("Microsoft Sans Serif", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.Label50.ForeColor = System.Drawing.Color.Aqua
-        Me.Label50.Location = New System.Drawing.Point(131, 206)
+        Me.Label50.Location = New System.Drawing.Point(152, 254)
         Me.Label50.Name = "Label50"
         Me.Label50.Size = New System.Drawing.Size(36, 20)
         Me.Label50.TabIndex = 135
@@ -498,7 +502,7 @@ Partial Class FRM_EMP_REG
         Me.Label51.AutoSize = True
         Me.Label51.Font = New System.Drawing.Font("Microsoft Sans Serif", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.Label51.ForeColor = System.Drawing.Color.White
-        Me.Label51.Location = New System.Drawing.Point(19, 107)
+        Me.Label51.Location = New System.Drawing.Point(20, 155)
         Me.Label51.Name = "Label51"
         Me.Label51.Size = New System.Drawing.Size(60, 20)
         Me.Label51.TabIndex = 134
@@ -507,7 +511,7 @@ Partial Class FRM_EMP_REG
         'Txt_Email
         '
         Me.Txt_Email.Font = New System.Drawing.Font("Microsoft Sans Serif", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.Txt_Email.Location = New System.Drawing.Point(130, 236)
+        Me.Txt_Email.Location = New System.Drawing.Point(151, 284)
         Me.Txt_Email.Name = "Txt_Email"
         Me.Txt_Email.Size = New System.Drawing.Size(413, 26)
         Me.Txt_Email.TabIndex = 131
@@ -517,7 +521,7 @@ Partial Class FRM_EMP_REG
         Me.Label48.AutoSize = True
         Me.Label48.Font = New System.Drawing.Font("Microsoft Sans Serif", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.Label48.ForeColor = System.Drawing.Color.White
-        Me.Label48.Location = New System.Drawing.Point(18, 239)
+        Me.Label48.Location = New System.Drawing.Point(19, 287)
         Me.Label48.Name = "Label48"
         Me.Label48.Size = New System.Drawing.Size(90, 20)
         Me.Label48.TabIndex = 132
@@ -526,7 +530,7 @@ Partial Class FRM_EMP_REG
         'Txt_ContactNo
         '
         Me.Txt_ContactNo.Font = New System.Drawing.Font("Microsoft Sans Serif", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.Txt_ContactNo.Location = New System.Drawing.Point(167, 204)
+        Me.Txt_ContactNo.Location = New System.Drawing.Point(188, 252)
         Me.Txt_ContactNo.Name = "Txt_ContactNo"
         Me.Txt_ContactNo.Size = New System.Drawing.Size(118, 26)
         Me.Txt_ContactNo.TabIndex = 129
@@ -536,7 +540,7 @@ Partial Class FRM_EMP_REG
         Me.Label32.AutoSize = True
         Me.Label32.Font = New System.Drawing.Font("Microsoft Sans Serif", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.Label32.ForeColor = System.Drawing.Color.White
-        Me.Label32.Location = New System.Drawing.Point(19, 209)
+        Me.Label32.Location = New System.Drawing.Point(19, 257)
         Me.Label32.Name = "Label32"
         Me.Label32.Size = New System.Drawing.Size(97, 20)
         Me.Label32.TabIndex = 130
@@ -545,7 +549,7 @@ Partial Class FRM_EMP_REG
         'Txt_ResiAdd
         '
         Me.Txt_ResiAdd.Font = New System.Drawing.Font("Microsoft Sans Serif", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.Txt_ResiAdd.Location = New System.Drawing.Point(130, 171)
+        Me.Txt_ResiAdd.Location = New System.Drawing.Point(151, 219)
         Me.Txt_ResiAdd.Multiline = True
         Me.Txt_ResiAdd.Name = "Txt_ResiAdd"
         Me.Txt_ResiAdd.Size = New System.Drawing.Size(414, 27)
@@ -556,7 +560,7 @@ Partial Class FRM_EMP_REG
         Me.Label15.AutoSize = True
         Me.Label15.Font = New System.Drawing.Font("Microsoft Sans Serif", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.Label15.ForeColor = System.Drawing.Color.White
-        Me.Label15.Location = New System.Drawing.Point(20, 174)
+        Me.Label15.Location = New System.Drawing.Point(21, 222)
         Me.Label15.Name = "Label15"
         Me.Label15.Size = New System.Drawing.Size(72, 20)
         Me.Label15.TabIndex = 128
@@ -566,7 +570,7 @@ Partial Class FRM_EMP_REG
         'Txt_Birthday
         '
         Me.Txt_Birthday.Font = New System.Drawing.Font("Microsoft Sans Serif", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.Txt_Birthday.Location = New System.Drawing.Point(131, 38)
+        Me.Txt_Birthday.Location = New System.Drawing.Point(152, 86)
         Me.Txt_Birthday.Name = "Txt_Birthday"
         Me.Txt_Birthday.Size = New System.Drawing.Size(154, 26)
         Me.Txt_Birthday.TabIndex = 126
@@ -577,7 +581,7 @@ Partial Class FRM_EMP_REG
         Me.Label13.AutoSize = True
         Me.Label13.Font = New System.Drawing.Font("Microsoft Sans Serif", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.Label13.ForeColor = System.Drawing.Color.White
-        Me.Label13.Location = New System.Drawing.Point(20, 44)
+        Me.Label13.Location = New System.Drawing.Point(21, 92)
         Me.Label13.Name = "Label13"
         Me.Label13.Size = New System.Drawing.Size(71, 20)
         Me.Label13.TabIndex = 125
@@ -588,7 +592,7 @@ Partial Class FRM_EMP_REG
         Me.Label14.AutoSize = True
         Me.Label14.Font = New System.Drawing.Font("Microsoft Sans Serif", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.Label14.ForeColor = System.Drawing.Color.White
-        Me.Label14.Location = New System.Drawing.Point(18, 73)
+        Me.Label14.Location = New System.Drawing.Point(19, 121)
         Me.Label14.Name = "Label14"
         Me.Label14.Size = New System.Drawing.Size(67, 20)
         Me.Label14.TabIndex = 124
@@ -1114,9 +1118,29 @@ Partial Class FRM_EMP_REG
         Me.PictureBox2.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle
         Me.PictureBox2.Location = New System.Drawing.Point(24, 873)
         Me.PictureBox2.Name = "PictureBox2"
-        Me.PictureBox2.Size = New System.Drawing.Size(1454, 69)
+        Me.PictureBox2.Size = New System.Drawing.Size(864, 69)
         Me.PictureBox2.TabIndex = 3
         Me.PictureBox2.TabStop = False
+        '
+        'Txt_MothersMaiden
+        '
+        Me.Txt_MothersMaiden.Font = New System.Drawing.Font("Microsoft Sans Serif", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.Txt_MothersMaiden.Location = New System.Drawing.Point(153, 54)
+        Me.Txt_MothersMaiden.Name = "Txt_MothersMaiden"
+        Me.Txt_MothersMaiden.Size = New System.Drawing.Size(415, 26)
+        Me.Txt_MothersMaiden.TabIndex = 163
+        Me.Txt_MothersMaiden.TextAlign = System.Windows.Forms.HorizontalAlignment.Center
+        '
+        'Lbl_MothersMaiden
+        '
+        Me.Lbl_MothersMaiden.AutoSize = True
+        Me.Lbl_MothersMaiden.Font = New System.Drawing.Font("Microsoft Sans Serif", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.Lbl_MothersMaiden.ForeColor = System.Drawing.Color.White
+        Me.Lbl_MothersMaiden.Location = New System.Drawing.Point(19, 60)
+        Me.Lbl_MothersMaiden.Name = "Lbl_MothersMaiden"
+        Me.Lbl_MothersMaiden.Size = New System.Drawing.Size(130, 20)
+        Me.Lbl_MothersMaiden.TabIndex = 162
+        Me.Lbl_MothersMaiden.Text = "Mother's Maiden:"
         '
         'FRM_EMP_REG
         '
@@ -1258,4 +1282,6 @@ Partial Class FRM_EMP_REG
     Friend WithEvents Label27 As Label
     Friend WithEvents Btn_LongList As FontAwesome.Sharp.IconButton
     Friend WithEvents Btn_ShortList As FontAwesome.Sharp.IconButton
+    Friend WithEvents Txt_MothersMaiden As TextBox
+    Friend WithEvents Lbl_MothersMaiden As Label
 End Class

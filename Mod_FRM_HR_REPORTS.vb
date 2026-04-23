@@ -11,35 +11,42 @@ Module Mod_FRM_HR_REPORTS
 
         SQL = "
 SELECT 
+    B.SUB_CLIENT_STATUS,
     B.SUB_CLIENT_NAME,
     B.ADDRESS,
     A.START_CONTRACT_DATE,
     A.END_CONTRACT_DATE,
     A.CONTRACT_STATUS
 FROM 
-    TBL_CLIENT_CONTRACT A
-    INNER JOIN TBL_CLIENT_SUB B ON A.SUB_CLIENT_ID = B.SUB_CLIENT_ID
+    TBL_CLIENT_SUB AS B
+    INNER JOIN TBL_CLIENT_CONTRACT AS A
+        ON B.SUB_CLIENT_ID = A.SUB_CLIENT_ID
 WHERE 
-    1=1
+    B.SUB_CLIENT_STATUS = 'ACTIVE'
+    AND A.ID IN
+    (
+        SELECT MAX(C.ID)
+        FROM TBL_CLIENT_CONTRACT AS C
+        GROUP BY C.SUB_CLIENT_ID
+    )
 "
 
-        ' 📌 APPLY FILTERS BASED ON ENUM
         Select Case filter
 
             Case ExpiryFilter.Exp1Month
-                SQL &= "AND A.END_CONTRACT_DATE BETWEEN Date() AND DateAdd('d', 30, Date()) "
+                SQL &= " AND A.END_CONTRACT_DATE BETWEEN Date() AND DateAdd('d', 30, Date()) "
 
             Case ExpiryFilter.Exp2Month
-                SQL &= "AND A.END_CONTRACT_DATE BETWEEN Date() AND DateAdd('d', 60, Date()) "
+                SQL &= " AND A.END_CONTRACT_DATE BETWEEN Date() AND DateAdd('d', 60, Date()) "
 
             Case ExpiryFilter.Exp3Month
-                SQL &= "AND A.END_CONTRACT_DATE BETWEEN Date() AND DateAdd('d', 90, Date()) "
+                SQL &= " AND A.END_CONTRACT_DATE BETWEEN Date() AND DateAdd('d', 90, Date()) "
 
             Case ExpiryFilter.Expired
-                SQL &= "AND A.END_CONTRACT_DATE < Date() "
+                SQL &= " AND A.END_CONTRACT_DATE < Date() "
 
             Case ExpiryFilter.NoRecord
-                SQL &= "AND A.END_CONTRACT_DATE IS NULL "
+                SQL &= " AND A.END_CONTRACT_DATE IS NULL "
         End Select
 
         SQL &= " ORDER BY A.END_CONTRACT_DATE ASC"
@@ -48,11 +55,10 @@ WHERE
             da = New OleDb.OleDbDataAdapter(SQL, GlobalVariables.GlobalCon)
             da.Fill(dt)
 
-            If dt.Rows.Count > 0 Then
+            With FRM_HR_REPORTS.LV_Client_Contract_Exp
+                .Items.Clear()
 
-                With FRM_HR_REPORTS.LV_Client_Contract_Exp
-                    .Items.Clear()
-
+                If dt.Rows.Count > 0 Then
                     For Each row As DataRow In dt.Rows
 
                         Dim startDate As String = ""
@@ -69,29 +75,24 @@ WHERE
                             daysExpired = (Date.Now - expDate).Days
                         End If
 
-                        With .Items
-                            .Add(row("SUB_CLIENT_NAME").ToString())
-                            .Item(.Count - 1).SubItems.Add(row("ADDRESS").ToString())
-                            .Item(.Count - 1).SubItems.Add(startDate)
-                            .Item(.Count - 1).SubItems.Add(endDate)
-                            .Item(.Count - 1).SubItems.Add(row("CONTRACT_STATUS").ToString())
-                            .Item(.Count - 1).SubItems.Add(daysExpired.ToString())
-                        End With
+                        Dim item As ListViewItem = .Items.Add(row("SUB_CLIENT_NAME").ToString())
+                        item.SubItems.Add(row("ADDRESS").ToString())
+                        item.SubItems.Add(startDate)
+                        item.SubItems.Add(endDate)
+                        item.SubItems.Add(row("SUB_CLIENT_STATUS").ToString())
+                        item.SubItems.Add(daysExpired.ToString())
 
                     Next
-
-                End With
-
-            Else
-                'MsgBox("No records found from your filter", vbExclamation)
-                FRM_HR_REPORTS.LV_Client_Contract_Exp.Items.Clear()
-            End If
+                End If
+            End With
 
         Catch ex As Exception
             MsgBox(ex.ToString)
+        Finally
+            If GlobalVariables.GlobalCon.State = ConnectionState.Open Then
+                GlobalVariables.GlobalCon.Close()
+            End If
         End Try
-
-        GlobalVariables.GlobalCon.Close()
 
     End Sub
 

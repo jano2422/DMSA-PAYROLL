@@ -23,11 +23,6 @@ Public Module AppNotification
         End Using
     End Function
 
-    Public Function ShowWpf(message As String, Optional title As String = Nothing, Optional buttons As System.Windows.MessageBoxButton = System.Windows.MessageBoxButton.OK, Optional icon As System.Windows.MessageBoxImage = System.Windows.MessageBoxImage.None) As System.Windows.MessageBoxResult
-        Dim result As DialogResult = Show(message, title, ToWinFormsButtons(buttons), ToWinFormsIcon(icon))
-        Return ToWpfResult(result)
-    End Function
-
     Private Function ResolveOwner() As IWin32Window
         If Form.ActiveForm IsNot Nothing Then Return Form.ActiveForm
         If Application.OpenForms.Count > 0 Then Return Application.OpenForms(Application.OpenForms.Count - 1)
@@ -77,42 +72,6 @@ Public Module AppNotification
                 Return MsgBoxResult.No
             Case Else
                 Return MsgBoxResult.Cancel
-        End Select
-    End Function
-
-    Private Function ToWinFormsButtons(buttons As System.Windows.MessageBoxButton) As MessageBoxButtons
-        Select Case buttons
-            Case System.Windows.MessageBoxButton.OKCancel
-                Return MessageBoxButtons.OKCancel
-            Case System.Windows.MessageBoxButton.YesNo
-                Return MessageBoxButtons.YesNo
-            Case System.Windows.MessageBoxButton.YesNoCancel
-                Return MessageBoxButtons.YesNoCancel
-            Case Else
-                Return MessageBoxButtons.OK
-        End Select
-    End Function
-
-    Private Function ToWinFormsIcon(icon As System.Windows.MessageBoxImage) As MessageBoxIcon
-        If icon = System.Windows.MessageBoxImage.Error OrElse icon = System.Windows.MessageBoxImage.Hand OrElse icon = System.Windows.MessageBoxImage.Stop Then Return MessageBoxIcon.Error
-        If icon = System.Windows.MessageBoxImage.Warning OrElse icon = System.Windows.MessageBoxImage.Exclamation Then Return MessageBoxIcon.Warning
-        If icon = System.Windows.MessageBoxImage.Question Then Return MessageBoxIcon.Question
-        If icon = System.Windows.MessageBoxImage.Information OrElse icon = System.Windows.MessageBoxImage.Asterisk Then Return MessageBoxIcon.Information
-        Return MessageBoxIcon.None
-    End Function
-
-    Private Function ToWpfResult(result As DialogResult) As System.Windows.MessageBoxResult
-        Select Case result
-            Case DialogResult.OK
-                Return System.Windows.MessageBoxResult.OK
-            Case DialogResult.Cancel
-                Return System.Windows.MessageBoxResult.Cancel
-            Case DialogResult.Yes
-                Return System.Windows.MessageBoxResult.Yes
-            Case DialogResult.No
-                Return System.Windows.MessageBoxResult.No
-            Case Else
-                Return System.Windows.MessageBoxResult.None
         End Select
     End Function
 End Module

@@ -32,6 +32,7 @@ Partial Class FRM_DTR_BIOMETRIC
         Me.TabPage1 = New System.Windows.Forms.TabPage()
         Me.dtrRootPanel = New System.Windows.Forms.TableLayoutPanel()
         Me.dtrHeaderPanel = New System.Windows.Forms.TableLayoutPanel()
+        Me.EmployeeInfoHeader = New System.Windows.Forms.Label()
         Me.dtrWorkspacePanel = New System.Windows.Forms.TableLayoutPanel()
         Me.Label2 = New System.Windows.Forms.Label()
         Me.Lbl_IDNumber = New System.Windows.Forms.Label()
@@ -43,6 +44,7 @@ Partial Class FRM_DTR_BIOMETRIC
         Me.DTR_Lbl_Period = New System.Windows.Forms.Label()
         Me.Label15 = New System.Windows.Forms.Label()
         Me.Lbl_ND_Days = New System.Windows.Forms.Label()
+        Me.Btn_Close_DTR = New System.Windows.Forms.Button()
         Me.actualRootPanel = New System.Windows.Forms.TableLayoutPanel()
         Me.actualToolPanel = New System.Windows.Forms.FlowLayoutPanel()
         Me.Btn_TimeCalcView = New System.Windows.Forms.Button()
@@ -164,29 +166,50 @@ Partial Class FRM_DTR_BIOMETRIC
         Me.dtrHeaderPanel.ColumnCount = 2
         Me.dtrHeaderPanel.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 45.0!))
         Me.dtrHeaderPanel.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 55.0!))
-        Me.dtrHeaderPanel.Controls.Add(Me.Label2, 0, 0)
-        Me.dtrHeaderPanel.Controls.Add(Me.Lbl_IDNumber, 1, 0)
-        Me.dtrHeaderPanel.Controls.Add(Me.Label1, 0, 1)
-        Me.dtrHeaderPanel.Controls.Add(Me.Lbl_Name, 1, 1)
-        Me.dtrHeaderPanel.Controls.Add(Me.Label3, 0, 2)
-        Me.dtrHeaderPanel.Controls.Add(Me.DTR_Lbl_Period, 1, 2)
-        Me.dtrHeaderPanel.Controls.Add(Me.Label13, 0, 3)
-        Me.dtrHeaderPanel.Controls.Add(Me.Lbl_Actual_Rep_Days, 1, 3)
-        Me.dtrHeaderPanel.Controls.Add(Me.Label15, 0, 4)
-        Me.dtrHeaderPanel.Controls.Add(Me.Lbl_ND_Days, 1, 4)
+        Me.dtrHeaderPanel.Controls.Add(Me.EmployeeInfoHeader, 0, 0)
+        Me.dtrHeaderPanel.SetColumnSpan(Me.EmployeeInfoHeader, 2)
+        Me.dtrHeaderPanel.Controls.Add(Me.Label2, 0, 1)
+        Me.dtrHeaderPanel.Controls.Add(Me.Lbl_IDNumber, 1, 1)
+        Me.dtrHeaderPanel.Controls.Add(Me.Label1, 0, 2)
+        Me.dtrHeaderPanel.Controls.Add(Me.Lbl_Name, 1, 2)
+        Me.dtrHeaderPanel.Controls.Add(Me.Label3, 0, 3)
+        Me.dtrHeaderPanel.Controls.Add(Me.DTR_Lbl_Period, 1, 3)
+        Me.dtrHeaderPanel.Controls.Add(Me.Label13, 0, 4)
+        Me.dtrHeaderPanel.Controls.Add(Me.Lbl_Actual_Rep_Days, 1, 4)
+        Me.dtrHeaderPanel.Controls.Add(Me.Label15, 0, 5)
+        Me.dtrHeaderPanel.Controls.Add(Me.Lbl_ND_Days, 1, 5)
+        Me.dtrHeaderPanel.Controls.Add(Me.Btn_Close_DTR, 0, 6)
+        Me.dtrHeaderPanel.SetColumnSpan(Me.Btn_Close_DTR, 2)
         Me.dtrHeaderPanel.Dock = System.Windows.Forms.DockStyle.Fill
-        Me.dtrHeaderPanel.Location = New System.Drawing.Point(871, 3)
+        Me.dtrHeaderPanel.Location = New System.Drawing.Point(871, 12)
+        Me.dtrHeaderPanel.Margin = New System.Windows.Forms.Padding(3, 12, 3, 3)
         Me.dtrHeaderPanel.Name = "dtrHeaderPanel"
         Me.dtrHeaderPanel.Padding = New System.Windows.Forms.Padding(6)
-        Me.dtrHeaderPanel.RowCount = 6
+        Me.dtrHeaderPanel.RowCount = 7
+        Me.dtrHeaderPanel.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 38.0!))
         Me.dtrHeaderPanel.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 44.0!))
         Me.dtrHeaderPanel.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 44.0!))
         Me.dtrHeaderPanel.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 44.0!))
         Me.dtrHeaderPanel.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 44.0!))
         Me.dtrHeaderPanel.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 44.0!))
         Me.dtrHeaderPanel.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100.0!))
-        Me.dtrHeaderPanel.Size = New System.Drawing.Size(300, 647)
+        Me.dtrHeaderPanel.Size = New System.Drawing.Size(300, 638)
         Me.dtrHeaderPanel.TabIndex = 0
+        '
+        'EmployeeInfoHeader
+        '
+        Me.EmployeeInfoHeader.BackColor = System.Drawing.Color.Teal
+        Me.EmployeeInfoHeader.Dock = System.Windows.Forms.DockStyle.Fill
+        Me.EmployeeInfoHeader.Font = New System.Drawing.Font("Verdana", 10.0!, System.Drawing.FontStyle.Bold)
+        Me.EmployeeInfoHeader.ForeColor = System.Drawing.Color.White
+        Me.EmployeeInfoHeader.Location = New System.Drawing.Point(6, 6)
+        Me.EmployeeInfoHeader.Margin = New System.Windows.Forms.Padding(0, 0, 0, 6)
+        Me.EmployeeInfoHeader.Name = "EmployeeInfoHeader"
+        Me.EmployeeInfoHeader.Padding = New System.Windows.Forms.Padding(10, 0, 0, 0)
+        Me.EmployeeInfoHeader.Size = New System.Drawing.Size(288, 32)
+        Me.EmployeeInfoHeader.TabIndex = 86
+        Me.EmployeeInfoHeader.Text = "Employee Information"
+        Me.EmployeeInfoHeader.TextAlign = System.Drawing.ContentAlignment.MiddleLeft
         '
         'dtrWorkspacePanel
         '
@@ -200,9 +223,9 @@ Partial Class FRM_DTR_BIOMETRIC
         Me.dtrWorkspacePanel.Location = New System.Drawing.Point(3, 3)
         Me.dtrWorkspacePanel.Name = "dtrWorkspacePanel"
         Me.dtrWorkspacePanel.RowCount = 3
-        Me.dtrWorkspacePanel.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 41.0!))
-        Me.dtrWorkspacePanel.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 20.0!))
-        Me.dtrWorkspacePanel.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 39.0!))
+        Me.dtrWorkspacePanel.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 38.0!))
+        Me.dtrWorkspacePanel.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 16.0!))
+        Me.dtrWorkspacePanel.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 46.0!))
         Me.dtrWorkspacePanel.Size = New System.Drawing.Size(862, 647)
         Me.dtrWorkspacePanel.TabIndex = 1
         '
@@ -343,6 +366,23 @@ Partial Class FRM_DTR_BIOMETRIC
         Me.Lbl_ND_Days.TabIndex = 20
         Me.Lbl_ND_Days.Text = "-"
         Me.Lbl_ND_Days.TextAlign = System.Drawing.ContentAlignment.MiddleLeft
+        '
+        'Btn_Close_DTR
+        '
+        Me.Btn_Close_DTR.Anchor = CType(((System.Windows.Forms.AnchorStyles.Bottom Or System.Windows.Forms.AnchorStyles.Left) _
+            Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
+        Me.Btn_Close_DTR.BackColor = System.Drawing.Color.Teal
+        Me.Btn_Close_DTR.Cursor = System.Windows.Forms.Cursors.Hand
+        Me.Btn_Close_DTR.FlatAppearance.BorderSize = 0
+        Me.Btn_Close_DTR.FlatStyle = System.Windows.Forms.FlatStyle.Flat
+        Me.Btn_Close_DTR.Font = New System.Drawing.Font("Verdana", 9.75!, System.Drawing.FontStyle.Bold)
+        Me.Btn_Close_DTR.ForeColor = System.Drawing.Color.White
+        Me.Btn_Close_DTR.Location = New System.Drawing.Point(9, 591)
+        Me.Btn_Close_DTR.Name = "Btn_Close_DTR"
+        Me.Btn_Close_DTR.Size = New System.Drawing.Size(282, 38)
+        Me.Btn_Close_DTR.TabIndex = 87
+        Me.Btn_Close_DTR.Text = "Close"
+        Me.Btn_Close_DTR.UseVisualStyleBackColor = False
         '
         'actualRootPanel
         '
@@ -880,6 +920,7 @@ Partial Class FRM_DTR_BIOMETRIC
     Friend WithEvents rootPanel As TableLayoutPanel
     Friend WithEvents dtrRootPanel As TableLayoutPanel
     Friend WithEvents dtrHeaderPanel As TableLayoutPanel
+    Friend WithEvents EmployeeInfoHeader As Label
     Friend WithEvents dtrWorkspacePanel As TableLayoutPanel
     Friend WithEvents actualRootPanel As TableLayoutPanel
     Friend WithEvents actualToolPanel As FlowLayoutPanel
@@ -935,4 +976,5 @@ Partial Class FRM_DTR_BIOMETRIC
     Friend WithEvents Label15 As Label
     Friend WithEvents Lbl_Actual_Rep_Days As Label
     Friend WithEvents Label13 As Label
+    Friend WithEvents Btn_Close_DTR As Button
 End Class

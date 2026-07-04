@@ -84,9 +84,10 @@ Module Mod_FRM_SCHEDULE
         With FRM_DTR_SCHEDULE
             ' Loop through only columns 1 and 3
             For Each iCol As Integer In {1, 3}
-                For iRow = 0 To .GView_Schedule1_15.Rows.Count - 2
+                For iRow = 0 To .GView_Schedule1_15.Rows.Count - 1
+                    If .GView_Schedule1_15.Rows(iRow).IsNewRow Then Continue For
 
-                    First_Cut_Off_Time = .GView_Schedule1_15.Rows(iRow).Cells(iCol).Value
+                    First_Cut_Off_Time = Convert.ToString(.GView_Schedule1_15.Rows(iRow).Cells(iCol).Value)
 
                     ' Check if the value is in the correct time format HH:mm or H:mm
                     If Not IsValidTimeFormat(First_Cut_Off_Time) Then
@@ -97,9 +98,10 @@ Module Mod_FRM_SCHEDULE
             Next
 
             For Each iCol As Integer In {1, 3}
-                For iRow = 0 To .GView_Schedule16_30.Rows.Count - 2
+                For iRow = 0 To .GView_Schedule16_30.Rows.Count - 1
+                    If .GView_Schedule16_30.Rows(iRow).IsNewRow Then Continue For
 
-                    Second_Cut_Off_Time = .GView_Schedule16_30.Rows(iRow).Cells(iCol).Value
+                    Second_Cut_Off_Time = Convert.ToString(.GView_Schedule16_30.Rows(iRow).Cells(iCol).Value)
 
                     ' Check if the value is in the correct time format HH:mm or H:mm
                     If Not IsValidTimeFormat(Second_Cut_Off_Time) Then
@@ -135,7 +137,7 @@ Module Mod_FRM_SCHEDULE
         Dim minutes As Integer
 
         If Integer.TryParse(timeParts(0), hours) AndAlso Integer.TryParse(timeParts(1), minutes) Then
-            If hours >= 0 AndAlso hours <= 24 AndAlso minutes >= 0 AndAlso minutes <= 60 Then
+            If hours >= 0 AndAlso hours <= 23 AndAlso minutes >= 0 AndAlso minutes <= 59 Then
                 Return True
             End If
         End If

@@ -8,6 +8,8 @@ Namespace Models
         SpecialHolidayHours
         LegalHolidayHours
         RegularOvertimeHours
+        LateHours
+        BreaktimeHours
     End Enum
 
     Public Class DtrDayCalculation
@@ -74,6 +76,7 @@ Namespace Models
         Public Function ToBreakdownTable(coveredDates As IEnumerable(Of Date)) As DataTable
             Dim table As New DataTable("DtrCalculationBreakdown")
             table.Columns.Add("BreakdownLabel", GetType(String))
+            table.Columns.Add("Total", GetType(Decimal))
 
             Dim dates = If(coveredDates, Enumerable.Empty(Of Date)()).
                 Select(Function(d) d.Date).
@@ -84,8 +87,6 @@ Namespace Models
             For Each coveredDate In dates
                 table.Columns.Add(DateColumnName(coveredDate), GetType(Decimal))
             Next
-
-            table.Columns.Add("Total", GetType(Decimal))
 
             For Each metric In BreakdownMetrics()
                 Dim row = table.NewRow()
@@ -122,7 +123,9 @@ Namespace Models
                 DtrCalculationMetric.SundayHours,
                 DtrCalculationMetric.SpecialHolidayHours,
                 DtrCalculationMetric.LegalHolidayHours,
-                DtrCalculationMetric.RegularOvertimeHours
+                DtrCalculationMetric.RegularOvertimeHours,
+                DtrCalculationMetric.LateHours,
+                DtrCalculationMetric.BreaktimeHours
             }
         End Function
 
@@ -140,6 +143,10 @@ Namespace Models
                     Return "Legal Holiday"
                 Case DtrCalculationMetric.RegularOvertimeHours
                     Return "Overtime"
+                Case DtrCalculationMetric.LateHours
+                    Return "Late"
+                Case DtrCalculationMetric.BreaktimeHours
+                    Return "Breaktime"
                 Case Else
                     Return metric.ToString()
             End Select
@@ -161,9 +168,17 @@ Namespace Models
                     Return calculation.LegalHolidayHours
                 Case DtrCalculationMetric.RegularOvertimeHours
                     Return calculation.RegularOvertimeHours
+                Case DtrCalculationMetric.LateHours
+                    Return MinutesToHours(calculation.LateMinutes)
+                Case DtrCalculationMetric.BreaktimeHours
+                    Return MinutesToHours(calculation.OverBreakMinutes)
                 Case Else
                     Return 0D
             End Select
+        End Function
+
+        Private Shared Function MinutesToHours(minutes As Decimal) As Decimal
+            Return Math.Round(minutes / 60D, 2)
         End Function
     End Class
 End Namespace

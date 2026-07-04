@@ -44,6 +44,11 @@ Module Mod_Biometric_DTR
                     Dim firstDate As String = GetFirstDate(row.Cells(0)?.Value?.ToString())
                     Dim parsedDate = ParseDate(firstDate)
                     If parsedDate Is Nothing Then Continue For
+                    If Not RowHasActualReport(row) Then Continue For
+                    If Not .RawPunchDatesAreValid(row) Then
+                        invalidRows.AppendLine($"Day {parsedDate.Value.Day} has time entries outside the row date coverage.")
+                        Continue For
+                    End If
 
                     Dim dayOfMonth As Integer = parsedDate.Value.Day
 
@@ -143,6 +148,8 @@ Module Mod_Biometric_DTR
             If Not IsDtrDataRow(row) Then Continue For
 
             Dim hasActualReport As Boolean = RowHasActualReport(row)
+            If hasActualReport AndAlso Not FRM_DTR_BIOMETRIC.RawPunchDatesAreValid(row) Then Continue For
+
             If hasActualReport Then
                 actualReportCount += 1
             End If
@@ -158,9 +165,16 @@ Module Mod_Biometric_DTR
             For Each scheduleRow As DataGridViewRow In FRM_DTR_BIOMETRIC.GView_Schedule.Rows
                 If scheduleRow.Cells(0)?.Value?.ToString() = dayOfMonth.ToString() Then
                     scheduleFound = True
-                    ValidateAndCalculateAttendance(row, scheduleRow, presentCount)
-                    If hasActualReport AndAlso IsNightShiftRange(row) Then
-                        nightShiftCount += 1
+                    If hasActualReport Then
+                        ValidateAndCalculateAttendance(row, scheduleRow, presentCount)
+                        If IsNightShiftRange(row) Then
+                            nightShiftCount += 1
+                        End If
+                    ElseIf ScheduleRowHasWorkHours(scheduleRow) Then
+                        scheduleRow.Cells(6).Value = "Absent"
+                        absentCount += 1
+                    Else
+                        scheduleRow.Cells(6).Value = ""
                     End If
                     Exit For
                 End If
@@ -243,6 +257,13 @@ Module Mod_Biometric_DTR
         Return ParseDate(GetFirstDate(dateText)).HasValue
     End Function
 
+    Private Function ScheduleRowHasWorkHours(scheduleRow As DataGridViewRow) As Boolean
+        If scheduleRow Is Nothing OrElse scheduleRow.Cells.Count <= 4 Then Return False
+
+        Dim totalHours As Double
+        Return Double.TryParse(Convert.ToString(scheduleRow.Cells(4)?.Value), totalHours) AndAlso totalHours > 0
+    End Function
+
     Private Function IsNightShiftRange(row As DataGridViewRow) As Boolean
         Dim timeInValue As Object = row.Cells(2)?.Value
         If timeInValue Is Nothing OrElse String.IsNullOrWhiteSpace(timeInValue.ToString()) Then
@@ -272,6 +293,8 @@ Module Mod_Biometric_DTR
     Private Sub CalculateBreaks()
         For i = 0 To FRM_DTR_BIOMETRIC.GView_DTR.Rows.Count - 1 ' Iterate through DTR grid rows
             If Not IsDtrDataRow(FRM_DTR_BIOMETRIC.GView_DTR.Rows(i)) Then Continue For
+            If Not RowHasActualReport(FRM_DTR_BIOMETRIC.GView_DTR.Rows(i)) Then Continue For
+            If Not FRM_DTR_BIOMETRIC.RawPunchDatesAreValid(FRM_DTR_BIOMETRIC.GView_DTR.Rows(i)) Then Continue For
 
             ' Calculate break durations (Break 1 and Break 2)
             Dim break1Duration As Integer = CalculateBreakDuration(i, 4, 3)
@@ -331,6 +354,8 @@ Module Mod_Biometric_DTR
             Dim overtimeMinutes As Integer = 0
             Dim totalWorkedMinutes As Integer = 0
             If Not IsDtrDataRow(FRM_DTR_BIOMETRIC.GView_DTR.Rows(i)) Then Continue For
+            If Not RowHasActualReport(FRM_DTR_BIOMETRIC.GView_DTR.Rows(i)) Then Continue For
+            If Not FRM_DTR_BIOMETRIC.RawPunchDatesAreValid(FRM_DTR_BIOMETRIC.GView_DTR.Rows(i)) Then Continue For
 
             ' Extract date and validate
             Dim firstDate As String = GetFirstDate(FRM_DTR_BIOMETRIC.GView_DTR.Rows(i).Cells(0)?.Value.ToString())
@@ -361,7 +386,7 @@ Module Mod_Biometric_DTR
 
             calculation.OvertimeMinutes = overtimeMinutes
 
-            Dim totalWorkedHours As Double = Math.Round(totalWorkedMinutes / 60,2)
+            Dim totalWorkedHours As Double = Math.Round(totalWorkedMinutes / 60, 2)
             ' Ensure the maximum is 12 hours
 
             Dim schedTotalWorkHours = ParseScheduleTotalHours(dayOfMonth)
@@ -422,7 +447,7 @@ Module Mod_Biometric_DTR
         totalMinutesWorked -= lateMinutes
 
         ' Return the final total worked minutes after accounting for lateness
-        Return totalMinutesWorked
+        Return Math.Max(totalMinutesWorked, 0)
     End Function
 
     ' Calculates overtime based on the difference between actual time and scheduled time
@@ -440,7 +465,9 @@ Module Mod_Biometric_DTR
         Dim overtimeMinutes As Integer = CInt((timeOut - scheduledTimeOut).TotalMinutes)
 
         ' Ensure overtime is within valid range
-        If overtimeMinutes > 0 AndAlso overtimeMinutes < 60 Then
+        If overtimeMinutes <= 0 Then
+            overtimeMinutes = 0
+        ElseIf overtimeMinutes < 60 Then
             overtimeMinutes = 0 ' Ignore overtime less than 60 minutes
         ElseIf overtimeMinutes > 240 Then
             overtimeMinutes = 240 ' Cap at 4 hours (240 minutes)
@@ -544,11 +571,33 @@ Module Mod_Biometric_DTR
                 Dim parsedDate = ParseDate(firstDate)
                 If parsedDate Is Nothing Then Throw New Exception("Invalid Date")
 
-                Parsed_SchedStrToDate(parsedDate, schedTimeOut, parsedScheduleOut)
+                Dim scheduleOutDate = ResolveScheduleOutDate(parsedDate.Value, schedRow)
+                Parsed_SchedStrToDate(scheduleOutDate, schedTimeOut, parsedScheduleOut)
                 Return parsedScheduleOut
             End If
         Next
         Throw New Exception($"No schedule found for day {dayNumber}")
+    End Function
+
+    Private Function ResolveScheduleOutDate(scheduleInDate As DateTime, schedRow As DataGridViewRow) As DateTime
+        If schedRow Is Nothing OrElse schedRow.Cells.Count <= 2 Then Return scheduleInDate
+
+        Dim outDay As Integer
+        If Not Integer.TryParse(Convert.ToString(schedRow.Cells(2)?.Value), outDay) Then Return scheduleInDate
+        If outDay = scheduleInDate.Day Then Return scheduleInDate
+
+        Dim daysInMonth = DateTime.DaysInMonth(scheduleInDate.Year, scheduleInDate.Month)
+        If outDay >= 1 AndAlso outDay <= daysInMonth Then
+            Return New DateTime(scheduleInDate.Year, scheduleInDate.Month, outDay)
+        End If
+
+        Dim nextMonth = scheduleInDate.AddMonths(1)
+        Dim nextMonthDay = outDay - daysInMonth
+        If nextMonthDay >= 1 AndAlso nextMonthDay <= DateTime.DaysInMonth(nextMonth.Year, nextMonth.Month) Then
+            Return New DateTime(nextMonth.Year, nextMonth.Month, nextMonthDay)
+        End If
+
+        Return scheduleInDate
     End Function
 
     ' Retrieves the total break time for a specific day (in minutes)

@@ -2,7 +2,6 @@
 Imports System.IO
 Imports Spire.Pdf
 Imports Spire.Pdf.Conversion
-Imports System.Windows
 Imports DMSA_System.Models
 
 Public Class FRM_DTR_BIOMETRIC
@@ -85,7 +84,7 @@ Public Class FRM_DTR_BIOMETRIC
         End If
 
         ' Show the modern file selection form and get the selected file
-        Dim selectedFile As String = ShowModernFileSelectionForm(filteredFiles, selectedDirectory)
+        Dim selectedFile As String = ShowModernFileSelectionForm(filteredFiles, selectedDirectory, lastName, firstName)
         If String.IsNullOrEmpty(selectedFile) Then
             MsgBox("No file selected.", vbExclamation, "Selection Canceled")
             Exit Sub
@@ -167,6 +166,7 @@ Public Class FRM_DTR_BIOMETRIC
 
             ' Load the converted Excel file into the application
             Connect_to_Excel_DTR()
+            NormalizeRawDtrToPeriodCoverage()
             ClearTimeCalculationView()
 
             ' Perform DTR calculations
@@ -184,25 +184,13 @@ Public Class FRM_DTR_BIOMETRIC
         End Try
     End Sub
 
-    Private Function ShowModernFileSelectionForm(filteredFiles As List(Of String), ByRef selectedDirectory As String) As String
-        ' Pass the current directory to the FileSelectionControl
-        Dim fileSelectionControl As New FileSelectionControl(filteredFiles, selectedDirectory)
-
-        Dim fileSelectionWindow As New Window With {
-        .Title = "Select a File",
-        .Width = 600,
-        .Height = 400,
-        .WindowStartupLocation = WindowStartupLocation.CenterScreen,
-        .Content = fileSelectionControl
-    }
-
-        Dim result = fileSelectionWindow.ShowDialog()
-
-        ' If the dialog result is True, update the directory and return the selected file
-        If result.HasValue AndAlso result.Value Then
-            selectedDirectory = fileSelectionControl.SelectedDirectory
-            Return fileSelectionControl.SelectedFile
-        End If
+    Private Function ShowModernFileSelectionForm(filteredFiles As List(Of String), ByRef selectedDirectory As String, ParamArray fileNameFilters() As String) As String
+        Using fileSelectionForm As New FileSelectionControl(filteredFiles, selectedDirectory, fileNameFilters)
+            If fileSelectionForm.ShowDialog(Me) = System.Windows.Forms.DialogResult.OK Then
+                selectedDirectory = fileSelectionForm.SelectedDirectory
+                Return fileSelectionForm.SelectedFile
+            End If
+        End Using
 
         Return Nothing
     End Function
@@ -238,6 +226,7 @@ Public Class FRM_DTR_BIOMETRIC
     End Sub
 
     Private Sub PopulateTimeCalculationView()
+        GView_TimeCalculation.DataSource = Nothing
         GView_TimeCalculation.Rows.Clear()
         GView_TimeCalculation.Columns.Clear()
         GView_TimeCalculation.AllowUserToAddRows = False
@@ -245,7 +234,6 @@ Public Class FRM_DTR_BIOMETRIC
         GView_TimeCalculation.ReadOnly = True
         GView_TimeCalculation.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.None
         GView_TimeCalculation.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize
-        GView_TimeCalculation.DataSource = Nothing
 
         GView_TimeCalculation.DataSource = DtrCalculations.ToBreakdownTable(PeriodCoverageDates())
 
@@ -275,6 +263,8 @@ Public Class FRM_DTR_BIOMETRIC
 
         If GView_TimeCalculation.Columns.Contains("Total") Then
             With GView_TimeCalculation.Columns("Total")
+                .Frozen = True
+                .DisplayIndex = 1
                 .ReadOnly = True
                 .SortMode = DataGridViewColumnSortMode.NotSortable
                 .Width = 76
@@ -357,15 +347,21 @@ Public Class FRM_DTR_BIOMETRIC
 
             For columnIndex As Integer = 1 To GView_Classification.Columns.Count - 1
                 Dim coveredDate = ClassificationDateForColumn(columnIndex)
+                Dim hasPunches = coveredDate.HasValue AndAlso DtrDateHasPunches(coveredDate.Value)
                 Dim sundayCell = GView_Classification.Rows(sundayRowIndex).Cells(columnIndex)
-                sundayCell.Value = coveredDate.HasValue AndAlso coveredDate.Value.DayOfWeek = DayOfWeek.Sunday
+                sundayCell.Value = hasPunches AndAlso coveredDate.HasValue AndAlso coveredDate.Value.DayOfWeek = DayOfWeek.Sunday
+
+                If Not hasPunches Then
+                    For rowIndex As Integer = 0 To 2
+                        DisableClassificationCell(GView_Classification.Rows(rowIndex).Cells(columnIndex), "No time in/out for this date.")
+                    Next
+                    Continue For
+                End If
 
                 If Not coveredDate.HasValue OrElse coveredDate.Value.DayOfWeek <> DayOfWeek.Sunday Then
-                    sundayCell.ReadOnly = True
-                    sundayCell.Style.BackColor = Color.LightGray
-                    sundayCell.Style.SelectionBackColor = Color.LightGray
-                    sundayCell.Style.ForeColor = Color.DimGray
-                    sundayCell.ToolTipText = "Sunday can only be selected on an actual Sunday date."
+                    DisableClassificationCell(sundayCell, "Sunday can only be selected on an actual Sunday date.")
+                Else
+                    EnableClassificationCell(sundayCell)
                 End If
 
                 GView_Classification.Rows(shRowIndex).Cells(columnIndex).Value = False
@@ -417,31 +413,204 @@ Public Class FRM_DTR_BIOMETRIC
         Return IsCellChecked(GView_Classification.Rows(0).Cells(columnIndex))
     End Function
 
+    Private Function DtrDateHasPunches(coveredDate As Date) As Boolean
+        Dim rowIndex = SourceRowIndexForDate(GView_DTR, coveredDate)
+        If rowIndex < 0 Then Return False
+
+        Return DtrRowHasPunches(GView_DTR.Rows(rowIndex))
+    End Function
+
+    Private Function ClassificationColumnHasPunches(columnIndex As Integer) As Boolean
+        Dim coveredDate = ClassificationDateForColumn(columnIndex)
+        Return coveredDate.HasValue AndAlso DtrDateHasPunches(coveredDate.Value)
+    End Function
+
+    Private Function DtrRowHasPunches(row As DataGridViewRow) As Boolean
+        If row Is Nothing Then Return False
+
+        For columnIndex As Integer = RawPunchStartColumnIndex To RawPunchEndColumnIndex
+            If Not String.IsNullOrWhiteSpace(SourceCellText(row, columnIndex)) Then Return True
+        Next
+
+        Return False
+    End Function
+
+    Public Function RawPunchDatesAreValid(row As DataGridViewRow, Optional showMessage As Boolean = False) As Boolean
+        If row Is Nothing Then Return False
+
+        Dim rowStartDate As Date
+        Dim rowEndDate As Date
+        If Not TryGetDtrRowDateRange(row, rowStartDate, rowEndDate) Then Return False
+
+        For columnIndex As Integer = RawPunchStartColumnIndex To RawPunchEndColumnIndex
+            Dim punchText = SourceCellText(row, columnIndex)
+            If String.IsNullOrWhiteSpace(punchText) Then Continue For
+
+            Dim punchDateTime As DateTime
+            If Not TryParseRawPunchDateTime(punchText, punchDateTime) Then
+                If showMessage Then
+                    MsgBox($"Invalid time format: {punchText}{vbCrLf}Use the full format from the biometric file, for example 1/26/2025 8:00:00 AM.", vbExclamation, "Invalid DTR Time")
+                End If
+                Return False
+            End If
+
+            If punchDateTime.Date < rowStartDate.Date OrElse punchDateTime.Date > rowEndDate.Date Then
+                If showMessage Then
+                    MsgBox($"The time value {punchText} does not belong to the {BuildDateRangeText(rowStartDate, rowEndDate)} row.{vbCrLf}Please enter a time dated within this row's date coverage.", vbExclamation, "Invalid DTR Date")
+                End If
+                Return False
+            End If
+        Next
+
+        Return True
+    End Function
+
+    Private Function TryGetDtrRowDateRange(row As DataGridViewRow, ByRef startDate As Date, ByRef endDate As Date) As Boolean
+        startDate = Date.MinValue
+        endDate = Date.MinValue
+
+        Dim dateText = SourceCellText(row, DtrDateColumnIndex)
+        If String.IsNullOrWhiteSpace(dateText) Then Return False
+
+        Dim parts = dateText.Split("-"c)
+        If Not DateTime.TryParse(parts(0).Trim(), startDate) Then Return False
+
+        If parts.Length > 1 Then
+            If Not DateTime.TryParse(parts(parts.Length - 1).Trim(), endDate) Then Return False
+        Else
+            endDate = startDate
+        End If
+
+        Dim scheduleRow = ScheduleRowForDay(startDate.Day)
+        If scheduleRow IsNot Nothing Then
+            Dim outDay As Integer
+            Dim scheduleOutDate As Date
+            If Integer.TryParse(Convert.ToString(scheduleRow.Cells(2)?.Value), outDay) AndAlso
+               TryBuildScheduleOutDate(startDate, outDay, scheduleOutDate) AndAlso
+               scheduleOutDate.Date > endDate.Date Then
+                endDate = scheduleOutDate.Date
+            End If
+        End If
+
+        If RowHasNextDayTimeout(row, startDate) AndAlso startDate.AddDays(1).Date > endDate.Date Then
+            endDate = startDate.AddDays(1).Date
+        End If
+
+        If endDate < startDate Then endDate = startDate
+        Return True
+    End Function
+
+    Private Function RowHasNextDayTimeout(row As DataGridViewRow, startDate As Date) As Boolean
+        If row Is Nothing Then Return False
+
+        Dim firstTimeIn As DateTime
+        If Not TryParseRawPunchDateTime(SourceCellText(row, RawPunchStartColumnIndex), firstTimeIn) Then Return False
+        If firstTimeIn.Date <> startDate.Date Then Return False
+
+        Dim timeOutColumns As Integer() = {3, 5, 7, 9}
+        For Each columnIndex In timeOutColumns
+            Dim punchDateTime As DateTime
+            If TryParseRawPunchDateTime(SourceCellText(row, columnIndex), punchDateTime) AndAlso
+               punchDateTime.Date = startDate.AddDays(1).Date Then
+                Return True
+            End If
+        Next
+
+        Return False
+    End Function
+
+    Private Function TryParseRawPunchDateTime(punchText As String, ByRef punchDateTime As DateTime) As Boolean
+        If DateTime.TryParseExact(punchText.Trim(), "M/d/yyyy h:mm:ss tt", Globalization.CultureInfo.InvariantCulture, Globalization.DateTimeStyles.None, punchDateTime) Then
+            Return True
+        End If
+
+        Return DateTime.TryParse(punchText, punchDateTime)
+    End Function
+
+    Private Function BuildDateRangeText(startDate As Date, endDate As Date) As String
+        If startDate.Date = endDate.Date Then Return startDate.ToString("MMM d", Globalization.CultureInfo.InvariantCulture)
+
+        Return String.Format(Globalization.CultureInfo.InvariantCulture, "{0:MMM d} - {1:MMM d}", startDate, endDate)
+    End Function
+
+    Private Sub DisableClassificationCell(cell As DataGridViewCell, tooltip As String)
+        If cell Is Nothing Then Return
+
+        cell.ReadOnly = True
+        cell.Value = False
+        cell.ToolTipText = tooltip
+        cell.Style.BackColor = Color.LightGray
+        cell.Style.SelectionBackColor = Color.LightGray
+        cell.Style.ForeColor = Color.DimGray
+    End Sub
+
+    Private Sub EnableClassificationCell(cell As DataGridViewCell)
+        If cell Is Nothing Then Return
+
+        cell.ReadOnly = False
+        cell.ToolTipText = ""
+        cell.Style.BackColor = Color.FromArgb(255, 224, 192)
+        cell.Style.SelectionBackColor = GView_Classification.DefaultCellStyle.SelectionBackColor
+        cell.Style.ForeColor = Color.Black
+    End Sub
+
     Private Sub ApplyClassificationExclusionState(columnIndex As Integer)
         If GView_Classification Is Nothing OrElse GView_Classification.Rows.Count < 3 OrElse columnIndex < 1 Then Return
+
+        If Not ClassificationColumnHasPunches(columnIndex) Then
+            For rowIndex As Integer = 0 To 2
+                DisableClassificationCell(GView_Classification.Rows(rowIndex).Cells(columnIndex), "No time in/out for this date.")
+            Next
+            Return
+        End If
 
         Dim sundaySelected = IsSundayCheckedForClassificationColumn(columnIndex)
 
         For rowIndex As Integer = 1 To 2
             Dim cell = GView_Classification.Rows(rowIndex).Cells(columnIndex)
-            cell.ReadOnly = sundaySelected
-            cell.ToolTipText = If(sundaySelected, "SH and LH cannot be selected when Sunday is selected.", "")
 
             If sundaySelected Then
-                cell.Value = False
-                cell.Style.BackColor = Color.LightGray
-                cell.Style.SelectionBackColor = Color.LightGray
-                cell.Style.ForeColor = Color.DimGray
+                DisableClassificationCell(cell, "SH and LH cannot be selected when Sunday is selected.")
             Else
-                cell.Style.BackColor = Color.FromArgb(255, 224, 192)
-                cell.Style.SelectionBackColor = GView_Classification.DefaultCellStyle.SelectionBackColor
-                cell.Style.ForeColor = Color.Black
+                EnableClassificationCell(cell)
             End If
         Next
     End Sub
 
+    Private Sub RefreshClassificationAvailability()
+        If GView_Classification Is Nothing OrElse GView_Classification.Rows.Count < 3 Then Return
+
+        Try
+            isUpdatingClassificationGrid = True
+
+            For columnIndex As Integer = 1 To GView_Classification.Columns.Count - 1
+                Dim coveredDate = ClassificationDateForColumn(columnIndex)
+                Dim hasPunches = coveredDate.HasValue AndAlso DtrDateHasPunches(coveredDate.Value)
+
+                If Not hasPunches Then
+                    For rowIndex As Integer = 0 To 2
+                        DisableClassificationCell(GView_Classification.Rows(rowIndex).Cells(columnIndex), "No time in/out for this date.")
+                    Next
+                    Continue For
+                End If
+
+                Dim sundayCell = GView_Classification.Rows(0).Cells(columnIndex)
+                If coveredDate.HasValue AndAlso coveredDate.Value.DayOfWeek = DayOfWeek.Sunday Then
+                    EnableClassificationCell(sundayCell)
+                Else
+                    DisableClassificationCell(sundayCell, "Sunday can only be selected on an actual Sunday date.")
+                End If
+
+                ApplyClassificationExclusionState(columnIndex)
+            Next
+        Finally
+            isUpdatingClassificationGrid = False
+        End Try
+    End Sub
+
     Private Sub GView_Classification_CellClick(sender As Object, e As DataGridViewCellEventArgs) Handles GView_Classification.CellClick
         If isUpdatingClassificationGrid OrElse e.RowIndex < 0 OrElse e.ColumnIndex < 1 Then Return
+        If Not ClassificationColumnHasPunches(e.ColumnIndex) Then Return
 
         Dim cell = GView_Classification.Rows(e.RowIndex).Cells(e.ColumnIndex)
         Dim currentValue = IsCellChecked(cell)
@@ -541,6 +710,105 @@ Public Class FRM_DTR_BIOMETRIC
         Next
 
         Return -1
+    End Function
+
+    Private Sub NormalizeRawDtrToPeriodCoverage()
+        If GView_DTR Is Nothing Then Return
+
+        Dim coveredDates = PeriodCoverageDates()
+        If coveredDates.Count = 0 Then Return
+
+        Dim existingValuesByDate As New Dictionary(Of Date, Object())()
+        For rowIndex As Integer = 0 To GView_DTR.Rows.Count - 1
+            If Not IsDtrDataRow(GView_DTR, rowIndex) Then Continue For
+
+            Dim row = GView_DTR.Rows(rowIndex)
+            Dim rowDate = DtrRowDate(row)
+            If Not rowDate.HasValue OrElse existingValuesByDate.ContainsKey(rowDate.Value.Date) Then Continue For
+
+            Dim values(GView_DTR.Columns.Count - 1) As Object
+            For columnIndex As Integer = 0 To GView_DTR.Columns.Count - 1
+                values(columnIndex) = row.Cells(columnIndex).Value
+            Next
+            existingValuesByDate.Add(rowDate.Value.Date, values)
+        Next
+
+        GView_DTR.Rows.Clear()
+
+        For Each coveredDate In coveredDates
+            Dim newRowIndex = GView_DTR.Rows.Add()
+            Dim row = GView_DTR.Rows(newRowIndex)
+            Dim existingValues As Object() = Nothing
+
+            If existingValuesByDate.TryGetValue(coveredDate.Date, existingValues) Then
+                For columnIndex As Integer = 0 To Math.Min(GView_DTR.Columns.Count, existingValues.Length) - 1
+                    row.Cells(columnIndex).Value = existingValues(columnIndex)
+                Next
+            Else
+                row.Cells(DtrDateColumnIndex).Value = BuildCoverageDateLabel(coveredDate)
+                row.Cells(DtrDayColumnIndex).Value = BuildCoverageDayLabel(coveredDate)
+                For columnIndex As Integer = RawPunchStartColumnIndex To RawPunchEndColumnIndex
+                    row.Cells(columnIndex).Value = ""
+                Next
+            End If
+        Next
+    End Sub
+
+    Private Function BuildCoverageDateLabel(coveredDate As Date) As String
+        Dim scheduleRow = ScheduleRowForDay(coveredDate.Day)
+        If scheduleRow Is Nothing Then Return coveredDate.ToString("MM/dd/yyyy", Globalization.CultureInfo.InvariantCulture)
+
+        Dim outDay As Integer
+        If Not Integer.TryParse(Convert.ToString(scheduleRow.Cells(2)?.Value), outDay) OrElse outDay = coveredDate.Day Then
+            Return coveredDate.ToString("MM/dd/yyyy", Globalization.CultureInfo.InvariantCulture)
+        End If
+
+        Dim outDate As Date
+        If Not TryBuildScheduleOutDate(coveredDate, outDay, outDate) Then Return coveredDate.ToString("MM/dd/yyyy", Globalization.CultureInfo.InvariantCulture)
+
+        Return String.Format(Globalization.CultureInfo.InvariantCulture, "{0:MM/dd/yyyy} - {1:MM/dd/yyyy}", coveredDate, outDate)
+    End Function
+
+    Private Function BuildCoverageDayLabel(coveredDate As Date) As String
+        Dim scheduleRow = ScheduleRowForDay(coveredDate.Day)
+        If scheduleRow Is Nothing Then Return coveredDate.DayOfWeek.ToString()
+
+        Dim outDay As Integer
+        If Not Integer.TryParse(Convert.ToString(scheduleRow.Cells(2)?.Value), outDay) OrElse outDay = coveredDate.Day Then
+            Return coveredDate.DayOfWeek.ToString()
+        End If
+
+        Dim outDate As Date
+        If Not TryBuildScheduleOutDate(coveredDate, outDay, outDate) Then Return coveredDate.DayOfWeek.ToString()
+
+        Return coveredDate.DayOfWeek.ToString() & " - " & outDate.DayOfWeek.ToString()
+    End Function
+
+    Private Function ScheduleRowForDay(dayNumber As Integer) As DataGridViewRow
+        If GView_Schedule Is Nothing Then Return Nothing
+
+        For Each row As DataGridViewRow In GView_Schedule.Rows
+            If row Is Nothing OrElse row.IsNewRow OrElse row.Cells.Count < 3 Then Continue For
+            If Convert.ToString(row.Cells(0)?.Value) = dayNumber.ToString(Globalization.CultureInfo.InvariantCulture) Then Return row
+        Next
+
+        Return Nothing
+    End Function
+
+    Private Function TryBuildScheduleOutDate(coveredDate As Date, outDay As Integer, ByRef outDate As Date) As Boolean
+        If outDay < 1 Then Return False
+
+        If outDay <= Date.DaysInMonth(coveredDate.Year, coveredDate.Month) Then
+            outDate = New Date(coveredDate.Year, coveredDate.Month, outDay)
+            Return True
+        End If
+
+        Dim nextMonth = coveredDate.AddMonths(1)
+        Dim nextMonthDay = outDay - Date.DaysInMonth(coveredDate.Year, coveredDate.Month)
+        If nextMonthDay < 1 OrElse nextMonthDay > Date.DaysInMonth(nextMonth.Year, nextMonth.Month) Then Return False
+
+        outDate = New Date(nextMonth.Year, nextMonth.Month, nextMonthDay)
+        Return True
     End Function
 
     Private Function DtrRowDate(row As DataGridViewRow) As Date?
@@ -970,12 +1238,37 @@ Public Class FRM_DTR_BIOMETRIC
                            GlobalVariables.DTR_Selected_Employee_ID)
 
     End Sub
+
+    Private Sub Btn_Close_DTR_Click(sender As Object, e As EventArgs) Handles Btn_Close_DTR.Click
+        Close()
+    End Sub
+
     Private Sub GView_DTR_CellEndEdit(sender As Object, e As DataGridViewCellEventArgs) Handles GView_DTR.CellEndEdit
         If isRecalculatingDtr OrElse isRefreshingDtrViews Then Return
         If e.RowIndex < 0 OrElse e.ColumnIndex < RawPunchStartColumnIndex OrElse e.ColumnIndex > RawPunchEndColumnIndex Then Return
 
+        If Not ValidateEditedRawPunchCell(e.RowIndex, e.ColumnIndex) Then
+            RefreshClassificationAvailability()
+            RecalculateDtrFromTimeDetails()
+            Return
+        End If
+
         RecalculateDtrFromTimeDetails()
     End Sub
+
+    Private Function ValidateEditedRawPunchCell(rowIndex As Integer, columnIndex As Integer) As Boolean
+        If GView_DTR Is Nothing OrElse rowIndex < 0 OrElse rowIndex >= GView_DTR.Rows.Count Then Return False
+
+        Dim row = GView_DTR.Rows(rowIndex)
+        Dim cell = row.Cells(columnIndex)
+        Dim punchText = Convert.ToString(cell.Value)
+        If String.IsNullOrWhiteSpace(punchText) Then Return True
+
+        If RawPunchDatesAreValid(row, True) Then Return True
+
+        cell.Value = ""
+        Return False
+    End Function
 
     Private Sub RecalculateDtrFromTimeDetails()
         If isRecalculatingDtr Then Return
@@ -984,6 +1277,7 @@ Public Class FRM_DTR_BIOMETRIC
             isRecalculatingDtr = True
             ClearTimeCalculationView()
             Calculate_DTR()
+            RefreshClassificationAvailability()
             ProcessHoursBreakdown()
             RefreshDtrViews()
         Finally

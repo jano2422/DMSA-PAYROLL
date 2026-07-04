@@ -126,17 +126,6 @@ Public Class FRM_MAIN
     End Sub
 
     Private Sub Btn_Schedule_Click(sender As Object, e As EventArgs) Handles Btn_Schedule.Click
-        '' Create and show the WPF window
-        'Dim wpfScheduleWindow As New ScheduleManager()
-        'Dim helper As New WindowInteropHelper(wpfScheduleWindow)
-        'helper.Owner = Me.Handle ' Set WinForms window as owner
-
-        '' Show as a modal dialog to ensure input focus
-        'wpfScheduleWindow.ShowDialog()
-
-        '' Ensure the window is properly activated and textbox is focused
-        'wpfScheduleWindow.Activate()
-        'Keyboard.Focus(wpfScheduleWindow.EmployeeSearchTextBox)
         FRM_DTR_SCHEDULE.ShowDialog()
     End Sub
 

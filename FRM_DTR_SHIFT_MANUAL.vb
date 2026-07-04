@@ -190,6 +190,7 @@ Public Partial Class FRM_DTR_SHIFT_MANUAL
 
             holidayGrid.Rows(shRowIndex).Cells(columnName).Value = False
             holidayGrid.Rows(lhRowIndex).Cells(columnName).Value = False
+            ApplyHolidayExclusionState(holidayGrid.Columns(columnName).Index)
         Next
 
         isUpdatingGrid = False
@@ -287,6 +288,7 @@ Public Partial Class FRM_DTR_SHIFT_MANUAL
             holidayGrid.Rows(0).Cells(columnName).Value = (d.DayOfWeek = DayOfWeek.Sunday)
             holidayGrid.Rows(1).Cells(columnName).Value = False
             holidayGrid.Rows(2).Cells(columnName).Value = False
+            ApplyHolidayExclusionState(holidayGrid.Columns(columnName).Index)
         Next
         isUpdatingGrid = False
         RecalculateTotals()
@@ -331,16 +333,51 @@ Public Partial Class FRM_DTR_SHIFT_MANUAL
         If e.RowIndex = 0 Then
             If Not IsClassificationColumnSunday(e.ColumnIndex) Then Return
             cell.Value = Not currentValue
+            If CBool(cell.Value) Then
+                holidayGrid.Rows(1).Cells(e.ColumnIndex).Value = False
+                holidayGrid.Rows(2).Cells(e.ColumnIndex).Value = False
+            End If
+            ApplyHolidayExclusionState(e.ColumnIndex)
         ElseIf e.RowIndex = 1 Then
+            If IsSundayCheckedForColumn(e.ColumnIndex) Then Return
             cell.Value = Not currentValue
             If CBool(cell.Value) Then holidayGrid.Rows(2).Cells(e.ColumnIndex).Value = False
         ElseIf e.RowIndex = 2 Then
+            If IsSundayCheckedForColumn(e.ColumnIndex) Then Return
             cell.Value = Not currentValue
             If CBool(cell.Value) Then holidayGrid.Rows(1).Cells(e.ColumnIndex).Value = False
         End If
 
         RecalculateTotals()
     End Sub
+
+    Private Sub ApplyHolidayExclusionState(columnIndex As Integer)
+        If holidayGrid.Rows.Count < 3 OrElse columnIndex < 1 Then Return
+
+        Dim sundaySelected = IsSundayCheckedForColumn(columnIndex)
+
+        For rowIndex As Integer = 1 To 2
+            Dim cell = holidayGrid.Rows(rowIndex).Cells(columnIndex)
+            cell.ReadOnly = sundaySelected
+            cell.ToolTipText = If(sundaySelected, "SH and LH cannot be selected when Sunday is selected.", "")
+
+            If sundaySelected Then
+                cell.Value = False
+                cell.Style.BackColor = Color.LightGray
+                cell.Style.SelectionBackColor = Color.LightGray
+                cell.Style.ForeColor = Color.DimGray
+            Else
+                cell.Style.BackColor = Color.FromArgb(255, 224, 192)
+                cell.Style.SelectionBackColor = holidayGrid.DefaultCellStyle.SelectionBackColor
+                cell.Style.ForeColor = Color.Black
+            End If
+        Next
+    End Sub
+
+    Private Function IsSundayCheckedForColumn(columnIndex As Integer) As Boolean
+        If holidayGrid.Rows.Count = 0 OrElse columnIndex < 1 Then Return False
+        Return IsCellChecked(holidayGrid.Rows(0).Cells(columnIndex))
+    End Function
 
     Private Function IsClassificationColumnSunday(columnIndex As Integer) As Boolean
         If columnIndex < 1 OrElse columnIndex > coveredDates.Count Then Return False

@@ -73,7 +73,7 @@ Module Mod_FRM_SCHEDULE
                 Next
             End With
         Catch ex As Exception
-            MessageBox.Show("Error: " & ex.Message, "Calculation Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
+            AppNotification.Show("Error: " & ex.Message, "Calculation Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
         End Try
     End Sub
 
@@ -219,7 +219,7 @@ Module Mod_FRM_SCHEDULE
             reader.Close()
         End Using
 
-        MessageBox.Show("Update complete.")
+        AppNotification.Show("Update complete.", "Schedule", MessageBoxButtons.OK, MessageBoxIcon.Information)
     End Sub
     ' Example for 1st Cutoff
     Public Sub Update_1stCutoff_Cells(sTime_IN As String, sTime_OUT As String)

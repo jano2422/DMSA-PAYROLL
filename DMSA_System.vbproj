@@ -107,10 +107,17 @@
     <Import Include="System.Threading.Tasks" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ChangePasswordView.xaml.vb">
-      <DependentUpon>ChangePasswordView.xaml</DependentUpon>
-    </Compile>
     <Compile Include="Data\Services\ScheduleService.vb" />
+    <Compile Include="AppNotification.vb" />
+    <Compile Include="AppNotificationDialog.Designer.vb">
+      <DependentUpon>AppNotificationDialog.vb</DependentUpon>
+    </Compile>
+    <Compile Include="AppNotificationDialog.vb">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FrmProcessing.Designer.vb">
+      <DependentUpon>FrmProcessing.vb</DependentUpon>
+    </Compile>
     <Compile Include="FrmProcessing.vb">
       <SubType>Form</SubType>
     </Compile>
@@ -165,11 +172,20 @@
     <Compile Include="FRM_DTR_EMPLOYEE_LIST_ALL.vb">
       <SubType>Form</SubType>
     </Compile>
+    <Compile Include="FRM_DTR_CLIENT_LIST_ALL.Designer.vb">
+      <DependentUpon>FRM_DTR_CLIENT_LIST_ALL.vb</DependentUpon>
+    </Compile>
+    <Compile Include="FRM_DTR_CLIENT_LIST_ALL.vb">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Include="FRM_DTR_EXPORTS.Designer.vb">
       <DependentUpon>FRM_DTR_EXPORTS.vb</DependentUpon>
     </Compile>
     <Compile Include="FRM_DTR_EXPORTS.vb">
       <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FRM_DTR_DEDUCTION_UPDATE.Designer.vb">
+      <DependentUpon>FRM_DTR_DEDUCTION_UPDATE.vb</DependentUpon>
     </Compile>
     <Compile Include="FRM_DTR_DEDUCTION_UPDATE.vb">
       <SubType>Form</SubType>
@@ -185,6 +201,9 @@
     </Compile>
     <Compile Include="FRM_DTR_REPORT.vb">
       <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FRM_DTR_SHIFT_MANUAL.Designer.vb">
+      <DependentUpon>FRM_DTR_SHIFT_MANUAL.vb</DependentUpon>
     </Compile>
     <Compile Include="FRM_DTR_SHIFT_MANUAL.vb">
       <SubType>Form</SubType>
@@ -242,6 +261,12 @@
       <DependentUpon>FRM_LOGIN.vb</DependentUpon>
     </Compile>
     <Compile Include="FRM_LOGIN.vb">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FRM_CHANGE_PASSWORD.Designer.vb">
+      <DependentUpon>FRM_CHANGE_PASSWORD.vb</DependentUpon>
+    </Compile>
+    <Compile Include="FRM_CHANGE_PASSWORD.vb">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="FRM_MAIN.Designer.vb">
@@ -336,6 +361,12 @@
     <EmbeddedResource Include="FRM_DTR_BIOMETRIC_WINDOW.resx">
       <DependentUpon>FRM_DTR_BIOMETRIC_WINDOW.vb</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="AppNotificationDialog.resx">
+      <DependentUpon>AppNotificationDialog.vb</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FrmProcessing.resx">
+      <DependentUpon>FrmProcessing.vb</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="FRM_DTR_DEDUCTION_UPDATE.resx">
       <DependentUpon>FRM_DTR_DEDUCTION_UPDATE.vb</DependentUpon>
     </EmbeddedResource>
@@ -345,6 +376,9 @@
     <EmbeddedResource Include="FRM_DTR_EMPLOYEE_LIST_ALL.resx">
       <DependentUpon>FRM_DTR_EMPLOYEE_LIST_ALL.vb</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="FRM_DTR_CLIENT_LIST_ALL.resx">
+      <DependentUpon>FRM_DTR_CLIENT_LIST_ALL.vb</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="FRM_DTR_EXPORTS.resx">
       <DependentUpon>FRM_DTR_EXPORTS.vb</DependentUpon>
     </EmbeddedResource>
@@ -353,6 +387,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="FRM_DTR_REPORT.resx">
       <DependentUpon>FRM_DTR_REPORT.vb</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FRM_DTR_SHIFT_MANUAL.resx">
+      <DependentUpon>FRM_DTR_SHIFT_MANUAL.vb</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="FRM_DTR_SCHEDULE.resx">
       <DependentUpon>FRM_DTR_SCHEDULE.vb</DependentUpon>
@@ -519,10 +556,6 @@
     </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
-    <Page Include="ChangePasswordView.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
     <Page Include="UserManagementView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>

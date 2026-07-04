@@ -1,37 +1,72 @@
-﻿Public Class FrmProcessing
-    Inherits Form
+Imports System.Drawing
+Imports System.Windows.Forms
 
-    Private lblMessage As Label
-    Private loadingBar As ProgressBar
+Public Partial Class FrmProcessing
+    Private ReadOnly progressTimer As Timer
+    Private progressDirection As Integer = 1
+    Private dragOffset As Point
 
     Public Sub New(Optional message As String = "Processing, please wait...")
-        ' === BASE FORM SETTINGS ===
-        Me.FormBorderStyle = FormBorderStyle.None
-        Me.StartPosition = FormStartPosition.CenterScreen
-        Me.Size = New Size(360, 130)
-        Me.BackColor = Color.White
-        Me.TopMost = True
-        Me.ShowInTaskbar = False
-        Me.ControlBox = False
+        InitializeComponent()
+        SetStatusMessage(message)
 
-        ' === LABEL ===
-        lblMessage = New Label()
-        lblMessage.Text = message
-        lblMessage.Font = New Font("Segoe UI", 11, FontStyle.Bold)
-        lblMessage.AutoSize = False
-        lblMessage.TextAlign = ContentAlignment.MiddleCenter
-        lblMessage.Dock = DockStyle.Top
-        lblMessage.Height = 60
+        progressTimer = New Timer With {
+            .Interval = 24
+        }
+        AddHandler progressTimer.Tick, AddressOf ProgressTimer_Tick
+    End Sub
 
-        ' === PROGRESS BAR ===
-        loadingBar = New ProgressBar()
-        loadingBar.Dock = DockStyle.Bottom
-        loadingBar.Height = 25
-        loadingBar.Style = ProgressBarStyle.Marquee
-        loadingBar.MarqueeAnimationSpeed = 40
+    Public Sub SetStatusMessage(message As String)
+        Lbl_Message.Text = If(String.IsNullOrWhiteSpace(message), "Working on your file...", message.Trim())
+    End Sub
 
-        ' === ADD TO FORM ===
-        Me.Controls.Add(lblMessage)
-        Me.Controls.Add(loadingBar)
+    Protected Overrides Sub OnShown(e As EventArgs)
+        MyBase.OnShown(e)
+        CenterAgainstOwner()
+        progressFill.Left = 0
+        progressTimer.Start()
+    End Sub
+
+    Protected Overrides Sub OnFormClosed(e As FormClosedEventArgs)
+        progressTimer.Stop()
+        RemoveHandler progressTimer.Tick, AddressOf ProgressTimer_Tick
+        progressTimer.Dispose()
+        MyBase.OnFormClosed(e)
+    End Sub
+
+    Private Sub CenterAgainstOwner()
+        If Owner Is Nothing Then Return
+
+        Dim x As Integer = Owner.Left + ((Owner.Width - Width) \ 2)
+        Dim y As Integer = Owner.Top + ((Owner.Height - Height) \ 2)
+        Location = New Point(Math.Max(Owner.Left, x), Math.Max(Owner.Top, y))
+    End Sub
+
+    Private Sub ProgressTimer_Tick(sender As Object, e As EventArgs)
+        If progressTrack.Width <= 0 Then Return
+
+        progressFill.Width = Math.Max(92, progressTrack.Width \ 3)
+        Dim maxLeft As Integer = Math.Max(0, progressTrack.Width - progressFill.Width)
+        Dim nextLeft As Integer = progressFill.Left + (8 * progressDirection)
+
+        If nextLeft >= maxLeft Then
+            nextLeft = maxLeft
+            progressDirection = -1
+        ElseIf nextLeft <= 0 Then
+            nextLeft = 0
+            progressDirection = 1
+        End If
+
+        progressFill.Left = nextLeft
+    End Sub
+
+    Private Sub Header_MouseDown(sender As Object, e As MouseEventArgs) Handles headerPanel.MouseDown, Lbl_Title.MouseDown
+        If e.Button <> MouseButtons.Left Then Return
+        dragOffset = New Point(e.X, e.Y)
+    End Sub
+
+    Private Sub Header_MouseMove(sender As Object, e As MouseEventArgs) Handles headerPanel.MouseMove, Lbl_Title.MouseMove
+        If e.Button <> MouseButtons.Left Then Return
+        Location = New Point(Location.X + e.X - dragOffset.X, Location.Y + e.Y - dragOffset.Y)
     End Sub
 End Class

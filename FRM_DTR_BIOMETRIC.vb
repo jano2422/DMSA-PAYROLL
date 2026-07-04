@@ -440,7 +440,7 @@ Public Class FRM_DTR_BIOMETRIC
         Next
 
         ' Display error message if DataGridView is not found
-        MessageBox.Show($"The DataGridView '{name}' was not found on the breakdown page. Please contact the administrator.",
+        AppNotification.Show($"The DataGridView '{name}' was not found on the breakdown page. Please contact the administrator.",
                     "Error",
                     MessageBoxButtons.OK,
                     MessageBoxIcon.Error)
@@ -503,7 +503,7 @@ Public Class FRM_DTR_BIOMETRIC
             End If
 
         Catch ex As Exception
-            MessageBox.Show($"An error occurred: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
+            AppNotification.Show($"An error occurred: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
         Finally
             ' Reset the highlights for invalid cells after a delay
             If invalidCells.Count > 0 Then
@@ -583,7 +583,7 @@ Public Class FRM_DTR_BIOMETRIC
             Next
 
         Catch ex As Exception
-            MessageBox.Show($"An error occurred: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
+            AppNotification.Show($"An error occurred: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
         End Try
 
     End Sub

@@ -19,7 +19,7 @@ Public Class FRM_DTR_BIOMETRIC_WPF_UC
         Dim extractedRecords As New DataTable()
         Dim filePath As String = "C:/MASTER_DTR/4011.pdf"
         If Not File.Exists(filePath) Then
-            MessageBox.Show("File not found: " & filePath, "Error", MessageBoxButton.OK, MessageBoxImage.Error)
+            AppNotification.ShowWpf("File not found: " & filePath, "Error", MessageBoxButton.OK, MessageBoxImage.Error)
             Return
         End If
         extractedRecords = ExtractDTRDataFromPDF(filePath)

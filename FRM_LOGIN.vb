@@ -1,5 +1,4 @@
 ﻿Imports System.Data.OleDb
-Imports System.Windows
 
 Public Class FRM_LOGIN
     Private Sub FRM_LOGIN_Load(sender As Object, e As EventArgs) Handles MyBase.Load
@@ -25,22 +24,9 @@ Public Class FRM_LOGIN
     End Sub
 
     Private Sub ShowChangePasswordView()
-        ' Create the user control
-        Dim changePasswordControl As New ChangePasswordView()
-
-        ' Wrap the user control in a new window
-        Dim changePasswordWindow As New System.Windows.Window With {
-        .Title = "Change Password",
-        .Width = 600,
-        .Height = 500,
-        .Content = changePasswordControl,
-        .WindowStartupLocation = System.Windows.WindowStartupLocation.CenterScreen,
-        .ResizeMode = System.Windows.ResizeMode.CanResize,
-        .WindowStyle = System.Windows.WindowStyle.ToolWindow
-    }
-
-        ' Show the window as a dialog (modal), but we don't care about the result
-        changePasswordWindow.ShowDialog()
+        Using changePasswordForm As New FRM_CHANGE_PASSWORD(TxtUsername.Text)
+            changePasswordForm.ShowDialog(Me)
+        End Using
     End Sub
     Private Sub TxtPassword_KeyPress(sender As Object, e As KeyPressEventArgs) Handles TxtPassword.KeyPress
 

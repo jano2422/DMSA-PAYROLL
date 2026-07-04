@@ -1,8 +1,7 @@
-﻿Imports System.Drawing
+Imports System.Data.OleDb
 Imports System.Globalization
-Imports System.Windows.Forms
 
-Public Class FRM_DTR_DEDUCTION_UPDATE
+Public Partial Class FRM_DTR_DEDUCTION_UPDATE
     Inherits Form
 
     Private ReadOnly _employeeId As String
@@ -27,30 +26,39 @@ Public Class FRM_DTR_DEDUCTION_UPDATE
     Private ReadOnly _defaultOfficerAllowance As Decimal
     Private ReadOnly _defaultSgUniformAllowance As Decimal
 
-    Private ReadOnly _isFirstCutoff As Boolean
-
-    Private txtSss As TextBox
-    Private txtPhilhealth As TextBox
-    Private txtPagibig As TextBox
-    Private txtCashBond As TextBox
-    Private txtSssLoan As TextBox
-    Private txtSssCalLoan As TextBox
-    Private txtPiLoan As TextBox
-    Private txtPiCalLoan As TextBox
-    Private txtOfficerAllowance As TextBox
-    Private txtSgUniformAllowance As TextBox
-
-    Private lblRegValue As Label
-    Private lblSunValue As Label
-    Private lblShValue As Label
-    Private lblLhValue As Label
-    Private lblUnallocatedValue As Label
-
+    Private _isFirstCutoff As Boolean
     Private _unallocatedHours As Decimal
     Private ReadOnly _initialRegHours As Decimal
     Private ReadOnly _initialSunHours As Decimal
     Private ReadOnly _initialShHours As Decimal
     Private ReadOnly _initialLhHours As Decimal
+    Private _dailyWage As Decimal
+    Private _subClientName As String
+
+    Public Sub New()
+        _employeeId = "230096"
+        _employeeName = "CATAPAT, MARIBEL A."
+        _cutoff = "7_1st_2026"
+        _subClientId = 0
+        _numDays = 9D
+        _totalHours = 72D
+        _regHours = 56D
+        _sunHours = 16D
+        _shHours = 0D
+        _lhHours = 0D
+        _initialRegHours = _regHours
+        _initialSunHours = _sunHours
+        _initialShHours = _shHours
+        _initialLhHours = _lhHours
+        _otRegHours = 0D
+        _dailyWage = 610D
+        _subClientName = "Sample Detachment"
+        _isFirstCutoff = True
+
+        InitializeComponent()
+        SetupRuntimeHandlers()
+        LoadDialogData(useDatabaseWage:=False)
+    End Sub
 
     Public Sub New(
         employeeId As String,
@@ -101,253 +109,110 @@ Public Class FRM_DTR_DEDUCTION_UPDATE
         _defaultOfficerAllowance = officerAllowance
         _defaultSgUniformAllowance = sguniformallowance
         _unallocatedHours = 0D
-
         _isFirstCutoff = IsFirstCutoff(cutoff)
 
-        InitializeComponents()
+        InitializeComponent()
+        SetupRuntimeHandlers()
+        LoadDialogData(useDatabaseWage:=True)
     End Sub
 
-    Private Sub InitializeComponents()
-        Text = $"Update Deductions - {_employeeName}"
-        StartPosition = FormStartPosition.CenterParent
-        FormBorderStyle = FormBorderStyle.FixedDialog
-        MinimizeBox = False
-        MaximizeBox = False
-        Font = New Font("Segoe UI", 10.0F, FontStyle.Regular, GraphicsUnit.Point)
-        AutoSize = True
-        AutoSizeMode = AutoSizeMode.GrowAndShrink
+    Private Sub SetupRuntimeHandlers()
+        AddHandler btnRegMinus.Click, Sub() AdjustAllocation("REG", -1D)
+        AddHandler btnRegPlus.Click, Sub() AdjustAllocation("REG", 1D)
+        AddHandler btnRegUnallocate.Click, Sub() HandleUnallocateAllForType("REG")
+        AddHandler btnRegAllocate.Click, Sub() HandleAllocateAllUnallocatedForType("REG")
 
-        Dim mainPanel As New TableLayoutPanel With {
-    .Dock = DockStyle.Fill,
-    .ColumnCount = 2,
-    .AutoSize = True,
-    .Padding = New Padding(16)}
+        AddHandler btnSunMinus.Click, Sub() AdjustAllocation("SUN", -1D)
+        AddHandler btnSunPlus.Click, Sub() AdjustAllocation("SUN", 1D)
+        AddHandler btnSunUnallocate.Click, Sub() HandleUnallocateAllForType("SUN")
+        AddHandler btnSunAllocate.Click, Sub() HandleAllocateAllUnallocatedForType("SUN")
 
-        mainPanel.ColumnStyles.Add(New ColumnStyle(SizeType.Percent, 45))
-        mainPanel.ColumnStyles.Add(New ColumnStyle(SizeType.Percent, 55))
+        AddHandler btnShMinus.Click, Sub() AdjustAllocation("SH", -1D)
+        AddHandler btnShPlus.Click, Sub() AdjustAllocation("SH", 1D)
+        AddHandler btnShUnallocate.Click, Sub() HandleUnallocateAllForType("SH")
+        AddHandler btnShAllocate.Click, Sub() HandleAllocateAllUnallocatedForType("SH")
 
-        Dim header As New Label With {
-            .Text = $"Employee: {_employeeName}" & Environment.NewLine & $"Cutoff: {FormatCutoff(_cutoff)}",
-            .AutoSize = True,
-            .Font = New Font("Segoe UI", 10.0F, FontStyle.Bold),
-            .ForeColor = Color.FromArgb(30, 30, 30),
-            .Padding = New Padding(0, 0, 0, 8)
-        }
+        AddHandler btnLhMinus.Click, Sub() AdjustAllocation("LH", -1D)
+        AddHandler btnLhPlus.Click, Sub() AdjustAllocation("LH", 1D)
+        AddHandler btnLhUnallocate.Click, Sub() HandleUnallocateAllForType("LH")
+        AddHandler btnLhAllocate.Click, Sub() HandleAllocateAllUnallocatedForType("LH")
 
-        mainPanel.Controls.Add(header, 0, 0)
-        mainPanel.SetColumnSpan(header, 2)
+        AddHandler btnResetAll.Click, AddressOf HandleResetToOriginal
+        AddHandler btnSave.Click, AddressOf HandleSave
+        AddHandler btnCancel.Click, AddressOf HandleCancel
+    End Sub
 
-        Dim rowIndex As Integer = 1
+    Private Sub LoadDialogData(useDatabaseWage As Boolean)
+        Text = "Update Deductions - " & _employeeName
 
-        mainPanel.Controls.Add(BuildAllocationSection(), 0, rowIndex)
-        mainPanel.SetColumnSpan(mainPanel.GetControlFromPosition(0, rowIndex), 2)
-        rowIndex += 1
-
-        If _isFirstCutoff Then
-            txtSss = AddField(mainPanel, rowIndex, "SSS Deduction", _defaultSssDeduct)
-            rowIndex += 1
-            txtPhilhealth = AddField(mainPanel, rowIndex, "PhilHealth Deduction", _defaultPhilhealthDeduct)
-            rowIndex += 1
-            txtPagibig = AddField(mainPanel, rowIndex, "Pag-IBIG Deduction", _defaultPagibigDeduct)
-            rowIndex += 1
-            txtOfficerAllowance = AddField(mainPanel, rowIndex, "Officer's Allowance", _defaultOfficerAllowance)
-            rowIndex += 1
-            txtSgUniformAllowance = AddField(mainPanel, rowIndex, "SG Uniform Allowance", _defaultSgUniformAllowance)
-            rowIndex += 1
-        Else
-            txtCashBond = AddField(mainPanel, rowIndex, "Cash Bond Deduction", _defaultCbDeduct)
-            rowIndex += 1
-            txtSssLoan = AddField(mainPanel, rowIndex, "SSS Loan Deduction", _defaultSssLoanDeduct)
-            rowIndex += 1
-            txtSssCalLoan = AddField(mainPanel, rowIndex, "SSS Cal Loan Deduction", _defaultSssCalLoanDeduct)
-            rowIndex += 1
-            txtPiLoan = AddField(mainPanel, rowIndex, "Pag-IBIG Loan Deduction", _defaultPiLoanDeduct)
-            rowIndex += 1
-            txtPiCalLoan = AddField(mainPanel, rowIndex, "Pag-IBIG Cal Loan Deduction", _defaultPiCalLoanDeduct)
-            rowIndex += 1
-            txtOfficerAllowance = AddField(mainPanel, rowIndex, "Officer's Allowance", _defaultOfficerAllowance)
-            rowIndex += 1
-            txtSgUniformAllowance = AddField(mainPanel, rowIndex, "SG Uniform Allowance", _defaultSgUniformAllowance)
-            rowIndex += 1
+        If useDatabaseWage Then
+            LoadSubClientDetails()
         End If
 
-        Dim buttonPanel As New FlowLayoutPanel With {
-            .FlowDirection = FlowDirection.RightToLeft,
-            .Dock = DockStyle.Fill,
-            .AutoSize = True
-        }
+        lblEmployeeValue.Text = _employeeId & " - " & _employeeName
+        lblCutoffValue.Text = FormatCutoff(_cutoff)
+        lblSubClientValue.Text = If(String.IsNullOrWhiteSpace(_subClientName), "Sub Client ID: " & _subClientId.ToString(), _subClientName)
+        lblDailyWageValue.Text = FormatPeso(_dailyWage)
 
-        Dim btnSave As New Button With {
-            .Text = "Save",
-            .AutoSize = True,
-            .BackColor = Color.FromArgb(0, 120, 212),
-            .ForeColor = Color.White,
-            .FlatStyle = FlatStyle.Flat
-        }
-        btnSave.FlatAppearance.BorderSize = 0
-        AddHandler btnSave.Click, AddressOf HandleSave
+        txtSss.Text = _defaultSssDeduct.ToString("0.##")
+        txtPhilhealth.Text = _defaultPhilhealthDeduct.ToString("0.##")
+        txtPagibig.Text = _defaultPagibigDeduct.ToString("0.##")
+        txtOfficerAllowanceFirst.Text = _defaultOfficerAllowance.ToString("0.##")
+        txtSgUniformAllowanceFirst.Text = _defaultSgUniformAllowance.ToString("0.##")
 
-        Dim btnCancel As New Button With {
-            .Text = "Cancel",
-            .AutoSize = True
-        }
-        AddHandler btnCancel.Click, Sub() DialogResult = DialogResult.Cancel
+        txtCashBond.Text = _defaultCbDeduct.ToString("0.##")
+        txtSssLoan.Text = _defaultSssLoanDeduct.ToString("0.##")
+        txtSssCalLoan.Text = _defaultSssCalLoanDeduct.ToString("0.##")
+        txtPiLoan.Text = _defaultPiLoanDeduct.ToString("0.##")
+        txtPiCalLoan.Text = _defaultPiCalLoanDeduct.ToString("0.##")
+        txtOfficerAllowanceSecond.Text = _defaultOfficerAllowance.ToString("0.##")
+        txtSgUniformAllowanceSecond.Text = _defaultSgUniformAllowance.ToString("0.##")
 
-        buttonPanel.Controls.Add(btnSave)
-        buttonPanel.Controls.Add(btnCancel)
+        pnlFirstCutoff.Visible = _isFirstCutoff
+        pnlSecondCutoff.Visible = Not _isFirstCutoff
 
-        mainPanel.Controls.Add(buttonPanel, 0, rowIndex)
-        mainPanel.SetColumnSpan(buttonPanel, 2)
-
-        Controls.Add(mainPanel)
-        AcceptButton = btnSave
-        CancelButton = btnCancel
+        RefreshAllocationLabels()
+        RefreshWorkValueSummary()
     End Sub
 
-    Private Function BuildAllocationSection() As Control
-        Dim sectionPanel As New TableLayoutPanel With {
-            .ColumnCount = 1,
-            .AutoSize = True,
-            .Dock = DockStyle.Fill,
-            .Margin = New Padding(0, 0, 0, 12)
-        }
+    Private Sub RefreshWorkValueSummary()
+        Dim hourlyRate As Decimal = If(_dailyWage > 0D, _dailyWage / 8D, 0D)
+        Dim workAmount As Decimal = _totalHours * hourlyRate
 
-        Dim sectionTitle As New Label With {
-            .Text = "Hour Allocation Adjustment (REG/SUN/SH/LH)",
-            .AutoSize = True,
-            .Font = New Font("Segoe UI", 10.0F, FontStyle.Bold),
-            .Margin = New Padding(0, 4, 0, 6)
-        }
-        sectionPanel.Controls.Add(sectionTitle)
+        lblTotalWorkingHoursValue.Text = _totalHours.ToString("0.##")
+        lblHourlyRateValue.Text = FormatPeso(hourlyRate)
+        lblTotalWorkPesoValue.Text = FormatPeso(workAmount)
+        lblFooterStatus.Text = "Total working hours are valued using Daily Wage / 8."
+    End Sub
 
-        Dim grid As New TableLayoutPanel With {
-            .ColumnCount = 6,
-            .RowCount = 6,
-            .AutoSize = True,
-            .Dock = DockStyle.Fill
-        }
+    Private Sub LoadSubClientDetails()
+        If _subClientId <= 0 Then Return
 
-        grid.ColumnStyles.Add(New ColumnStyle(SizeType.Absolute, 100))
-        grid.ColumnStyles.Add(New ColumnStyle(SizeType.Absolute, 90))
-        grid.ColumnStyles.Add(New ColumnStyle(SizeType.Absolute, 55))
-        grid.ColumnStyles.Add(New ColumnStyle(SizeType.Absolute, 55))
-        grid.ColumnStyles.Add(New ColumnStyle(SizeType.Absolute, 120))
-        grid.ColumnStyles.Add(New ColumnStyle(SizeType.Absolute, 170))
+        Try
+            Connect_to_MDB()
+            Using cmd As New OleDbCommand("SELECT SUB_CLIENT_NAME, DAILY_WAGE FROM TBL_CLIENT_SUB WHERE SUB_CLIENT_ID = ?", GlobalVariables.GlobalCon)
+                cmd.Parameters.AddWithValue("?", _subClientId)
+                Using reader As OleDbDataReader = cmd.ExecuteReader()
+                    If reader.Read() Then
+                        _subClientName = Convert.ToString(reader("SUB_CLIENT_NAME")).Trim()
 
-        grid.Controls.Add(New Label With {.Text = "Type", .AutoSize = True, .Font = New Font("Segoe UI", 9.0F, FontStyle.Bold)}, 0, 0)
-        grid.Controls.Add(New Label With {.Text = "Hours", .AutoSize = True, .Font = New Font("Segoe UI", 9.0F, FontStyle.Bold)}, 1, 0)
-
-        lblRegValue = AddAllocationRow(grid, 1, "REG", _regHours,
-            Sub() AdjustAllocation("REG", -1D),
-            Sub() AdjustAllocation("REG", 1D))
-
-        lblSunValue = AddAllocationRow(grid, 2, "SUN", _sunHours,
-            Sub() AdjustAllocation("SUN", -1D),
-            Sub() AdjustAllocation("SUN", 1D))
-
-        lblShValue = AddAllocationRow(grid, 3, "SH", _shHours,
-            Sub() AdjustAllocation("SH", -1D),
-            Sub() AdjustAllocation("SH", 1D))
-
-        lblLhValue = AddAllocationRow(grid, 4, "LH", _lhHours,
-            Sub() AdjustAllocation("LH", -1D),
-            Sub() AdjustAllocation("LH", 1D))
-
-        Dim lblUnallocated As New Label With {
-            .Text = "Unallocated",
-            .AutoSize = True,
-            .Margin = New Padding(0, 8, 8, 4),
-            .Font = New Font("Segoe UI", 9.0F, FontStyle.Bold)
-        }
-        lblUnallocatedValue = New Label With {
-            .Text = _unallocatedHours.ToString("0.##"),
-            .AutoSize = True,
-            .Margin = New Padding(0, 8, 8, 4),
-            .Font = New Font("Segoe UI", 9.0F, FontStyle.Bold),
-            .ForeColor = Color.FromArgb(194, 77, 0)
-        }
-
-        grid.Controls.Add(lblUnallocated, 0, 5)
-        grid.Controls.Add(lblUnallocatedValue, 1, 5)
-        sectionPanel.Controls.Add(grid)
-
-        Dim actionPanel As New FlowLayoutPanel With {
-            .AutoSize = True,
-            .FlowDirection = FlowDirection.LeftToRight,
-            .Margin = New Padding(0, 8, 0, 0)
-        }
-
-        Dim btnResetAll As New Button With {
-            .Text = "Reset to Original",
-            .AutoSize = True
-        }
-        AddHandler btnResetAll.Click, AddressOf HandleResetToOriginal
-
-        actionPanel.Controls.Add(btnResetAll)
-        sectionPanel.Controls.Add(actionPanel)
-
-        Return sectionPanel
-    End Function
-
-    Private Function AddAllocationRow(grid As TableLayoutPanel, row As Integer, allocationName As String, value As Decimal, onMinus As Action, onPlus As Action) As Label
-        Dim lblName As New Label With {
-            .Text = allocationName,
-            .AutoSize = True,
-            .Margin = New Padding(0, 6, 8, 6)
-        }
-
-        Dim lblValue As New Label With {
-            .Text = value.ToString("0.##"),
-            .AutoSize = True,
-            .Margin = New Padding(0, 6, 8, 6)
-        }
-
-        Dim btnMinus As New Button With {
-            .Text = "-",
-            .Width = 45,
-            .Height = 28,
-            .Margin = New Padding(0, 2, 6, 2)
-        }
-        AddHandler btnMinus.Click, Sub() onMinus()
-
-        Dim btnPlus As New Button With {
-            .Text = "+",
-            .Width = 45,
-            .Height = 28,
-            .Margin = New Padding(0, 2, 0, 2)
-        }
-        AddHandler btnPlus.Click, Sub() onPlus()
-
-        Dim btnUnallocateAll As New Button With {
-            .Text = "Unallocate All",
-            .AutoSize = True,
-            .Margin = New Padding(0, 2, 6, 2)
-        }
-        AddHandler btnUnallocateAll.Click, Sub() HandleUnallocateAllForType(allocationName)
-
-        Dim btnAllocateAll As New Button With {
-            .Text = "Allocate All Unallocated",
-            .AutoSize = True,
-            .Margin = New Padding(0, 2, 0, 2)
-        }
-        AddHandler btnAllocateAll.Click, Sub() HandleAllocateAllUnallocatedForType(allocationName)
-
-        grid.Controls.Add(lblName, 0, row)
-        grid.Controls.Add(lblValue, 1, row)
-        grid.Controls.Add(btnMinus, 2, row)
-        grid.Controls.Add(btnPlus, 3, row)
-        grid.Controls.Add(btnUnallocateAll, 4, row)
-        grid.Controls.Add(btnAllocateAll, 5, row)
-
-        Return lblValue
-    End Function
+                        Dim wageValue As Decimal
+                        If Decimal.TryParse(Convert.ToString(reader("DAILY_WAGE")), wageValue) Then
+                            _dailyWage = wageValue
+                        End If
+                    End If
+                End Using
+            End Using
+        Catch
+        End Try
+    End Sub
 
     Private Sub AdjustAllocation(allocationName As String, delta As Decimal)
         If delta = 0D Then Return
 
         If delta < 0D Then
             If GetAllocationValue(allocationName) < Math.Abs(delta) Then
-                MessageBox.Show($"No more hours to remove from {allocationName}.", "Adjustment", MessageBoxButtons.OK, MessageBoxIcon.Information)
+                AppNotification.Show("No more hours to remove from " & allocationName & ".", "Adjustment", MessageBoxButtons.OK, MessageBoxIcon.Information)
                 Return
             End If
 
@@ -358,7 +223,7 @@ Public Class FRM_DTR_DEDUCTION_UPDATE
         End If
 
         If _unallocatedHours < delta Then
-            MessageBox.Show("No unallocated hours available to add.", "Adjustment", MessageBoxButtons.OK, MessageBoxIcon.Information)
+            AppNotification.Show("No unallocated hours available to add.", "Adjustment", MessageBoxButtons.OK, MessageBoxIcon.Information)
             Return
         End If
 
@@ -369,9 +234,7 @@ Public Class FRM_DTR_DEDUCTION_UPDATE
 
     Private Sub HandleUnallocateAllForType(allocationName As String)
         Dim currentValue As Decimal = GetAllocationValue(allocationName)
-        If currentValue <= 0D Then
-            Return
-        End If
+        If currentValue <= 0D Then Return
 
         SetAllocationValue(allocationName, 0D)
         _unallocatedHours += currentValue
@@ -379,9 +242,7 @@ Public Class FRM_DTR_DEDUCTION_UPDATE
     End Sub
 
     Private Sub HandleAllocateAllUnallocatedForType(allocationName As String)
-        If _unallocatedHours <= 0D Then
-            Return
-        End If
+        If _unallocatedHours <= 0D Then Return
 
         SetAllocationValue(allocationName, GetAllocationValue(allocationName) + _unallocatedHours)
         _unallocatedHours = 0D
@@ -428,33 +289,13 @@ Public Class FRM_DTR_DEDUCTION_UPDATE
     End Sub
 
     Private Sub RefreshAllocationLabels()
-        If lblRegValue IsNot Nothing Then lblRegValue.Text = _regHours.ToString("0.##")
-        If lblSunValue IsNot Nothing Then lblSunValue.Text = _sunHours.ToString("0.##")
-        If lblShValue IsNot Nothing Then lblShValue.Text = _shHours.ToString("0.##")
-        If lblLhValue IsNot Nothing Then lblLhValue.Text = _lhHours.ToString("0.##")
-        If lblUnallocatedValue IsNot Nothing Then lblUnallocatedValue.Text = _unallocatedHours.ToString("0.##")
+        lblRegValue.Text = _regHours.ToString("0.##")
+        lblSunValue.Text = _sunHours.ToString("0.##")
+        lblShValue.Text = _shHours.ToString("0.##")
+        lblLhValue.Text = _lhHours.ToString("0.##")
+        lblUnallocatedValue.Text = _unallocatedHours.ToString("0.##")
+        lblUnallocatedValue.ForeColor = If(_unallocatedHours = 0D, Color.Teal, Color.FromArgb(194, 77, 0))
     End Sub
-
-    Private Function AddField(panel As TableLayoutPanel, rowIndex As Integer, labelText As String, initialValue As Decimal) As TextBox
-        panel.RowStyles.Add(New RowStyle(SizeType.AutoSize))
-
-        Dim lbl As New Label With {
-            .Text = labelText,
-            .AutoSize = True,
-            .Margin = New Padding(0, 6, 8, 6)
-        }
-
-        Dim txt As New TextBox With {
-            .Text = initialValue.ToString("0.##"),
-            .Margin = New Padding(0, 3, 0, 3),
-            .Width = 220
-        }
-
-        panel.Controls.Add(lbl, 0, rowIndex)
-        panel.Controls.Add(txt, 1, rowIndex)
-
-        Return txt
-    End Function
 
     Private Sub HandleSave(sender As Object, e As EventArgs)
         Dim cbDeduct As Decimal = _defaultCbDeduct
@@ -472,20 +313,20 @@ Public Class FRM_DTR_DEDUCTION_UPDATE
             If Not TryReadDecimal(txtSss, sssDeduct, "SSS Deduction") Then Return
             If Not TryReadDecimal(txtPhilhealth, philhealthDeduct, "PhilHealth Deduction") Then Return
             If Not TryReadDecimal(txtPagibig, pagibigDeduct, "Pag-IBIG Deduction") Then Return
-            If Not TryReadDecimal(txtOfficerAllowance, officerAllowance, "Officer's Allowance") Then Return
-            If Not TryReadDecimal(txtSgUniformAllowance, sguniformallowance, "sguniformallowance") Then Return
+            If Not TryReadDecimal(txtOfficerAllowanceFirst, officerAllowance, "Officer's Allowance") Then Return
+            If Not TryReadDecimal(txtSgUniformAllowanceFirst, sguniformallowance, "SG Uniform Allowance") Then Return
         Else
             If Not TryReadDecimal(txtCashBond, cbDeduct, "Cash Bond Deduction") Then Return
             If Not TryReadDecimal(txtSssLoan, sssLoanDeduct, "SSS Loan Deduction") Then Return
             If Not TryReadDecimal(txtSssCalLoan, sssCalLoanDeduct, "SSS Cal Loan Deduction") Then Return
             If Not TryReadDecimal(txtPiLoan, piLoanDeduct, "Pag-IBIG Loan Deduction") Then Return
             If Not TryReadDecimal(txtPiCalLoan, piCalLoanDeduct, "Pag-IBIG Cal Loan Deduction") Then Return
-            If Not TryReadDecimal(txtOfficerAllowance, officerAllowance, "Officer's Allowance") Then Return
-            If Not TryReadDecimal(txtSgUniformAllowance, sguniformallowance, "sguniformallowance") Then Return
+            If Not TryReadDecimal(txtOfficerAllowanceSecond, officerAllowance, "Officer's Allowance") Then Return
+            If Not TryReadDecimal(txtSgUniformAllowanceSecond, sguniformallowance, "SG Uniform Allowance") Then Return
         End If
 
         If _unallocatedHours > 0D Then
-            MessageBox.Show("Unable to save while there are unallocated hours. Please allocate all hours or reset to original first.", "Unallocated Hours", MessageBoxButtons.OK, MessageBoxIcon.Warning)
+            AppNotification.Show("Unable to save while there are unallocated hours. Please allocate all hours or reset to original first.", "Unallocated Hours", MessageBoxButtons.OK, MessageBoxIcon.Warning)
             Return
         End If
 
@@ -512,8 +353,12 @@ Public Class FRM_DTR_DEDUCTION_UPDATE
             sguniformallowance
         )
 
-        MessageBox.Show("Deductions updated successfully.", "Saved", MessageBoxButtons.OK, MessageBoxIcon.Information)
+        AppNotification.Show("Deductions updated successfully.", "Saved", MessageBoxButtons.OK, MessageBoxIcon.Information)
         DialogResult = DialogResult.OK
+    End Sub
+
+    Private Sub HandleCancel(sender As Object, e As EventArgs)
+        DialogResult = DialogResult.Cancel
     End Sub
 
     Private Function TryReadDecimal(textBox As TextBox, ByRef value As Decimal, fieldName As String) As Boolean
@@ -524,7 +369,7 @@ Public Class FRM_DTR_DEDUCTION_UPDATE
             Return True
         End If
 
-        MessageBox.Show($"Invalid value for {fieldName}.", "Input Error", MessageBoxButtons.OK, MessageBoxIcon.Warning)
+        AppNotification.Show("Invalid value for " & fieldName & ".", "Input Error", MessageBoxButtons.OK, MessageBoxIcon.Warning)
         textBox.Focus()
         Return False
     End Function
@@ -551,21 +396,10 @@ Public Class FRM_DTR_DEDUCTION_UPDATE
         Dim normalizedCutoff As String = cutoffPart.ToLowerInvariant()
         Dim cutoffLabel As String = Char.ToUpperInvariant(normalizedCutoff(0)) & normalizedCutoff.Substring(1)
 
-        Return $"{monthName} {yearNumber} ({cutoffLabel} Cutoff)"
+        Return monthName & " " & yearNumber.ToString() & " (" & cutoffLabel & " Cutoff)"
     End Function
 
-    Private Sub InitializeComponent()
-        Me.SuspendLayout()
-        '
-        'FRM_DTR_DEDUCTION_UPDATE
-        '
-        Me.ClientSize = New System.Drawing.Size(284, 261)
-        Me.Name = "FRM_DTR_DEDUCTION_UPDATE"
-        Me.ResumeLayout(False)
-
-    End Sub
-
-    Private Sub FRM_DTR_DEDUCTION_UPDATE_Load(sender As Object, e As EventArgs) Handles MyBase.Load
-
-    End Sub
+    Private Function FormatPeso(value As Decimal) As String
+        Return "PHP " & value.ToString("N2", CultureInfo.CurrentCulture)
+    End Function
 End Class

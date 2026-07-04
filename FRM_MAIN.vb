@@ -1,8 +1,6 @@
 ﻿Imports DMSA_System.DMSA_System
 Imports FontAwesome.Sharp
 Imports System.Globalization
-Imports System.Windows.Input
-Imports System.Windows.Interop
 
 Public Class FRM_MAIN
     Private Sub PictureBox1_Click(sender As Object, e As EventArgs)
@@ -11,22 +9,9 @@ Public Class FRM_MAIN
 
 
     Private Sub ShowUserManagementView()
-        ' Create the user control
-        Dim userManagementControl As New UserManagementView()
-
-        ' Wrap the user control in a new window
-        Dim userManagementWindow As New System.Windows.Window With {
-        .Title = "User Management",
-        .Width = 600,
-        .Height = 500,
-        .Content = userManagementControl,
-        .WindowStartupLocation = System.Windows.WindowStartupLocation.CenterScreen,
-        .ResizeMode = System.Windows.ResizeMode.CanResize,
-        .WindowStyle = System.Windows.WindowStyle.ToolWindow
-    }
-
-        ' Show the window as a dialog (modal), but we don't care about the result
-        userManagementWindow.ShowDialog()
+        Using userManagementForm As New FRM_USER_CREATOR()
+            userManagementForm.ShowDialog(Me)
+        End Using
     End Sub
     Private Sub Btn_HR_Click(sender As Object, e As EventArgs)
 
@@ -35,6 +20,7 @@ Public Class FRM_MAIN
             Grp_HR_Menu.Visible = True
             Grp_HR_Menu.Location = New Point(349, 89)
             GRP_Payroll.Visible = False
+            GRP_Admin.Visible = False
         Else
             Grp_HR_Menu.Visible = False
             Grp_HR_Menu.Location = New Point(695, 89)
@@ -73,6 +59,7 @@ Public Class FRM_MAIN
     Private Sub Btn_Payroll_Click(sender As Object, e As EventArgs)
         If GRP_Payroll.Visible = False Then
             Grp_HR_Menu.Visible = False
+            GRP_Admin.Visible = False
             GRP_Payroll.Visible = True
             GRP_Payroll.Location = New Point(349, 89)
         Else
@@ -92,6 +79,7 @@ Public Class FRM_MAIN
             Grp_HR_Menu.Visible = True
             GRP_Operations.Visible = False
             GRP_Payroll.Visible = False
+            GRP_Admin.Visible = False
         Else
             Grp_HR_Menu.Visible = False
         End If
@@ -122,6 +110,7 @@ Public Class FRM_MAIN
             GRP_Payroll.Visible = True
             GRP_Operations.Visible = False
             Grp_HR_Menu.Visible = False
+            GRP_Admin.Visible = False
         Else
             GRP_Payroll.Visible = False
         End If
@@ -157,6 +146,7 @@ Public Class FRM_MAIN
             GRP_Operations.Visible = True
             GRP_Payroll.Visible = False
             Grp_HR_Menu.Visible = False
+            GRP_Admin.Visible = False
         Else
             GRP_Operations.Visible = False
         End If
@@ -167,6 +157,17 @@ Public Class FRM_MAIN
     End Sub
 
     Private Sub AdminBtn_Click(sender As Object, e As EventArgs) Handles AdminBtn.Click
+        If GRP_Admin.Visible = False Then
+            GRP_Admin.Visible = True
+            GRP_Operations.Visible = False
+            GRP_Payroll.Visible = False
+            Grp_HR_Menu.Visible = False
+        Else
+            GRP_Admin.Visible = False
+        End If
+    End Sub
+
+    Private Sub Btn_UserManagement_Click(sender As Object, e As EventArgs) Handles Btn_UserManagement.Click
         ShowUserManagementView()
     End Sub
 End Class

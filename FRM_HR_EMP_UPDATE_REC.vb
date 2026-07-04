@@ -757,7 +757,7 @@
 
         ' ✅ Make sure a row is selected
         If LV_Status_History.SelectedItems.Count = 0 Then
-            MessageBox.Show("⚠️ Please select a record from the list first.", "No Selection", MessageBoxButtons.OK, MessageBoxIcon.Warning)
+            AppNotification.Show("⚠️ Please select a record from the list first.", "No Selection", MessageBoxButtons.OK, MessageBoxIcon.Warning)
             Exit Sub
         End If
 

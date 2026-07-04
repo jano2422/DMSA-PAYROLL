@@ -9,7 +9,7 @@ Public Class UserManagementView
         LoadUserLevelOnStart()
 
         If Not String.Equals(GlobalVariables.sUser_Level, "administrator", StringComparison.OrdinalIgnoreCase) Then
-            MessageBox.Show("Access denied. Only administrators are allowed to access this view.", "Unauthorized Access", MessageBoxButton.OK, MessageBoxImage.Warning)
+            AppNotification.ShowWpf("Access denied. Only administrators are allowed to access this view.", "Unauthorized Access", MessageBoxButton.OK, MessageBoxImage.Warning)
 
             ' Close the parent window
             Dim win As Window = Window.GetWindow(Me)
@@ -50,13 +50,13 @@ Public Class UserManagementView
             Btn_Create.Content = "Save"
         Else
             If String.IsNullOrWhiteSpace(Txt_UserID.Text) OrElse Cmb_UserLevel.SelectedIndex = -1 Then
-                MessageBox.Show("Please complete all fields.", "Validation Error", MessageBoxButton.OK, MessageBoxImage.Warning)
+                AppNotification.ShowWpf("Please complete all fields.", "Validation Error", MessageBoxButton.OK, MessageBoxImage.Warning)
                 Return
             End If
 
             ' ✅ Check if COMPANY_ID already exists
             If UserExists(Txt_UserID.Text) Then
-                MessageBox.Show("A user with this COMPANY_ID already exists.", "Duplicate Entry", MessageBoxButton.OK, MessageBoxImage.Warning)
+                AppNotification.ShowWpf("A user with this COMPANY_ID already exists.", "Duplicate Entry", MessageBoxButton.OK, MessageBoxImage.Warning)
                 Return
             End If
 
@@ -73,7 +73,7 @@ Public Class UserManagementView
 
     Private Sub Btn_Update_Click(sender As Object, e As RoutedEventArgs)
         If String.IsNullOrWhiteSpace(Txt_UserID.Text) OrElse Cmb_UserLevel.SelectedIndex = -1 Then
-            MessageBox.Show("Select a user and level to update.", "Missing Info", MessageBoxButton.OK, MessageBoxImage.Warning)
+            AppNotification.ShowWpf("Select a user and level to update.", "Missing Info", MessageBoxButton.OK, MessageBoxImage.Warning)
             Return
         End If
 
@@ -83,9 +83,9 @@ Public Class UserManagementView
             Dim cmd As New OleDbCommand(sql, GlobalVariables.GlobalCon)
             cmd.ExecuteNonQuery()
             cmd.Dispose()
-            MessageBox.Show("User updated successfully.", "Success", MessageBoxButton.OK, MessageBoxImage.Information)
+            AppNotification.ShowWpf("User updated successfully.", "Success", MessageBoxButton.OK, MessageBoxImage.Information)
         Catch ex As Exception
-            MessageBox.Show("Update failed: " & ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error)
+            AppNotification.ShowWpf("Update failed: " & ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error)
         Finally
             GlobalVariables.GlobalCon.Close()
             LoadUsers()
@@ -95,20 +95,20 @@ Public Class UserManagementView
 
     Private Sub Btn_Delete_Click(sender As Object, e As RoutedEventArgs)
         If String.IsNullOrWhiteSpace(Txt_UserID.Text) Then
-            MessageBox.Show("Select a user to delete.", "Missing Info", MessageBoxButton.OK, MessageBoxImage.Warning)
+            AppNotification.ShowWpf("Select a user to delete.", "Missing Info", MessageBoxButton.OK, MessageBoxImage.Warning)
             Return
         End If
 
-        If MessageBox.Show("Are you sure you want to delete this user?", "Confirm Delete", MessageBoxButton.YesNo, MessageBoxImage.Warning) = MessageBoxResult.Yes Then
+        If AppNotification.ShowWpf("Are you sure you want to delete this user?", "Confirm Delete", MessageBoxButton.YesNo, MessageBoxImage.Warning) = MessageBoxResult.Yes Then
             Try
                 Connect_to_MDB()
                 Dim sql As String = $"DELETE FROM TBL_USERS WHERE COMPANY_ID = '{Txt_UserID.Text}'"
                 Dim cmd As New OleDbCommand(sql, GlobalVariables.GlobalCon)
                 cmd.ExecuteNonQuery()
                 cmd.Dispose()
-                MessageBox.Show("User deleted successfully.", "Deleted", MessageBoxButton.OK, MessageBoxImage.Information)
+                AppNotification.ShowWpf("User deleted successfully.", "Deleted", MessageBoxButton.OK, MessageBoxImage.Information)
             Catch ex As Exception
-                MessageBox.Show("Delete failed: " & ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error)
+                AppNotification.ShowWpf("Delete failed: " & ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error)
             Finally
                 GlobalVariables.GlobalCon.Close()
                 LoadUsers()
@@ -143,7 +143,7 @@ Public Class UserManagementView
             adapter.Fill(dt)
             UsersDataGrid.ItemsSource = dt.DefaultView
         Catch ex As Exception
-            MessageBox.Show("Error loading users: " & ex.Message, "DB Error", MessageBoxButton.OK, MessageBoxImage.Error)
+            AppNotification.ShowWpf("Error loading users: " & ex.Message, "DB Error", MessageBoxButton.OK, MessageBoxImage.Error)
         Finally
             GlobalVariables.GlobalCon.Close()
         End Try
@@ -162,20 +162,20 @@ Public Class UserManagementView
             Dim companyId As String = Mod_GlobalVariables.GlobalVariables.sEmployee_ID_Logged_in?.Trim()
 
             If String.IsNullOrEmpty(companyId) Then
-                MessageBox.Show("No Company ID found for the logged-in user.", "Warning", MessageBoxButton.OK, MessageBoxImage.Warning)
+                AppNotification.ShowWpf("No Company ID found for the logged-in user.", "Warning", MessageBoxButton.OK, MessageBoxImage.Warning)
                 Return
             End If
 
             Dim userLevel As String = GetUserLevelByCompanyId(companyId)
 
             If String.IsNullOrEmpty(userLevel) Then
-                MessageBox.Show($"User level not found for Company ID: {companyId}", "Information", MessageBoxButton.OK, MessageBoxImage.Information)
+                AppNotification.ShowWpf($"User level not found for Company ID: {companyId}", "Information", MessageBoxButton.OK, MessageBoxImage.Information)
             End If
 
             Mod_GlobalVariables.GlobalVariables.sUser_Level = userLevel
 
         Catch ex As Exception
-            MessageBox.Show("An error occurred while loading user level: " & ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error)
+            AppNotification.ShowWpf("An error occurred while loading user level: " & ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error)
         End Try
     End Sub
 
@@ -194,7 +194,7 @@ Public Class UserManagementView
                 End If
             End Using
         Catch ex As Exception
-            MessageBox.Show("Error retrieving user level: " & ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error)
+            AppNotification.ShowWpf("Error retrieving user level: " & ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error)
         Finally
             GlobalVariables.GlobalCon.Close()
         End Try
@@ -212,7 +212,7 @@ Public Class UserManagementView
                 exists = (count > 0)
             End Using
         Catch ex As Exception
-            MessageBox.Show("Error checking user: " & ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error)
+            AppNotification.ShowWpf("Error checking user: " & ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error)
         Finally
             GlobalVariables.GlobalCon.Close()
         End Try

@@ -46,12 +46,15 @@ Partial Class FRM_MAIN
         Me.Label1 = New System.Windows.Forms.Label()
         Me.Timer1 = New System.Windows.Forms.Timer(Me.components)
         Me.GRP_Operations = New System.Windows.Forms.GroupBox()
+        Me.GRP_Admin = New System.Windows.Forms.GroupBox()
+        Me.Btn_UserManagement = New FontAwesome.Sharp.IconButton()
         Me.Grp_HR_Menu.SuspendLayout()
         Me.GRP_Payroll.SuspendLayout()
         Me.Panel1.SuspendLayout()
         Me.Panel2.SuspendLayout()
         CType(Me.PictureBox2, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.GRP_Operations.SuspendLayout()
+        Me.GRP_Admin.SuspendLayout()
         Me.SuspendLayout()
         '
         'MenuStrip1
@@ -415,12 +418,47 @@ Partial Class FRM_MAIN
         Me.GRP_Operations.Text = "Operations"
         Me.GRP_Operations.Visible = False
         '
+        'GRP_Admin
+        '
+        Me.GRP_Admin.Controls.Add(Me.Btn_UserManagement)
+        Me.GRP_Admin.Font = New System.Drawing.Font("Verdana", 9.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.GRP_Admin.ForeColor = System.Drawing.Color.Maroon
+        Me.GRP_Admin.Location = New System.Drawing.Point(300, 646)
+        Me.GRP_Admin.Name = "GRP_Admin"
+        Me.GRP_Admin.Size = New System.Drawing.Size(1045, 219)
+        Me.GRP_Admin.TabIndex = 38
+        Me.GRP_Admin.TabStop = False
+        Me.GRP_Admin.Text = "Admin Menu"
+        Me.GRP_Admin.Visible = False
+        '
+        'Btn_UserManagement
+        '
+        Me.Btn_UserManagement.BackColor = System.Drawing.Color.Teal
+        Me.Btn_UserManagement.FlatAppearance.BorderSize = 0
+        Me.Btn_UserManagement.FlatStyle = System.Windows.Forms.FlatStyle.Flat
+        Me.Btn_UserManagement.Font = New System.Drawing.Font("Microsoft Sans Serif", 14.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.Btn_UserManagement.ForeColor = System.Drawing.Color.White
+        Me.Btn_UserManagement.IconChar = FontAwesome.Sharp.IconChar.User
+        Me.Btn_UserManagement.IconColor = System.Drawing.Color.White
+        Me.Btn_UserManagement.IconFont = FontAwesome.Sharp.IconFont.[Auto]
+        Me.Btn_UserManagement.IconSize = 85
+        Me.Btn_UserManagement.ImageAlign = System.Drawing.ContentAlignment.TopCenter
+        Me.Btn_UserManagement.Location = New System.Drawing.Point(22, 39)
+        Me.Btn_UserManagement.Name = "Btn_UserManagement"
+        Me.Btn_UserManagement.Size = New System.Drawing.Size(277, 160)
+        Me.Btn_UserManagement.TabIndex = 37
+        Me.Btn_UserManagement.Text = "User Management"
+        Me.Btn_UserManagement.TextAlign = System.Drawing.ContentAlignment.BottomCenter
+        Me.Btn_UserManagement.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText
+        Me.Btn_UserManagement.UseVisualStyleBackColor = False
+        '
         'FRM_MAIN
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
         Me.BackColor = System.Drawing.Color.White
         Me.ClientSize = New System.Drawing.Size(1659, 901)
+        Me.Controls.Add(Me.GRP_Admin)
         Me.Controls.Add(Me.GRP_Operations)
         Me.Controls.Add(Me.Label1)
         Me.Controls.Add(Me.GRP_Payroll)
@@ -439,6 +477,7 @@ Partial Class FRM_MAIN
         Me.Panel2.ResumeLayout(False)
         CType(Me.PictureBox2, System.ComponentModel.ISupportInitialize).EndInit()
         Me.GRP_Operations.ResumeLayout(False)
+        Me.GRP_Admin.ResumeLayout(False)
         Me.ResumeLayout(False)
         Me.PerformLayout()
 
@@ -467,4 +506,6 @@ Partial Class FRM_MAIN
     Friend WithEvents Btn_Schedule As IconButton
     Friend WithEvents GRP_Operations As GroupBox
     Friend WithEvents AdminBtn As IconButton
+    Friend WithEvents GRP_Admin As GroupBox
+    Friend WithEvents Btn_UserManagement As IconButton
 End Class

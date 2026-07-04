@@ -1,6 +1,15 @@
 ﻿Imports System.Data
 Imports System.Globalization
-Public Class FRM_DTR_EXPORTS
+Imports System.Drawing
+
+Public Partial Class FRM_DTR_EXPORTS
+    Private _displayedCutoff As String = ""
+    Private _displayedCutoffText As String = ""
+    Private _displayedMonthText As String = ""
+    Private _displayedYearText As String = ""
+    Private _displayedClientId As String = ""
+    Private _displayedHasRecords As Boolean = False
+
     Private Function TryBuildCutoff(ByRef cutoff As String) As Boolean
         cutoff = ""
 
@@ -33,11 +42,18 @@ Public Class FRM_DTR_EXPORTS
     End Function
 
     Private Sub Btn_Client_Click(sender As Object, e As EventArgs) Handles Btn_Client.Click
-        GlobalVariables.Client_Event = "Payslip_Per_Client"
-        FRM_CLIENT_REG.ShowDialog()
+        Using clientSelector As New FRM_DTR_CLIENT_LIST_ALL()
+            clientSelector.ShowDialog(Me)
+        End Using
+    End Sub
+
+    Private Sub Btn_Close_Click(sender As Object, e As EventArgs) Handles Btn_Close.Click
+        Close()
     End Sub
 
     Private Sub FRM_DTR_EXPORTS_Load(sender As Object, e As EventArgs) Handles MyBase.Load
+        SetupRuntimeUi()
+
         ' Populate Cmb_Month with month names (Jan, Feb, etc.)
         Cmb_Month.Items.Clear()
         For i As Integer = 1 To 12
@@ -59,7 +75,161 @@ Public Class FRM_DTR_EXPORTS
         Cmb_CutOff.SelectedIndex = 0
         Cmb_Month.SelectedItem = DateTime.Now.ToString("MMM")
         Cmb_Year.SelectedItem = currentYear.ToString()
+        UpdateActionStates()
     End Sub
+
+    Private Sub SetupRuntimeUi()
+        ApplyGridStyle(DGV_DTR_Per_Client)
+        ApplyGridStyle(DGV_DTR_MATRIX)
+
+        AddHandler Lbl_ClientID.TextChanged, Sub(sender, e)
+                                                 If Not String.IsNullOrWhiteSpace(_displayedCutoff) AndAlso
+                                                    Not String.Equals(_displayedClientId, Lbl_ClientID.Text.Trim(), StringComparison.OrdinalIgnoreCase) Then
+                                                     ClearDisplayedRecords()
+                                                 End If
+
+                                                 UpdateActionStates()
+                                             End Sub
+        AddHandler DGV_DTR_Per_Client.RowsAdded, Sub(sender, e) UpdateActionStates()
+        AddHandler DGV_DTR_Per_Client.RowsRemoved, Sub(sender, e) UpdateActionStates()
+        AddHandler DGV_DTR_Per_Client.DataBindingComplete, Sub(sender, e)
+                                                               ApplyGridStyle(DGV_DTR_Per_Client)
+                                                               UpdateActionStates()
+                                                           End Sub
+        AddHandler DGV_DTR_MATRIX.RowsAdded, Sub(sender, e) UpdateActionStates()
+        AddHandler DGV_DTR_MATRIX.RowsRemoved, Sub(sender, e) UpdateActionStates()
+        AddHandler DGV_DTR_MATRIX.DataBindingComplete, Sub(sender, e)
+                                                           ApplyGridStyle(DGV_DTR_MATRIX)
+                                                           UpdateActionStates()
+                                                       End Sub
+        AddHandler Cmb_Year.SelectedIndexChanged, Sub(sender, e) UpdateLoadedPeriodStatus()
+        AddHandler Cmb_Month.SelectedIndexChanged, Sub(sender, e) UpdateLoadedPeriodStatus()
+        AddHandler Cmb_CutOff.SelectedIndexChanged, Sub(sender, e) UpdateLoadedPeriodStatus()
+    End Sub
+
+    Private Sub ApplyGridStyle(grid As DataGridView)
+        grid.EnableHeadersVisualStyles = False
+        grid.BackgroundColor = Color.FromArgb(255, 224, 192)
+        grid.GridColor = Color.FromArgb(224, 176, 128)
+        grid.BorderStyle = BorderStyle.FixedSingle
+        grid.RowHeadersVisible = False
+        grid.AlternatingRowsDefaultCellStyle.BackColor = Color.FromArgb(255, 238, 214)
+        grid.DefaultCellStyle.BackColor = Color.FromArgb(255, 224, 192)
+        grid.DefaultCellStyle.ForeColor = Color.Black
+        grid.DefaultCellStyle.SelectionBackColor = Color.Teal
+        grid.DefaultCellStyle.SelectionForeColor = Color.White
+        grid.ColumnHeadersDefaultCellStyle.BackColor = Color.Teal
+        grid.ColumnHeadersDefaultCellStyle.ForeColor = Color.White
+        grid.ColumnHeadersDefaultCellStyle.Font = New Font("Verdana", 9.0!, FontStyle.Bold)
+    End Sub
+
+    Private Sub UpdateActionStates()
+        Dim hasClient As Boolean = Not String.IsNullOrWhiteSpace(Lbl_ClientID.Text)
+        Dim hasPerClientRows As Boolean = DGV_DTR_Per_Client.Rows.Count > 0
+        Dim hasMatrixRows As Boolean = DGV_DTR_MATRIX.Rows.Count > 0 OrElse DGV_DTR_MATRIX.DataSource IsNot Nothing
+        Dim hasDisplayedPeriod As Boolean = Not String.IsNullOrWhiteSpace(_displayedCutoff) AndAlso String.Equals(_displayedClientId, Lbl_ClientID.Text.Trim(), StringComparison.OrdinalIgnoreCase)
+
+        SetActionButtonState(Btn_Show, hasClient)
+        SetActionButtonState(Btn_Export_to_Excell, hasClient AndAlso hasDisplayedPeriod AndAlso _displayedHasRecords AndAlso hasPerClientRows)
+        SetActionButtonState(btnDtrHrsExport, hasClient AndAlso hasDisplayedPeriod AndAlso _displayedHasRecords AndAlso hasMatrixRows)
+        Label5.Text = If(hasClient, "Selected client", "Select a client")
+        UpdateLoadedPeriodStatus()
+    End Sub
+
+    Private Sub SetActionButtonState(button As Button, isEnabled As Boolean)
+        button.Enabled = isEnabled
+        button.BackColor = If(isEnabled, Color.Teal, Color.FromArgb(210, 174, 132))
+        button.ForeColor = If(isEnabled, Color.White, Color.FromArgb(85, 68, 52))
+    End Sub
+
+    Private Sub SetDisplayedPeriod(cutoff As String, hasRecords As Boolean)
+        _displayedCutoff = cutoff
+        _displayedCutoffText = Cmb_CutOff.Text.Trim()
+        _displayedMonthText = Cmb_Month.Text.Trim()
+        _displayedYearText = Cmb_Year.Text.Trim()
+        _displayedClientId = Lbl_ClientID.Text.Trim()
+        _displayedHasRecords = hasRecords
+        UpdateLoadedPeriodStatus()
+    End Sub
+
+    Private Sub ClearDisplayedPeriod()
+        _displayedCutoff = ""
+        _displayedCutoffText = ""
+        _displayedMonthText = ""
+        _displayedYearText = ""
+        _displayedClientId = ""
+        _displayedHasRecords = False
+        UpdateLoadedPeriodStatus()
+    End Sub
+
+    Private Sub ClearDisplayedRecords()
+        DGV_DTR_Per_Client.DataSource = Nothing
+        DGV_DTR_Per_Client.Rows.Clear()
+        DGV_DTR_Per_Client.Columns.Clear()
+
+        DGV_DTR_MATRIX.DataSource = Nothing
+        DGV_DTR_MATRIX.Rows.Clear()
+        DGV_DTR_MATRIX.Columns.Clear()
+
+        ClearDisplayedPeriod()
+    End Sub
+
+    Private Function HasDisplayedPeriod() As Boolean
+        Return Not String.IsNullOrWhiteSpace(_displayedCutoff) AndAlso String.Equals(_displayedClientId, Lbl_ClientID.Text.Trim(), StringComparison.OrdinalIgnoreCase)
+    End Function
+
+    Private Function IsFilterMatchingDisplayedPeriod() As Boolean
+        If Not HasDisplayedPeriod() Then Return False
+
+        Return String.Equals(_displayedCutoffText, Cmb_CutOff.Text.Trim(), StringComparison.OrdinalIgnoreCase) AndAlso
+               String.Equals(_displayedMonthText, Cmb_Month.Text.Trim(), StringComparison.OrdinalIgnoreCase) AndAlso
+               String.Equals(_displayedYearText, Cmb_Year.Text.Trim(), StringComparison.OrdinalIgnoreCase)
+    End Function
+
+    Private Sub UpdateLoadedPeriodStatus()
+        If Lbl_LoadedPeriod Is Nothing Then Return
+
+        If Not HasDisplayedPeriod() Then
+            Lbl_LoadedPeriod.Text = "Showing: none"
+            Lbl_LoadedPeriod.BackColor = Color.FromArgb(255, 224, 192)
+            Lbl_LoadedPeriod.ForeColor = Color.FromArgb(74, 55, 32)
+            Return
+        End If
+
+        Dim periodText As String = _displayedMonthText & " " & _displayedYearText & ", " & _displayedCutoffText
+        If Not _displayedHasRecords Then
+            Lbl_LoadedPeriod.Text = "No records: " & periodText
+            If Not IsFilterMatchingDisplayedPeriod() Then
+                Lbl_LoadedPeriod.Text &= " | filters changed"
+            End If
+
+            Lbl_LoadedPeriod.BackColor = Color.FromArgb(255, 238, 214)
+            Lbl_LoadedPeriod.ForeColor = Color.FromArgb(154, 88, 0)
+            Return
+        End If
+
+        If IsFilterMatchingDisplayedPeriod() Then
+            Lbl_LoadedPeriod.Text = "Showing: " & periodText
+            Lbl_LoadedPeriod.BackColor = Color.FromArgb(222, 245, 235)
+            Lbl_LoadedPeriod.ForeColor = Color.Teal
+        Else
+            Lbl_LoadedPeriod.Text = "Showing: " & periodText & " | filters changed"
+            Lbl_LoadedPeriod.BackColor = Color.FromArgb(255, 238, 214)
+            Lbl_LoadedPeriod.ForeColor = Color.FromArgb(154, 88, 0)
+        End If
+    End Sub
+
+    Private Function TryGetDisplayedCutoff(ByRef cutoff As String) As Boolean
+        cutoff = ""
+
+        If Not HasDisplayedPeriod() Then
+            AppNotification.Show("Click Show Records first so the export uses the same cutoff period currently displayed in the grid.", "No Displayed Period", MessageBoxButtons.OK, MessageBoxIcon.Warning)
+            Return False
+        End If
+
+        cutoff = _displayedCutoff
+        Return True
+    End Function
 
 
     Private Sub Btn_Show_Click(sender As Object, e As EventArgs) Handles Btn_Show.Click
@@ -87,33 +257,22 @@ Public Class FRM_DTR_EXPORTS
 
         Call Get_DTR_Per_Client(CInt(Lbl_ClientID.Text), sCut_Off)
         Call Generate_DTR_Hours_Matrix(CInt(Lbl_ClientID.Text), sCut_Off)
+        SetDisplayedPeriod(sCut_Off, HasLoadedRows())
+        UpdateActionStates()
     End Sub
+
+    Private Function HasLoadedRows() As Boolean
+        Return DGV_DTR_Per_Client.Rows.Count > 0 OrElse DGV_DTR_MATRIX.Rows.Count > 0
+    End Function
 
     Private Sub Btn_Export_to_Excell_Click(sender As Object, e As EventArgs) Handles Btn_Export_to_Excell.Click
         Try
-            ' Validate that combo boxes are not empty
-            If String.IsNullOrWhiteSpace(Cmb_Month.Text) OrElse
-           String.IsNullOrWhiteSpace(Cmb_CutOff.Text) OrElse
-           String.IsNullOrWhiteSpace(Cmb_Year.Text) Then
-                MessageBox.Show("Please select a valid Month, Cut-Off, and Year.", "Input Error", MessageBoxButtons.OK, MessageBoxIcon.Warning)
-                Exit Sub
-            End If
-
-            ' Convert month name to month number
-            Dim monthNumber As Integer
-            Try
-                monthNumber = DateTime.ParseExact(Cmb_Month.Text.Trim.ToUpper, "MMM", CultureInfo.InvariantCulture).Month
-            Catch ex As FormatException
-                MessageBox.Show("Invalid month format. Please select a valid month.", "Format Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
-                Exit Sub
-            End Try
-
-            ' Construct the Cut-Off string
-            Dim sCut_Off As String = monthNumber & "_" & Mid(Cmb_CutOff.Text, 1, 3) & "_" & Cmb_Year.Text
+            Dim sCut_Off As String = ""
+            If Not TryGetDisplayedCutoff(sCut_Off) Then Exit Sub
 
             ' Validate client details
             If String.IsNullOrWhiteSpace(Lbl_ClientID.Text) OrElse String.IsNullOrWhiteSpace(Lbl_Client_Address.Text) Then
-                MessageBox.Show("Client information is missing.", "Data Error", MessageBoxButtons.OK, MessageBoxIcon.Warning)
+                AppNotification.Show("Client information is missing.", "Data Error", MessageBoxButtons.OK, MessageBoxIcon.Warning)
                 Exit Sub
             End If
 
@@ -123,7 +282,7 @@ Public Class FRM_DTR_EXPORTS
                                                                End Sub)
 
         Catch ex As Exception
-            MessageBox.Show("An unexpected error occurred: " & ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
+            AppNotification.Show("An unexpected error occurred: " & ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
         End Try
     End Sub
 
@@ -134,29 +293,12 @@ Public Class FRM_DTR_EXPORTS
 
     Private Sub btnDtrHrsExport_Click(sender As Object, e As EventArgs) Handles btnDtrHrsExport.Click
         Try
-            ' Validate that combo boxes are not empty
-            If String.IsNullOrWhiteSpace(Cmb_Month.Text) OrElse
-           String.IsNullOrWhiteSpace(Cmb_CutOff.Text) OrElse
-           String.IsNullOrWhiteSpace(Cmb_Year.Text) Then
-                MessageBox.Show("Please select a valid Month, Cut-Off, and Year.", "Input Error", MessageBoxButtons.OK, MessageBoxIcon.Warning)
-                Exit Sub
-            End If
-
-            ' Convert month name to month number
-            Dim monthNumber As Integer
-            Try
-                monthNumber = DateTime.ParseExact(Cmb_Month.Text.Trim.ToUpper, "MMM", CultureInfo.InvariantCulture).Month
-            Catch ex As FormatException
-                MessageBox.Show("Invalid month format. Please select a valid month.", "Format Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
-                Exit Sub
-            End Try
-
-            ' Construct the Cut-Off string
-            Dim sCut_Off As String = monthNumber & "_" & Mid(Cmb_CutOff.Text, 1, 3) & "_" & Cmb_Year.Text
+            Dim sCut_Off As String = ""
+            If Not TryGetDisplayedCutoff(sCut_Off) Then Exit Sub
 
             ' Validate client details
             If String.IsNullOrWhiteSpace(Lbl_ClientID.Text) OrElse String.IsNullOrWhiteSpace(Lbl_Client_Address.Text) Then
-                MessageBox.Show("Client information is missing.", "Data Error", MessageBoxButtons.OK, MessageBoxIcon.Warning)
+                AppNotification.Show("Client information is missing.", "Data Error", MessageBoxButtons.OK, MessageBoxIcon.Warning)
                 Exit Sub
             End If
 
@@ -165,7 +307,7 @@ Public Class FRM_DTR_EXPORTS
                                                                      Export_DTR_Hours_Per_Client_to_Excell(Lbl_Client_Name.Text, Lbl_Client_Address.Text, sCut_Off)
                                                                  End Sub)
         Catch ex As Exception
-            MessageBox.Show("An unexpected error occurred: " & ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
+            AppNotification.Show("An unexpected error occurred: " & ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
         End Try
 
     End Sub
@@ -192,7 +334,7 @@ Public Class FRM_DTR_EXPORTS
         End If
 
         Dim cutoff As String = ""
-        If Not TryBuildCutoff(cutoff) Then Return
+        If Not TryGetDisplayedCutoff(cutoff) Then Return
 
         Dim row As DataGridViewRow = DGV_DTR_Per_Client.Rows(e.RowIndex)
         Dim employeeId As String = Convert.ToString(row.Cells("colEmployeeId").Value).Trim()

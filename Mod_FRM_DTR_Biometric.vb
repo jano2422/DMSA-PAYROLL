@@ -9,6 +9,7 @@ Module Mod_Biometric_DTR
 
     Public Sub Calculate_DTR()
         With FRM_DTR_BIOMETRIC
+            .DtrCalculations.Clear()
 
 #Region "DTR Attendance and Schedule Processing"
             '============================ DTR Attendance and Schedule Processing ================================
@@ -139,6 +140,7 @@ Module Mod_Biometric_DTR
         String.IsNullOrWhiteSpace(CStr(row.Cells(0)?.Value))
 
             If isRowEmpty Then Continue For
+            If Not IsDtrDataRow(row) Then Continue For
 
             Dim hasActualReport As Boolean = RowHasActualReport(row)
             If hasActualReport Then
@@ -171,6 +173,7 @@ Module Mod_Biometric_DTR
 
 
         ' Update UI elements showing the count of present and absent days
+        FRM_DTR_BIOMETRIC.Label11.Text = presentCount
         FRM_DTR_BIOMETRIC.Lbl_Num_of_Reporting_Days.Text = presentCount
         FRM_DTR_BIOMETRIC.Lbl_Actual_Rep_Days.Text = presentCount
         FRM_DTR_BIOMETRIC.Lbl_Absent_Count.Text = absentCount
@@ -202,7 +205,8 @@ Module Mod_Biometric_DTR
         If DateTime.TryParseExact(actualTimeInStr, "M/d/yyyy h:mm:ss tt", CultureInfo.InvariantCulture, DateTimeStyles.None, parsedActualTimeIn) Then
             ' Calculate the lateness duration
             Dim lateDuration As TimeSpan = CalculateLate(parsedScheduleIn, parsedActualTimeIn)
-            row.Cells(10).Value = Math.Max(lateDuration.TotalMinutes, 0)
+            Dim calculation = FRM_DTR_BIOMETRIC.GetOrCreateCalculationForDtrRow(row)
+            If calculation IsNot Nothing Then calculation.LateMinutes = CDec(Math.Max(lateDuration.TotalMinutes, 0))
         Else
             Throw New Exception($"Invalid DateTime format: {actualTimeInStr}")
         End If
@@ -228,6 +232,15 @@ Module Mod_Biometric_DTR
         Next
 
         Return False
+    End Function
+
+    Private Function IsDtrDataRow(row As DataGridViewRow) As Boolean
+        If row Is Nothing OrElse row.IsNewRow OrElse row.Cells.Count = 0 Then Return False
+
+        Dim dateText = Convert.ToString(row.Cells(0)?.Value).Trim()
+        If String.IsNullOrWhiteSpace(dateText) Then Return False
+
+        Return ParseDate(GetFirstDate(dateText)).HasValue
     End Function
 
     Private Function IsNightShiftRange(row As DataGridViewRow) As Boolean
@@ -257,10 +270,8 @@ Module Mod_Biometric_DTR
 
     ' Calculates break durations and excess break time
     Private Sub CalculateBreaks()
-        For i = 0 To 16 ' Iterate through DTR grid rows
-            If String.IsNullOrEmpty(CStr(FRM_DTR_BIOMETRIC.GView_DTR.Rows(i).Cells(0).Value)) Then
-                Continue For
-            End If
+        For i = 0 To FRM_DTR_BIOMETRIC.GView_DTR.Rows.Count - 1 ' Iterate through DTR grid rows
+            If Not IsDtrDataRow(FRM_DTR_BIOMETRIC.GView_DTR.Rows(i)) Then Continue For
 
             ' Calculate break durations (Break 1 and Break 2)
             Dim break1Duration As Integer = CalculateBreakDuration(i, 4, 3)
@@ -268,8 +279,11 @@ Module Mod_Biometric_DTR
 
             ' Sum break durations and calculate excess break time (if any)
             Dim totalBreakTime As Integer = If(break1Duration < 30, 30, break1Duration) + If(break2Duration < 30, 30, break2Duration)
-            FRM_DTR_BIOMETRIC.GView_DTR.Rows(i).Cells(11).Value = totalBreakTime
-            FRM_DTR_BIOMETRIC.GView_DTR.Rows(i).Cells(12).Value = If(totalBreakTime > 60, totalBreakTime - 60, 0)
+            Dim calculation = FRM_DTR_BIOMETRIC.GetOrCreateCalculationForDtrRow(FRM_DTR_BIOMETRIC.GView_DTR.Rows(i))
+            If calculation IsNot Nothing Then
+                calculation.TotalBreakMinutes = totalBreakTime
+                calculation.OverBreakMinutes = If(totalBreakTime > 60, totalBreakTime - 60, 0)
+            End If
         Next
     End Sub
 
@@ -313,13 +327,10 @@ Module Mod_Biometric_DTR
     Private Sub CalculateOvertimeAndTotalHours()
         Dim totalOverallWorkedMinutes As Integer = 0 ' Variable to accumulate total worked minutes
 
-        For i = 0 To 16
+        For i = 0 To FRM_DTR_BIOMETRIC.GView_DTR.Rows.Count - 1
             Dim overtimeMinutes As Integer = 0
             Dim totalWorkedMinutes As Integer = 0
-            If String.IsNullOrEmpty(CStr(FRM_DTR_BIOMETRIC.GView_DTR.Rows(i).Cells(0).Value)) Then
-                ResetCells(FRM_DTR_BIOMETRIC.GView_DTR.Rows(i), 10, 14)
-                Continue For
-            End If
+            If Not IsDtrDataRow(FRM_DTR_BIOMETRIC.GView_DTR.Rows(i)) Then Continue For
 
             ' Extract date and validate
             Dim firstDate As String = GetFirstDate(FRM_DTR_BIOMETRIC.GView_DTR.Rows(i).Cells(0)?.Value.ToString())
@@ -345,8 +356,10 @@ Module Mod_Biometric_DTR
             End If
 
 
-            ' Update grid cells with overtime and total worked hours
-            FRM_DTR_BIOMETRIC.GView_DTR.Rows(i).Cells(13).Value = overtimeMinutes
+            Dim calculation = FRM_DTR_BIOMETRIC.GetOrCreateCalculationForDtrRow(FRM_DTR_BIOMETRIC.GView_DTR.Rows(i))
+            If calculation Is Nothing Then Continue For
+
+            calculation.OvertimeMinutes = overtimeMinutes
 
             Dim totalWorkedHours As Double = Math.Round(totalWorkedMinutes / 60,2)
             ' Ensure the maximum is 12 hours
@@ -356,7 +369,7 @@ Module Mod_Biometric_DTR
                 totalWorkedHours = schedTotalWorkHours
             End If
 
-            FRM_DTR_BIOMETRIC.GView_DTR.Rows(i).Cells(14).Value = totalWorkedHours
+            calculation.TotalHours = CDec(totalWorkedHours)
 
 
 
@@ -367,9 +380,6 @@ Module Mod_Biometric_DTR
         ' Calculate total overall worked hours (including breaks)
         Dim totalOverallWorkedHours As Double = Math.Round(totalOverallWorkedMinutes / 60, 2)
 
-        ' Update the last row to display the total overall worked hours
-        FRM_DTR_BIOMETRIC.GView_DTR.Rows(FRM_DTR_BIOMETRIC.GView_DTR.Rows.Count - 2).Cells(13).Value = "Total:"
-        'FRM_DTR_BIOMETRIC.GView_DTR.Rows(FRM_DTR_BIOMETRIC.GView_DTR.Rows.Count - 2).Cells(14).Value = totalOverallWorkedHours
     End Sub
 
 
@@ -572,7 +582,6 @@ Module Mod_Biometric_DTR
         Return 0D
     End Function
 
-
     Public Sub Save_DTR_Total_Hours(
     iSub_Client_ID As Integer,
     sEmployee_ID As String,
@@ -584,36 +593,34 @@ Module Mod_Biometric_DTR
         Connect_to_MDB()
 
         Try
-            With FRM_DTR_BIOMETRIC.GView_DTR
+            Dim calculations = FRM_DTR_BIOMETRIC.DtrCalculations
 
-                SQL = "INSERT INTO PRL_DTR_TOTAL_HOURS " &
+            SQL = "INSERT INTO PRL_DTR_TOTAL_HOURS " &
       "(EMPLOYEE_ID, SUB_CLIENT_ID, CUTOFF_PERIOD, NUM_OF_DAYS, " &
       "TOTAL_HOURS, REG, SUN, SH, LH, OT_REG, ND_DAYS) " &
       "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"
 
 
 
-                Using SQLcmd As New OleDbCommand(SQL, GlobalVariables.GlobalCon)
+            Using SQLcmd As New OleDbCommand(SQL, GlobalVariables.GlobalCon)
 
-                    SQLcmd.Parameters.AddWithValue("?", sEmployee_ID)
-                    SQLcmd.Parameters.AddWithValue("?", iSub_Client_ID)
-                    SQLcmd.Parameters.AddWithValue("?", sCutOff_Period)
-                    SQLcmd.Parameters.AddWithValue("?", iNumber_of_Days)
+                SQLcmd.Parameters.AddWithValue("?", sEmployee_ID)
+                SQLcmd.Parameters.AddWithValue("?", iSub_Client_ID)
+                SQLcmd.Parameters.AddWithValue("?", sCutOff_Period)
+                SQLcmd.Parameters.AddWithValue("?", iNumber_of_Days)
 
-                    SQLcmd.Parameters.AddWithValue("?", ToDec(.Rows(17).Cells(14).Value))
-                    SQLcmd.Parameters.AddWithValue("?", ToDec(.Rows(17).Cells(15).Value))
-                    SQLcmd.Parameters.AddWithValue("?", ToDec(.Rows(17).Cells(16).Value))
-                    SQLcmd.Parameters.AddWithValue("?", ToDec(.Rows(17).Cells(17).Value))
-                    SQLcmd.Parameters.AddWithValue("?", ToDec(.Rows(17).Cells(18).Value))
-                    SQLcmd.Parameters.AddWithValue("?", ToDec(.Rows(17).Cells(19).Value))
-                    SQLcmd.Parameters.AddWithValue("?", iNumber_of_ND_Days)
+                SQLcmd.Parameters.AddWithValue("?", calculations.TotalFor(Models.DtrCalculationMetric.TotalHours))
+                SQLcmd.Parameters.AddWithValue("?", calculations.TotalFor(Models.DtrCalculationMetric.RegularHours))
+                SQLcmd.Parameters.AddWithValue("?", calculations.TotalFor(Models.DtrCalculationMetric.SundayHours))
+                SQLcmd.Parameters.AddWithValue("?", calculations.TotalFor(Models.DtrCalculationMetric.SpecialHolidayHours))
+                SQLcmd.Parameters.AddWithValue("?", calculations.TotalFor(Models.DtrCalculationMetric.LegalHolidayHours))
+                SQLcmd.Parameters.AddWithValue("?", calculations.TotalFor(Models.DtrCalculationMetric.RegularOvertimeHours))
+                SQLcmd.Parameters.AddWithValue("?", iNumber_of_ND_Days)
 
-                    SQLcmd.ExecuteNonQuery()
-                End Using
+                SQLcmd.ExecuteNonQuery()
+            End Using
 
-                MsgBox("DTR Total Hours was successfully saved!", vbInformation, "Saved")
-
-            End With
+            MsgBox("DTR Total Hours was successfully saved!", vbInformation, "Saved")
 
         Catch ex As Exception
             MsgBox(ex.Message, vbCritical, "Error saving total hours!")
@@ -631,37 +638,21 @@ Module Mod_Biometric_DTR
         Connect_to_MDB()
 
         Try
-            With FRM_DTR_BIOMETRIC.GView_DTR
-                For i = 0 To .Rows.Count - 1
+            For Each calculation In FRM_DTR_BIOMETRIC.DtrCalculations.Rows
+                Dim totalHours As Decimal = calculation.TotalHours
 
-                    If IsNothing(.Rows(i).Cells(0).Value) Then
-                        Continue For
-                    End If
+                SQL = "INSERT INTO PRL_DTR_HOURS_PER_DAY (EMPLOYEE_ID, SUB_CLIENT_ID, REPORT_DATE, REPORT_DAY, DAILY_TOTAL_HOURS) " &
+                  "VALUES (?, ?, ?, ?, ?)"
 
-                    ' Format the date for MS Access
-                    Dim rawValue As String = .Rows(i).Cells(0).Value.ToString()
-                    Dim datePart As String = rawValue.Split("-"c)(0).Trim()
-                    Dim reportDate As String = "#" & Format(CDate(datePart), "yyyy-MM-dd") & "#"
-
-                    Dim reportDay As String = .Rows(i).Cells(1).Value.ToString()
-                    Dim totalHours As Double = 0
-
-                    ' Safe conversion using TryParse
-                    Dim cellValue As Object = .Rows(i).Cells(14).Value
-                    If Not IsNothing(cellValue) AndAlso Not String.IsNullOrWhiteSpace(cellValue.ToString()) Then
-                        Double.TryParse(cellValue.ToString(), totalHours)
-                    End If
-
-                    ' Build SQL
-                    SQL = "INSERT INTO PRL_DTR_HOURS_PER_DAY (EMPLOYEE_ID, SUB_CLIENT_ID, REPORT_DATE, REPORT_DAY, DAILY_TOTAL_HOURS) " &
-                      "VALUES ('" & sEmployee_ID & "', " & iSub_Client_ID & ", " & reportDate & ", '" & reportDay & "', " & totalHours & ")"
-
-                    Using SQLcmd As New OleDbCommand(SQL, GlobalVariables.GlobalCon)
-                        SQLcmd.ExecuteNonQuery()
-                    End Using
-
-                Next
-            End With
+                Using SQLcmd As New OleDbCommand(SQL, GlobalVariables.GlobalCon)
+                    SQLcmd.Parameters.AddWithValue("?", sEmployee_ID)
+                    SQLcmd.Parameters.AddWithValue("?", iSub_Client_ID)
+                    SQLcmd.Parameters.AddWithValue("?", calculation.ReportDate)
+                    SQLcmd.Parameters.AddWithValue("?", calculation.ReportDay)
+                    SQLcmd.Parameters.AddWithValue("?", totalHours)
+                    SQLcmd.ExecuteNonQuery()
+                End Using
+            Next
         Catch ex As Exception
             MsgBox(ex.Message, vbCritical, "Error saving Total Hours Per Day!")
         Finally

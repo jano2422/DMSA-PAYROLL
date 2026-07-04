@@ -108,6 +108,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Data\Services\ScheduleService.vb" />
+    <Compile Include="Models\DtrCalculationTable.vb" />
     <Compile Include="AppNotification.vb" />
     <Compile Include="AppNotificationDialog.Designer.vb">
       <DependentUpon>AppNotificationDialog.vb</DependentUpon>

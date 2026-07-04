@@ -3,6 +3,7 @@ Imports System.IO
 Imports Spire.Pdf
 Imports Spire.Pdf.Conversion
 Imports System.Windows
+Imports DMSA_System.Models
 
 Public Class FRM_DTR_BIOMETRIC
 
@@ -11,10 +12,21 @@ Public Class FRM_DTR_BIOMETRIC
     'Dim DefaultDTRDir As String = "\\DMSAC-SERVER\Files\MASTER_DTR"
     Dim DefaultDTRDir As String = "C:\MASTER_DTR"
     Public Property AutoStartForSelectedEmployee As Boolean
+    Private isRefreshingDtrViews As Boolean
+    Private isRecalculatingDtr As Boolean
+    Private isUpdatingClassificationGrid As Boolean
+    Private ReadOnly dtrCalculationTable As New DtrCalculationTable()
+    Private Const DtrDateColumnIndex As Integer = 0
+    Private Const DtrDayColumnIndex As Integer = 1
+    Private Const RawPunchStartColumnIndex As Integer = 2
+    Private Const RawPunchEndColumnIndex As Integer = 9
+    Private Shared ReadOnly RawDtrVisibleColumns As Integer() = Enumerable.Range(DtrDateColumnIndex, RawPunchEndColumnIndex + 1).ToArray()
 
-    Private Sub Btn_DTR_Click(sender As Object, e As EventArgs) Handles Btn_DTR.Click
-        StartDtrSelection(True)
-    End Sub
+    Public ReadOnly Property DtrCalculations As DtrCalculationTable
+        Get
+            Return dtrCalculationTable
+        End Get
+    End Property
 
     Public Sub StartForSelectedEmployee()
         StartDtrSelection(False)
@@ -23,8 +35,9 @@ Public Class FRM_DTR_BIOMETRIC
     Private Sub StartDtrSelection(promptForEmployee As Boolean)
         ' Clear the schedule grid and reset UI
         GView_Schedule.Rows.Clear()
-        RemoveDataGridViewByName(DTR_TimeCalculationPanel, "Duplicate_DGV")
-        ShowOriginalDataGridViewColumns(GView_DTR)
+        ClearClassificationGrid()
+        DtrCalculations.Clear()
+        ClearTimeCalculationView()
 
         ' Default DTR Directory
 
@@ -147,18 +160,20 @@ Public Class FRM_DTR_BIOMETRIC
                 Exit Sub
             End Try
 
-            ' Remove previous DataGridView duplicates
-            RemoveDataGridViewByName(DTR_TimeCalculationPanel, "Duplicate_DGV")
+            ' Reset the calculation view before loading the next DTR.
+            ClearClassificationGrid()
+            DtrCalculations.Clear()
+            ClearTimeCalculationView()
 
             ' Load the converted Excel file into the application
             Connect_to_Excel_DTR()
-            RemoveDataGridViewByName(DTR_TimeCalculationPanel, "Duplicate_DGV")
-            ShowOriginalDataGridViewColumns(GView_DTR)
+            ClearTimeCalculationView()
 
             ' Perform DTR calculations
             Calculate_DTR()
+            BuildClassificationGrid()
             ProcessHoursBreakdown()
-            DuplicateAndHideDtrDGView()
+            RefreshDtrViews()
 
             ' Enable the save button
             SetButtonState(True, Btn_Save_DTR)
@@ -192,109 +207,529 @@ Public Class FRM_DTR_BIOMETRIC
         Return Nothing
     End Function
 
-    Private Sub DuplicateAndHideDtrDGView()
-        Dim columnsToHide As New List(Of String) From {"DataGridViewTextBoxColumn3", "DataGridViewTextBoxColumn4", "DataGridViewTextBoxColumn5", "DataGridViewTextBoxColumn6", "DataGridViewTextBoxColumn7", "DataGridViewTextBoxColumn8", "ExtraTimeIn1", "ExtraTimeOut1"}
-        Dim OriginalDGviewcolumnsToHide As New List(Of String) From {"DataGridViewTextBoxColumn9", "DataGridViewTextBoxColumn10", "DataGridViewTextBoxColumn11", "DataGridViewTextBoxColumn12", "DataGridViewTextBoxColumn13", "REG_REG", "REG_SUN", "REG_SH", "REG_LH", "RD_SUN_SH", "REG_REG", "RD_SUN_LH", "ND_REG", "ND_SUN", "ND_SH", "ND_LH", "ND_RD_SUN_SH", "ND_RD_SUN_LH", "OT_REG"}
-
-        DuplicateAndModifyDataGridView(GView_DTR, columnsToHide, DTR_TimeCalculationPanel)
-        HideOriginalDataGridViewColumns(GView_DTR, OriginalDGviewcolumnsToHide)
+    Private Sub RefreshDtrViews()
+        Try
+            isRefreshingDtrViews = True
+            ConfigureRawDtrGridColumns()
+            PopulateTimeCalculationView()
+        Finally
+            isRefreshingDtrViews = False
+        End Try
 
     End Sub
-    Private Sub DuplicateAndModifyDataGridView(originalDataGridView As DataGridView, hiddenColumns As List(Of String), targetPanel As Panel)
-        ' Check if a DataGridView with the desired name already exists
-        Dim existingDataGridView As DataGridView = Nothing
 
-        For Each ctrl As Control In targetPanel.Controls
-            If TypeOf ctrl Is DataGridView AndAlso ctrl.Name = "Duplicate_DGV" Then
-                existingDataGridView = DirectCast(ctrl, DataGridView)
-                Exit For
-            End If
+    Private Sub ConfigureRawDtrGridColumns()
+        If GView_DTR Is Nothing Then Return
+
+        GView_DTR.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.DisplayedCells
+        GView_DTR.AllowUserToAddRows = False
+        GView_DTR.AllowUserToDeleteRows = False
+
+        For columnIndex As Integer = 0 To GView_DTR.Columns.Count - 1
+            Dim column = GView_DTR.Columns(columnIndex)
+            Dim isRawVisible = Array.IndexOf(RawDtrVisibleColumns, columnIndex) >= 0
+            Dim isEditablePunch = columnIndex >= RawPunchStartColumnIndex AndAlso columnIndex <= RawPunchEndColumnIndex
+
+            column.Visible = isRawVisible
+            column.ReadOnly = Not isEditablePunch
+            column.SortMode = DataGridViewColumnSortMode.NotSortable
+            column.Frozen = columnIndex <= DtrDayColumnIndex
         Next
+    End Sub
 
-        ' If it exists, clear it; otherwise, create a new one
-        Dim newDataGridView As DataGridView
-        If existingDataGridView IsNot Nothing Then
-            newDataGridView = existingDataGridView
-            newDataGridView.Rows.Clear()
-            newDataGridView.Columns.Clear()
-        Else
-            newDataGridView = New DataGridView() With {
-            .Name = "Duplicate_DGV",
-            .Location = New System.Drawing.Point(10, 10),
-            .Size = originalDataGridView.Size,
-            .AllowUserToAddRows = originalDataGridView.AllowUserToAddRows,
-            .AllowUserToDeleteRows = originalDataGridView.AllowUserToDeleteRows,
-            .ReadOnly = originalDataGridView.ReadOnly,
-            .AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.DisplayedCells,
-            .ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize
-        }
-            targetPanel.Controls.Add(newDataGridView)
+    Private Sub PopulateTimeCalculationView()
+        GView_TimeCalculation.Rows.Clear()
+        GView_TimeCalculation.Columns.Clear()
+        GView_TimeCalculation.AllowUserToAddRows = False
+        GView_TimeCalculation.AllowUserToDeleteRows = False
+        GView_TimeCalculation.ReadOnly = True
+        GView_TimeCalculation.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.None
+        GView_TimeCalculation.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize
+        GView_TimeCalculation.DataSource = Nothing
+
+        GView_TimeCalculation.DataSource = DtrCalculations.ToBreakdownTable(PeriodCoverageDates())
+
+        If GView_TimeCalculation.Columns.Contains("BreakdownLabel") Then
+            With GView_TimeCalculation.Columns("BreakdownLabel")
+                .HeaderText = "Breakdown of Hours"
+                .Frozen = True
+                .ReadOnly = True
+                .SortMode = DataGridViewColumnSortMode.NotSortable
+                .Width = 150
+            End With
         End If
 
-        ' Copy columns from the original DataGridView
-        For Each col As DataGridViewColumn In originalDataGridView.Columns
-            Dim newCol As DataGridViewColumn = DirectCast(col.Clone(), DataGridViewColumn)
-            newDataGridView.Columns.Add(newCol)
+        For Each coveredDate In PeriodCoverageDates()
+            Dim columnName = DtrCalculationTable.DateColumnName(coveredDate)
+            If Not GView_TimeCalculation.Columns.Contains(columnName) Then Continue For
+
+            With GView_TimeCalculation.Columns(columnName)
+                .HeaderText = coveredDate.ToString("MMM d", Globalization.CultureInfo.InvariantCulture) & vbCrLf & coveredDate.ToString("ddd", Globalization.CultureInfo.InvariantCulture)
+                .ReadOnly = True
+                .SortMode = DataGridViewColumnSortMode.NotSortable
+                .Width = 74
+                .DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleRight
+                .DefaultCellStyle.Format = "0.##"
+            End With
         Next
 
-        ' Copy rows from the original DataGridView
-        For Each row As DataGridViewRow In originalDataGridView.Rows
-            If Not row.IsNewRow Then
-                Dim newRow As DataGridViewRow = DirectCast(row.Clone(), DataGridViewRow)
-                For i As Integer = 0 To row.Cells.Count - 1
-                    newRow.Cells(i).Value = row.Cells(i).Value
-                Next
-                newDataGridView.Rows.Add(newRow)
-            End If
-        Next
+        If GView_TimeCalculation.Columns.Contains("Total") Then
+            With GView_TimeCalculation.Columns("Total")
+                .ReadOnly = True
+                .SortMode = DataGridViewColumnSortMode.NotSortable
+                .Width = 76
+                .DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleRight
+                .DefaultCellStyle.Format = "0.##"
+                .DefaultCellStyle.BackColor = Color.FromArgb(235, 245, 245)
+            End With
+        End If
 
-        ' Hide specified columns in the new DataGridView
-        For Each columnName As String In hiddenColumns
-            If newDataGridView.Columns.Contains(columnName) Then
-                newDataGridView.Columns(columnName).Visible = False
-            End If
-        Next
-
-        ' Auto-size column widths based on cell content
-        For Each col As DataGridViewColumn In newDataGridView.Columns
-            col.AutoSizeMode = DataGridViewAutoSizeColumnMode.DisplayedCells
-        Next
-    End Sub
-
-    Private Sub HideOriginalDataGridViewColumns(originalDataGridView As DataGridView, hiddenColumns As List(Of String))
-        For Each columnName As String In hiddenColumns
-            If originalDataGridView.Columns.Contains(columnName) Then
-                originalDataGridView.Columns(columnName).Visible = False
-            End If
-        Next
-    End Sub
-
-    Private Sub ShowOriginalDataGridViewColumns(originalDataGridView As DataGridView)
-
-        Dim showColumns As New List(Of String) From {"DataGridViewTextBoxColumn9", "DataGridViewTextBoxColumn10", "DataGridViewTextBoxColumn11", "DataGridViewTextBoxColumn12", "DataGridViewTextBoxColumn13", "REG_REG", "REG_SUN", "REG_SH", "REG_LH", "RD_SUN_SH", "REG_REG", "RD_SUN_LH", "ND_REG", "ND_SUN", "ND_SH", "ND_LH", "ND_RD_SUN_SH", "ND_RD_SUN_LH", "OT_REG"}
-
-        For Each columnName As String In showColumns
-            If originalDataGridView.Columns.Contains(columnName) Then
-                originalDataGridView.Columns(columnName).Visible = True
-            End If
+        For Each row As DataGridViewRow In GView_TimeCalculation.Rows
+            For columnIndex As Integer = 1 To GView_TimeCalculation.Columns.Count - 1
+                If GView_TimeCalculation.Columns(columnIndex).Name = "Total" Then Continue For
+                If row.Cells(columnIndex).Value Is Nothing OrElse row.Cells(columnIndex).Value Is DBNull.Value Then
+                    row.Cells(columnIndex).Style.BackColor = Color.LightGray
+                    row.Cells(columnIndex).Style.SelectionBackColor = Color.LightGray
+                End If
+            Next
         Next
     End Sub
 
     Private Sub BIOMETRICForm_FormClosing(sender As Object, e As EventArgs) Handles MyBase.Closing
-        RemoveDataGridViewByName(DTR_TimeCalculationPanel, "Duplicate_DGV")
-        ShowOriginalDataGridViewColumns(GView_DTR)
+        ClearTimeCalculationView()
     End Sub
 
-    Private Sub RemoveDataGridViewByName(targetPanel As Panel, dataGridViewName As String)
+    Private Sub ClearTimeCalculationView()
+        If GView_TimeCalculation Is Nothing Then Return
+        GView_TimeCalculation.DataSource = Nothing
+        GView_TimeCalculation.Rows.Clear()
+        GView_TimeCalculation.Columns.Clear()
+    End Sub
 
-        ' Loop through each control in the TabPage
-        For Each ctrl As Control In targetPanel.Controls
-            ' Check if the control is a DataGridView and if its name matches the target name
-            If TypeOf ctrl Is DataGridView AndAlso ctrl.Name = dataGridViewName Then
-                ' Remove the specific DataGridView by name
-                targetPanel.Controls.Remove(ctrl)
-                ctrl.Dispose() ' Dispose of the DataGridView to free resources
-                Exit Sub ' Exit after removing the first match
+    Private Sub ClearClassificationGrid()
+        If GView_Classification Is Nothing Then Return
+        GView_Classification.Rows.Clear()
+        GView_Classification.Columns.Clear()
+    End Sub
+
+    Private Sub BuildClassificationGrid()
+        If GView_Classification Is Nothing Then Return
+
+        Try
+            isUpdatingClassificationGrid = True
+
+            GView_Classification.Columns.Clear()
+            GView_Classification.Rows.Clear()
+            GView_Classification.AllowUserToAddRows = False
+            GView_Classification.AllowUserToDeleteRows = False
+            GView_Classification.ReadOnly = True
+            GView_Classification.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.None
+            GView_Classification.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize
+
+            GView_Classification.Columns.Add(New DataGridViewTextBoxColumn With {
+                .Name = "Label",
+                .HeaderText = "Classification",
+                .Frozen = True,
+                .ReadOnly = True,
+                .SortMode = DataGridViewColumnSortMode.NotSortable,
+                .Width = 180
+            })
+
+            For Each coveredDate In PeriodCoverageDates()
+                GView_Classification.Columns.Add(New DataGridViewCheckBoxColumn With {
+                    .Name = DateColumnName(coveredDate),
+                    .HeaderText = coveredDate.ToString("MMM d", Globalization.CultureInfo.InvariantCulture) & vbCrLf & coveredDate.ToString("ddd", Globalization.CultureInfo.InvariantCulture),
+                    .ReadOnly = True,
+                    .SortMode = DataGridViewColumnSortMode.NotSortable,
+                    .Tag = coveredDate.Date,
+                    .Width = 74
+                })
+            Next
+
+            Dim sundayRowIndex = GView_Classification.Rows.Add()
+            GView_Classification.Rows(sundayRowIndex).Cells("Label").Value = "Sunday"
+
+            Dim shRowIndex = GView_Classification.Rows.Add()
+            GView_Classification.Rows(shRowIndex).Cells("Label").Value = "Special Holiday (SH)"
+
+            Dim lhRowIndex = GView_Classification.Rows.Add()
+            GView_Classification.Rows(lhRowIndex).Cells("Label").Value = "Legal Holiday (LH)"
+
+            For columnIndex As Integer = 1 To GView_Classification.Columns.Count - 1
+                Dim coveredDate = ClassificationDateForColumn(columnIndex)
+                Dim sundayCell = GView_Classification.Rows(sundayRowIndex).Cells(columnIndex)
+                sundayCell.Value = coveredDate.HasValue AndAlso coveredDate.Value.DayOfWeek = DayOfWeek.Sunday
+
+                If Not coveredDate.HasValue OrElse coveredDate.Value.DayOfWeek <> DayOfWeek.Sunday Then
+                    sundayCell.ReadOnly = True
+                    sundayCell.Style.BackColor = Color.LightGray
+                    sundayCell.Style.SelectionBackColor = Color.LightGray
+                    sundayCell.Style.ForeColor = Color.DimGray
+                    sundayCell.ToolTipText = "Sunday can only be selected on an actual Sunday date."
+                End If
+
+                GView_Classification.Rows(shRowIndex).Cells(columnIndex).Value = False
+                GView_Classification.Rows(lhRowIndex).Cells(columnIndex).Value = False
+                ApplyClassificationExclusionState(columnIndex)
+            Next
+        Finally
+            isUpdatingClassificationGrid = False
+        End Try
+    End Sub
+
+    Private Function DateColumnName(d As Date) As String
+        Return "D" & d.ToString("yyyyMMdd", Globalization.CultureInfo.InvariantCulture)
+    End Function
+
+    Private Function ClassificationDateForColumn(columnIndex As Integer) As Date?
+        If GView_Classification Is Nothing OrElse columnIndex < 1 OrElse columnIndex >= GView_Classification.Columns.Count Then Return Nothing
+
+        Dim tagValue = GView_Classification.Columns(columnIndex).Tag
+        If TypeOf tagValue Is Date Then Return DirectCast(tagValue, Date).Date
+
+        Return Nothing
+    End Function
+
+    Private Function ClassificationColumnIndexForDate(d As Date) As Integer
+        If GView_Classification Is Nothing Then Return -1
+
+        Dim columnName = DateColumnName(d)
+        If GView_Classification.Columns.Contains(columnName) Then Return GView_Classification.Columns(columnName).Index
+
+        Return -1
+    End Function
+
+    Private Function IsClassificationColumnSunday(columnIndex As Integer) As Boolean
+        Dim coveredDate = ClassificationDateForColumn(columnIndex)
+        Return coveredDate.HasValue AndAlso coveredDate.Value.DayOfWeek = DayOfWeek.Sunday
+    End Function
+
+    Private Function IsCellChecked(cell As DataGridViewCell) As Boolean
+        If cell Is Nothing OrElse cell.Value Is Nothing OrElse cell.Value Is DBNull.Value Then Return False
+
+        Dim checkedValue As Boolean
+        Boolean.TryParse(cell.Value.ToString(), checkedValue)
+        Return checkedValue
+    End Function
+
+    Private Function IsSundayCheckedForClassificationColumn(columnIndex As Integer) As Boolean
+        If GView_Classification Is Nothing OrElse GView_Classification.Rows.Count = 0 OrElse columnIndex < 1 Then Return False
+        Return IsCellChecked(GView_Classification.Rows(0).Cells(columnIndex))
+    End Function
+
+    Private Sub ApplyClassificationExclusionState(columnIndex As Integer)
+        If GView_Classification Is Nothing OrElse GView_Classification.Rows.Count < 3 OrElse columnIndex < 1 Then Return
+
+        Dim sundaySelected = IsSundayCheckedForClassificationColumn(columnIndex)
+
+        For rowIndex As Integer = 1 To 2
+            Dim cell = GView_Classification.Rows(rowIndex).Cells(columnIndex)
+            cell.ReadOnly = sundaySelected
+            cell.ToolTipText = If(sundaySelected, "SH and LH cannot be selected when Sunday is selected.", "")
+
+            If sundaySelected Then
+                cell.Value = False
+                cell.Style.BackColor = Color.LightGray
+                cell.Style.SelectionBackColor = Color.LightGray
+                cell.Style.ForeColor = Color.DimGray
+            Else
+                cell.Style.BackColor = Color.FromArgb(255, 224, 192)
+                cell.Style.SelectionBackColor = GView_Classification.DefaultCellStyle.SelectionBackColor
+                cell.Style.ForeColor = Color.Black
+            End If
+        Next
+    End Sub
+
+    Private Sub GView_Classification_CellClick(sender As Object, e As DataGridViewCellEventArgs) Handles GView_Classification.CellClick
+        If isUpdatingClassificationGrid OrElse e.RowIndex < 0 OrElse e.ColumnIndex < 1 Then Return
+
+        Dim cell = GView_Classification.Rows(e.RowIndex).Cells(e.ColumnIndex)
+        Dim currentValue = IsCellChecked(cell)
+
+        If e.RowIndex = 0 Then
+            If Not IsClassificationColumnSunday(e.ColumnIndex) Then Return
+            cell.Value = Not currentValue
+            If CBool(cell.Value) Then
+                GView_Classification.Rows(1).Cells(e.ColumnIndex).Value = False
+                GView_Classification.Rows(2).Cells(e.ColumnIndex).Value = False
+            End If
+            ApplyClassificationExclusionState(e.ColumnIndex)
+        ElseIf e.RowIndex = 1 Then
+            If IsSundayCheckedForClassificationColumn(e.ColumnIndex) Then Return
+            cell.Value = Not currentValue
+            If CBool(cell.Value) Then GView_Classification.Rows(2).Cells(e.ColumnIndex).Value = False
+        ElseIf e.RowIndex = 2 Then
+            If IsSundayCheckedForClassificationColumn(e.ColumnIndex) Then Return
+            cell.Value = Not currentValue
+            If CBool(cell.Value) Then GView_Classification.Rows(1).Cells(e.ColumnIndex).Value = False
+        End If
+
+        RecalculateDtrFromClassifications()
+    End Sub
+
+    Private Function ClassificationForDate(d As Date) As String
+        If GView_Classification Is Nothing OrElse GView_Classification.Rows.Count < 3 Then
+            Return If(d.DayOfWeek = DayOfWeek.Sunday, "SUN", "")
+        End If
+
+        Dim columnIndex = ClassificationColumnIndexForDate(d)
+        If columnIndex < 1 Then Return If(d.DayOfWeek = DayOfWeek.Sunday, "SUN", "")
+
+        If IsCellChecked(GView_Classification.Rows(0).Cells(columnIndex)) Then Return "SUN"
+        If IsCellChecked(GView_Classification.Rows(1).Cells(columnIndex)) Then Return "SH"
+        If IsCellChecked(GView_Classification.Rows(2).Cells(columnIndex)) Then Return "LH"
+
+        Return ""
+    End Function
+
+    Private Function ClassificationForDtrRow(row As DataGridViewRow) As String
+        Dim rowDate = DtrRowDate(row)
+        If Not rowDate.HasValue Then Return ""
+
+        Return ClassificationForDate(rowDate.Value)
+    End Function
+
+    Private Sub ApplyDtrClassificationStyles()
+        For rowIndex As Integer = 0 To GView_DTR.Rows.Count - 1
+            If Not IsDtrDataRow(GView_DTR, rowIndex) Then Continue For
+
+            Dim row = GView_DTR.Rows(rowIndex)
+            Select Case ClassificationForDtrRow(row)
+                Case "SUN"
+                    row.DefaultCellStyle.BackColor = Color.LightBlue
+                Case "SH"
+                    row.DefaultCellStyle.BackColor = Color.Yellow
+                Case "LH"
+                    row.DefaultCellStyle.BackColor = Color.LightGreen
+                Case Else
+                    row.DefaultCellStyle.BackColor = Color.Empty
+            End Select
+        Next
+    End Sub
+
+    Private Function SourceColumnIndexForCell(grid As DataGridView, columnIndex As Integer) As Integer
+        If grid Is Nothing Then Return -1
+
+        If columnIndex < 0 OrElse columnIndex >= grid.Columns.Count Then Return -1
+        Return columnIndex
+    End Function
+
+    Private Function TryGetCellBySourceColumn(row As DataGridViewRow, sourceColumnIndex As Integer, ByRef cell As DataGridViewCell) As Boolean
+        cell = Nothing
+        If row Is Nothing OrElse row.DataGridView Is Nothing Then Return False
+
+        For Each column As DataGridViewColumn In row.DataGridView.Columns
+            If SourceColumnIndexForCell(row.DataGridView, column.Index) = sourceColumnIndex Then
+                If column.Index < row.Cells.Count Then
+                    cell = row.Cells(column.Index)
+                    Return True
+                End If
+            End If
+        Next
+
+        Return False
+    End Function
+
+    Private Function SourceRowIndexForDate(grid As DataGridView, coveredDate As Date) As Integer
+        If grid Is Nothing Then Return -1
+
+        For rowIndex As Integer = 0 To grid.Rows.Count - 1
+            If Not IsDtrDataRow(grid, rowIndex) Then Continue For
+
+            Dim rowDate = DtrRowDate(grid.Rows(rowIndex))
+            If rowDate.HasValue AndAlso rowDate.Value.Date = coveredDate.Date Then Return rowIndex
+        Next
+
+        Return -1
+    End Function
+
+    Private Function DtrRowDate(row As DataGridViewRow) As Date?
+        If row Is Nothing Then Return Nothing
+
+        Dim dateText = SourceCellText(row, 0)
+        If String.IsNullOrWhiteSpace(dateText) Then Return Nothing
+
+        Dim parsedDate As DateTime
+        If DateTime.TryParse(GetFirstDate(dateText), parsedDate) Then Return parsedDate.Date
+
+        Return Nothing
+    End Function
+
+    Public Function GetOrCreateCalculationForDtrRow(row As DataGridViewRow) As DtrDayCalculation
+        Dim rowDate = DtrRowDate(row)
+        If Not rowDate.HasValue Then Return Nothing
+
+        Return DtrCalculations.Upsert(rowDate.Value, SourceCellText(row, DtrDayColumnIndex))
+    End Function
+
+    Public Function TryGetCalculationForDtrRow(row As DataGridViewRow, ByRef calculation As DtrDayCalculation) As Boolean
+        calculation = Nothing
+
+        Dim rowDate = DtrRowDate(row)
+        If Not rowDate.HasValue Then Return False
+
+        Return DtrCalculations.TryGet(rowDate.Value, calculation)
+    End Function
+
+    Private Function PeriodCoverageDates() As List(Of Date)
+        Dim rowDates = DtrDataDates()
+        Dim cutoff = GlobalVariables.sPayroll_Cutoff
+        Dim cutoffDates = CutoffCoverageDates(cutoff, rowDates)
+
+        If cutoffDates.Count > 0 Then Return cutoffDates
+        Return rowDates
+    End Function
+
+    Private Function DtrDataDates() As List(Of Date)
+        Dim dates As New List(Of Date)
+
+        For rowIndex As Integer = 0 To GView_DTR.Rows.Count - 1
+            If Not IsDtrDataRow(GView_DTR, rowIndex) Then Continue For
+
+            Dim rowDate = DtrRowDate(GView_DTR.Rows(rowIndex))
+            If rowDate.HasValue AndAlso Not dates.Contains(rowDate.Value.Date) Then dates.Add(rowDate.Value.Date)
+        Next
+
+        dates.Sort()
+        Return dates
+    End Function
+
+    Private Function CutoffCoverageDates(cutoff As String, fallbackDates As List(Of Date)) As List(Of Date)
+        Dim dates As New List(Of Date)
+        If String.IsNullOrWhiteSpace(cutoff) Then Return dates
+
+        Dim parts = cutoff.Split("_"c)
+        If parts.Length < 3 Then Return dates
+
+        Dim monthValue As Integer
+        Dim yearValue As Integer
+        If Not Integer.TryParse(parts(0), monthValue) Then Return dates
+        If Not Integer.TryParse(parts(2), yearValue) Then Return dates
+        If monthValue < 1 OrElse monthValue > 12 Then Return dates
+
+        Dim startDay As Integer
+        Dim endDay As Integer
+        If cutoff.IndexOf("_1st_", StringComparison.OrdinalIgnoreCase) >= 0 Then
+            startDay = 1
+            endDay = 15
+        ElseIf cutoff.IndexOf("_2nd_", StringComparison.OrdinalIgnoreCase) >= 0 Then
+            startDay = 16
+            endDay = Date.DaysInMonth(yearValue, monthValue)
+        Else
+            Return dates
+        End If
+
+        If fallbackDates IsNot Nothing AndAlso fallbackDates.Count > 0 Then
+            Dim minDate = fallbackDates.Min()
+            Dim maxDate = fallbackDates.Max()
+            If minDate.Month <> monthValue OrElse minDate.Year <> yearValue Then Return fallbackDates
+            If maxDate.Month <> monthValue OrElse maxDate.Year <> yearValue Then Return fallbackDates
+        End If
+
+        For dayValue As Integer = startDay To endDay
+            dates.Add(New Date(yearValue, monthValue, dayValue))
+        Next
+
+        Return dates
+    End Function
+
+    Private Sub AddBreakdownTotalColumn()
+        Dim totalColumn As New DataGridViewTextBoxColumn With {
+            .Name = "Total",
+            .HeaderText = "Total",
+            .ReadOnly = True,
+            .SortMode = DataGridViewColumnSortMode.NotSortable,
+            .Width = 76
+        }
+        totalColumn.DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleRight
+        GView_TimeCalculation.Columns.Add(totalColumn)
+
+        RefreshBreakdownTotals()
+    End Sub
+
+    Private Sub RefreshBreakdownTotals()
+        If GView_TimeCalculation.Columns.Count = 0 OrElse Not GView_TimeCalculation.Columns.Contains("Total") Then Return
+
+        Dim totalColumnIndex = GView_TimeCalculation.Columns.Count - 1
+        For Each row As DataGridViewRow In GView_TimeCalculation.Rows
+            Dim total As Decimal = 0D
+
+            For columnIndex As Integer = 1 To totalColumnIndex - 1
+                Dim value As Decimal
+                If row.Cells(columnIndex).Value IsNot Nothing AndAlso Decimal.TryParse(row.Cells(columnIndex).Value.ToString(), value) Then
+                    total += value
+                End If
+            Next
+
+            row.Cells(totalColumnIndex).Value = total.ToString("0.##")
+            row.Cells(totalColumnIndex).Style.BackColor = Color.FromArgb(235, 245, 245)
+        Next
+    End Sub
+
+    Private Function SourceCellText(row As DataGridViewRow, sourceColumnIndex As Integer) As String
+        Dim cell As DataGridViewCell = Nothing
+        If Not TryGetCellBySourceColumn(row, sourceColumnIndex, cell) Then Return String.Empty
+        Return Convert.ToString(cell.Value).Trim()
+    End Function
+
+    Private Function IsDtrDataRow(grid As DataGridView, rowIndex As Integer) As Boolean
+        If grid Is Nothing OrElse rowIndex < 0 OrElse rowIndex >= grid.Rows.Count Then Return False
+
+        Dim row = grid.Rows(rowIndex)
+        If row Is Nothing Then Return False
+        If row.IsNewRow Then Return False
+        If String.Equals(SourceCellText(row, 13), "Total:", StringComparison.OrdinalIgnoreCase) Then Return False
+
+        Dim dateText = SourceCellText(row, 0)
+        If String.IsNullOrWhiteSpace(dateText) Then Return False
+        If String.Equals(dateText, "Total:", StringComparison.OrdinalIgnoreCase) Then Return False
+
+        Dim parsedDate As DateTime
+        Return DateTime.TryParse(GetFirstDate(dateText), parsedDate)
+    End Function
+
+    Private Function GetTotalRowIndex(grid As DataGridView) As Integer
+        If grid Is Nothing OrElse grid.Rows.Count = 0 Then Return -1
+
+        For rowIndex As Integer = 0 To grid.Rows.Count - 1
+            If String.Equals(SourceCellText(grid.Rows(rowIndex), 13), "Total:", StringComparison.OrdinalIgnoreCase) Then
+                Return rowIndex
+            End If
+        Next
+
+        If grid.Rows.Count > 1 Then Return grid.Rows.Count - 2
+        Return grid.Rows.Count - 1
+    End Function
+
+    Private Sub UpdateTotalRow(grid As DataGridView, columnIndices As Integer())
+        Dim totalRowIndex = GetTotalRowIndex(grid)
+        If totalRowIndex < 0 Then Return
+
+        Dim totals(columnIndices.Length - 1) As Double
+
+        For rowIndex As Integer = 0 To grid.Rows.Count - 1
+            If rowIndex = totalRowIndex OrElse Not IsDtrDataRow(grid, rowIndex) Then Continue For
+
+            For columnOffset As Integer = 0 To columnIndices.Length - 1
+                Dim sourceCell As DataGridViewCell = Nothing
+                If Not TryGetCellBySourceColumn(grid.Rows(rowIndex), columnIndices(columnOffset), sourceCell) Then Continue For
+
+                Dim cellValue = sourceCell.Value
+                If cellValue IsNot Nothing AndAlso IsNumeric(cellValue) Then
+                    totals(columnOffset) += CDbl(cellValue)
+                End If
+            Next
+        Next
+
+        Dim totalLabelCell As DataGridViewCell = Nothing
+        If TryGetCellBySourceColumn(grid.Rows(totalRowIndex), 13, totalLabelCell) Then
+            totalLabelCell.Value = "Total:"
+        End If
+
+        For columnOffset As Integer = 0 To columnIndices.Length - 1
+            Dim totalCell As DataGridViewCell = Nothing
+            If TryGetCellBySourceColumn(grid.Rows(totalRowIndex), columnIndices(columnOffset), totalCell) Then
+                totalCell.Value = Math.Round(totals(columnOffset), 2)
             End If
         Next
     End Sub
@@ -310,6 +745,7 @@ Public Class FRM_DTR_BIOMETRIC
 
             ' Clear any existing rows in the GView_DTR grid view
             GView_DTR.Rows.Clear()
+            ConfigureRawDtrGridColumns()
 
             ' Terminate any running instances of Excel that are using "PdfToExcel.xlsx"
             TerminateExcelProcesses("PdfToExcel.xlsx")
@@ -418,132 +854,26 @@ Public Class FRM_DTR_BIOMETRIC
         End Try
     End Function
 
-    Private Sub btn_Breakdown_Click(sender As Object, e As EventArgs) Handles btn_Breakdown.Click
-        ShowOriginalDataGridViewColumns(GView_DTR)
-        Dim columns As Integer() = {14, 15, 16, 17, 18, 19}
-        ' Copy data to original DataGridView if Duplicate_DGV exists
-        Dim duplicateDataGridView As DataGridView = FindDuplicateDataGridView("Duplicate_DGV")
-        If duplicateDataGridView IsNot Nothing Then
-            CopyAndCalculateTotals(duplicateDataGridView, GView_DTR, columns)
-        End If
-
-        DuplicateAndHideDtrDGView()
-    End Sub
-
-
-    ' Helper function to find the duplicate DataGridView by name
-    Private Function FindDuplicateDataGridView(name As String) As DataGridView
-        For Each ctrl As Control In DTR_TimeCalculationPanel.Controls
-            If TypeOf ctrl Is DataGridView AndAlso ctrl.Name = name Then
-                Return DirectCast(ctrl, DataGridView)
-            End If
-        Next
-
-        ' Display error message if DataGridView is not found
-        AppNotification.Show($"The DataGridView '{name}' was not found on the breakdown page. Please contact the administrator.",
-                    "Error",
-                    MessageBoxButtons.OK,
-                    MessageBoxIcon.Error)
-        Return Nothing
-    End Function
-    Private Sub CopyAndCalculateTotals(duplicateDataGridView As DataGridView, originalDataGridView As DataGridView, columnIndices As Integer())
-        Dim totals(columnIndices.Length - 1) As Double ' Initialize totals array
-        Dim invalidCells As New List(Of DataGridViewCell) ' Track invalid cells
-        Dim errorMessages As New List(Of String) ' Collect error messages for all invalid cells
-
-        Try
-            ' Copy values from the duplicate DataGridView to the original DataGridView
-            For rowIndex As Integer = 0 To Math.Min(duplicateDataGridView.Rows.Count - 1, originalDataGridView.Rows.Count - 1)
-                For Each columnIndex In columnIndices
-                    Dim cellValue As Object = duplicateDataGridView.Rows(rowIndex).Cells(columnIndex).Value
-                    If cellValue IsNot Nothing Then
-                        originalDataGridView.Rows(rowIndex).Cells(columnIndex).Value = cellValue
-                    End If
-                Next
-            Next
-
-            ' Sum values for rows 0 to 16 in the original DataGridView
-            For i = 0 To Math.Min(originalDataGridView.Rows.Count - 1, 16)
-                For j = 0 To columnIndices.Length - 1
-                    Dim cellValue As Object = originalDataGridView.Rows(i).Cells(columnIndices(j)).Value
-                    If cellValue IsNot Nothing Then
-                        ' Check if value is numeric
-                        If IsNumeric(cellValue) Then
-                            totals(j) += CDbl(cellValue)
-                        Else
-                            ' Highlight the invalid cell and record error
-                            Dim invalidCell = originalDataGridView.Rows(i).Cells(columnIndices(j))
-                            HighlightCell(invalidCell)
-
-                            invalidCells.Add(invalidCell)
-
-                            ' Get the column name (header text)
-                            Dim columnName As String = originalDataGridView.Columns(columnIndices(j)).HeaderText
-
-                            ' Add detailed error message with column name
-                            errorMessages.Add($"Invalid value at Row {i + 1}, Column '{columnName}'.")
-                        End If
-                    End If
-                Next
-            Next
-
-            ' Assign totals to the second-to-last row of the original DataGridView
-            Dim targetRowIndex As Integer = originalDataGridView.Rows.Count - 2
-            If targetRowIndex >= 0 Then
-                For j = 0 To columnIndices.Length - 1
-                    originalDataGridView.Rows(targetRowIndex).Cells(columnIndices(j)).Value = totals(j)
-                Next
-            Else
-                Throw New IndexOutOfRangeException("Target row index is invalid.")
-            End If
-
-            ' Display all error messages if there are invalid cells
-            If errorMessages.Count > 0 Then
-                Throw New InvalidCastException(String.Join(Environment.NewLine, errorMessages))
-            End If
-
-        Catch ex As Exception
-            AppNotification.Show($"An error occurred: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
-        Finally
-            ' Reset the highlights for invalid cells after a delay
-            If invalidCells.Count > 0 Then
-                Dim resetTimer As New Timer With {.Interval = 3000} ' Highlight for 3 seconds
-                AddHandler resetTimer.Tick, Sub()
-                                                For Each cell In invalidCells
-                                                    cell.Style.BackColor = Color.White ' Reset to default
-                                                Next
-                                                resetTimer.Stop()
-                                                resetTimer.Dispose()
-                                            End Sub
-                resetTimer.Start()
-            End If
-        End Try
-    End Sub
-
-    ' Helper Method to Highlight a Cell
-    Private Sub HighlightCell(cell As DataGridViewCell)
-        cell.Style.BackColor = Color.LightCoral ' Use light red (LightCoral) for highlighting
-        cell.DataGridView.CurrentCell = cell ' Optionally focus on the first invalid cell
-    End Sub
-
-
-
     Private Sub ProcessHoursBreakdown()
-        ' Loop through rows in GView_DTR
-        For iRow = 0 To GView_DTR.Rows.Count - 3
+        ApplyDtrClassificationStyles()
+        DtrCalculations.ResetHourBreakdown()
 
-            Dim allEmpty As Boolean = Enumerable.Range(2, 9).All(Function(col) String.IsNullOrEmpty(CStr(GView_DTR.Rows(iRow).Cells(col).Value)))
+        ' Loop through rows in GView_DTR
+        For iRow = 0 To GView_DTR.Rows.Count - 1
+            If Not IsDtrDataRow(GView_DTR, iRow) Then Continue For
+
+            Dim rowIndex = iRow
+            Dim allEmpty As Boolean = Enumerable.Range(RawPunchStartColumnIndex, RawPunchEndColumnIndex - RawPunchStartColumnIndex + 1).All(Function(col) String.IsNullOrEmpty(CStr(GView_DTR.Rows(rowIndex).Cells(col).Value)))
             If allEmpty Then
                 Continue For
             End If
 
-            ' Parse time and extract values
-            Dim parsedTime_DTR_IN As DateTime
-            Parsed_StrToDate(GView_DTR.Rows(iRow).Cells(2).Value, parsedTime_DTR_IN)
-            Dim reportedTime As Integer = parsedTime_DTR_IN.Hour
-            Dim totalHours As Double = CDbl(GView_DTR.Rows(iRow).Cells(14).Value)
+            Dim calculation As DtrDayCalculation = Nothing
+            If Not TryGetCalculationForDtrRow(GView_DTR.Rows(iRow), calculation) Then Continue For
 
-            Dim firstDate As String = GetFirstDate(GView_DTR.Rows(iRow).Cells(0)?.Value?.ToString())
+            Dim totalHours As Double = CDbl(calculation.TotalHours)
+
+            Dim firstDate As String = GetFirstDate(GView_DTR.Rows(iRow).Cells(DtrDateColumnIndex)?.Value?.ToString())
             Dim parsedDate = ParseDate(firstDate)
             If parsedDate Is Nothing Then Throw New Exception("Invalid Date")
 
@@ -552,117 +882,55 @@ Public Class FRM_DTR_BIOMETRIC
             Dim regHours As Double = If(schedTotalWorkHours >= 16, 16, 8)
             Dim otHours As Double = 0
 
-            ' Reset all current row columns (15 to 26) to 0
-            ResetCells(GView_DTR.Rows(iRow), 15, 21)
-
             ' Process regular hours and OT logic
-            ProcessRegularAndOTHours(GView_DTR.Rows(iRow), totalHours, regHours, otHours)
-
-            ' Set OT value in the last column
-            GView_DTR.Rows(iRow).Cells(19).Value = otHours
+            ProcessRegularAndOTHours(GView_DTR.Rows(iRow), calculation, totalHours, regHours, otHours)
+            calculation.RegularOvertimeHours = CDec(otHours)
         Next
-
-        ' Array to store column indices for each hour type
-        Dim columns As Integer() = {14, 15, 16, 17, 18, 19}
-        Dim totals(5) As Double ' Initialize totals array
-
-
-        Try
-
-
-            ' Sum values for rows 0 to 16
-            For i = 0 To 16
-                For j = 0 To columns.Length - 1
-                    totals(j) += CDbl(GView_DTR.Rows(i).Cells(columns(j)).Value)
-                Next
-            Next
-
-            ' Assign totals to row 17
-            For j = 0 To columns.Length - 1
-                GView_DTR.Rows(GView_DTR.Rows.Count - 2).Cells(columns(j)).Value = totals(j)
-            Next
-
-        Catch ex As Exception
-            AppNotification.Show($"An error occurred: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
-        End Try
 
     End Sub
 
     ' Helper function to handle regular hours and OT calculation
-    Private Sub ProcessRegularAndOTHours(row As DataGridViewRow, totalHours As Double, regHours As Double, ByRef otHours As Double)
-        ' Extract first day from the cell value (e.g., "Sunday - Monday" or "Saturday - Sunday")
-        Dim firstDay As String = String.Empty
-        Dim secondDay As String = String.Empty
+    Private Sub ProcessRegularAndOTHours(row As DataGridViewRow, calculation As DtrDayCalculation, totalHours As Double, regHours As Double, ByRef otHours As Double)
+        If calculation Is Nothing Then Return
 
-        If row.Cells(1).Value IsNot Nothing AndAlso row.Cells(1).Value.ToString().Contains("-") Then
-            ' Split only if the "-" exists
-            Dim parts As String() = row.Cells(1).Value.ToString().Split("-"c)
-            If parts.Length >= 2 Then
-                firstDay = parts(0).Trim()
-                secondDay = parts(1).Trim()
-            Else
-                ' Handle unexpected split results if somehow there's only one part
-                firstDay = parts(0).Trim()
-                secondDay = String.Empty ' or handle the default logic for only one part
-            End If
-        Else
-            ' Handle the case where there's no "-" at all
-            firstDay = row.Cells(1).Value.ToString().Trim()
-            secondDay = String.Empty
-        End If
-
-        ' Determine where to assign the regular and OT hours
-        If firstDay = "Sunday" Or secondDay = "Sunday" Then
-            AssignHours(row, totalHours, regHours, 16, otHours)
-        Else ' Not Sunday
-            Select Case row.DefaultCellStyle.BackColor
-                Case Color.LightGreen ' Legal Holiday
-                    AssignHours(row, totalHours, regHours, 18, otHours)
-                Case Color.Yellow ' Special Holiday
-                    AssignHours(row, totalHours, regHours, 17, otHours)
-                Case Else ' Regular Day
-                    AssignHours(row, totalHours, regHours, 15, otHours)
-            End Select
-        End If
+        Select Case ClassificationForDtrRow(row)
+            Case "SUN"
+                calculation.Classification = "SUN"
+                AssignHours(calculation, totalHours, regHours, DtrCalculationMetric.SundayHours, otHours)
+            Case "SH"
+                calculation.Classification = "SH"
+                AssignHours(calculation, totalHours, regHours, DtrCalculationMetric.SpecialHolidayHours, otHours)
+            Case "LH"
+                calculation.Classification = "LH"
+                AssignHours(calculation, totalHours, regHours, DtrCalculationMetric.LegalHolidayHours, otHours)
+            Case Else
+                calculation.Classification = String.Empty
+                AssignHours(calculation, totalHours, regHours, DtrCalculationMetric.RegularHours, otHours)
+        End Select
     End Sub
 
     ' Helper function to assign hours
-    Private Sub AssignHours(row As DataGridViewRow, totalHours As Double, regHours As Double, cellIndex As Integer, ByRef otHours As Double)
+    Private Sub AssignHours(calculation As DtrDayCalculation, totalHours As Double, regHours As Double, metric As DtrCalculationMetric, ByRef otHours As Double)
+        Dim regularValue As Decimal
+
         If totalHours >= regHours Then
-            row.Cells(cellIndex).Value = Math.Round(regHours, 2)
+            regularValue = CDec(Math.Round(regHours, 2))
             otHours = Math.Round(totalHours - regHours, 2)
         Else
-            row.Cells(cellIndex).Value = Math.Round(totalHours, 2)
+            regularValue = CDec(Math.Round(totalHours, 2))
             otHours = 0
         End If
-    End Sub
 
-
-
-
-    Private Sub Chk_Sunday_CheckedChanged(sender As Object, e As EventArgs) Handles Chk_Sunday.CheckedChanged
-        If Chk_Sunday.Checked = True Then
-            For iRow = 0 To 16 ' Number of Days in Cut-Off
-
-                If GView_DTR.Rows(iRow).Cells(1).Value = "Sunday" Then
-                    GView_DTR.Rows(iRow).DefaultCellStyle.BackColor = Color.LightBlue
-                ElseIf GView_DTR.Rows(iRow).DefaultCellStyle.BackColor <> Color.Empty Then
-                    'GView_DTR.Rows(iRow).DefaultCellStyle.BackColor = Color.Empty
-                End If
-
-            Next
-        Else
-            For iRow = 0 To 16 ' Number of Days in Cut-Off
-
-                If GView_DTR.Rows(iRow).Cells(1).Value = "Sunday" Then
-                    GView_DTR.Rows(iRow).DefaultCellStyle.BackColor = Color.Empty
-                ElseIf GView_DTR.Rows(iRow).DefaultCellStyle.BackColor <> Color.Empty Then
-
-                End If
-
-            Next
-
-        End If
+        Select Case metric
+            Case DtrCalculationMetric.RegularHours
+                calculation.RegularHours = regularValue
+            Case DtrCalculationMetric.SundayHours
+                calculation.SundayHours = regularValue
+            Case DtrCalculationMetric.SpecialHolidayHours
+                calculation.SpecialHolidayHours = regularValue
+            Case DtrCalculationMetric.LegalHolidayHours
+                calculation.LegalHolidayHours = regularValue
+        End Select
     End Sub
     Private Function GetDecimalFromTextBox(txt As TextBox) As Decimal
         If txt Is Nothing Then Return 0D
@@ -702,40 +970,41 @@ Public Class FRM_DTR_BIOMETRIC
                            GlobalVariables.DTR_Selected_Employee_ID)
 
     End Sub
+    Private Sub GView_DTR_CellEndEdit(sender As Object, e As DataGridViewCellEventArgs) Handles GView_DTR.CellEndEdit
+        If isRecalculatingDtr OrElse isRefreshingDtrViews Then Return
+        If e.RowIndex < 0 OrElse e.ColumnIndex < RawPunchStartColumnIndex OrElse e.ColumnIndex > RawPunchEndColumnIndex Then Return
 
-
-    Private Sub BtnSH_Click(sender As Object, e As EventArgs) Handles BtnSH.Click
-        GView_DTR.Rows(GView_DTR.CurrentCell.RowIndex).DefaultCellStyle.BackColor = Color.Yellow
-        ProcessHoursBreakdown()
-    End Sub
-    Private Sub BtnLH_Click(sender As Object, e As EventArgs) Handles BtnLH.Click
-        GView_DTR.Rows(GView_DTR.CurrentCell.RowIndex).DefaultCellStyle.BackColor = Color.LightGreen
-        ProcessHoursBreakdown()
+        RecalculateDtrFromTimeDetails()
     End Sub
 
-    Private Sub Btn_TimeCalcView_Click(sender As Object, e As EventArgs) Handles Btn_TimeCalcView.Click
-        TabControl2.SelectedTab = dtrBreakDownPage
+    Private Sub RecalculateDtrFromTimeDetails()
+        If isRecalculatingDtr Then Return
+
+        Try
+            isRecalculatingDtr = True
+            ClearTimeCalculationView()
+            Calculate_DTR()
+            ProcessHoursBreakdown()
+            RefreshDtrViews()
+        Finally
+            isRecalculatingDtr = False
+        End Try
     End Sub
 
-    Private Sub Btn_TimeDtlView_Click(sender As Object, e As EventArgs) Handles Btn_TimeDtlView.Click
-        TabControl2.SelectedTab = actualDtrPage
+    Private Sub RecalculateDtrFromClassifications()
+        If isRecalculatingDtr Then Return
+
+        Try
+            isRecalculatingDtr = True
+            ProcessHoursBreakdown()
+            RefreshDtrViews()
+        Finally
+            isRecalculatingDtr = False
+        End Try
     End Sub
 
-    Private Sub Btn_Calc_DTR_Click_1(sender As Object, e As EventArgs) Handles Btn_Calc_DTR.Click
-        RemoveDataGridViewByName(DTR_TimeCalculationPanel, "Duplicate_DGV")
-        ShowOriginalDataGridViewColumns(GView_DTR)
-        Calculate_DTR()
-        ProcessHoursBreakdown()
-        DuplicateAndHideDtrDGView()
-        TabControl2.SelectedTab = dtrBreakDownPage
-    End Sub
     Private Function IsTextBoxNullOrEmpty(txt As TextBox) As Boolean
         Return txt Is Nothing OrElse String.IsNullOrWhiteSpace(txt.Text)
     End Function
-
-    Private Sub dtrBreakDownPage_Click(sender As Object, e As EventArgs) Handles dtrBreakDownPage.Click
-
-    End Sub
-
 
 End Class

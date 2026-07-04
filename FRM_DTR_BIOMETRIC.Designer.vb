@@ -1,8 +1,7 @@
-﻿<Global.Microsoft.VisualBasic.CompilerServices.DesignerGenerated()>
+<Global.Microsoft.VisualBasic.CompilerServices.DesignerGenerated()>
 Partial Class FRM_DTR_BIOMETRIC
     Inherits System.Windows.Forms.Form
 
-    'Form overrides dispose to clean up the component list.
     <System.Diagnostics.DebuggerNonUserCode()>
     Protected Overrides Sub Dispose(ByVal disposing As Boolean)
         Try
@@ -14,34 +13,38 @@ Partial Class FRM_DTR_BIOMETRIC
         End Try
     End Sub
 
-    'Required by the Windows Form Designer
     Private components As System.ComponentModel.IContainer
 
-    'NOTE: The following procedure is required by the Windows Form Designer
-    'It can be modified using the Windows Form Designer.  
-    'Do not modify it using the code editor.
     <System.Diagnostics.DebuggerStepThrough()>
     Private Sub InitializeComponent()
-        Dim DataGridViewCellStyle23 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
-        Dim DataGridViewCellStyle13 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
-        Dim DataGridViewCellStyle14 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
-        Dim DataGridViewCellStyle15 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
-        Dim DataGridViewCellStyle16 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
-        Dim DataGridViewCellStyle17 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
-        Dim DataGridViewCellStyle18 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
-        Dim DataGridViewCellStyle19 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
-        Dim DataGridViewCellStyle20 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
-        Dim DataGridViewCellStyle21 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
-        Dim DataGridViewCellStyle22 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
-        Dim DataGridViewCellStyle24 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
-        Me.Panel1 = New System.Windows.Forms.Panel()
-        Me.Btn_DTR = New System.Windows.Forms.Button()
+        Dim DataGridViewCellStyle1 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
+        Dim DataGridViewCellStyle2 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
+        Dim DataGridViewCellStyle3 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
+        Dim DataGridViewCellStyle4 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
+        Dim DataGridViewCellStyle5 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
+        Dim DataGridViewCellStyle6 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
+        Dim DataGridViewCellStyle7 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
+        Dim DataGridViewCellStyle8 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
+        Dim DataGridViewCellStyle9 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
+        Dim DataGridViewCellStyle10 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
+        Me.rootPanel = New System.Windows.Forms.TableLayoutPanel()
         Me.TabControl1 = New System.Windows.Forms.TabControl()
         Me.TabPage1 = New System.Windows.Forms.TabPage()
+        Me.dtrRootPanel = New System.Windows.Forms.TableLayoutPanel()
+        Me.dtrHeaderPanel = New System.Windows.Forms.TableLayoutPanel()
+        Me.dtrWorkspacePanel = New System.Windows.Forms.TableLayoutPanel()
+        Me.Label2 = New System.Windows.Forms.Label()
+        Me.Lbl_IDNumber = New System.Windows.Forms.Label()
+        Me.Label1 = New System.Windows.Forms.Label()
+        Me.Lbl_Name = New System.Windows.Forms.Label()
+        Me.Label13 = New System.Windows.Forms.Label()
+        Me.Lbl_Actual_Rep_Days = New System.Windows.Forms.Label()
+        Me.Label3 = New System.Windows.Forms.Label()
         Me.DTR_Lbl_Period = New System.Windows.Forms.Label()
-        Me.TabControl2 = New System.Windows.Forms.TabControl()
-        Me.actualDtrPage = New System.Windows.Forms.TabPage()
-        Me.Btn_Calc_DTR = New System.Windows.Forms.Button()
+        Me.Label15 = New System.Windows.Forms.Label()
+        Me.Lbl_ND_Days = New System.Windows.Forms.Label()
+        Me.actualRootPanel = New System.Windows.Forms.TableLayoutPanel()
+        Me.actualToolPanel = New System.Windows.Forms.FlowLayoutPanel()
         Me.Btn_TimeCalcView = New System.Windows.Forms.Button()
         Me.GView_DTR = New System.Windows.Forms.DataGridView()
         Me.DataGridViewTextBoxColumn1 = New System.Windows.Forms.DataGridViewTextBoxColumn()
@@ -54,40 +57,14 @@ Partial Class FRM_DTR_BIOMETRIC
         Me.DataGridViewTextBoxColumn8 = New System.Windows.Forms.DataGridViewTextBoxColumn()
         Me.ExtraTimeIn1 = New System.Windows.Forms.DataGridViewTextBoxColumn()
         Me.ExtraTimeOut1 = New System.Windows.Forms.DataGridViewTextBoxColumn()
-        Me.DataGridViewTextBoxColumn9 = New System.Windows.Forms.DataGridViewTextBoxColumn()
-        Me.DataGridViewTextBoxColumn10 = New System.Windows.Forms.DataGridViewTextBoxColumn()
-        Me.DataGridViewTextBoxColumn11 = New System.Windows.Forms.DataGridViewTextBoxColumn()
-        Me.DataGridViewTextBoxColumn12 = New System.Windows.Forms.DataGridViewTextBoxColumn()
-        Me.DataGridViewTextBoxColumn13 = New System.Windows.Forms.DataGridViewTextBoxColumn()
-        Me.REG_REG = New System.Windows.Forms.DataGridViewTextBoxColumn()
-        Me.REG_SUN = New System.Windows.Forms.DataGridViewTextBoxColumn()
-        Me.REG_SH = New System.Windows.Forms.DataGridViewTextBoxColumn()
-        Me.REG_LH = New System.Windows.Forms.DataGridViewTextBoxColumn()
-        Me.OT_REG = New System.Windows.Forms.DataGridViewTextBoxColumn()
-        Me.FirstTimeIn = New System.Windows.Forms.DataGridViewTextBoxColumn()
-        Me.LastTimeOut = New System.Windows.Forms.DataGridViewTextBoxColumn()
-        Me.BtnSH = New System.Windows.Forms.Button()
-        Me.Chk_Sunday = New System.Windows.Forms.CheckBox()
-        Me.BtnLH = New System.Windows.Forms.Button()
-        Me.Label7 = New System.Windows.Forms.Label()
-        Me.Label6 = New System.Windows.Forms.Label()
-        Me.dtrBreakDownPage = New System.Windows.Forms.TabPage()
-        Me.Btn_Save_DTR = New System.Windows.Forms.Button()
-        Me.Btn_TimeDtlView = New System.Windows.Forms.Button()
+        Me.GView_Classification = New System.Windows.Forms.DataGridView()
+        Me.breakdownRootPanel = New System.Windows.Forms.TableLayoutPanel()
         Me.DTR_TimeCalculationPanel = New System.Windows.Forms.Panel()
-        Me.btn_Breakdown = New System.Windows.Forms.Button()
-        Me.Lbl_IDNumber = New System.Windows.Forms.Label()
-        Me.Lbl_Name = New System.Windows.Forms.Label()
-        Me.Label3 = New System.Windows.Forms.Label()
-        Me.Label2 = New System.Windows.Forms.Label()
-        Me.Label1 = New System.Windows.Forms.Label()
+        Me.GView_TimeCalculation = New System.Windows.Forms.DataGridView()
+        Me.breakdownActionPanel = New System.Windows.Forms.TableLayoutPanel()
+        Me.Btn_Save_DTR = New System.Windows.Forms.Button()
         Me.TabPage2 = New System.Windows.Forms.TabPage()
-        Me.Lbl_Num_of_Reporting_Days = New System.Windows.Forms.Label()
-        Me.Label11 = New System.Windows.Forms.Label()
-        Me.Label10 = New System.Windows.Forms.Label()
-        Me.Label5 = New System.Windows.Forms.Label()
-        Me.Lbl_Absent_Count = New System.Windows.Forms.Label()
-        Me.Label9 = New System.Windows.Forms.Label()
+        Me.scheduleRootPanel = New System.Windows.Forms.TableLayoutPanel()
         Me.Label4 = New System.Windows.Forms.Label()
         Me.GView_Schedule = New System.Windows.Forms.DataGridView()
         Me.Col_DayNum = New System.Windows.Forms.DataGridViewTextBoxColumn()
@@ -98,170 +75,347 @@ Partial Class FRM_DTR_BIOMETRIC
         Me.Col_FlagShift = New System.Windows.Forms.DataGridViewTextBoxColumn()
         Me.Col_ID = New System.Windows.Forms.DataGridViewTextBoxColumn()
         Me.Col_Attendance = New System.Windows.Forms.DataGridViewTextBoxColumn()
-        Me.OpenFileDialog1 = New System.Windows.Forms.OpenFileDialog()
+        Me.scheduleSummaryPanel = New System.Windows.Forms.TableLayoutPanel()
+        Me.Label5 = New System.Windows.Forms.Label()
+        Me.Label11 = New System.Windows.Forms.Label()
+        Me.Label10 = New System.Windows.Forms.Label()
+        Me.Lbl_Num_of_Reporting_Days = New System.Windows.Forms.Label()
+        Me.Label9 = New System.Windows.Forms.Label()
+        Me.Lbl_Absent_Count = New System.Windows.Forms.Label()
+        Me.Panel1 = New System.Windows.Forms.Panel()
         Me.Label8 = New System.Windows.Forms.Label()
-        Me.Lbl_Actual_Rep_Days = New System.Windows.Forms.Label()
-        Me.Label13 = New System.Windows.Forms.Label()
-        Me.Lbl_ND_Days = New System.Windows.Forms.Label()
-        Me.Label15 = New System.Windows.Forms.Label()
+        Me.OpenFileDialog1 = New System.Windows.Forms.OpenFileDialog()
+        Me.rootPanel.SuspendLayout()
         Me.TabControl1.SuspendLayout()
         Me.TabPage1.SuspendLayout()
-        Me.TabControl2.SuspendLayout()
-        Me.actualDtrPage.SuspendLayout()
+        Me.dtrRootPanel.SuspendLayout()
+        Me.dtrHeaderPanel.SuspendLayout()
+        Me.dtrWorkspacePanel.SuspendLayout()
+        Me.actualRootPanel.SuspendLayout()
+        Me.actualToolPanel.SuspendLayout()
         CType(Me.GView_DTR, System.ComponentModel.ISupportInitialize).BeginInit()
-        Me.dtrBreakDownPage.SuspendLayout()
+        CType(Me.GView_Classification, System.ComponentModel.ISupportInitialize).BeginInit()
+        Me.breakdownRootPanel.SuspendLayout()
+        CType(Me.GView_TimeCalculation, System.ComponentModel.ISupportInitialize).BeginInit()
+        Me.breakdownActionPanel.SuspendLayout()
         Me.TabPage2.SuspendLayout()
+        Me.scheduleRootPanel.SuspendLayout()
         CType(Me.GView_Schedule, System.ComponentModel.ISupportInitialize).BeginInit()
+        Me.scheduleSummaryPanel.SuspendLayout()
         Me.SuspendLayout()
         '
-        'Panel1
+        'rootPanel
         '
-        Me.Panel1.BackColor = System.Drawing.Color.Maroon
-        Me.Panel1.Dock = System.Windows.Forms.DockStyle.Top
-        Me.Panel1.Location = New System.Drawing.Point(0, 0)
-        Me.Panel1.Name = "Panel1"
-        Me.Panel1.Size = New System.Drawing.Size(1919, 32)
-        Me.Panel1.TabIndex = 4
-        '
-        'Btn_DTR
-        '
-        Me.Btn_DTR.BackColor = System.Drawing.Color.Teal
-        Me.Btn_DTR.Cursor = System.Windows.Forms.Cursors.Hand
-        Me.Btn_DTR.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(CType(CType(255, Byte), Integer), CType(CType(128, Byte), Integer), CType(CType(0, Byte), Integer))
-        Me.Btn_DTR.FlatAppearance.MouseOverBackColor = System.Drawing.Color.Cyan
-        Me.Btn_DTR.FlatStyle = System.Windows.Forms.FlatStyle.Flat
-        Me.Btn_DTR.Font = New System.Drawing.Font("Microsoft Sans Serif", 12.0!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.Btn_DTR.ForeColor = System.Drawing.SystemColors.ControlLightLight
-        Me.Btn_DTR.Location = New System.Drawing.Point(6, 651)
-        Me.Btn_DTR.Name = "Btn_DTR"
-        Me.Btn_DTR.Size = New System.Drawing.Size(1782, 51)
-        Me.Btn_DTR.TabIndex = 62
-        Me.Btn_DTR.Text = "UPLOAD DTR"
-        Me.Btn_DTR.UseVisualStyleBackColor = False
+        Me.rootPanel.BackColor = System.Drawing.Color.FromArgb(255, 192, 128)
+        Me.rootPanel.ColumnCount = 1
+        Me.rootPanel.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100.0!))
+        Me.rootPanel.Controls.Add(Me.TabControl1, 0, 0)
+        Me.rootPanel.Dock = System.Windows.Forms.DockStyle.Fill
+        Me.rootPanel.Location = New System.Drawing.Point(0, 0)
+        Me.rootPanel.Name = "rootPanel"
+        Me.rootPanel.Padding = New System.Windows.Forms.Padding(10)
+        Me.rootPanel.RowCount = 1
+        Me.rootPanel.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100.0!))
+        Me.rootPanel.Size = New System.Drawing.Size(1220, 720)
+        Me.rootPanel.TabIndex = 0
         '
         'TabControl1
         '
         Me.TabControl1.Controls.Add(Me.TabPage1)
         Me.TabControl1.Controls.Add(Me.TabPage2)
-        Me.TabControl1.Font = New System.Drawing.Font("Microsoft Sans Serif", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.TabControl1.ItemSize = New System.Drawing.Size(60, 25)
-        Me.TabControl1.Location = New System.Drawing.Point(12, 38)
+        Me.TabControl1.Dock = System.Windows.Forms.DockStyle.Fill
+        Me.TabControl1.Font = New System.Drawing.Font("Verdana", 9.75!, System.Drawing.FontStyle.Regular)
+        Me.TabControl1.Location = New System.Drawing.Point(13, 13)
         Me.TabControl1.Name = "TabControl1"
         Me.TabControl1.SelectedIndex = 0
-        Me.TabControl1.Size = New System.Drawing.Size(1860, 881)
+        Me.TabControl1.Size = New System.Drawing.Size(1194, 694)
         Me.TabControl1.TabIndex = 65
         '
         'TabPage1
         '
-        Me.TabPage1.AutoScroll = True
-        Me.TabPage1.BackColor = System.Drawing.Color.FromArgb(CType(CType(255, Byte), Integer), CType(CType(192, Byte), Integer), CType(CType(128, Byte), Integer))
-        Me.TabPage1.Controls.Add(Me.Lbl_ND_Days)
-        Me.TabPage1.Controls.Add(Me.Label15)
-        Me.TabPage1.Controls.Add(Me.Lbl_Actual_Rep_Days)
-        Me.TabPage1.Controls.Add(Me.Label13)
-        Me.TabPage1.Controls.Add(Me.DTR_Lbl_Period)
-        Me.TabPage1.Controls.Add(Me.TabControl2)
-        Me.TabPage1.Controls.Add(Me.Lbl_IDNumber)
-        Me.TabPage1.Controls.Add(Me.Lbl_Name)
-        Me.TabPage1.Controls.Add(Me.Label3)
-        Me.TabPage1.Controls.Add(Me.Label2)
-        Me.TabPage1.Controls.Add(Me.Label1)
-        Me.TabPage1.Font = New System.Drawing.Font("Microsoft Sans Serif", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.TabPage1.Location = New System.Drawing.Point(4, 29)
+        Me.TabPage1.BackColor = System.Drawing.Color.FromArgb(255, 192, 128)
+        Me.TabPage1.Controls.Add(Me.dtrRootPanel)
+        Me.TabPage1.Location = New System.Drawing.Point(4, 25)
         Me.TabPage1.Name = "TabPage1"
-        Me.TabPage1.Padding = New System.Windows.Forms.Padding(3)
-        Me.TabPage1.Size = New System.Drawing.Size(1852, 848)
+        Me.TabPage1.Padding = New System.Windows.Forms.Padding(6)
+        Me.TabPage1.Size = New System.Drawing.Size(1186, 665)
         Me.TabPage1.TabIndex = 0
-        Me.TabPage1.Text = "     DTR        "
+        Me.TabPage1.Text = "DTR"
+        '
+        'dtrRootPanel
+        '
+        Me.dtrRootPanel.ColumnCount = 2
+        Me.dtrRootPanel.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 74.0!))
+        Me.dtrRootPanel.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 26.0!))
+        Me.dtrRootPanel.Controls.Add(Me.dtrWorkspacePanel, 0, 1)
+        Me.dtrRootPanel.Controls.Add(Me.dtrHeaderPanel, 1, 1)
+        Me.dtrRootPanel.Dock = System.Windows.Forms.DockStyle.Fill
+        Me.dtrRootPanel.Location = New System.Drawing.Point(6, 6)
+        Me.dtrRootPanel.Name = "dtrRootPanel"
+        Me.dtrRootPanel.RowCount = 2
+        Me.dtrRootPanel.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 0!))
+        Me.dtrRootPanel.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100.0!))
+        Me.dtrRootPanel.Size = New System.Drawing.Size(1174, 653)
+        Me.dtrRootPanel.TabIndex = 0
+        '
+        'dtrHeaderPanel
+        '
+        Me.dtrHeaderPanel.BackColor = System.Drawing.Color.FromArgb(255, 192, 128)
+        Me.dtrHeaderPanel.ColumnCount = 2
+        Me.dtrHeaderPanel.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 45.0!))
+        Me.dtrHeaderPanel.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 55.0!))
+        Me.dtrHeaderPanel.Controls.Add(Me.Label2, 0, 0)
+        Me.dtrHeaderPanel.Controls.Add(Me.Lbl_IDNumber, 1, 0)
+        Me.dtrHeaderPanel.Controls.Add(Me.Label1, 0, 1)
+        Me.dtrHeaderPanel.Controls.Add(Me.Lbl_Name, 1, 1)
+        Me.dtrHeaderPanel.Controls.Add(Me.Label3, 0, 2)
+        Me.dtrHeaderPanel.Controls.Add(Me.DTR_Lbl_Period, 1, 2)
+        Me.dtrHeaderPanel.Controls.Add(Me.Label13, 0, 3)
+        Me.dtrHeaderPanel.Controls.Add(Me.Lbl_Actual_Rep_Days, 1, 3)
+        Me.dtrHeaderPanel.Controls.Add(Me.Label15, 0, 4)
+        Me.dtrHeaderPanel.Controls.Add(Me.Lbl_ND_Days, 1, 4)
+        Me.dtrHeaderPanel.Dock = System.Windows.Forms.DockStyle.Fill
+        Me.dtrHeaderPanel.Location = New System.Drawing.Point(871, 3)
+        Me.dtrHeaderPanel.Name = "dtrHeaderPanel"
+        Me.dtrHeaderPanel.Padding = New System.Windows.Forms.Padding(6)
+        Me.dtrHeaderPanel.RowCount = 6
+        Me.dtrHeaderPanel.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 44.0!))
+        Me.dtrHeaderPanel.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 44.0!))
+        Me.dtrHeaderPanel.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 44.0!))
+        Me.dtrHeaderPanel.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 44.0!))
+        Me.dtrHeaderPanel.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 44.0!))
+        Me.dtrHeaderPanel.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100.0!))
+        Me.dtrHeaderPanel.Size = New System.Drawing.Size(300, 647)
+        Me.dtrHeaderPanel.TabIndex = 0
+        '
+        'dtrWorkspacePanel
+        '
+        Me.dtrWorkspacePanel.BackColor = System.Drawing.Color.FromArgb(255, 192, 128)
+        Me.dtrWorkspacePanel.ColumnCount = 1
+        Me.dtrWorkspacePanel.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100.0!))
+        Me.dtrWorkspacePanel.Controls.Add(Me.actualRootPanel, 0, 0)
+        Me.dtrWorkspacePanel.Controls.Add(Me.GView_Classification, 0, 1)
+        Me.dtrWorkspacePanel.Controls.Add(Me.breakdownRootPanel, 0, 2)
+        Me.dtrWorkspacePanel.Dock = System.Windows.Forms.DockStyle.Fill
+        Me.dtrWorkspacePanel.Location = New System.Drawing.Point(3, 3)
+        Me.dtrWorkspacePanel.Name = "dtrWorkspacePanel"
+        Me.dtrWorkspacePanel.RowCount = 3
+        Me.dtrWorkspacePanel.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 41.0!))
+        Me.dtrWorkspacePanel.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 20.0!))
+        Me.dtrWorkspacePanel.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 39.0!))
+        Me.dtrWorkspacePanel.Size = New System.Drawing.Size(862, 647)
+        Me.dtrWorkspacePanel.TabIndex = 1
+        '
+        'Label2
+        '
+        Me.Label2.Dock = System.Windows.Forms.DockStyle.Fill
+        Me.Label2.Font = New System.Drawing.Font("Verdana", 8.5!, System.Drawing.FontStyle.Bold)
+        Me.Label2.ForeColor = System.Drawing.Color.Teal
+        Me.Label2.Location = New System.Drawing.Point(9, 6)
+        Me.Label2.Name = "Label2"
+        Me.Label2.Size = New System.Drawing.Size(134, 34)
+        Me.Label2.TabIndex = 3
+        Me.Label2.Text = "Employee ID"
+        Me.Label2.TextAlign = System.Drawing.ContentAlignment.MiddleRight
+        '
+        'Lbl_IDNumber
+        '
+        Me.Lbl_IDNumber.AutoEllipsis = True
+        Me.Lbl_IDNumber.BackColor = System.Drawing.Color.FromArgb(255, 224, 192)
+        Me.Lbl_IDNumber.Dock = System.Windows.Forms.DockStyle.Fill
+        Me.Lbl_IDNumber.Font = New System.Drawing.Font("Verdana", 9.25!, System.Drawing.FontStyle.Bold)
+        Me.Lbl_IDNumber.ForeColor = System.Drawing.Color.Blue
+        Me.Lbl_IDNumber.Location = New System.Drawing.Point(149, 9)
+        Me.Lbl_IDNumber.Margin = New System.Windows.Forms.Padding(3)
+        Me.Lbl_IDNumber.Name = "Lbl_IDNumber"
+        Me.Lbl_IDNumber.Padding = New System.Windows.Forms.Padding(8, 0, 0, 0)
+        Me.Lbl_IDNumber.Size = New System.Drawing.Size(223, 28)
+        Me.Lbl_IDNumber.TabIndex = 7
+        Me.Lbl_IDNumber.Text = "-"
+        Me.Lbl_IDNumber.TextAlign = System.Drawing.ContentAlignment.MiddleLeft
+        '
+        'Label1
+        '
+        Me.Label1.Dock = System.Windows.Forms.DockStyle.Fill
+        Me.Label1.Font = New System.Drawing.Font("Verdana", 8.5!, System.Drawing.FontStyle.Bold)
+        Me.Label1.ForeColor = System.Drawing.Color.Teal
+        Me.Label1.Location = New System.Drawing.Point(378, 6)
+        Me.Label1.Name = "Label1"
+        Me.Label1.Size = New System.Drawing.Size(144, 34)
+        Me.Label1.TabIndex = 2
+        Me.Label1.Text = "Employee Name"
+        Me.Label1.TextAlign = System.Drawing.ContentAlignment.MiddleRight
+        '
+        'Lbl_Name
+        '
+        Me.Lbl_Name.AutoEllipsis = True
+        Me.Lbl_Name.BackColor = System.Drawing.Color.FromArgb(255, 224, 192)
+        Me.Lbl_Name.Dock = System.Windows.Forms.DockStyle.Fill
+        Me.Lbl_Name.Font = New System.Drawing.Font("Verdana", 9.25!, System.Drawing.FontStyle.Bold)
+        Me.Lbl_Name.ForeColor = System.Drawing.Color.Blue
+        Me.Lbl_Name.Location = New System.Drawing.Point(528, 9)
+        Me.Lbl_Name.Margin = New System.Windows.Forms.Padding(3)
+        Me.Lbl_Name.Name = "Lbl_Name"
+        Me.Lbl_Name.Padding = New System.Windows.Forms.Padding(8, 0, 0, 0)
+        Me.Lbl_Name.Size = New System.Drawing.Size(217, 28)
+        Me.Lbl_Name.TabIndex = 5
+        Me.Lbl_Name.Text = "-"
+        Me.Lbl_Name.TextAlign = System.Drawing.ContentAlignment.MiddleLeft
+        '
+        'Label13
+        '
+        Me.Label13.Dock = System.Windows.Forms.DockStyle.Fill
+        Me.Label13.Font = New System.Drawing.Font("Verdana", 8.5!, System.Drawing.FontStyle.Bold)
+        Me.Label13.ForeColor = System.Drawing.Color.Teal
+        Me.Label13.Location = New System.Drawing.Point(751, 6)
+        Me.Label13.Name = "Label13"
+        Me.Label13.Size = New System.Drawing.Size(184, 34)
+        Me.Label13.TabIndex = 17
+        Me.Label13.Text = "Actual Reporting Days"
+        Me.Label13.TextAlign = System.Drawing.ContentAlignment.MiddleRight
+        '
+        'Lbl_Actual_Rep_Days
+        '
+        Me.Lbl_Actual_Rep_Days.BackColor = System.Drawing.Color.FromArgb(255, 224, 192)
+        Me.Lbl_Actual_Rep_Days.Dock = System.Windows.Forms.DockStyle.Fill
+        Me.Lbl_Actual_Rep_Days.Font = New System.Drawing.Font("Verdana", 9.25!, System.Drawing.FontStyle.Bold)
+        Me.Lbl_Actual_Rep_Days.ForeColor = System.Drawing.Color.Blue
+        Me.Lbl_Actual_Rep_Days.Location = New System.Drawing.Point(941, 9)
+        Me.Lbl_Actual_Rep_Days.Margin = New System.Windows.Forms.Padding(3)
+        Me.Lbl_Actual_Rep_Days.Name = "Lbl_Actual_Rep_Days"
+        Me.Lbl_Actual_Rep_Days.Padding = New System.Windows.Forms.Padding(8, 0, 0, 0)
+        Me.Lbl_Actual_Rep_Days.Size = New System.Drawing.Size(218, 28)
+        Me.Lbl_Actual_Rep_Days.TabIndex = 18
+        Me.Lbl_Actual_Rep_Days.Text = "-"
+        Me.Lbl_Actual_Rep_Days.TextAlign = System.Drawing.ContentAlignment.MiddleLeft
+        '
+        'Label3
+        '
+        Me.Label3.Dock = System.Windows.Forms.DockStyle.Fill
+        Me.Label3.Font = New System.Drawing.Font("Verdana", 8.5!, System.Drawing.FontStyle.Bold)
+        Me.Label3.ForeColor = System.Drawing.Color.Teal
+        Me.Label3.Location = New System.Drawing.Point(9, 40)
+        Me.Label3.Name = "Label3"
+        Me.Label3.Size = New System.Drawing.Size(134, 34)
+        Me.Label3.TabIndex = 4
+        Me.Label3.Text = "DTR Period"
+        Me.Label3.TextAlign = System.Drawing.ContentAlignment.MiddleRight
         '
         'DTR_Lbl_Period
         '
-        Me.DTR_Lbl_Period.AutoSize = True
-        Me.DTR_Lbl_Period.ForeColor = System.Drawing.Color.FromArgb(CType(CType(0, Byte), Integer), CType(CType(0, Byte), Integer), CType(CType(192, Byte), Integer))
-        Me.DTR_Lbl_Period.Location = New System.Drawing.Point(130, 71)
+        Me.DTR_Lbl_Period.AutoEllipsis = True
+        Me.DTR_Lbl_Period.BackColor = System.Drawing.Color.FromArgb(255, 224, 192)
+        Me.DTR_Lbl_Period.Dock = System.Windows.Forms.DockStyle.Fill
+        Me.DTR_Lbl_Period.Font = New System.Drawing.Font("Verdana", 9.25!, System.Drawing.FontStyle.Bold)
+        Me.DTR_Lbl_Period.ForeColor = System.Drawing.Color.Blue
+        Me.DTR_Lbl_Period.Location = New System.Drawing.Point(149, 43)
+        Me.DTR_Lbl_Period.Margin = New System.Windows.Forms.Padding(3)
         Me.DTR_Lbl_Period.Name = "DTR_Lbl_Period"
-        Me.DTR_Lbl_Period.Size = New System.Drawing.Size(14, 20)
+        Me.DTR_Lbl_Period.Padding = New System.Windows.Forms.Padding(8, 0, 0, 0)
+        Me.DTR_Lbl_Period.Size = New System.Drawing.Size(223, 28)
         Me.DTR_Lbl_Period.TabIndex = 16
         Me.DTR_Lbl_Period.Text = "-"
+        Me.DTR_Lbl_Period.TextAlign = System.Drawing.ContentAlignment.MiddleLeft
         '
-        'TabControl2
+        'Label15
         '
-        Me.TabControl2.Controls.Add(Me.actualDtrPage)
-        Me.TabControl2.Controls.Add(Me.dtrBreakDownPage)
-        Me.TabControl2.Location = New System.Drawing.Point(32, 101)
-        Me.TabControl2.Name = "TabControl2"
-        Me.TabControl2.SelectedIndex = 0
-        Me.TabControl2.Size = New System.Drawing.Size(1802, 741)
-        Me.TabControl2.TabIndex = 15
+        Me.Label15.Dock = System.Windows.Forms.DockStyle.Fill
+        Me.Label15.Font = New System.Drawing.Font("Verdana", 8.5!, System.Drawing.FontStyle.Bold)
+        Me.Label15.ForeColor = System.Drawing.Color.Teal
+        Me.Label15.Location = New System.Drawing.Point(751, 40)
+        Me.Label15.Name = "Label15"
+        Me.Label15.Size = New System.Drawing.Size(184, 34)
+        Me.Label15.TabIndex = 19
+        Me.Label15.Text = "Night Differential Days"
+        Me.Label15.TextAlign = System.Drawing.ContentAlignment.MiddleRight
         '
-        'actualDtrPage
+        'Lbl_ND_Days
         '
-        Me.actualDtrPage.BackColor = System.Drawing.Color.Wheat
-        Me.actualDtrPage.Controls.Add(Me.Btn_Calc_DTR)
-        Me.actualDtrPage.Controls.Add(Me.Btn_TimeCalcView)
-        Me.actualDtrPage.Controls.Add(Me.GView_DTR)
-        Me.actualDtrPage.Controls.Add(Me.BtnSH)
-        Me.actualDtrPage.Controls.Add(Me.Chk_Sunday)
-        Me.actualDtrPage.Controls.Add(Me.Btn_DTR)
-        Me.actualDtrPage.Controls.Add(Me.BtnLH)
-        Me.actualDtrPage.Controls.Add(Me.Label7)
-        Me.actualDtrPage.Controls.Add(Me.Label6)
-        Me.actualDtrPage.Location = New System.Drawing.Point(4, 29)
-        Me.actualDtrPage.Name = "actualDtrPage"
-        Me.actualDtrPage.Padding = New System.Windows.Forms.Padding(3)
-        Me.actualDtrPage.Size = New System.Drawing.Size(1794, 708)
-        Me.actualDtrPage.TabIndex = 0
-        Me.actualDtrPage.Text = "Time Details"
+        Me.Lbl_ND_Days.BackColor = System.Drawing.Color.FromArgb(255, 224, 192)
+        Me.Lbl_ND_Days.Dock = System.Windows.Forms.DockStyle.Fill
+        Me.Lbl_ND_Days.Font = New System.Drawing.Font("Verdana", 9.25!, System.Drawing.FontStyle.Bold)
+        Me.Lbl_ND_Days.ForeColor = System.Drawing.Color.Blue
+        Me.Lbl_ND_Days.Location = New System.Drawing.Point(941, 43)
+        Me.Lbl_ND_Days.Margin = New System.Windows.Forms.Padding(3)
+        Me.Lbl_ND_Days.Name = "Lbl_ND_Days"
+        Me.Lbl_ND_Days.Padding = New System.Windows.Forms.Padding(8, 0, 0, 0)
+        Me.Lbl_ND_Days.Size = New System.Drawing.Size(218, 28)
+        Me.Lbl_ND_Days.TabIndex = 20
+        Me.Lbl_ND_Days.Text = "-"
+        Me.Lbl_ND_Days.TextAlign = System.Drawing.ContentAlignment.MiddleLeft
         '
-        'Btn_Calc_DTR
+        'actualRootPanel
         '
-        Me.Btn_Calc_DTR.BackColor = System.Drawing.Color.OliveDrab
-        Me.Btn_Calc_DTR.Cursor = System.Windows.Forms.Cursors.Hand
-        Me.Btn_Calc_DTR.FlatStyle = System.Windows.Forms.FlatStyle.Flat
-        Me.Btn_Calc_DTR.Font = New System.Drawing.Font("Microsoft Sans Serif", 12.0!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.Btn_Calc_DTR.ForeColor = System.Drawing.SystemColors.ControlLightLight
-        Me.Btn_Calc_DTR.Location = New System.Drawing.Point(6, 593)
-        Me.Btn_Calc_DTR.Name = "Btn_Calc_DTR"
-        Me.Btn_Calc_DTR.Size = New System.Drawing.Size(1779, 52)
-        Me.Btn_Calc_DTR.TabIndex = 75
-        Me.Btn_Calc_DTR.Text = "Calculate Modified DTR/Time Details"
-        Me.Btn_Calc_DTR.UseVisualStyleBackColor = False
+        Me.actualRootPanel.ColumnCount = 1
+        Me.actualRootPanel.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100.0!))
+        Me.actualRootPanel.Controls.Add(Me.actualToolPanel, 0, 0)
+        Me.actualRootPanel.Controls.Add(Me.GView_DTR, 0, 1)
+        Me.actualRootPanel.Dock = System.Windows.Forms.DockStyle.Fill
+        Me.actualRootPanel.Location = New System.Drawing.Point(3, 3)
+        Me.actualRootPanel.Name = "actualRootPanel"
+        Me.actualRootPanel.RowCount = 2
+        Me.actualRootPanel.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 48.0!))
+        Me.actualRootPanel.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100.0!))
+        Me.actualRootPanel.Size = New System.Drawing.Size(1162, 319)
+        Me.actualRootPanel.TabIndex = 0
+        '
+        'actualToolPanel
+        '
+        Me.actualToolPanel.BackColor = System.Drawing.Color.FromArgb(255, 192, 128)
+        Me.actualToolPanel.Controls.Add(Me.Btn_TimeCalcView)
+        Me.actualToolPanel.Dock = System.Windows.Forms.DockStyle.Fill
+        Me.actualToolPanel.Location = New System.Drawing.Point(3, 3)
+        Me.actualToolPanel.Name = "actualToolPanel"
+        Me.actualToolPanel.Padding = New System.Windows.Forms.Padding(4, 6, 4, 0)
+        Me.actualToolPanel.Size = New System.Drawing.Size(1156, 42)
+        Me.actualToolPanel.TabIndex = 0
+        Me.actualToolPanel.WrapContents = True
         '
         'Btn_TimeCalcView
         '
-        Me.Btn_TimeCalcView.BackColor = System.Drawing.Color.SkyBlue
+        Me.Btn_TimeCalcView.BackColor = System.Drawing.Color.Teal
         Me.Btn_TimeCalcView.Cursor = System.Windows.Forms.Cursors.Hand
-        Me.Btn_TimeCalcView.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(CType(CType(255, Byte), Integer), CType(CType(128, Byte), Integer), CType(CType(0, Byte), Integer))
-        Me.Btn_TimeCalcView.FlatAppearance.MouseOverBackColor = System.Drawing.Color.Cyan
+        Me.Btn_TimeCalcView.FlatAppearance.BorderSize = 0
         Me.Btn_TimeCalcView.FlatStyle = System.Windows.Forms.FlatStyle.Flat
-        Me.Btn_TimeCalcView.Font = New System.Drawing.Font("Microsoft Sans Serif", 12.0!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.Btn_TimeCalcView.ForeColor = System.Drawing.SystemColors.ControlLightLight
-        Me.Btn_TimeCalcView.Location = New System.Drawing.Point(7, 7)
+        Me.Btn_TimeCalcView.ForeColor = System.Drawing.Color.White
+        Me.Btn_TimeCalcView.Location = New System.Drawing.Point(4, 8)
+        Me.Btn_TimeCalcView.Margin = New System.Windows.Forms.Padding(0, 2, 12, 0)
         Me.Btn_TimeCalcView.Name = "Btn_TimeCalcView"
-        Me.Btn_TimeCalcView.Size = New System.Drawing.Size(374, 58)
+        Me.Btn_TimeCalcView.Size = New System.Drawing.Size(180, 32)
         Me.Btn_TimeCalcView.TabIndex = 74
-        Me.Btn_TimeCalcView.Text = "Time Calculation View"
+        Me.Btn_TimeCalcView.Text = "Raw DTR"
         Me.Btn_TimeCalcView.UseVisualStyleBackColor = False
+        Me.Btn_TimeCalcView.Enabled = False
         '
         'GView_DTR
         '
+        Me.GView_DTR.AllowUserToAddRows = False
+        Me.GView_DTR.AlternatingRowsDefaultCellStyle.BackColor = System.Drawing.Color.FromArgb(255, 238, 214)
         Me.GView_DTR.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.DisplayedCells
+        Me.GView_DTR.BackgroundColor = System.Drawing.Color.FromArgb(255, 224, 192)
+        Me.GView_DTR.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle
+        Me.GView_DTR.ColumnHeadersDefaultCellStyle.BackColor = System.Drawing.Color.Teal
+        Me.GView_DTR.ColumnHeadersDefaultCellStyle.Font = New System.Drawing.Font("Verdana", 9.0!, System.Drawing.FontStyle.Bold)
+        Me.GView_DTR.ColumnHeadersDefaultCellStyle.ForeColor = System.Drawing.Color.White
         Me.GView_DTR.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize
-        Me.GView_DTR.Columns.AddRange(New System.Windows.Forms.DataGridViewColumn() {Me.DataGridViewTextBoxColumn1, Me.DataGridViewTextBoxColumn2, Me.DataGridViewTextBoxColumn3, Me.DataGridViewTextBoxColumn4, Me.DataGridViewTextBoxColumn5, Me.DataGridViewTextBoxColumn6, Me.DataGridViewTextBoxColumn7, Me.DataGridViewTextBoxColumn8, Me.ExtraTimeIn1, Me.ExtraTimeOut1, Me.DataGridViewTextBoxColumn9, Me.DataGridViewTextBoxColumn10, Me.DataGridViewTextBoxColumn11, Me.DataGridViewTextBoxColumn12, Me.DataGridViewTextBoxColumn13, Me.REG_REG, Me.REG_SUN, Me.REG_SH, Me.REG_LH, Me.OT_REG, Me.FirstTimeIn, Me.LastTimeOut})
-        DataGridViewCellStyle23.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft
-        DataGridViewCellStyle23.BackColor = System.Drawing.Color.White
-        DataGridViewCellStyle23.Font = New System.Drawing.Font("Microsoft Sans Serif", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        DataGridViewCellStyle23.ForeColor = System.Drawing.SystemColors.ControlText
-        DataGridViewCellStyle23.SelectionBackColor = System.Drawing.SystemColors.Highlight
-        DataGridViewCellStyle23.SelectionForeColor = System.Drawing.SystemColors.HighlightText
-        DataGridViewCellStyle23.WrapMode = System.Windows.Forms.DataGridViewTriState.[False]
-        Me.GView_DTR.DefaultCellStyle = DataGridViewCellStyle23
+        Me.GView_DTR.Columns.AddRange(New System.Windows.Forms.DataGridViewColumn() {Me.DataGridViewTextBoxColumn1, Me.DataGridViewTextBoxColumn2, Me.DataGridViewTextBoxColumn3, Me.DataGridViewTextBoxColumn4, Me.DataGridViewTextBoxColumn5, Me.DataGridViewTextBoxColumn6, Me.DataGridViewTextBoxColumn7, Me.DataGridViewTextBoxColumn8, Me.ExtraTimeIn1, Me.ExtraTimeOut1})
+        DataGridViewCellStyle1.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft
+        DataGridViewCellStyle1.BackColor = System.Drawing.Color.FromArgb(255, 224, 192)
+        DataGridViewCellStyle1.Font = New System.Drawing.Font("Verdana", 9.75!, System.Drawing.FontStyle.Regular)
+        DataGridViewCellStyle1.ForeColor = System.Drawing.Color.Black
+        DataGridViewCellStyle1.SelectionBackColor = System.Drawing.SystemColors.Highlight
+        DataGridViewCellStyle1.SelectionForeColor = System.Drawing.SystemColors.HighlightText
+        DataGridViewCellStyle1.WrapMode = System.Windows.Forms.DataGridViewTriState.[False]
+        Me.GView_DTR.DefaultCellStyle = DataGridViewCellStyle1
+        Me.GView_DTR.Dock = System.Windows.Forms.DockStyle.Fill
+        Me.GView_DTR.EnableHeadersVisualStyles = False
         Me.GView_DTR.GridColor = System.Drawing.SystemColors.ActiveCaptionText
-        Me.GView_DTR.Location = New System.Drawing.Point(6, 84)
+        Me.GView_DTR.Location = New System.Drawing.Point(3, 51)
         Me.GView_DTR.MultiSelect = False
         Me.GView_DTR.Name = "GView_DTR"
+        Me.GView_DTR.RowHeadersVisible = False
         Me.GView_DTR.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.CellSelect
-        Me.GView_DTR.Size = New System.Drawing.Size(1782, 503)
+        Me.GView_DTR.Size = New System.Drawing.Size(1156, 207)
         Me.GView_DTR.TabIndex = 1
         '
         'DataGridViewTextBoxColumn1
@@ -270,7 +424,7 @@ Partial Class FRM_DTR_BIOMETRIC
         Me.DataGridViewTextBoxColumn1.HeaderText = "Date"
         Me.DataGridViewTextBoxColumn1.Name = "DataGridViewTextBoxColumn1"
         Me.DataGridViewTextBoxColumn1.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable
-        Me.DataGridViewTextBoxColumn1.Width = 50
+        Me.DataGridViewTextBoxColumn1.Width = 49
         '
         'DataGridViewTextBoxColumn2
         '
@@ -278,7 +432,7 @@ Partial Class FRM_DTR_BIOMETRIC
         Me.DataGridViewTextBoxColumn2.HeaderText = "Day"
         Me.DataGridViewTextBoxColumn2.Name = "DataGridViewTextBoxColumn2"
         Me.DataGridViewTextBoxColumn2.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable
-        Me.DataGridViewTextBoxColumn2.Width = 43
+        Me.DataGridViewTextBoxColumn2.Width = 42
         '
         'DataGridViewTextBoxColumn3
         '
@@ -294,7 +448,7 @@ Partial Class FRM_DTR_BIOMETRIC
         Me.DataGridViewTextBoxColumn4.HeaderText = "Time Out"
         Me.DataGridViewTextBoxColumn4.Name = "DataGridViewTextBoxColumn4"
         Me.DataGridViewTextBoxColumn4.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable
-        Me.DataGridViewTextBoxColumn4.Width = 79
+        Me.DataGridViewTextBoxColumn4.Width = 78
         '
         'DataGridViewTextBoxColumn5
         '
@@ -310,7 +464,7 @@ Partial Class FRM_DTR_BIOMETRIC
         Me.DataGridViewTextBoxColumn6.HeaderText = "Time Out"
         Me.DataGridViewTextBoxColumn6.Name = "DataGridViewTextBoxColumn6"
         Me.DataGridViewTextBoxColumn6.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable
-        Me.DataGridViewTextBoxColumn6.Width = 79
+        Me.DataGridViewTextBoxColumn6.Width = 78
         '
         'DataGridViewTextBoxColumn7
         '
@@ -326,7 +480,7 @@ Partial Class FRM_DTR_BIOMETRIC
         Me.DataGridViewTextBoxColumn8.HeaderText = "Time Out"
         Me.DataGridViewTextBoxColumn8.Name = "DataGridViewTextBoxColumn8"
         Me.DataGridViewTextBoxColumn8.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable
-        Me.DataGridViewTextBoxColumn8.Width = 79
+        Me.DataGridViewTextBoxColumn8.Width = 78
         '
         'ExtraTimeIn1
         '
@@ -342,385 +496,175 @@ Partial Class FRM_DTR_BIOMETRIC
         Me.ExtraTimeOut1.Name = "ExtraTimeOut1"
         Me.ExtraTimeOut1.Width = 98
         '
-        'DataGridViewTextBoxColumn9
+        'GView_Classification
         '
-        DataGridViewCellStyle13.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight
-        Me.DataGridViewTextBoxColumn9.DefaultCellStyle = DataGridViewCellStyle13
-        Me.DataGridViewTextBoxColumn9.Frozen = True
-        Me.DataGridViewTextBoxColumn9.HeaderText = "Late"
-        Me.DataGridViewTextBoxColumn9.Name = "DataGridViewTextBoxColumn9"
-        Me.DataGridViewTextBoxColumn9.ReadOnly = True
-        Me.DataGridViewTextBoxColumn9.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable
-        Me.DataGridViewTextBoxColumn9.Width = 47
+        Me.GView_Classification.AllowUserToAddRows = False
+        Me.GView_Classification.AllowUserToDeleteRows = False
+        Me.GView_Classification.AlternatingRowsDefaultCellStyle.BackColor = System.Drawing.Color.FromArgb(255, 238, 214)
+        Me.GView_Classification.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.DisplayedCells
+        Me.GView_Classification.BackgroundColor = System.Drawing.Color.FromArgb(255, 224, 192)
+        Me.GView_Classification.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle
+        Me.GView_Classification.ColumnHeadersDefaultCellStyle.BackColor = System.Drawing.Color.Teal
+        Me.GView_Classification.ColumnHeadersDefaultCellStyle.Font = New System.Drawing.Font("Verdana", 9.0!, System.Drawing.FontStyle.Bold)
+        Me.GView_Classification.ColumnHeadersDefaultCellStyle.ForeColor = System.Drawing.Color.White
+        Me.GView_Classification.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize
+        Me.GView_Classification.DefaultCellStyle.BackColor = System.Drawing.Color.FromArgb(255, 224, 192)
+        Me.GView_Classification.DefaultCellStyle.ForeColor = System.Drawing.Color.Black
+        Me.GView_Classification.Dock = System.Windows.Forms.DockStyle.Fill
+        Me.GView_Classification.EnableHeadersVisualStyles = False
+        Me.GView_Classification.Location = New System.Drawing.Point(3, 339)
+        Me.GView_Classification.MultiSelect = False
+        Me.GView_Classification.Name = "GView_Classification"
+        Me.GView_Classification.ReadOnly = True
+        Me.GView_Classification.RowHeadersVisible = False
+        Me.GView_Classification.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.CellSelect
+        Me.GView_Classification.Size = New System.Drawing.Size(856, 123)
+        Me.GView_Classification.TabIndex = 3
         '
-        'DataGridViewTextBoxColumn10
+        'breakdownRootPanel
         '
-        DataGridViewCellStyle14.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight
-        Me.DataGridViewTextBoxColumn10.DefaultCellStyle = DataGridViewCellStyle14
-        Me.DataGridViewTextBoxColumn10.Frozen = True
-        Me.DataGridViewTextBoxColumn10.HeaderText = "Total Break"
-        Me.DataGridViewTextBoxColumn10.Name = "DataGridViewTextBoxColumn10"
-        Me.DataGridViewTextBoxColumn10.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable
-        Me.DataGridViewTextBoxColumn10.Width = 96
-        '
-        'DataGridViewTextBoxColumn11
-        '
-        DataGridViewCellStyle15.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight
-        Me.DataGridViewTextBoxColumn11.DefaultCellStyle = DataGridViewCellStyle15
-        Me.DataGridViewTextBoxColumn11.Frozen = True
-        Me.DataGridViewTextBoxColumn11.HeaderText = "Over Break"
-        Me.DataGridViewTextBoxColumn11.Name = "DataGridViewTextBoxColumn11"
-        Me.DataGridViewTextBoxColumn11.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable
-        Me.DataGridViewTextBoxColumn11.Width = 94
-        '
-        'DataGridViewTextBoxColumn12
-        '
-        DataGridViewCellStyle16.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight
-        Me.DataGridViewTextBoxColumn12.DefaultCellStyle = DataGridViewCellStyle16
-        Me.DataGridViewTextBoxColumn12.Frozen = True
-        Me.DataGridViewTextBoxColumn12.HeaderText = "Over Time"
-        Me.DataGridViewTextBoxColumn12.Name = "DataGridViewTextBoxColumn12"
-        Me.DataGridViewTextBoxColumn12.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable
-        Me.DataGridViewTextBoxColumn12.Width = 86
-        '
-        'DataGridViewTextBoxColumn13
-        '
-        DataGridViewCellStyle17.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter
-        Me.DataGridViewTextBoxColumn13.DefaultCellStyle = DataGridViewCellStyle17
-        Me.DataGridViewTextBoxColumn13.Frozen = True
-        Me.DataGridViewTextBoxColumn13.HeaderText = "Total Hours"
-        Me.DataGridViewTextBoxColumn13.Name = "DataGridViewTextBoxColumn13"
-        Me.DataGridViewTextBoxColumn13.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable
-        Me.DataGridViewTextBoxColumn13.Width = 97
-        '
-        'REG_REG
-        '
-        DataGridViewCellStyle18.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight
-        Me.REG_REG.DefaultCellStyle = DataGridViewCellStyle18
-        Me.REG_REG.Frozen = True
-        Me.REG_REG.HeaderText = "Reg"
-        Me.REG_REG.Name = "REG_REG"
-        Me.REG_REG.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable
-        Me.REG_REG.Width = 45
-        '
-        'REG_SUN
-        '
-        DataGridViewCellStyle19.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight
-        Me.REG_SUN.DefaultCellStyle = DataGridViewCellStyle19
-        Me.REG_SUN.Frozen = True
-        Me.REG_SUN.HeaderText = "Sun"
-        Me.REG_SUN.Name = "REG_SUN"
-        Me.REG_SUN.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable
-        Me.REG_SUN.Width = 44
-        '
-        'REG_SH
-        '
-        DataGridViewCellStyle20.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight
-        Me.REG_SH.DefaultCellStyle = DataGridViewCellStyle20
-        Me.REG_SH.Frozen = True
-        Me.REG_SH.HeaderText = "SH"
-        Me.REG_SH.Name = "REG_SH"
-        Me.REG_SH.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable
-        Me.REG_SH.Width = 38
-        '
-        'REG_LH
-        '
-        DataGridViewCellStyle21.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight
-        Me.REG_LH.DefaultCellStyle = DataGridViewCellStyle21
-        Me.REG_LH.Frozen = True
-        Me.REG_LH.HeaderText = "LH"
-        Me.REG_LH.Name = "REG_LH"
-        Me.REG_LH.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable
-        Me.REG_LH.Width = 36
-        '
-        'OT_REG
-        '
-        DataGridViewCellStyle22.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight
-        Me.OT_REG.DefaultCellStyle = DataGridViewCellStyle22
-        Me.OT_REG.Frozen = True
-        Me.OT_REG.HeaderText = "OT Reg"
-        Me.OT_REG.Name = "OT_REG"
-        Me.OT_REG.ReadOnly = True
-        Me.OT_REG.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable
-        Me.OT_REG.Width = 70
-        '
-        'FirstTimeIn
-        '
-        Me.FirstTimeIn.HeaderText = "First Time In"
-        Me.FirstTimeIn.Name = "FirstTimeIn"
-        Me.FirstTimeIn.Visible = False
-        Me.FirstTimeIn.Width = 121
-        '
-        'LastTimeOut
-        '
-        Me.LastTimeOut.HeaderText = "Last Time Out"
-        Me.LastTimeOut.Name = "LastTimeOut"
-        Me.LastTimeOut.Visible = False
-        Me.LastTimeOut.Width = 133
-        '
-        'BtnSH
-        '
-        Me.BtnSH.BackColor = System.Drawing.Color.Yellow
-        Me.BtnSH.Location = New System.Drawing.Point(1341, 42)
-        Me.BtnSH.Name = "BtnSH"
-        Me.BtnSH.Size = New System.Drawing.Size(47, 31)
-        Me.BtnSH.TabIndex = 14
-        Me.BtnSH.Text = "SH"
-        Me.BtnSH.UseVisualStyleBackColor = False
-        '
-        'Chk_Sunday
-        '
-        Me.Chk_Sunday.AutoSize = True
-        Me.Chk_Sunday.Location = New System.Drawing.Point(1618, 18)
-        Me.Chk_Sunday.Name = "Chk_Sunday"
-        Me.Chk_Sunday.Size = New System.Drawing.Size(156, 24)
-        Me.Chk_Sunday.TabIndex = 12
-        Me.Chk_Sunday.Text = "Highlight Sundays"
-        Me.Chk_Sunday.UseVisualStyleBackColor = True
-        '
-        'BtnLH
-        '
-        Me.BtnLH.BackColor = System.Drawing.Color.LightGreen
-        Me.BtnLH.Location = New System.Drawing.Point(1341, 13)
-        Me.BtnLH.Name = "BtnLH"
-        Me.BtnLH.Size = New System.Drawing.Size(47, 31)
-        Me.BtnLH.TabIndex = 13
-        Me.BtnLH.Text = "LH"
-        Me.BtnLH.UseVisualStyleBackColor = False
-        '
-        'Label7
-        '
-        Me.Label7.AutoSize = True
-        Me.Label7.Font = New System.Drawing.Font("Microsoft Sans Serif", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.Label7.Location = New System.Drawing.Point(1394, 47)
-        Me.Label7.Name = "Label7"
-        Me.Label7.Size = New System.Drawing.Size(117, 20)
-        Me.Label7.TabIndex = 11
-        Me.Label7.Text = "Special Holiday"
-        '
-        'Label6
-        '
-        Me.Label6.AutoSize = True
-        Me.Label6.Font = New System.Drawing.Font("Microsoft Sans Serif", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.Label6.Location = New System.Drawing.Point(1394, 18)
-        Me.Label6.Name = "Label6"
-        Me.Label6.Size = New System.Drawing.Size(104, 20)
-        Me.Label6.TabIndex = 10
-        Me.Label6.Text = "Legal Holiday"
-        '
-        'dtrBreakDownPage
-        '
-        Me.dtrBreakDownPage.Controls.Add(Me.Btn_Save_DTR)
-        Me.dtrBreakDownPage.Controls.Add(Me.Btn_TimeDtlView)
-        Me.dtrBreakDownPage.Controls.Add(Me.DTR_TimeCalculationPanel)
-        Me.dtrBreakDownPage.Controls.Add(Me.btn_Breakdown)
-        Me.dtrBreakDownPage.Location = New System.Drawing.Point(4, 29)
-        Me.dtrBreakDownPage.Name = "dtrBreakDownPage"
-        Me.dtrBreakDownPage.Padding = New System.Windows.Forms.Padding(3)
-        Me.dtrBreakDownPage.Size = New System.Drawing.Size(1794, 708)
-        Me.dtrBreakDownPage.TabIndex = 1
-        Me.dtrBreakDownPage.Text = "Time Calculation"
-        Me.dtrBreakDownPage.UseVisualStyleBackColor = True
-        '
-        'Btn_Save_DTR
-        '
-        Me.Btn_Save_DTR.BackColor = System.Drawing.Color.YellowGreen
-        Me.Btn_Save_DTR.Font = New System.Drawing.Font("Microsoft Sans Serif", 12.0!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.Btn_Save_DTR.ForeColor = System.Drawing.SystemColors.ControlLightLight
-        Me.Btn_Save_DTR.Location = New System.Drawing.Point(1314, 623)
-        Me.Btn_Save_DTR.Name = "Btn_Save_DTR"
-        Me.Btn_Save_DTR.Size = New System.Drawing.Size(447, 51)
-        Me.Btn_Save_DTR.TabIndex = 82
-        Me.Btn_Save_DTR.Text = "Save"
-        Me.Btn_Save_DTR.UseVisualStyleBackColor = False
-        '
-        'Btn_TimeDtlView
-        '
-        Me.Btn_TimeDtlView.BackColor = System.Drawing.Color.SkyBlue
-        Me.Btn_TimeDtlView.Cursor = System.Windows.Forms.Cursors.Hand
-        Me.Btn_TimeDtlView.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(CType(CType(255, Byte), Integer), CType(CType(128, Byte), Integer), CType(CType(0, Byte), Integer))
-        Me.Btn_TimeDtlView.FlatAppearance.MouseOverBackColor = System.Drawing.Color.Cyan
-        Me.Btn_TimeDtlView.FlatStyle = System.Windows.Forms.FlatStyle.Flat
-        Me.Btn_TimeDtlView.Font = New System.Drawing.Font("Microsoft Sans Serif", 12.0!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.Btn_TimeDtlView.ForeColor = System.Drawing.SystemColors.ControlLightLight
-        Me.Btn_TimeDtlView.Location = New System.Drawing.Point(6, 6)
-        Me.Btn_TimeDtlView.Name = "Btn_TimeDtlView"
-        Me.Btn_TimeDtlView.Size = New System.Drawing.Size(374, 58)
-        Me.Btn_TimeDtlView.TabIndex = 73
-        Me.Btn_TimeDtlView.Text = "Time Details View"
-        Me.Btn_TimeDtlView.UseVisualStyleBackColor = False
+        Me.breakdownRootPanel.ColumnCount = 1
+        Me.breakdownRootPanel.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100.0!))
+        Me.breakdownRootPanel.Controls.Add(Me.DTR_TimeCalculationPanel, 0, 0)
+        Me.breakdownRootPanel.Controls.Add(Me.breakdownActionPanel, 0, 1)
+        Me.breakdownRootPanel.Dock = System.Windows.Forms.DockStyle.Fill
+        Me.breakdownRootPanel.Location = New System.Drawing.Point(3, 468)
+        Me.breakdownRootPanel.Name = "breakdownRootPanel"
+        Me.breakdownRootPanel.RowCount = 2
+        Me.breakdownRootPanel.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100.0!))
+        Me.breakdownRootPanel.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 58.0!))
+        Me.breakdownRootPanel.Size = New System.Drawing.Size(856, 176)
+        Me.breakdownRootPanel.TabIndex = 0
         '
         'DTR_TimeCalculationPanel
         '
         Me.DTR_TimeCalculationPanel.AutoScroll = True
-        Me.DTR_TimeCalculationPanel.Location = New System.Drawing.Point(6, 70)
+        Me.DTR_TimeCalculationPanel.BackColor = System.Drawing.Color.FromArgb(255, 224, 192)
+        Me.DTR_TimeCalculationPanel.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle
+        Me.DTR_TimeCalculationPanel.Controls.Add(Me.GView_TimeCalculation)
+        Me.DTR_TimeCalculationPanel.Dock = System.Windows.Forms.DockStyle.Fill
+        Me.DTR_TimeCalculationPanel.Location = New System.Drawing.Point(3, 3)
         Me.DTR_TimeCalculationPanel.Name = "DTR_TimeCalculationPanel"
-        Me.DTR_TimeCalculationPanel.Size = New System.Drawing.Size(1203, 517)
+        Me.DTR_TimeCalculationPanel.Size = New System.Drawing.Size(850, 112)
         Me.DTR_TimeCalculationPanel.TabIndex = 72
         '
-        'btn_Breakdown
+        'GView_TimeCalculation
         '
-        Me.btn_Breakdown.BackColor = System.Drawing.Color.Gainsboro
-        Me.btn_Breakdown.Cursor = System.Windows.Forms.Cursors.Hand
-        Me.btn_Breakdown.FlatStyle = System.Windows.Forms.FlatStyle.Flat
-        Me.btn_Breakdown.Font = New System.Drawing.Font("Microsoft Sans Serif", 12.0!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.btn_Breakdown.Location = New System.Drawing.Point(6, 623)
-        Me.btn_Breakdown.Name = "btn_Breakdown"
-        Me.btn_Breakdown.Size = New System.Drawing.Size(1260, 51)
-        Me.btn_Breakdown.TabIndex = 71
-        Me.btn_Breakdown.Text = "Calculate Modified Time Calculation"
-        Me.btn_Breakdown.UseVisualStyleBackColor = False
+        Me.GView_TimeCalculation.AllowUserToAddRows = False
+        Me.GView_TimeCalculation.AlternatingRowsDefaultCellStyle.BackColor = System.Drawing.Color.FromArgb(255, 238, 214)
+        Me.GView_TimeCalculation.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.DisplayedCells
+        Me.GView_TimeCalculation.BackgroundColor = System.Drawing.Color.FromArgb(255, 224, 192)
+        Me.GView_TimeCalculation.BorderStyle = System.Windows.Forms.BorderStyle.None
+        Me.GView_TimeCalculation.ColumnHeadersDefaultCellStyle.BackColor = System.Drawing.Color.Teal
+        Me.GView_TimeCalculation.ColumnHeadersDefaultCellStyle.Font = New System.Drawing.Font("Verdana", 9.0!, System.Drawing.FontStyle.Bold)
+        Me.GView_TimeCalculation.ColumnHeadersDefaultCellStyle.ForeColor = System.Drawing.Color.White
+        Me.GView_TimeCalculation.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize
+        Me.GView_TimeCalculation.Dock = System.Windows.Forms.DockStyle.Fill
+        Me.GView_TimeCalculation.EnableHeadersVisualStyles = False
+        Me.GView_TimeCalculation.Location = New System.Drawing.Point(0, 0)
+        Me.GView_TimeCalculation.MultiSelect = False
+        Me.GView_TimeCalculation.Name = "GView_TimeCalculation"
+        Me.GView_TimeCalculation.RowHeadersVisible = False
+        Me.GView_TimeCalculation.ReadOnly = True
+        Me.GView_TimeCalculation.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.CellSelect
+        Me.GView_TimeCalculation.Size = New System.Drawing.Size(848, 110)
+        Me.GView_TimeCalculation.TabIndex = 0
         '
-        'Lbl_IDNumber
+        'breakdownActionPanel
         '
-        Me.Lbl_IDNumber.Font = New System.Drawing.Font("Microsoft Sans Serif", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.Lbl_IDNumber.ForeColor = System.Drawing.Color.FromArgb(CType(CType(0, Byte), Integer), CType(CType(0, Byte), Integer), CType(CType(192, Byte), Integer))
-        Me.Lbl_IDNumber.Location = New System.Drawing.Point(163, 12)
-        Me.Lbl_IDNumber.Name = "Lbl_IDNumber"
-        Me.Lbl_IDNumber.Size = New System.Drawing.Size(240, 20)
-        Me.Lbl_IDNumber.TabIndex = 7
-        Me.Lbl_IDNumber.Text = "-                    "
+        Me.breakdownActionPanel.BackColor = System.Drawing.Color.FromArgb(255, 192, 128)
+        Me.breakdownActionPanel.ColumnCount = 1
+        Me.breakdownActionPanel.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100.0!))
+        Me.breakdownActionPanel.Controls.Add(Me.Btn_Save_DTR, 0, 0)
+        Me.breakdownActionPanel.Dock = System.Windows.Forms.DockStyle.Fill
+        Me.breakdownActionPanel.Location = New System.Drawing.Point(3, 121)
+        Me.breakdownActionPanel.Name = "breakdownActionPanel"
+        Me.breakdownActionPanel.RowCount = 1
+        Me.breakdownActionPanel.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100.0!))
+        Me.breakdownActionPanel.Size = New System.Drawing.Size(850, 52)
+        Me.breakdownActionPanel.TabIndex = 2
         '
-        'Lbl_Name
+        'Btn_Save_DTR
         '
-        Me.Lbl_Name.Font = New System.Drawing.Font("Microsoft Sans Serif", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.Lbl_Name.ForeColor = System.Drawing.Color.FromArgb(CType(CType(0, Byte), Integer), CType(CType(0, Byte), Integer), CType(CType(192, Byte), Integer))
-        Me.Lbl_Name.Location = New System.Drawing.Point(163, 41)
-        Me.Lbl_Name.Name = "Lbl_Name"
-        Me.Lbl_Name.Size = New System.Drawing.Size(515, 20)
-        Me.Lbl_Name.TabIndex = 5
-        Me.Lbl_Name.Text = "-                      "
-        '
-        'Label3
-        '
-        Me.Label3.AutoSize = True
-        Me.Label3.Font = New System.Drawing.Font("Microsoft Sans Serif", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.Label3.Location = New System.Drawing.Point(29, 71)
-        Me.Label3.Name = "Label3"
-        Me.Label3.Size = New System.Drawing.Size(95, 20)
-        Me.Label3.TabIndex = 4
-        Me.Label3.Text = "DTR Period:"
-        '
-        'Label2
-        '
-        Me.Label2.AutoSize = True
-        Me.Label2.Font = New System.Drawing.Font("Microsoft Sans Serif", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.Label2.Location = New System.Drawing.Point(28, 12)
-        Me.Label2.Name = "Label2"
-        Me.Label2.Size = New System.Drawing.Size(104, 20)
-        Me.Label2.TabIndex = 3
-        Me.Label2.Text = "Employee ID:"
-        '
-        'Label1
-        '
-        Me.Label1.AutoSize = True
-        Me.Label1.Font = New System.Drawing.Font("Microsoft Sans Serif", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.Label1.Location = New System.Drawing.Point(28, 41)
-        Me.Label1.Name = "Label1"
-        Me.Label1.Size = New System.Drawing.Size(129, 20)
-        Me.Label1.TabIndex = 2
-        Me.Label1.Text = "Employee Name:"
+        Me.Btn_Save_DTR.BackColor = System.Drawing.Color.YellowGreen
+        Me.Btn_Save_DTR.Cursor = System.Windows.Forms.Cursors.Hand
+        Me.Btn_Save_DTR.Dock = System.Windows.Forms.DockStyle.Fill
+        Me.Btn_Save_DTR.FlatAppearance.BorderSize = 0
+        Me.Btn_Save_DTR.FlatStyle = System.Windows.Forms.FlatStyle.Flat
+        Me.Btn_Save_DTR.Font = New System.Drawing.Font("Verdana", 9.75!, System.Drawing.FontStyle.Bold)
+        Me.Btn_Save_DTR.ForeColor = System.Drawing.Color.White
+        Me.Btn_Save_DTR.Location = New System.Drawing.Point(3, 3)
+        Me.Btn_Save_DTR.Name = "Btn_Save_DTR"
+        Me.Btn_Save_DTR.Size = New System.Drawing.Size(844, 46)
+        Me.Btn_Save_DTR.TabIndex = 82
+        Me.Btn_Save_DTR.Text = "Save"
+        Me.Btn_Save_DTR.UseVisualStyleBackColor = False
         '
         'TabPage2
         '
-        Me.TabPage2.BackColor = System.Drawing.Color.FromArgb(CType(CType(255, Byte), Integer), CType(CType(192, Byte), Integer), CType(CType(128, Byte), Integer))
-        Me.TabPage2.Controls.Add(Me.Lbl_Num_of_Reporting_Days)
-        Me.TabPage2.Controls.Add(Me.Label11)
-        Me.TabPage2.Controls.Add(Me.Label10)
-        Me.TabPage2.Controls.Add(Me.Label5)
-        Me.TabPage2.Controls.Add(Me.Lbl_Absent_Count)
-        Me.TabPage2.Controls.Add(Me.Label9)
-        Me.TabPage2.Controls.Add(Me.Label4)
-        Me.TabPage2.Controls.Add(Me.GView_Schedule)
-        Me.TabPage2.Font = New System.Drawing.Font("Microsoft Sans Serif", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.TabPage2.Location = New System.Drawing.Point(4, 29)
+        Me.TabPage2.BackColor = System.Drawing.Color.FromArgb(255, 192, 128)
+        Me.TabPage2.Controls.Add(Me.scheduleRootPanel)
+        Me.TabPage2.Location = New System.Drawing.Point(4, 25)
         Me.TabPage2.Name = "TabPage2"
-        Me.TabPage2.Padding = New System.Windows.Forms.Padding(3)
-        Me.TabPage2.Size = New System.Drawing.Size(1852, 848)
+        Me.TabPage2.Padding = New System.Windows.Forms.Padding(6)
+        Me.TabPage2.Size = New System.Drawing.Size(1186, 665)
         Me.TabPage2.TabIndex = 1
-        Me.TabPage2.Text = "   Schedule   "
+        Me.TabPage2.Text = "Schedule"
         '
-        'Lbl_Num_of_Reporting_Days
+        'scheduleRootPanel
         '
-        Me.Lbl_Num_of_Reporting_Days.AutoSize = True
-        Me.Lbl_Num_of_Reporting_Days.Font = New System.Drawing.Font("Microsoft Sans Serif", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.Lbl_Num_of_Reporting_Days.ForeColor = System.Drawing.Color.FromArgb(CType(CType(0, Byte), Integer), CType(CType(0, Byte), Integer), CType(CType(192, Byte), Integer))
-        Me.Lbl_Num_of_Reporting_Days.Location = New System.Drawing.Point(947, 108)
-        Me.Lbl_Num_of_Reporting_Days.Name = "Lbl_Num_of_Reporting_Days"
-        Me.Lbl_Num_of_Reporting_Days.Size = New System.Drawing.Size(52, 20)
-        Me.Lbl_Num_of_Reporting_Days.TabIndex = 13
-        Me.Lbl_Num_of_Reporting_Days.Text = "Count"
-        '
-        'Label11
-        '
-        Me.Label11.AutoSize = True
-        Me.Label11.Font = New System.Drawing.Font("Microsoft Sans Serif", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.Label11.ForeColor = System.Drawing.Color.FromArgb(CType(CType(0, Byte), Integer), CType(CType(0, Byte), Integer), CType(CType(192, Byte), Integer))
-        Me.Label11.Location = New System.Drawing.Point(979, 76)
-        Me.Label11.Name = "Label11"
-        Me.Label11.Size = New System.Drawing.Size(52, 20)
-        Me.Label11.TabIndex = 12
-        Me.Label11.Text = "Count"
-        '
-        'Label10
-        '
-        Me.Label10.AutoSize = True
-        Me.Label10.Font = New System.Drawing.Font("Microsoft Sans Serif", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.Label10.Location = New System.Drawing.Point(772, 108)
-        Me.Label10.Name = "Label10"
-        Me.Label10.Size = New System.Drawing.Size(169, 20)
-        Me.Label10.TabIndex = 11
-        Me.Label10.Text = "Actual Reported Days:"
-        '
-        'Label5
-        '
-        Me.Label5.AutoSize = True
-        Me.Label5.Font = New System.Drawing.Font("Microsoft Sans Serif", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.Label5.Location = New System.Drawing.Point(772, 76)
-        Me.Label5.Name = "Label5"
-        Me.Label5.Size = New System.Drawing.Size(201, 20)
-        Me.Label5.TabIndex = 10
-        Me.Label5.Text = "Number of Reporting Days:"
-        '
-        'Lbl_Absent_Count
-        '
-        Me.Lbl_Absent_Count.AutoSize = True
-        Me.Lbl_Absent_Count.Font = New System.Drawing.Font("Microsoft Sans Serif", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.Lbl_Absent_Count.ForeColor = System.Drawing.Color.FromArgb(CType(CType(0, Byte), Integer), CType(CType(0, Byte), Integer), CType(CType(192, Byte), Integer))
-        Me.Lbl_Absent_Count.Location = New System.Drawing.Point(863, 143)
-        Me.Lbl_Absent_Count.Name = "Lbl_Absent_Count"
-        Me.Lbl_Absent_Count.Size = New System.Drawing.Size(52, 20)
-        Me.Lbl_Absent_Count.TabIndex = 9
-        Me.Lbl_Absent_Count.Text = "Count"
-        '
-        'Label9
-        '
-        Me.Label9.AutoSize = True
-        Me.Label9.Font = New System.Drawing.Font("Microsoft Sans Serif", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.Label9.Location = New System.Drawing.Point(772, 143)
-        Me.Label9.Name = "Label9"
-        Me.Label9.Size = New System.Drawing.Size(76, 20)
-        Me.Label9.TabIndex = 8
-        Me.Label9.Text = "Absence:"
+        Me.scheduleRootPanel.ColumnCount = 2
+        Me.scheduleRootPanel.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 72.0!))
+        Me.scheduleRootPanel.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 28.0!))
+        Me.scheduleRootPanel.Controls.Add(Me.Label4, 0, 0)
+        Me.scheduleRootPanel.Controls.Add(Me.GView_Schedule, 0, 1)
+        Me.scheduleRootPanel.Controls.Add(Me.scheduleSummaryPanel, 1, 1)
+        Me.scheduleRootPanel.Dock = System.Windows.Forms.DockStyle.Fill
+        Me.scheduleRootPanel.Location = New System.Drawing.Point(6, 6)
+        Me.scheduleRootPanel.Name = "scheduleRootPanel"
+        Me.scheduleRootPanel.RowCount = 2
+        Me.scheduleRootPanel.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 42.0!))
+        Me.scheduleRootPanel.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100.0!))
+        Me.scheduleRootPanel.Size = New System.Drawing.Size(1174, 653)
+        Me.scheduleRootPanel.TabIndex = 0
         '
         'Label4
         '
-        Me.Label4.AutoSize = True
-        Me.Label4.Font = New System.Drawing.Font("Microsoft Sans Serif", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.Label4.Location = New System.Drawing.Point(23, 23)
+        Me.Label4.BackColor = System.Drawing.Color.Teal
+        Me.scheduleRootPanel.SetColumnSpan(Me.Label4, 2)
+        Me.Label4.Dock = System.Windows.Forms.DockStyle.Fill
+        Me.Label4.Font = New System.Drawing.Font("Verdana", 11.0!, System.Drawing.FontStyle.Bold)
+        Me.Label4.ForeColor = System.Drawing.Color.White
+        Me.Label4.Location = New System.Drawing.Point(3, 0)
         Me.Label4.Name = "Label4"
-        Me.Label4.Size = New System.Drawing.Size(76, 20)
+        Me.Label4.Padding = New System.Windows.Forms.Padding(12, 0, 0, 0)
+        Me.Label4.Size = New System.Drawing.Size(1168, 42)
         Me.Label4.TabIndex = 4
         Me.Label4.Text = "Schedule"
+        Me.Label4.TextAlign = System.Drawing.ContentAlignment.MiddleLeft
         '
         'GView_Schedule
         '
+        Me.GView_Schedule.AllowUserToAddRows = False
+        Me.GView_Schedule.AlternatingRowsDefaultCellStyle.BackColor = System.Drawing.Color.FromArgb(255, 238, 214)
         Me.GView_Schedule.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill
+        Me.GView_Schedule.BackgroundColor = System.Drawing.Color.FromArgb(255, 224, 192)
+        Me.GView_Schedule.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle
+        Me.GView_Schedule.ColumnHeadersDefaultCellStyle.BackColor = System.Drawing.Color.Teal
+        Me.GView_Schedule.ColumnHeadersDefaultCellStyle.Font = New System.Drawing.Font("Verdana", 9.0!, System.Drawing.FontStyle.Bold)
+        Me.GView_Schedule.ColumnHeadersDefaultCellStyle.ForeColor = System.Drawing.Color.White
         Me.GView_Schedule.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize
         Me.GView_Schedule.Columns.AddRange(New System.Windows.Forms.DataGridViewColumn() {Me.Col_DayNum, Me.Col_Sched_in, Me.Column1, Me.Col_Sched_Out, Me.Col_Sched_TotalHours, Me.Col_FlagShift, Me.Col_ID, Me.Col_Attendance})
-        Me.GView_Schedule.Location = New System.Drawing.Point(27, 57)
+        Me.GView_Schedule.DefaultCellStyle.BackColor = System.Drawing.Color.FromArgb(255, 224, 192)
+        Me.GView_Schedule.DefaultCellStyle.ForeColor = System.Drawing.Color.Black
+        Me.GView_Schedule.Dock = System.Windows.Forms.DockStyle.Fill
+        Me.GView_Schedule.EnableHeadersVisualStyles = False
+        Me.GView_Schedule.Location = New System.Drawing.Point(3, 45)
+        Me.GView_Schedule.MultiSelect = False
         Me.GView_Schedule.Name = "GView_Schedule"
-        Me.GView_Schedule.Size = New System.Drawing.Size(727, 637)
+        Me.GView_Schedule.RowHeadersVisible = False
+        Me.GView_Schedule.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.CellSelect
+        Me.GView_Schedule.Size = New System.Drawing.Size(839, 605)
         Me.GView_Schedule.TabIndex = 2
         '
         'Col_DayNum
@@ -761,96 +705,190 @@ Partial Class FRM_DTR_BIOMETRIC
         '
         'Col_Attendance
         '
-        DataGridViewCellStyle24.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter
-        Me.Col_Attendance.DefaultCellStyle = DataGridViewCellStyle24
+        Me.Col_Attendance.DefaultCellStyle.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter
         Me.Col_Attendance.HeaderText = "Attendance"
         Me.Col_Attendance.Name = "Col_Attendance"
+        '
+        'scheduleSummaryPanel
+        '
+        Me.scheduleSummaryPanel.BackColor = System.Drawing.Color.FromArgb(255, 192, 128)
+        Me.scheduleSummaryPanel.ColumnCount = 2
+        Me.scheduleSummaryPanel.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 70.0!))
+        Me.scheduleSummaryPanel.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 30.0!))
+        Me.scheduleSummaryPanel.Controls.Add(Me.Label5, 0, 0)
+        Me.scheduleSummaryPanel.Controls.Add(Me.Label11, 1, 0)
+        Me.scheduleSummaryPanel.Controls.Add(Me.Label10, 0, 1)
+        Me.scheduleSummaryPanel.Controls.Add(Me.Lbl_Num_of_Reporting_Days, 1, 1)
+        Me.scheduleSummaryPanel.Controls.Add(Me.Label9, 0, 2)
+        Me.scheduleSummaryPanel.Controls.Add(Me.Lbl_Absent_Count, 1, 2)
+        Me.scheduleSummaryPanel.Dock = System.Windows.Forms.DockStyle.Fill
+        Me.scheduleSummaryPanel.Location = New System.Drawing.Point(848, 45)
+        Me.scheduleSummaryPanel.Name = "scheduleSummaryPanel"
+        Me.scheduleSummaryPanel.RowCount = 5
+        Me.scheduleSummaryPanel.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 54.0!))
+        Me.scheduleSummaryPanel.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 54.0!))
+        Me.scheduleSummaryPanel.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 54.0!))
+        Me.scheduleSummaryPanel.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 54.0!))
+        Me.scheduleSummaryPanel.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100.0!))
+        Me.scheduleSummaryPanel.Size = New System.Drawing.Size(323, 605)
+        Me.scheduleSummaryPanel.TabIndex = 5
+        '
+        'Label5
+        '
+        Me.Label5.BackColor = System.Drawing.Color.FromArgb(255, 224, 192)
+        Me.Label5.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle
+        Me.Label5.Dock = System.Windows.Forms.DockStyle.Fill
+        Me.Label5.Font = New System.Drawing.Font("Verdana", 8.5!, System.Drawing.FontStyle.Bold)
+        Me.Label5.Location = New System.Drawing.Point(3, 0)
+        Me.Label5.Name = "Label5"
+        Me.Label5.Padding = New System.Windows.Forms.Padding(8, 0, 0, 0)
+        Me.Label5.Size = New System.Drawing.Size(220, 54)
+        Me.Label5.TabIndex = 10
+        Me.Label5.Text = "Number of Reporting Days"
+        Me.Label5.TextAlign = System.Drawing.ContentAlignment.MiddleLeft
+        '
+        'Label11
+        '
+        Me.Label11.BackColor = System.Drawing.Color.FromArgb(255, 224, 192)
+        Me.Label11.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle
+        Me.Label11.Dock = System.Windows.Forms.DockStyle.Fill
+        Me.Label11.Font = New System.Drawing.Font("Verdana", 9.75!, System.Drawing.FontStyle.Bold)
+        Me.Label11.ForeColor = System.Drawing.Color.Blue
+        Me.Label11.Location = New System.Drawing.Point(229, 0)
+        Me.Label11.Name = "Label11"
+        Me.Label11.Size = New System.Drawing.Size(91, 54)
+        Me.Label11.TabIndex = 12
+        Me.Label11.Text = "Count"
+        Me.Label11.TextAlign = System.Drawing.ContentAlignment.MiddleCenter
+        '
+        'Label10
+        '
+        Me.Label10.BackColor = System.Drawing.Color.FromArgb(255, 224, 192)
+        Me.Label10.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle
+        Me.Label10.Dock = System.Windows.Forms.DockStyle.Fill
+        Me.Label10.Font = New System.Drawing.Font("Verdana", 8.5!, System.Drawing.FontStyle.Bold)
+        Me.Label10.Location = New System.Drawing.Point(3, 54)
+        Me.Label10.Name = "Label10"
+        Me.Label10.Padding = New System.Windows.Forms.Padding(8, 0, 0, 0)
+        Me.Label10.Size = New System.Drawing.Size(220, 54)
+        Me.Label10.TabIndex = 11
+        Me.Label10.Text = "Actual Reported Days"
+        Me.Label10.TextAlign = System.Drawing.ContentAlignment.MiddleLeft
+        '
+        'Lbl_Num_of_Reporting_Days
+        '
+        Me.Lbl_Num_of_Reporting_Days.BackColor = System.Drawing.Color.FromArgb(255, 224, 192)
+        Me.Lbl_Num_of_Reporting_Days.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle
+        Me.Lbl_Num_of_Reporting_Days.Dock = System.Windows.Forms.DockStyle.Fill
+        Me.Lbl_Num_of_Reporting_Days.Font = New System.Drawing.Font("Verdana", 9.75!, System.Drawing.FontStyle.Bold)
+        Me.Lbl_Num_of_Reporting_Days.ForeColor = System.Drawing.Color.Blue
+        Me.Lbl_Num_of_Reporting_Days.Location = New System.Drawing.Point(229, 54)
+        Me.Lbl_Num_of_Reporting_Days.Name = "Lbl_Num_of_Reporting_Days"
+        Me.Lbl_Num_of_Reporting_Days.Size = New System.Drawing.Size(91, 54)
+        Me.Lbl_Num_of_Reporting_Days.TabIndex = 13
+        Me.Lbl_Num_of_Reporting_Days.Text = "Count"
+        Me.Lbl_Num_of_Reporting_Days.TextAlign = System.Drawing.ContentAlignment.MiddleCenter
+        '
+        'Label9
+        '
+        Me.Label9.BackColor = System.Drawing.Color.FromArgb(255, 224, 192)
+        Me.Label9.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle
+        Me.Label9.Dock = System.Windows.Forms.DockStyle.Fill
+        Me.Label9.Font = New System.Drawing.Font("Verdana", 8.5!, System.Drawing.FontStyle.Bold)
+        Me.Label9.Location = New System.Drawing.Point(3, 108)
+        Me.Label9.Name = "Label9"
+        Me.Label9.Padding = New System.Windows.Forms.Padding(8, 0, 0, 0)
+        Me.Label9.Size = New System.Drawing.Size(220, 54)
+        Me.Label9.TabIndex = 8
+        Me.Label9.Text = "Absence"
+        Me.Label9.TextAlign = System.Drawing.ContentAlignment.MiddleLeft
+        '
+        'Lbl_Absent_Count
+        '
+        Me.Lbl_Absent_Count.BackColor = System.Drawing.Color.FromArgb(255, 224, 192)
+        Me.Lbl_Absent_Count.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle
+        Me.Lbl_Absent_Count.Dock = System.Windows.Forms.DockStyle.Fill
+        Me.Lbl_Absent_Count.Font = New System.Drawing.Font("Verdana", 9.75!, System.Drawing.FontStyle.Bold)
+        Me.Lbl_Absent_Count.ForeColor = System.Drawing.Color.Blue
+        Me.Lbl_Absent_Count.Location = New System.Drawing.Point(229, 108)
+        Me.Lbl_Absent_Count.Name = "Lbl_Absent_Count"
+        Me.Lbl_Absent_Count.Size = New System.Drawing.Size(91, 54)
+        Me.Lbl_Absent_Count.TabIndex = 9
+        Me.Lbl_Absent_Count.Text = "Count"
+        Me.Lbl_Absent_Count.TextAlign = System.Drawing.ContentAlignment.MiddleCenter
+        '
+        'Panel1
+        '
+        Me.Panel1.BackColor = System.Drawing.Color.Maroon
+        Me.Panel1.Dock = System.Windows.Forms.DockStyle.Top
+        Me.Panel1.Location = New System.Drawing.Point(0, 0)
+        Me.Panel1.Name = "Panel1"
+        Me.Panel1.Size = New System.Drawing.Size(0, 0)
+        Me.Panel1.TabIndex = 4
+        Me.Panel1.Visible = False
+        '
+        'Label8
+        '
+        Me.Label8.AutoSize = True
+        Me.Label8.ForeColor = System.Drawing.Color.Yellow
+        Me.Label8.Location = New System.Drawing.Point(0, 0)
+        Me.Label8.Name = "Label8"
+        Me.Label8.Size = New System.Drawing.Size(71, 16)
+        Me.Label8.TabIndex = 68
+        Me.Label8.Text = "Pure Gold"
+        Me.Label8.Visible = False
         '
         'OpenFileDialog1
         '
         Me.OpenFileDialog1.FileName = "OpenFileDialog1"
         '
-        'Label8
-        '
-        Me.Label8.AutoSize = True
-        Me.Label8.Font = New System.Drawing.Font("Microsoft Sans Serif", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.Label8.ForeColor = System.Drawing.Color.Yellow
-        Me.Label8.Location = New System.Drawing.Point(1802, 42)
-        Me.Label8.Name = "Label8"
-        Me.Label8.Size = New System.Drawing.Size(80, 20)
-        Me.Label8.TabIndex = 68
-        Me.Label8.Text = "Pure Gold"
-        '
-        'Lbl_Actual_Rep_Days
-        '
-        Me.Lbl_Actual_Rep_Days.AutoSize = True
-        Me.Lbl_Actual_Rep_Days.ForeColor = System.Drawing.Color.FromArgb(CType(CType(0, Byte), Integer), CType(CType(0, Byte), Integer), CType(CType(192, Byte), Integer))
-        Me.Lbl_Actual_Rep_Days.Location = New System.Drawing.Point(843, 21)
-        Me.Lbl_Actual_Rep_Days.Name = "Lbl_Actual_Rep_Days"
-        Me.Lbl_Actual_Rep_Days.Size = New System.Drawing.Size(14, 20)
-        Me.Lbl_Actual_Rep_Days.TabIndex = 18
-        Me.Lbl_Actual_Rep_Days.Text = "-"
-        '
-        'Label13
-        '
-        Me.Label13.AutoSize = True
-        Me.Label13.Font = New System.Drawing.Font("Microsoft Sans Serif", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.Label13.Location = New System.Drawing.Point(670, 21)
-        Me.Label13.Name = "Label13"
-        Me.Label13.Size = New System.Drawing.Size(172, 20)
-        Me.Label13.TabIndex = 17
-        Me.Label13.Text = "Actual Reporting Days:"
-        '
-        'Lbl_ND_Days
-        '
-        Me.Lbl_ND_Days.AutoSize = True
-        Me.Lbl_ND_Days.ForeColor = System.Drawing.Color.FromArgb(CType(CType(0, Byte), Integer), CType(CType(0, Byte), Integer), CType(CType(192, Byte), Integer))
-        Me.Lbl_ND_Days.Location = New System.Drawing.Point(841, 61)
-        Me.Lbl_ND_Days.Name = "Lbl_ND_Days"
-        Me.Lbl_ND_Days.Size = New System.Drawing.Size(14, 20)
-        Me.Lbl_ND_Days.TabIndex = 20
-        Me.Lbl_ND_Days.Text = "-"
-        '
-        'Label15
-        '
-        Me.Label15.AutoSize = True
-        Me.Label15.Font = New System.Drawing.Font("Microsoft Sans Serif", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.Label15.Location = New System.Drawing.Point(670, 61)
-        Me.Label15.Name = "Label15"
-        Me.Label15.Size = New System.Drawing.Size(171, 20)
-        Me.Label15.TabIndex = 19
-        Me.Label15.Text = "Night Differential Days:"
-        '
         'FRM_DTR_BIOMETRIC
         '
-        Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
+        Me.AutoScaleDimensions = New System.Drawing.SizeF(8.0!, 16.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
-        Me.BackColor = System.Drawing.Color.Black
-        Me.ClientSize = New System.Drawing.Size(1919, 931)
-        Me.Controls.Add(Me.TabControl1)
-        Me.Controls.Add(Me.Label8)
-        Me.Controls.Add(Me.Panel1)
+        Me.BackColor = System.Drawing.Color.FromArgb(255, 192, 128)
+        Me.ClientSize = New System.Drawing.Size(1220, 720)
+        Me.Controls.Add(Me.rootPanel)
+        Me.Font = New System.Drawing.Font("Verdana", 9.75!, System.Drawing.FontStyle.Regular)
+        Me.MinimumSize = New System.Drawing.Size(1100, 650)
         Me.Name = "FRM_DTR_BIOMETRIC"
         Me.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen
-        Me.Text = "FRM_PAYROLL_BIOMETRIC"
+        Me.Text = "DTR Biometric"
+        Me.WindowState = System.Windows.Forms.FormWindowState.Maximized
+        Me.rootPanel.ResumeLayout(False)
         Me.TabControl1.ResumeLayout(False)
         Me.TabPage1.ResumeLayout(False)
-        Me.TabPage1.PerformLayout()
-        Me.TabControl2.ResumeLayout(False)
-        Me.actualDtrPage.ResumeLayout(False)
-        Me.actualDtrPage.PerformLayout()
+        Me.dtrRootPanel.ResumeLayout(False)
+        Me.dtrHeaderPanel.ResumeLayout(False)
+        Me.dtrWorkspacePanel.ResumeLayout(False)
+        Me.actualRootPanel.ResumeLayout(False)
+        Me.actualToolPanel.ResumeLayout(False)
+        Me.actualToolPanel.PerformLayout()
         CType(Me.GView_DTR, System.ComponentModel.ISupportInitialize).EndInit()
-        Me.dtrBreakDownPage.ResumeLayout(False)
+        CType(Me.GView_Classification, System.ComponentModel.ISupportInitialize).EndInit()
+        Me.breakdownRootPanel.ResumeLayout(False)
+        CType(Me.GView_TimeCalculation, System.ComponentModel.ISupportInitialize).EndInit()
+        Me.breakdownActionPanel.ResumeLayout(False)
         Me.TabPage2.ResumeLayout(False)
-        Me.TabPage2.PerformLayout()
+        Me.scheduleRootPanel.ResumeLayout(False)
         CType(Me.GView_Schedule, System.ComponentModel.ISupportInitialize).EndInit()
+        Me.scheduleSummaryPanel.ResumeLayout(False)
         Me.ResumeLayout(False)
-        Me.PerformLayout()
 
     End Sub
 
+    Friend WithEvents rootPanel As TableLayoutPanel
+    Friend WithEvents dtrRootPanel As TableLayoutPanel
+    Friend WithEvents dtrHeaderPanel As TableLayoutPanel
+    Friend WithEvents dtrWorkspacePanel As TableLayoutPanel
+    Friend WithEvents actualRootPanel As TableLayoutPanel
+    Friend WithEvents actualToolPanel As FlowLayoutPanel
+    Friend WithEvents GView_Classification As DataGridView
+    Friend WithEvents breakdownRootPanel As TableLayoutPanel
+    Friend WithEvents breakdownActionPanel As TableLayoutPanel
+    Friend WithEvents scheduleRootPanel As TableLayoutPanel
+    Friend WithEvents scheduleSummaryPanel As TableLayoutPanel
     Friend WithEvents Panel1 As Panel
-    Friend WithEvents Btn_DTR As Button
     Friend WithEvents TabControl1 As TabControl
     Friend WithEvents TabPage1 As TabPage
     Friend WithEvents Lbl_Name As Label
@@ -863,9 +901,6 @@ Partial Class FRM_DTR_BIOMETRIC
     Friend WithEvents GView_Schedule As DataGridView
     Friend WithEvents OpenFileDialog1 As OpenFileDialog
     Friend WithEvents Lbl_IDNumber As Label
-    Friend WithEvents Label7 As Label
-    Friend WithEvents Label6 As Label
-    Friend WithEvents Chk_Sunday As CheckBox
     Friend WithEvents Label8 As Label
     Friend WithEvents Lbl_Absent_Count As Label
     Friend WithEvents Label9 As Label
@@ -874,15 +909,9 @@ Partial Class FRM_DTR_BIOMETRIC
     Friend WithEvents Label11 As Label
     Friend WithEvents Label10 As Label
     Friend WithEvents Btn_Save_DTR As Button
-    Friend WithEvents BtnSH As Button
-    Friend WithEvents BtnLH As Button
-    Friend WithEvents TabControl2 As TabControl
-    Friend WithEvents actualDtrPage As TabPage
-    Friend WithEvents dtrBreakDownPage As TabPage
-    Friend WithEvents btn_Breakdown As Button
     Friend WithEvents DTR_TimeCalculationPanel As Panel
+    Friend WithEvents GView_TimeCalculation As DataGridView
     Friend WithEvents DTR_Lbl_Period As Label
-    Friend WithEvents Btn_TimeDtlView As Button
     Friend WithEvents Btn_TimeCalcView As Button
     Friend WithEvents DataGridViewTextBoxColumn1 As DataGridViewTextBoxColumn
     Friend WithEvents DataGridViewTextBoxColumn2 As DataGridViewTextBoxColumn
@@ -894,18 +923,6 @@ Partial Class FRM_DTR_BIOMETRIC
     Friend WithEvents DataGridViewTextBoxColumn8 As DataGridViewTextBoxColumn
     Friend WithEvents ExtraTimeIn1 As DataGridViewTextBoxColumn
     Friend WithEvents ExtraTimeOut1 As DataGridViewTextBoxColumn
-    Friend WithEvents DataGridViewTextBoxColumn9 As DataGridViewTextBoxColumn
-    Friend WithEvents DataGridViewTextBoxColumn10 As DataGridViewTextBoxColumn
-    Friend WithEvents DataGridViewTextBoxColumn11 As DataGridViewTextBoxColumn
-    Friend WithEvents DataGridViewTextBoxColumn12 As DataGridViewTextBoxColumn
-    Friend WithEvents DataGridViewTextBoxColumn13 As DataGridViewTextBoxColumn
-    Friend WithEvents REG_REG As DataGridViewTextBoxColumn
-    Friend WithEvents REG_SUN As DataGridViewTextBoxColumn
-    Friend WithEvents REG_SH As DataGridViewTextBoxColumn
-    Friend WithEvents REG_LH As DataGridViewTextBoxColumn
-    Friend WithEvents OT_REG As DataGridViewTextBoxColumn
-    Friend WithEvents FirstTimeIn As DataGridViewTextBoxColumn
-    Friend WithEvents LastTimeOut As DataGridViewTextBoxColumn
     Friend WithEvents Col_DayNum As DataGridViewTextBoxColumn
     Friend WithEvents Col_Sched_in As DataGridViewTextBoxColumn
     Friend WithEvents Column1 As DataGridViewTextBoxColumn
@@ -914,7 +931,6 @@ Partial Class FRM_DTR_BIOMETRIC
     Friend WithEvents Col_FlagShift As DataGridViewTextBoxColumn
     Friend WithEvents Col_ID As DataGridViewTextBoxColumn
     Friend WithEvents Col_Attendance As DataGridViewTextBoxColumn
-    Friend WithEvents Btn_Calc_DTR As Button
     Friend WithEvents Lbl_ND_Days As Label
     Friend WithEvents Label15 As Label
     Friend WithEvents Lbl_Actual_Rep_Days As Label

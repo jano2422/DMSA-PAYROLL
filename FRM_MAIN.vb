@@ -129,8 +129,7 @@ Public Class FRM_MAIN
 
     Private Sub Btn_DTR_Click(sender As Object, e As EventArgs) Handles Btn_DTR.Click
         GlobalVariables.sDTR_or_Schedule_Process = "DTR"
-        'FRM_DTR_BIOMETRIC_WINDOW.ShowDialog()
-        FRM_DTR_BIOMETRIC.ShowDialog()
+        FRM_DTR_EMPLOYEE_LIST_ALL.ShowDialog()
     End Sub
 
     Private Sub Btn_Payslip_Click(sender As Object, e As EventArgs) Handles Btn_Payslip.Click

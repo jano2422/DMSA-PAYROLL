@@ -30,6 +30,8 @@ Module Mod_GlobalVariables
         Public Shared DTR_Selected_Employee_Name As String
         Public Shared DTR_Selected_SubClient_ID As String
         Public Shared DTR_Selected_SubClient_Name As String
+        Public Shared DTR_Selected_SubClient_Address As String
+        Public Shared DTR_Selected_Sched_Type As String
 
         Public Shared sDay(15) As String
 

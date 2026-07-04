@@ -159,6 +159,12 @@
     <Compile Include="FRM_DTR_EMPLOYEE_LIST.vb">
       <SubType>Form</SubType>
     </Compile>
+    <Compile Include="FRM_DTR_EMPLOYEE_LIST_ALL.Designer.vb">
+      <DependentUpon>FRM_DTR_EMPLOYEE_LIST_ALL.vb</DependentUpon>
+    </Compile>
+    <Compile Include="FRM_DTR_EMPLOYEE_LIST_ALL.vb">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Include="FRM_DTR_EXPORTS.Designer.vb">
       <DependentUpon>FRM_DTR_EXPORTS.vb</DependentUpon>
     </Compile>
@@ -178,6 +184,9 @@
       <DependentUpon>FRM_DTR_REPORT.vb</DependentUpon>
     </Compile>
     <Compile Include="FRM_DTR_REPORT.vb">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FRM_DTR_SHIFT_MANUAL.vb">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="FRM_DTR_SCHEDULE.Designer.vb">
@@ -333,6 +342,9 @@
     <EmbeddedResource Include="FRM_DTR_EMPLOYEE_LIST.resx">
       <DependentUpon>FRM_DTR_EMPLOYEE_LIST.vb</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="FRM_DTR_EMPLOYEE_LIST_ALL.resx">
+      <DependentUpon>FRM_DTR_EMPLOYEE_LIST_ALL.vb</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="FRM_DTR_EXPORTS.resx">
       <DependentUpon>FRM_DTR_EXPORTS.vb</DependentUpon>
     </EmbeddedResource>
@@ -426,9 +438,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="bin\Debug\DTR15_3.PNG" />
-  </ItemGroup>
-  <ItemGroup>
-    <WCFMetadata Include="Connected Services\" />
   </ItemGroup>
   <ItemGroup>
     <None Include="bin\Debug\DTR16_31.PNG" />

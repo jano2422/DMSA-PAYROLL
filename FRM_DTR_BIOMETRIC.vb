@@ -10,9 +10,17 @@ Public Class FRM_DTR_BIOMETRIC
     Private selectedDirectory As String = String.Empty
     'Dim DefaultDTRDir As String = "\\DMSAC-SERVER\Files\MASTER_DTR"
     Dim DefaultDTRDir As String = "C:\MASTER_DTR"
+    Public Property AutoStartForSelectedEmployee As Boolean
+
     Private Sub Btn_DTR_Click(sender As Object, e As EventArgs) Handles Btn_DTR.Click
+        StartDtrSelection(True)
+    End Sub
 
+    Public Sub StartForSelectedEmployee()
+        StartDtrSelection(False)
+    End Sub
 
+    Private Sub StartDtrSelection(promptForEmployee As Boolean)
         ' Clear the schedule grid and reset UI
         GView_Schedule.Rows.Clear()
         RemoveDataGridViewByName(DTR_TimeCalculationPanel, "Duplicate_DGV")
@@ -26,8 +34,12 @@ Public Class FRM_DTR_BIOMETRIC
             Exit Sub ' Exit if no directory is selected
         End If
 
-        ' Show the employee list form
-        FRM_DTR_EMPLOYEE_LIST.ShowDialog()
+        If promptForEmployee Then
+            Dim previousProcess = GlobalVariables.sDTR_or_Schedule_Process
+            GlobalVariables.sDTR_or_Schedule_Process = "BIOMETRIC_DTR"
+            FRM_DTR_EMPLOYEE_LIST_ALL.ShowDialog()
+            GlobalVariables.sDTR_or_Schedule_Process = previousProcess
+        End If
 
         ' Retrieve and show the employee schedule
         Call Show_Employee_Schedule(GlobalVariables.DTR_Selected_Employee_ID, "No", 0)
@@ -40,6 +52,9 @@ Public Class FRM_DTR_BIOMETRIC
 
         ' Extract selected employee's name
         Dim szSelectedEmpName As String = GlobalVariables.DTR_Selected_Employee_Name
+        Lbl_IDNumber.Text = GlobalVariables.DTR_Selected_Employee_ID
+        Lbl_Name.Text = GlobalVariables.DTR_Selected_Employee_Name
+        DTR_Lbl_Period.Text = GlobalVariables.sPayroll_Cutoff
 
         ' Split the full name into last name and first name
         Dim nameParts() As String = szSelectedEmpName.Split(","c)
@@ -302,6 +317,13 @@ Public Class FRM_DTR_BIOMETRIC
             ' Log or display the error
             MsgBox($"An error occurred during form load: {ex.Message}", vbExclamation, "Error")
         End Try
+    End Sub
+
+    Private Sub FRM_BIOMETRIC_DTR_Shown(sender As Object, e As EventArgs) Handles MyBase.Shown
+        If AutoStartForSelectedEmployee Then
+            AutoStartForSelectedEmployee = False
+            StartForSelectedEmployee()
+        End If
     End Sub
 
     Private Sub FRM_BIOMETRIC_DTR_FormClosed(sender As Object, e As EventArgs) Handles MyBase.FormClosed

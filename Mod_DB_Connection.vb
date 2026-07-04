@@ -23,8 +23,33 @@ Module Mod_DB_Connection
                 Throw New FileNotFoundException("Database file not found at: " & dbfile)
             End If
 
+            Dim candidateConnectionStrings As String() = {
+                $"Provider=Microsoft.ACE.OLEDB.16.0;Data Source={dbfile};Jet OLEDB:Database Password=DMSA001;Persist Security Info=False;",
+                $"Provider=Microsoft.ACE.OLEDB.12.0;Data Source={dbfile};Jet OLEDB:Database Password=DMSA001;Persist Security Info=False;",
+                $"Provider=Microsoft.Jet.OLEDB.4.0;Data Source={dbfile};Jet OLEDB:Database Password=DMSA001;"
+            }
+
+            Dim selectedConnectionString As String = Nothing
+            Dim lastError As Exception = Nothing
+
+            For Each candidate In candidateConnectionStrings
+                Try
+                    Using testConnection As New OleDbConnection(candidate)
+                        testConnection.Open()
+                    End Using
+                    selectedConnectionString = candidate
+                    Exit For
+                Catch ex As Exception
+                    lastError = ex
+                End Try
+            Next
+
+            If String.IsNullOrWhiteSpace(selectedConnectionString) Then
+                Throw New InvalidOperationException("No installed Access database provider could open DMSA.mdb.", lastError)
+            End If
+
             ' Set the global connection string
-            GlobalVariables.GlobalConStr = $"Provider=Microsoft.Jet.OLEDB.4.0;Data Source={dbfile};Jet OLEDB:Database Password=DMSA001;"
+            GlobalVariables.GlobalConStr = selectedConnectionString
 
             ' Initialize the global database connection object
             GlobalVariables.GlobalCon = New OleDb.OleDbConnection(GlobalVariables.GlobalConStr)

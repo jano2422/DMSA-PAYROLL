@@ -21,10 +21,51 @@ Public Partial Class FRM_DTR_SHIFT_MANUAL
 
     Public Sub New()
         InitializeComponent()
+        SetupGridPresentation()
         SetupPeriodControls()
         SetupRuntimeHandlers()
         LoadSelectedEmployee()
         BuildPeriodDates()
+    End Sub
+
+    Private Sub SetupGridPresentation()
+        ConfigureWorkAreaRows()
+        ConfigureGridForFullSurface(shiftGrid)
+        ConfigureGridForFullSurface(holidayGrid)
+        ConfigureGridForFullSurface(dailyHoursGrid)
+
+        AddHandler shiftGrid.Resize, Sub(sender, e) FillGridRows(shiftGrid)
+        AddHandler holidayGrid.Resize, Sub(sender, e) FillGridRows(holidayGrid)
+        AddHandler dailyHoursGrid.Resize, Sub(sender, e) FillGridRows(dailyHoursGrid)
+        AddHandler shiftGrid.CellPainting, AddressOf GridCheckBoxCellPainting
+        AddHandler holidayGrid.CellPainting, AddressOf GridCheckBoxCellPainting
+    End Sub
+
+    Private Sub ConfigureWorkAreaRows()
+        If workPanel.RowStyles.Count < 3 Then Return
+
+        workPanel.RowStyles(0).SizeType = SizeType.Percent
+        workPanel.RowStyles(0).Height = 34.0!
+        workPanel.RowStyles(1).SizeType = SizeType.Percent
+        workPanel.RowStyles(1).Height = 26.0!
+        workPanel.RowStyles(2).SizeType = SizeType.Percent
+        workPanel.RowStyles(2).Height = 40.0!
+    End Sub
+
+    Private Sub ConfigureGridForFullSurface(grid As DataGridView)
+        grid.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.None
+        grid.AutoSizeRowsMode = DataGridViewAutoSizeRowsMode.None
+        grid.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter
+        grid.ColumnHeadersDefaultCellStyle.WrapMode = DataGridViewTriState.True
+        grid.ColumnHeadersDefaultCellStyle.Font = New Font("Verdana", 10.0!, FontStyle.Bold)
+        grid.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.DisableResizing
+        grid.ColumnHeadersHeight = 46
+        grid.DefaultCellStyle.Font = New Font("Verdana", 11.0!, FontStyle.Regular)
+        grid.DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter
+        grid.DefaultCellStyle.SelectionBackColor = Color.FromArgb(255, 244, 184)
+        grid.DefaultCellStyle.SelectionForeColor = Color.Black
+        grid.RowTemplate.Height = 36
+        grid.ScrollBars = ScrollBars.None
     End Sub
 
     Private Sub SetupRuntimeHandlers()
@@ -112,7 +153,7 @@ Public Partial Class FRM_DTR_SHIFT_MANUAL
             coveredDates.Add(New Date(yearValue, monthValue, dayValue))
         Next
 
-        lblCoverage.Text = coveredDates.First().ToString("MMM d", CultureInfo.InvariantCulture) & " - " & coveredDates.Last().ToString("MMM d, yyyy", CultureInfo.InvariantCulture)
+        lblCoverage.Text = "Period: " & coveredDates.First().ToString("M/d/yyyy", CultureInfo.InvariantCulture) & " - " & coveredDates.Last().ToString("M/d/yyyy", CultureInfo.InvariantCulture)
         GlobalVariables.sPayroll_Cutoff = BuildCutoff()
         BuildShiftGrid()
         BuildDailyHoursGrid()
@@ -149,6 +190,7 @@ Public Partial Class FRM_DTR_SHIFT_MANUAL
             shiftGrid.Rows(rowIndex).Cells("Coverage").Value = shiftDef.Coverage
         Next
 
+        ApplyFullGridLayout(shiftGrid, 118, 128)
         isUpdatingGrid = False
     End Sub
 
@@ -193,6 +235,7 @@ Public Partial Class FRM_DTR_SHIFT_MANUAL
             ApplyHolidayExclusionState(holidayGrid.Columns(columnName).Index)
         Next
 
+        ApplyFullGridLayout(holidayGrid, 190)
         isUpdatingGrid = False
     End Sub
 
@@ -200,6 +243,7 @@ Public Partial Class FRM_DTR_SHIFT_MANUAL
         dailyHoursGrid.Columns.Clear()
         dailyHoursGrid.Rows.Clear()
         dailyHoursGrid.Columns.Add(New DataGridViewTextBoxColumn With {.Name = "Label", .HeaderText = "Hours Breakdown", .ReadOnly = True, .Frozen = True, .Width = 180})
+        dailyHoursGrid.Columns.Add(New DataGridViewTextBoxColumn With {.Name = "Total", .HeaderText = "Total", .ReadOnly = True, .Frozen = True, .Width = 80})
 
         For Each d As Date In coveredDates
             dailyHoursGrid.Columns.Add(New DataGridViewTextBoxColumn With {
@@ -214,6 +258,91 @@ Public Partial Class FRM_DTR_SHIFT_MANUAL
             Dim rowIndex = dailyHoursGrid.Rows.Add()
             dailyHoursGrid.Rows(rowIndex).Cells("Label").Value = rowLabel
         Next
+
+        ApplyFullGridLayout(dailyHoursGrid, 190, 80)
+    End Sub
+
+    Private Sub ApplyFullGridLayout(grid As DataGridView, ParamArray fixedColumnWidths As Integer())
+        If grid.Columns.Count = 0 Then Return
+
+        For columnIndex As Integer = 0 To grid.Columns.Count - 1
+            Dim column = grid.Columns(columnIndex)
+            column.SortMode = DataGridViewColumnSortMode.NotSortable
+
+            If columnIndex < fixedColumnWidths.Length Then
+                column.AutoSizeMode = DataGridViewAutoSizeColumnMode.None
+                column.Width = fixedColumnWidths(columnIndex)
+                column.DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleLeft
+            Else
+                column.AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill
+                column.FillWeight = 1.0!
+                column.MinimumWidth = 38
+                column.DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter
+            End If
+        Next
+
+        FillGridRows(grid)
+    End Sub
+
+    Private Sub FillGridRows(grid As DataGridView)
+        If grid.Rows.Count = 0 OrElse grid.ClientSize.Height <= 0 Then Return
+
+        Dim availableHeight = grid.ClientSize.Height - grid.ColumnHeadersHeight - 2
+        If availableHeight <= 0 Then Return
+
+        Dim baseHeight = Math.Max(1, availableHeight \ grid.Rows.Count)
+        Dim usedHeight = baseHeight * grid.Rows.Count
+        Dim remainder = Math.Max(0, availableHeight - usedHeight)
+
+        For rowIndex As Integer = 0 To grid.Rows.Count - 1
+            grid.Rows(rowIndex).Height = baseHeight + If(rowIndex = grid.Rows.Count - 1, remainder, 0)
+        Next
+    End Sub
+
+    Private Sub GridCheckBoxCellPainting(sender As Object, e As DataGridViewCellPaintingEventArgs)
+        If e.RowIndex < 0 OrElse e.ColumnIndex < 0 Then Return
+
+        Dim grid = TryCast(sender, DataGridView)
+        If grid Is Nothing OrElse Not TypeOf grid.Columns(e.ColumnIndex) Is DataGridViewCheckBoxColumn Then Return
+
+        e.Paint(e.ClipBounds, e.PaintParts And Not DataGridViewPaintParts.ContentForeground)
+
+        Dim checked = IsCellChecked(grid.Rows(e.RowIndex).Cells(e.ColumnIndex))
+        Dim boxSize = Math.Min(24, Math.Max(18, Math.Min(e.CellBounds.Width, e.CellBounds.Height) - 14))
+        Dim boxLeft = e.CellBounds.Left + ((e.CellBounds.Width - boxSize) \ 2)
+        Dim boxTop = e.CellBounds.Top + ((e.CellBounds.Height - boxSize) \ 2)
+        Dim boxBounds As New Rectangle(boxLeft, boxTop, boxSize, boxSize)
+
+        Dim borderColor = If(checked, Color.FromArgb(0, 112, 112), Color.FromArgb(110, 110, 110))
+        Dim fillColor = If(checked, Color.Teal, Color.White)
+
+        Using fillBrush As New SolidBrush(fillColor)
+            e.Graphics.FillRectangle(fillBrush, boxBounds)
+        End Using
+
+        Using borderPen As New Pen(borderColor, 2.0!)
+            e.Graphics.DrawRectangle(borderPen, boxBounds)
+        End Using
+
+        If checked Then
+            Dim oldSmoothingMode = e.Graphics.SmoothingMode
+            e.Graphics.SmoothingMode = Drawing2D.SmoothingMode.AntiAlias
+
+            Using checkPen As New Pen(Color.White, 3.0!)
+                checkPen.StartCap = Drawing2D.LineCap.Round
+                checkPen.EndCap = Drawing2D.LineCap.Round
+
+                Dim firstPoint As New Point(boxBounds.Left + CInt(boxSize * 0.24), boxBounds.Top + CInt(boxSize * 0.54))
+                Dim middlePoint As New Point(boxBounds.Left + CInt(boxSize * 0.43), boxBounds.Top + CInt(boxSize * 0.72))
+                Dim lastPoint As New Point(boxBounds.Left + CInt(boxSize * 0.78), boxBounds.Top + CInt(boxSize * 0.3))
+
+                e.Graphics.DrawLines(checkPen, New Point() {firstPoint, middlePoint, lastPoint})
+            End Using
+
+            e.Graphics.SmoothingMode = oldSmoothingMode
+        End If
+
+        e.Handled = True
     End Sub
 
     Private Sub BuildFillButtons()
@@ -469,19 +598,20 @@ Public Partial Class FRM_DTR_SHIFT_MANUAL
 
     Private Sub RecalculateTotals()
         Dim totals = CalculateTotals()
-        UpdateDailyHoursDisplay()
-        lblNumDays.Text = "Days: " & totals("NUM_DAYS").ToString("0.##")
-        lblTotalHours.Text = "Total: " & totals("TOTAL_HOURS").ToString("0.##")
-        lblReg.Text = "REG: " & totals("REG").ToString("0.##")
-        lblSun.Text = "SUN: " & totals("SUN").ToString("0.##")
-        lblSh.Text = "SH: " & totals("SH").ToString("0.##")
-        lblLh.Text = "LH: " & totals("LH").ToString("0.##")
-        lblOt.Text = "OT: " & totals("OT_REG").ToString("0.##")
-        lblNdDays.Text = "ND Days: " & totals("ND_DAYS").ToString("0.##")
+        UpdateDailyHoursDisplay(totals)
+        lblActualReportingDays.Text = totals("NUM_DAYS").ToString("0.##")
+        lblNightDifferentialDays.Text = totals("ND_DAYS").ToString("0.##")
     End Sub
 
-    Private Sub UpdateDailyHoursDisplay()
+    Private Sub UpdateDailyHoursDisplay(totals As Dictionary(Of String, Decimal))
         If dailyHoursGrid.Rows.Count = 0 Then Return
+
+        dailyHoursGrid.Rows(0).Cells("Total").Value = FormatBreakdownValue(totals("TOTAL_HOURS"))
+        dailyHoursGrid.Rows(1).Cells("Total").Value = FormatBreakdownValue(totals("REG"))
+        dailyHoursGrid.Rows(2).Cells("Total").Value = FormatBreakdownValue(totals("SUN"))
+        dailyHoursGrid.Rows(3).Cells("Total").Value = FormatBreakdownValue(totals("SH"))
+        dailyHoursGrid.Rows(4).Cells("Total").Value = FormatBreakdownValue(totals("LH"))
+        dailyHoursGrid.Rows(5).Cells("Total").Value = FormatBreakdownValue(totals("OT_REG"))
 
         For Each d As Date In coveredDates
             Dim selectedShift = SelectedShiftForDate(d)

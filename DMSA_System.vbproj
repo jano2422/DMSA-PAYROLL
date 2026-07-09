@@ -96,208 +96,208 @@
     <Import Include="System.Threading.Tasks" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Data\Services\ScheduleService.vb" />
+    <Compile Include="Services\ScheduleService.vb" />
     <Compile Include="Models\DtrCalculationTable.vb" />
-    <Compile Include="AppNotification.vb" />
-    <Compile Include="AppNotificationDialog.Designer.vb">
+    <Compile Include="Modules\AppNotification.vb" />
+    <Compile Include="Forms\Common\AppNotificationDialog.Designer.vb">
       <DependentUpon>AppNotificationDialog.vb</DependentUpon>
     </Compile>
-    <Compile Include="AppNotificationDialog.vb">
+    <Compile Include="Forms\Common\AppNotificationDialog.vb">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="FrmProcessing.Designer.vb">
+    <Compile Include="Forms\Common\FrmProcessing.Designer.vb">
       <DependentUpon>FrmProcessing.vb</DependentUpon>
     </Compile>
-    <Compile Include="FrmProcessing.vb">
+    <Compile Include="Forms\Common\FrmProcessing.vb">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="FileSelectionControl.Designer.vb">
+    <Compile Include="Forms\Common\FileSelectionControl.Designer.vb">
       <DependentUpon>FileSelectionControl.vb</DependentUpon>
     </Compile>
-    <Compile Include="FileSelectionControl.vb">
+    <Compile Include="Forms\Common\FileSelectionControl.vb">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="FRM_APPROVAL.Designer.vb">
+    <Compile Include="Forms\Approvals\FRM_APPROVAL.Designer.vb">
       <DependentUpon>FRM_APPROVAL.vb</DependentUpon>
     </Compile>
-    <Compile Include="FRM_APPROVAL.vb">
+    <Compile Include="Forms\Approvals\FRM_APPROVAL.vb">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="FRM_CLIENT_DEACTIVATE.Designer.vb">
+    <Compile Include="Forms\HumanResources\Clients\FRM_CLIENT_DEACTIVATE.Designer.vb">
       <DependentUpon>FRM_CLIENT_DEACTIVATE.vb</DependentUpon>
     </Compile>
-    <Compile Include="FRM_CLIENT_DEACTIVATE.vb">
+    <Compile Include="Forms\HumanResources\Clients\FRM_CLIENT_DEACTIVATE.vb">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="FRM_CLIENT_HDR.Designer.vb">
+    <Compile Include="Forms\HumanResources\Clients\FRM_CLIENT_HDR.Designer.vb">
       <DependentUpon>FRM_CLIENT_HDR.vb</DependentUpon>
     </Compile>
-    <Compile Include="FRM_CLIENT_HDR.vb">
+    <Compile Include="Forms\HumanResources\Clients\FRM_CLIENT_HDR.vb">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="FRM_DTR.Designer.vb">
+    <Compile Include="Forms\Payroll\Timekeeping\FRM_DTR.Designer.vb">
       <DependentUpon>FRM_DTR.vb</DependentUpon>
     </Compile>
-    <Compile Include="FRM_DTR.vb">
+    <Compile Include="Forms\Payroll\Timekeeping\FRM_DTR.vb">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="FRM_DTR_EMPLOYEE_LIST.Designer.vb">
+    <Compile Include="Forms\Payroll\Timekeeping\FRM_DTR_EMPLOYEE_LIST.Designer.vb">
       <DependentUpon>FRM_DTR_EMPLOYEE_LIST.vb</DependentUpon>
     </Compile>
-    <Compile Include="FRM_DTR_EMPLOYEE_LIST.vb">
+    <Compile Include="Forms\Payroll\Timekeeping\FRM_DTR_EMPLOYEE_LIST.vb">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="FRM_DTR_EMPLOYEE_LIST_ALL.Designer.vb">
+    <Compile Include="Forms\Payroll\Timekeeping\FRM_DTR_EMPLOYEE_LIST_ALL.Designer.vb">
       <DependentUpon>FRM_DTR_EMPLOYEE_LIST_ALL.vb</DependentUpon>
     </Compile>
-    <Compile Include="FRM_DTR_EMPLOYEE_LIST_ALL.vb">
+    <Compile Include="Forms\Payroll\Timekeeping\FRM_DTR_EMPLOYEE_LIST_ALL.vb">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="FRM_DTR_CLIENT_LIST_ALL.Designer.vb">
+    <Compile Include="Forms\Payroll\Timekeeping\FRM_DTR_CLIENT_LIST_ALL.Designer.vb">
       <DependentUpon>FRM_DTR_CLIENT_LIST_ALL.vb</DependentUpon>
     </Compile>
-    <Compile Include="FRM_DTR_CLIENT_LIST_ALL.vb">
+    <Compile Include="Forms\Payroll\Timekeeping\FRM_DTR_CLIENT_LIST_ALL.vb">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="FRM_DTR_EXPORTS.Designer.vb">
+    <Compile Include="Forms\Payroll\Timekeeping\FRM_DTR_EXPORTS.Designer.vb">
       <DependentUpon>FRM_DTR_EXPORTS.vb</DependentUpon>
     </Compile>
-    <Compile Include="FRM_DTR_EXPORTS.vb">
+    <Compile Include="Forms\Payroll\Timekeeping\FRM_DTR_EXPORTS.vb">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="FRM_DTR_DEDUCTION_UPDATE.Designer.vb">
+    <Compile Include="Forms\Payroll\Timekeeping\FRM_DTR_DEDUCTION_UPDATE.Designer.vb">
       <DependentUpon>FRM_DTR_DEDUCTION_UPDATE.vb</DependentUpon>
     </Compile>
-    <Compile Include="FRM_DTR_DEDUCTION_UPDATE.vb">
+    <Compile Include="Forms\Payroll\Timekeeping\FRM_DTR_DEDUCTION_UPDATE.vb">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="FRM_DTR_INPUT_16_31.Designer.vb">
+    <Compile Include="Forms\Payroll\Timekeeping\FRM_DTR_INPUT_16_31.Designer.vb">
       <DependentUpon>FRM_DTR_INPUT_16_31.vb</DependentUpon>
     </Compile>
-    <Compile Include="FRM_DTR_INPUT_16_31.vb">
+    <Compile Include="Forms\Payroll\Timekeeping\FRM_DTR_INPUT_16_31.vb">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="FRM_DTR_REPORT.Designer.vb">
+    <Compile Include="Forms\Payroll\Timekeeping\FRM_DTR_REPORT.Designer.vb">
       <DependentUpon>FRM_DTR_REPORT.vb</DependentUpon>
     </Compile>
-    <Compile Include="FRM_DTR_REPORT.vb">
+    <Compile Include="Forms\Payroll\Timekeeping\FRM_DTR_REPORT.vb">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="FRM_DTR_SHIFT_MANUAL.Designer.vb">
+    <Compile Include="Forms\Payroll\Timekeeping\FRM_DTR_SHIFT_MANUAL.Designer.vb">
       <DependentUpon>FRM_DTR_SHIFT_MANUAL.vb</DependentUpon>
     </Compile>
-    <Compile Include="FRM_DTR_SHIFT_MANUAL.vb">
+    <Compile Include="Forms\Payroll\Timekeeping\FRM_DTR_SHIFT_MANUAL.vb">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="FRM_DTR_SCHEDULE.Designer.vb">
+    <Compile Include="Forms\Operations\Scheduling\FRM_DTR_SCHEDULE.Designer.vb">
       <DependentUpon>FRM_DTR_SCHEDULE.vb</DependentUpon>
     </Compile>
-    <Compile Include="FRM_DTR_SCHEDULE.vb">
+    <Compile Include="Forms\Operations\Scheduling\FRM_DTR_SCHEDULE.vb">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="FRM_HR_EMP_REC.vb">
+    <Compile Include="Forms\HumanResources\FRM_HR_EMP_REC.vb">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="FRM_HR_EMP_REC.Designer.vb">
+    <Compile Include="Forms\HumanResources\FRM_HR_EMP_REC.Designer.vb">
       <DependentUpon>FRM_HR_EMP_REC.vb</DependentUpon>
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="FRM_CLIENT_REG.Designer.vb">
+    <Compile Include="Forms\HumanResources\Clients\FRM_CLIENT_REG.Designer.vb">
       <DependentUpon>FRM_CLIENT_REG.vb</DependentUpon>
     </Compile>
-    <Compile Include="FRM_CLIENT_REG.vb">
+    <Compile Include="Forms\HumanResources\Clients\FRM_CLIENT_REG.vb">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="FRM_DTR_INPUT_1_15.Designer.vb">
+    <Compile Include="Forms\Payroll\Timekeeping\FRM_DTR_INPUT_1_15.Designer.vb">
       <DependentUpon>FRM_DTR_INPUT_1_15.vb</DependentUpon>
     </Compile>
-    <Compile Include="FRM_DTR_INPUT_1_15.vb">
+    <Compile Include="Forms\Payroll\Timekeeping\FRM_DTR_INPUT_1_15.vb">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="FRM_HR_EMP_UPDATE_REC.Designer.vb">
+    <Compile Include="Forms\HumanResources\FRM_HR_EMP_UPDATE_REC.Designer.vb">
       <DependentUpon>FRM_HR_EMP_UPDATE_REC.vb</DependentUpon>
     </Compile>
-    <Compile Include="FRM_HR_EMP_UPDATE_REC.vb">
+    <Compile Include="Forms\HumanResources\FRM_HR_EMP_UPDATE_REC.vb">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="FRM_HR_APPLICATION.Designer.vb">
+    <Compile Include="Forms\HumanResources\FRM_HR_APPLICATION.Designer.vb">
       <DependentUpon>FRM_HR_APPLICATION.vb</DependentUpon>
     </Compile>
-    <Compile Include="FRM_HR_APPLICATION.vb">
+    <Compile Include="Forms\HumanResources\FRM_HR_APPLICATION.vb">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="FRM_HR_REPORTS.Designer.vb">
+    <Compile Include="Forms\HumanResources\FRM_HR_REPORTS.Designer.vb">
       <DependentUpon>FRM_HR_REPORTS.vb</DependentUpon>
     </Compile>
-    <Compile Include="FRM_HR_REPORTS.vb">
+    <Compile Include="Forms\HumanResources\FRM_HR_REPORTS.vb">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="FRM_LOAN.Designer.vb">
+    <Compile Include="Forms\Payroll\FRM_LOAN.Designer.vb">
       <DependentUpon>FRM_LOAN.vb</DependentUpon>
     </Compile>
-    <Compile Include="FRM_LOAN.vb">
+    <Compile Include="Forms\Payroll\FRM_LOAN.vb">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="FRM_LOGIN.Designer.vb">
+    <Compile Include="Forms\Authentication\FRM_LOGIN.Designer.vb">
       <DependentUpon>FRM_LOGIN.vb</DependentUpon>
     </Compile>
-    <Compile Include="FRM_LOGIN.vb">
+    <Compile Include="Forms\Authentication\FRM_LOGIN.vb">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="FRM_CHANGE_PASSWORD.Designer.vb">
+    <Compile Include="Forms\Authentication\FRM_CHANGE_PASSWORD.Designer.vb">
       <DependentUpon>FRM_CHANGE_PASSWORD.vb</DependentUpon>
     </Compile>
-    <Compile Include="FRM_CHANGE_PASSWORD.vb">
+    <Compile Include="Forms\Authentication\FRM_CHANGE_PASSWORD.vb">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="FRM_MAIN.Designer.vb">
+    <Compile Include="Forms\Shell\FRM_MAIN.Designer.vb">
       <DependentUpon>FRM_MAIN.vb</DependentUpon>
     </Compile>
-    <Compile Include="FRM_MAIN.vb">
+    <Compile Include="Forms\Shell\FRM_MAIN.vb">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="FRM_DTR_BIOMETRIC.Designer.vb">
+    <Compile Include="Forms\Payroll\Timekeeping\FRM_DTR_BIOMETRIC.Designer.vb">
       <DependentUpon>FRM_DTR_BIOMETRIC.vb</DependentUpon>
     </Compile>
-    <Compile Include="FRM_DTR_BIOMETRIC.vb">
+    <Compile Include="Forms\Payroll\Timekeeping\FRM_DTR_BIOMETRIC.vb">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="Models\Employee.vb" />
     <Compile Include="Models\EmployeeSchedule.vb" />
-    <Compile Include="Mod_Excel.vb" />
-    <Compile Include="Mod_FRM_DTR_EXPORTS.vb" />
-    <Compile Include="Mod_FRM_DTR_Biometric.vb" />
-    <Compile Include="Mod_FRM_HR_EMP_UPDATE_REC.vb" />
-    <Compile Include="FRM_RELIEVER.Designer.vb">
+    <Compile Include="Modules\Mod_Excel.vb" />
+    <Compile Include="Modules\Payroll\Timekeeping\Mod_FRM_DTR_EXPORTS.vb" />
+    <Compile Include="Modules\Payroll\Timekeeping\Mod_FRM_DTR_Biometric.vb" />
+    <Compile Include="Modules\Mod_FRM_HR_EMP_UPDATE_REC.vb" />
+    <Compile Include="Forms\Payroll\Timekeeping\FRM_RELIEVER.Designer.vb">
       <DependentUpon>FRM_RELIEVER.vb</DependentUpon>
     </Compile>
-    <Compile Include="FRM_RELIEVER.vb">
+    <Compile Include="Forms\Payroll\Timekeeping\FRM_RELIEVER.vb">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="FRM_USER_CREATOR.Designer.vb">
+    <Compile Include="Forms\Authentication\FRM_USER_CREATOR.Designer.vb">
       <DependentUpon>FRM_USER_CREATOR.vb</DependentUpon>
     </Compile>
-    <Compile Include="FRM_USER_CREATOR.vb">
+    <Compile Include="Forms\Authentication\FRM_USER_CREATOR.vb">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Mod_Acitivity_Logs.vb" />
-    <Compile Include="Mod_DB_Connection.vb" />
-    <Compile Include="Mod_FRM_EMP_REG.vb" />
-    <Compile Include="Mod_FRM_CLIENT_HDR.vb" />
-    <Compile Include="Mod_FRM_EMP_REG_INPUT.vb" />
-    <Compile Include="Mod_FRM_Approval.vb" />
-    <Compile Include="Mod_FRM_DTR.vb" />
-    <Compile Include="Mod_FRM_DTR_INPUT_1_15.vb" />
-    <Compile Include="Mod_FRM_DTR_REPORT.vb" />
-    <Compile Include="Mod_FRM_EMP_REG_CLIENT.vb" />
-    <Compile Include="Mod_FRM_HR_APPLICATION.vb" />
-    <Compile Include="Mod_FRM_HR_REPORTS.vb" />
-    <Compile Include="Mod_FRM_LOAN.vb" />
-    <Compile Include="Mod_FRM_LOG_IN.vb" />
-    <Compile Include="Mod_FRM_RELIEVER.vb" />
-    <Compile Include="Mod_FRM_SCHEDULE.vb" />
-    <Compile Include="Mod_FRM_USER_CREATOR.vb" />
-    <Compile Include="Mod_GlobalVariables.vb" />
+    <Compile Include="Modules\Mod_Acitivity_Logs.vb" />
+    <Compile Include="Modules\Mod_DB_Connection.vb" />
+    <Compile Include="Modules\Mod_FRM_EMP_REG.vb" />
+    <Compile Include="Modules\HumanResources\Clients\Mod_FRM_CLIENT_HDR.vb" />
+    <Compile Include="Modules\Mod_FRM_EMP_REG_INPUT.vb" />
+    <Compile Include="Modules\Mod_FRM_Approval.vb" />
+    <Compile Include="Modules\Payroll\Timekeeping\Mod_FRM_DTR.vb" />
+    <Compile Include="Modules\Payroll\Timekeeping\Mod_FRM_DTR_INPUT_1_15.vb" />
+    <Compile Include="Modules\Payroll\Timekeeping\Mod_FRM_DTR_REPORT.vb" />
+    <Compile Include="Modules\HumanResources\Clients\Mod_FRM_EMP_REG_CLIENT.vb" />
+    <Compile Include="Modules\Mod_FRM_HR_APPLICATION.vb" />
+    <Compile Include="Modules\Mod_FRM_HR_REPORTS.vb" />
+    <Compile Include="Modules\Mod_FRM_LOAN.vb" />
+    <Compile Include="Modules\Mod_FRM_LOG_IN.vb" />
+    <Compile Include="Modules\Payroll\Timekeeping\Mod_FRM_RELIEVER.vb" />
+    <Compile Include="Modules\Operations\Scheduling\Mod_FRM_SCHEDULE.vb" />
+    <Compile Include="Modules\Mod_FRM_USER_CREATOR.vb" />
+    <Compile Include="Modules\Mod_GlobalVariables.vb" />
     <Compile Include="My Project\AssemblyInfo.vb" />
     <Compile Include="My Project\Application.Designer.vb">
       <AutoGen>True</AutoGen>
@@ -316,92 +316,92 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="FRM_APPROVAL.resx">
+    <EmbeddedResource Include="Forms\Approvals\FRM_APPROVAL.resx">
       <DependentUpon>FRM_APPROVAL.vb</DependentUpon>
       <SubType>Designer</SubType>
     </EmbeddedResource>
-    <EmbeddedResource Include="FRM_CLIENT_DEACTIVATE.resx">
+    <EmbeddedResource Include="Forms\HumanResources\Clients\FRM_CLIENT_DEACTIVATE.resx">
       <DependentUpon>FRM_CLIENT_DEACTIVATE.vb</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="FRM_CLIENT_HDR.resx">
+    <EmbeddedResource Include="Forms\HumanResources\Clients\FRM_CLIENT_HDR.resx">
       <DependentUpon>FRM_CLIENT_HDR.vb</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="FRM_DTR.resx">
+    <EmbeddedResource Include="Forms\Payroll\Timekeeping\FRM_DTR.resx">
       <DependentUpon>FRM_DTR.vb</DependentUpon>
       <SubType>Designer</SubType>
     </EmbeddedResource>
-    <EmbeddedResource Include="FRM_DTR_BIOMETRIC.resx">
+    <EmbeddedResource Include="Forms\Payroll\Timekeeping\FRM_DTR_BIOMETRIC.resx">
       <DependentUpon>FRM_DTR_BIOMETRIC.vb</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="AppNotificationDialog.resx">
+    <EmbeddedResource Include="Forms\Common\AppNotificationDialog.resx">
       <DependentUpon>AppNotificationDialog.vb</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="FrmProcessing.resx">
+    <EmbeddedResource Include="Forms\Common\FrmProcessing.resx">
       <DependentUpon>FrmProcessing.vb</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="FRM_DTR_DEDUCTION_UPDATE.resx">
+    <EmbeddedResource Include="Forms\Payroll\Timekeeping\FRM_DTR_DEDUCTION_UPDATE.resx">
       <DependentUpon>FRM_DTR_DEDUCTION_UPDATE.vb</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="FRM_DTR_EMPLOYEE_LIST.resx">
+    <EmbeddedResource Include="Forms\Payroll\Timekeeping\FRM_DTR_EMPLOYEE_LIST.resx">
       <DependentUpon>FRM_DTR_EMPLOYEE_LIST.vb</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="FRM_DTR_EMPLOYEE_LIST_ALL.resx">
+    <EmbeddedResource Include="Forms\Payroll\Timekeeping\FRM_DTR_EMPLOYEE_LIST_ALL.resx">
       <DependentUpon>FRM_DTR_EMPLOYEE_LIST_ALL.vb</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="FRM_DTR_CLIENT_LIST_ALL.resx">
+    <EmbeddedResource Include="Forms\Payroll\Timekeeping\FRM_DTR_CLIENT_LIST_ALL.resx">
       <DependentUpon>FRM_DTR_CLIENT_LIST_ALL.vb</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="FileSelectionControl.resx">
+    <EmbeddedResource Include="Forms\Common\FileSelectionControl.resx">
       <DependentUpon>FileSelectionControl.vb</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="FRM_DTR_EXPORTS.resx">
+    <EmbeddedResource Include="Forms\Payroll\Timekeeping\FRM_DTR_EXPORTS.resx">
       <DependentUpon>FRM_DTR_EXPORTS.vb</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="FRM_DTR_INPUT_16_31.resx">
+    <EmbeddedResource Include="Forms\Payroll\Timekeeping\FRM_DTR_INPUT_16_31.resx">
       <DependentUpon>FRM_DTR_INPUT_16_31.vb</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="FRM_DTR_REPORT.resx">
+    <EmbeddedResource Include="Forms\Payroll\Timekeeping\FRM_DTR_REPORT.resx">
       <DependentUpon>FRM_DTR_REPORT.vb</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="FRM_DTR_SHIFT_MANUAL.resx">
+    <EmbeddedResource Include="Forms\Payroll\Timekeeping\FRM_DTR_SHIFT_MANUAL.resx">
       <DependentUpon>FRM_DTR_SHIFT_MANUAL.vb</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="FRM_DTR_SCHEDULE.resx">
+    <EmbeddedResource Include="Forms\Operations\Scheduling\FRM_DTR_SCHEDULE.resx">
       <DependentUpon>FRM_DTR_SCHEDULE.vb</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="FRM_HR_EMP_REC.resx">
+    <EmbeddedResource Include="Forms\HumanResources\FRM_HR_EMP_REC.resx">
       <DependentUpon>FRM_HR_EMP_REC.vb</DependentUpon>
       <SubType>Designer</SubType>
     </EmbeddedResource>
-    <EmbeddedResource Include="FRM_CLIENT_REG.resx">
+    <EmbeddedResource Include="Forms\HumanResources\Clients\FRM_CLIENT_REG.resx">
       <DependentUpon>FRM_CLIENT_REG.vb</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="FRM_DTR_INPUT_1_15.resx">
+    <EmbeddedResource Include="Forms\Payroll\Timekeeping\FRM_DTR_INPUT_1_15.resx">
       <DependentUpon>FRM_DTR_INPUT_1_15.vb</DependentUpon>
       <SubType>Designer</SubType>
     </EmbeddedResource>
-    <EmbeddedResource Include="FRM_HR_EMP_UPDATE_REC.resx">
+    <EmbeddedResource Include="Forms\HumanResources\FRM_HR_EMP_UPDATE_REC.resx">
       <DependentUpon>FRM_HR_EMP_UPDATE_REC.vb</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="FRM_HR_APPLICATION.resx">
+    <EmbeddedResource Include="Forms\HumanResources\FRM_HR_APPLICATION.resx">
       <DependentUpon>FRM_HR_APPLICATION.vb</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="FRM_HR_REPORTS.resx">
+    <EmbeddedResource Include="Forms\HumanResources\FRM_HR_REPORTS.resx">
       <DependentUpon>FRM_HR_REPORTS.vb</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="FRM_LOAN.resx">
+    <EmbeddedResource Include="Forms\Payroll\FRM_LOAN.resx">
       <DependentUpon>FRM_LOAN.vb</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="FRM_LOGIN.resx">
+    <EmbeddedResource Include="Forms\Authentication\FRM_LOGIN.resx">
       <DependentUpon>FRM_LOGIN.vb</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="FRM_MAIN.resx">
+    <EmbeddedResource Include="Forms\Shell\FRM_MAIN.resx">
       <DependentUpon>FRM_MAIN.vb</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="FRM_RELIEVER.resx">
+    <EmbeddedResource Include="Forms\Payroll\Timekeeping\FRM_RELIEVER.resx">
       <DependentUpon>FRM_RELIEVER.vb</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="FRM_USER_CREATOR.resx">
+    <EmbeddedResource Include="Forms\Authentication\FRM_USER_CREATOR.resx">
       <DependentUpon>FRM_USER_CREATOR.vb</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="My Project\Resources.resx">
@@ -410,7 +410,7 @@
       <CustomToolNamespace>My.Resources</CustomToolNamespace>
       <SubType>Designer</SubType>
     </EmbeddedResource>
-    <EmbeddedResource Include="Rep_Payslip.rdlc" />
+    <EmbeddedResource Include="Reports\Rep_Payslip.rdlc" />
   </ItemGroup>
   <ItemGroup>
     <None Include="My Project\app.manifest" />
@@ -424,17 +424,19 @@
       <LastGenOutput>Settings.Designer.vb</LastGenOutput>
     </None>
     <None Include="App.config" />
+    <None Include="Data\Database\DMSA.mdb">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\DMSA_Logo.png" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="bin\Debug\DTR15_3.PNG" />
+    <None Include="Resources\DTR15_3.PNG" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="bin\Debug\DTR16_31.PNG" />
+    <None Include="Resources\DTR16_31.PNG" />
     <None Include="Resources\R_Status.PNG" />
-    <None Include="bin\Debug\Arrow_Left.png" />
     <None Include="Resources\DeltaMaroon_NoBg.png" />
     <None Include="Resources\Recruitment.PNG" />
     <None Include="Resources\eagle_security_services_logo.jpg" />

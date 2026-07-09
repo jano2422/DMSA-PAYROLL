@@ -50,15 +50,13 @@ Partial Class FRM_DTR_SHIFT_MANUAL
         Me.pnlCoverage = New System.Windows.Forms.Panel()
         Me.lblCoverage = New System.Windows.Forms.Label()
         Me.lblCoverageCaption = New System.Windows.Forms.Label()
+        Me.pnlActualReportingDays = New System.Windows.Forms.Panel()
+        Me.lblActualReportingDays = New System.Windows.Forms.Label()
+        Me.lblActualReportingDaysCaption = New System.Windows.Forms.Label()
+        Me.pnlNightDifferentialDays = New System.Windows.Forms.Panel()
+        Me.lblNightDifferentialDays = New System.Windows.Forms.Label()
+        Me.lblNightDifferentialDaysCaption = New System.Windows.Forms.Label()
         Me.footerPanel = New System.Windows.Forms.TableLayoutPanel()
-        Me.lblNumDays = New System.Windows.Forms.Label()
-        Me.lblTotalHours = New System.Windows.Forms.Label()
-        Me.lblReg = New System.Windows.Forms.Label()
-        Me.lblSun = New System.Windows.Forms.Label()
-        Me.lblSh = New System.Windows.Forms.Label()
-        Me.lblLh = New System.Windows.Forms.Label()
-        Me.lblOt = New System.Windows.Forms.Label()
-        Me.lblNdDays = New System.Windows.Forms.Label()
         Me.btnSave = New System.Windows.Forms.Button()
         Me.btnClose = New System.Windows.Forms.Button()
         Me.rootPanel.SuspendLayout()
@@ -75,6 +73,8 @@ Partial Class FRM_DTR_SHIFT_MANUAL
         Me.pnlAddress.SuspendLayout()
         Me.pnlSchedType.SuspendLayout()
         Me.pnlCoverage.SuspendLayout()
+        Me.pnlActualReportingDays.SuspendLayout()
+        Me.pnlNightDifferentialDays.SuspendLayout()
         Me.footerPanel.SuspendLayout()
         Me.SuspendLayout()
         '
@@ -86,19 +86,16 @@ Partial Class FRM_DTR_SHIFT_MANUAL
         Me.rootPanel.Controls.Add(Me.toolbarPanel, 0, 0)
         Me.rootPanel.Controls.Add(Me.workPanel, 0, 1)
         Me.rootPanel.Controls.Add(Me.headerPanel, 1, 1)
-        Me.rootPanel.Controls.Add(Me.footerPanel, 0, 2)
         Me.rootPanel.Dock = System.Windows.Forms.DockStyle.Fill
         Me.rootPanel.Location = New System.Drawing.Point(0, 0)
         Me.rootPanel.Name = "rootPanel"
         Me.rootPanel.Padding = New System.Windows.Forms.Padding(10)
-        Me.rootPanel.RowCount = 3
+        Me.rootPanel.RowCount = 2
         Me.rootPanel.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 54.0!))
         Me.rootPanel.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100.0!))
-        Me.rootPanel.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 64.0!))
         Me.rootPanel.Size = New System.Drawing.Size(1220, 720)
         Me.rootPanel.TabIndex = 0
         Me.rootPanel.SetColumnSpan(Me.toolbarPanel, 2)
-        Me.rootPanel.SetColumnSpan(Me.footerPanel, 2)
         '
         'toolbarPanel
         '
@@ -337,18 +334,24 @@ Partial Class FRM_DTR_SHIFT_MANUAL
         Me.headerPanel.Controls.Add(Me.pnlAddress, 0, 3)
         Me.headerPanel.Controls.Add(Me.pnlSchedType, 0, 4)
         Me.headerPanel.Controls.Add(Me.pnlCoverage, 0, 5)
+        Me.headerPanel.Controls.Add(Me.pnlActualReportingDays, 0, 6)
+        Me.headerPanel.Controls.Add(Me.pnlNightDifferentialDays, 0, 7)
+        Me.headerPanel.Controls.Add(Me.footerPanel, 0, 8)
         Me.headerPanel.Dock = System.Windows.Forms.DockStyle.Fill
         Me.headerPanel.Location = New System.Drawing.Point(901, 67)
         Me.headerPanel.Name = "headerPanel"
-        Me.headerPanel.RowCount = 7
+        Me.headerPanel.RowCount = 10
         Me.headerPanel.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 42.0!))
         Me.headerPanel.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 64.0!))
         Me.headerPanel.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 64.0!))
         Me.headerPanel.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 64.0!))
         Me.headerPanel.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 64.0!))
         Me.headerPanel.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 64.0!))
+        Me.headerPanel.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 64.0!))
+        Me.headerPanel.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 64.0!))
+        Me.headerPanel.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 58.0!))
         Me.headerPanel.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100.0!))
-        Me.headerPanel.Size = New System.Drawing.Size(306, 576)
+        Me.headerPanel.Size = New System.Drawing.Size(306, 640)
         Me.headerPanel.TabIndex = 2
         '
         'lblHeaderTitle
@@ -362,7 +365,7 @@ Partial Class FRM_DTR_SHIFT_MANUAL
         Me.lblHeaderTitle.Padding = New System.Windows.Forms.Padding(12, 0, 0, 0)
         Me.lblHeaderTitle.Size = New System.Drawing.Size(300, 42)
         Me.lblHeaderTitle.TabIndex = 0
-        Me.lblHeaderTitle.Text = "DTR employee"
+        Me.lblHeaderTitle.Text = "Employee Information"
         Me.lblHeaderTitle.TextAlign = System.Drawing.ContentAlignment.MiddleLeft
         '
         'pnlEmployee
@@ -390,7 +393,7 @@ Partial Class FRM_DTR_SHIFT_MANUAL
         Me.lblEmployee.Padding = New System.Windows.Forms.Padding(0, 2, 0, 0)
         Me.lblEmployee.Size = New System.Drawing.Size(286, 28)
         Me.lblEmployee.TabIndex = 1
-        Me.lblEmployee.Text = "Employee: -"
+        Me.lblEmployee.Text = "-"
         Me.lblEmployee.TextAlign = System.Drawing.ContentAlignment.MiddleLeft
         '
         'lblEmployeeCaption
@@ -431,7 +434,7 @@ Partial Class FRM_DTR_SHIFT_MANUAL
         Me.lblClient.Padding = New System.Windows.Forms.Padding(0, 2, 0, 0)
         Me.lblClient.Size = New System.Drawing.Size(286, 28)
         Me.lblClient.TabIndex = 1
-        Me.lblClient.Text = "Detachment: -"
+        Me.lblClient.Text = "-"
         Me.lblClient.TextAlign = System.Drawing.ContentAlignment.MiddleLeft
         '
         'lblClientCaption
@@ -472,7 +475,7 @@ Partial Class FRM_DTR_SHIFT_MANUAL
         Me.lblAddress.Padding = New System.Windows.Forms.Padding(0, 2, 0, 0)
         Me.lblAddress.Size = New System.Drawing.Size(286, 28)
         Me.lblAddress.TabIndex = 1
-        Me.lblAddress.Text = "Address: -"
+        Me.lblAddress.Text = "-"
         Me.lblAddress.TextAlign = System.Drawing.ContentAlignment.MiddleLeft
         '
         'lblAddressCaption
@@ -513,7 +516,7 @@ Partial Class FRM_DTR_SHIFT_MANUAL
         Me.lblSchedType.Padding = New System.Windows.Forms.Padding(0, 2, 0, 0)
         Me.lblSchedType.Size = New System.Drawing.Size(286, 28)
         Me.lblSchedType.TabIndex = 1
-        Me.lblSchedType.Text = "Schedule Type: -"
+        Me.lblSchedType.Text = "-"
         Me.lblSchedType.TextAlign = System.Drawing.ContentAlignment.MiddleLeft
         '
         'lblSchedTypeCaption
@@ -554,7 +557,7 @@ Partial Class FRM_DTR_SHIFT_MANUAL
         Me.lblCoverage.Padding = New System.Windows.Forms.Padding(0, 2, 0, 0)
         Me.lblCoverage.Size = New System.Drawing.Size(286, 28)
         Me.lblCoverage.TabIndex = 1
-        Me.lblCoverage.Text = "Coverage: -"
+        Me.lblCoverage.Text = "-"
         Me.lblCoverage.TextAlign = System.Drawing.ContentAlignment.MiddleLeft
         '
         'lblCoverageCaption
@@ -570,141 +573,104 @@ Partial Class FRM_DTR_SHIFT_MANUAL
         Me.lblCoverageCaption.Text = "COVERAGE"
         Me.lblCoverageCaption.TextAlign = System.Drawing.ContentAlignment.MiddleLeft
         '
+        'pnlActualReportingDays
+        '
+        Me.pnlActualReportingDays.BackColor = System.Drawing.Color.FromArgb(255, 224, 192)
+        Me.pnlActualReportingDays.Controls.Add(Me.lblActualReportingDays)
+        Me.pnlActualReportingDays.Controls.Add(Me.lblActualReportingDaysCaption)
+        Me.pnlActualReportingDays.Dock = System.Windows.Forms.DockStyle.Fill
+        Me.pnlActualReportingDays.Location = New System.Drawing.Point(0, 362)
+        Me.pnlActualReportingDays.Margin = New System.Windows.Forms.Padding(0, 0, 0, 6)
+        Me.pnlActualReportingDays.Name = "pnlActualReportingDays"
+        Me.pnlActualReportingDays.Padding = New System.Windows.Forms.Padding(10, 6, 10, 6)
+        Me.pnlActualReportingDays.Size = New System.Drawing.Size(306, 58)
+        Me.pnlActualReportingDays.TabIndex = 6
+        '
+        'lblActualReportingDays
+        '
+        Me.lblActualReportingDays.AutoEllipsis = True
+        Me.lblActualReportingDays.BackColor = System.Drawing.Color.FromArgb(255, 224, 192)
+        Me.lblActualReportingDays.Dock = System.Windows.Forms.DockStyle.Fill
+        Me.lblActualReportingDays.Font = New System.Drawing.Font("Verdana", 9.25!, System.Drawing.FontStyle.Bold)
+        Me.lblActualReportingDays.ForeColor = System.Drawing.Color.Blue
+        Me.lblActualReportingDays.Location = New System.Drawing.Point(10, 24)
+        Me.lblActualReportingDays.Name = "lblActualReportingDays"
+        Me.lblActualReportingDays.Padding = New System.Windows.Forms.Padding(0, 2, 0, 0)
+        Me.lblActualReportingDays.Size = New System.Drawing.Size(286, 28)
+        Me.lblActualReportingDays.TabIndex = 1
+        Me.lblActualReportingDays.Text = "-"
+        Me.lblActualReportingDays.TextAlign = System.Drawing.ContentAlignment.MiddleLeft
+        '
+        'lblActualReportingDaysCaption
+        '
+        Me.lblActualReportingDaysCaption.BackColor = System.Drawing.Color.FromArgb(255, 224, 192)
+        Me.lblActualReportingDaysCaption.Dock = System.Windows.Forms.DockStyle.Top
+        Me.lblActualReportingDaysCaption.Font = New System.Drawing.Font("Verdana", 7.5!, System.Drawing.FontStyle.Bold)
+        Me.lblActualReportingDaysCaption.ForeColor = System.Drawing.Color.Teal
+        Me.lblActualReportingDaysCaption.Location = New System.Drawing.Point(10, 6)
+        Me.lblActualReportingDaysCaption.Name = "lblActualReportingDaysCaption"
+        Me.lblActualReportingDaysCaption.Size = New System.Drawing.Size(286, 18)
+        Me.lblActualReportingDaysCaption.TabIndex = 0
+        Me.lblActualReportingDaysCaption.Text = "ACTUAL REPORTING DAYS"
+        Me.lblActualReportingDaysCaption.TextAlign = System.Drawing.ContentAlignment.MiddleLeft
+        '
+        'pnlNightDifferentialDays
+        '
+        Me.pnlNightDifferentialDays.BackColor = System.Drawing.Color.FromArgb(255, 224, 192)
+        Me.pnlNightDifferentialDays.Controls.Add(Me.lblNightDifferentialDays)
+        Me.pnlNightDifferentialDays.Controls.Add(Me.lblNightDifferentialDaysCaption)
+        Me.pnlNightDifferentialDays.Dock = System.Windows.Forms.DockStyle.Fill
+        Me.pnlNightDifferentialDays.Location = New System.Drawing.Point(0, 426)
+        Me.pnlNightDifferentialDays.Margin = New System.Windows.Forms.Padding(0, 0, 0, 6)
+        Me.pnlNightDifferentialDays.Name = "pnlNightDifferentialDays"
+        Me.pnlNightDifferentialDays.Padding = New System.Windows.Forms.Padding(10, 6, 10, 6)
+        Me.pnlNightDifferentialDays.Size = New System.Drawing.Size(306, 58)
+        Me.pnlNightDifferentialDays.TabIndex = 7
+        '
+        'lblNightDifferentialDays
+        '
+        Me.lblNightDifferentialDays.AutoEllipsis = True
+        Me.lblNightDifferentialDays.BackColor = System.Drawing.Color.FromArgb(255, 224, 192)
+        Me.lblNightDifferentialDays.Dock = System.Windows.Forms.DockStyle.Fill
+        Me.lblNightDifferentialDays.Font = New System.Drawing.Font("Verdana", 9.25!, System.Drawing.FontStyle.Bold)
+        Me.lblNightDifferentialDays.ForeColor = System.Drawing.Color.Blue
+        Me.lblNightDifferentialDays.Location = New System.Drawing.Point(10, 24)
+        Me.lblNightDifferentialDays.Name = "lblNightDifferentialDays"
+        Me.lblNightDifferentialDays.Padding = New System.Windows.Forms.Padding(0, 2, 0, 0)
+        Me.lblNightDifferentialDays.Size = New System.Drawing.Size(286, 28)
+        Me.lblNightDifferentialDays.TabIndex = 1
+        Me.lblNightDifferentialDays.Text = "-"
+        Me.lblNightDifferentialDays.TextAlign = System.Drawing.ContentAlignment.MiddleLeft
+        '
+        'lblNightDifferentialDaysCaption
+        '
+        Me.lblNightDifferentialDaysCaption.BackColor = System.Drawing.Color.FromArgb(255, 224, 192)
+        Me.lblNightDifferentialDaysCaption.Dock = System.Windows.Forms.DockStyle.Top
+        Me.lblNightDifferentialDaysCaption.Font = New System.Drawing.Font("Verdana", 7.5!, System.Drawing.FontStyle.Bold)
+        Me.lblNightDifferentialDaysCaption.ForeColor = System.Drawing.Color.Teal
+        Me.lblNightDifferentialDaysCaption.Location = New System.Drawing.Point(10, 6)
+        Me.lblNightDifferentialDaysCaption.Name = "lblNightDifferentialDaysCaption"
+        Me.lblNightDifferentialDaysCaption.Size = New System.Drawing.Size(286, 18)
+        Me.lblNightDifferentialDaysCaption.TabIndex = 0
+        Me.lblNightDifferentialDaysCaption.Text = "NIGHT DIFFERENTIAL DAYS"
+        Me.lblNightDifferentialDaysCaption.TextAlign = System.Drawing.ContentAlignment.MiddleLeft
+        '
         'footerPanel
         '
         Me.footerPanel.BackColor = System.Drawing.Color.FromArgb(255, 192, 128)
-        Me.footerPanel.ColumnCount = 10
-        Me.footerPanel.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 10.5!))
-        Me.footerPanel.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 10.5!))
-        Me.footerPanel.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 10.5!))
-        Me.footerPanel.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 10.5!))
-        Me.footerPanel.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 10.5!))
-        Me.footerPanel.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 10.5!))
-        Me.footerPanel.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 10.5!))
-        Me.footerPanel.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 10.5!))
-        Me.footerPanel.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 8.0!))
-        Me.footerPanel.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 8.0!))
-        Me.footerPanel.Controls.Add(Me.lblNumDays, 0, 0)
-        Me.footerPanel.Controls.Add(Me.lblTotalHours, 1, 0)
-        Me.footerPanel.Controls.Add(Me.lblReg, 2, 0)
-        Me.footerPanel.Controls.Add(Me.lblSun, 3, 0)
-        Me.footerPanel.Controls.Add(Me.lblSh, 4, 0)
-        Me.footerPanel.Controls.Add(Me.lblLh, 5, 0)
-        Me.footerPanel.Controls.Add(Me.lblOt, 6, 0)
-        Me.footerPanel.Controls.Add(Me.lblNdDays, 7, 0)
-        Me.footerPanel.Controls.Add(Me.btnSave, 8, 0)
-        Me.footerPanel.Controls.Add(Me.btnClose, 9, 0)
+        Me.footerPanel.ColumnCount = 2
+        Me.footerPanel.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50.0!))
+        Me.footerPanel.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50.0!))
+        Me.footerPanel.Controls.Add(Me.btnSave, 0, 0)
+        Me.footerPanel.Controls.Add(Me.btnClose, 1, 0)
         Me.footerPanel.Dock = System.Windows.Forms.DockStyle.Fill
-        Me.footerPanel.Location = New System.Drawing.Point(13, 649)
+        Me.footerPanel.Location = New System.Drawing.Point(0, 490)
+        Me.footerPanel.Margin = New System.Windows.Forms.Padding(0, 0, 0, 6)
         Me.footerPanel.Name = "footerPanel"
         Me.footerPanel.RowCount = 1
         Me.footerPanel.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100.0!))
-        Me.footerPanel.Size = New System.Drawing.Size(1194, 58)
+        Me.footerPanel.Size = New System.Drawing.Size(306, 52)
         Me.footerPanel.TabIndex = 3
-        '
-        'lblNumDays
-        '
-        Me.lblNumDays.BackColor = System.Drawing.Color.FromArgb(255, 224, 192)
-        Me.lblNumDays.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle
-        Me.lblNumDays.Dock = System.Windows.Forms.DockStyle.Fill
-        Me.lblNumDays.Font = New System.Drawing.Font("Verdana", 9.75!, System.Drawing.FontStyle.Bold)
-        Me.lblNumDays.Location = New System.Drawing.Point(3, 0)
-        Me.lblNumDays.Name = "lblNumDays"
-        Me.lblNumDays.Size = New System.Drawing.Size(119, 58)
-        Me.lblNumDays.TabIndex = 0
-        Me.lblNumDays.Text = "Days: 0"
-        Me.lblNumDays.TextAlign = System.Drawing.ContentAlignment.MiddleCenter
-        '
-        'lblTotalHours
-        '
-        Me.lblTotalHours.BackColor = System.Drawing.Color.FromArgb(255, 224, 192)
-        Me.lblTotalHours.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle
-        Me.lblTotalHours.Dock = System.Windows.Forms.DockStyle.Fill
-        Me.lblTotalHours.Font = New System.Drawing.Font("Verdana", 9.75!, System.Drawing.FontStyle.Bold)
-        Me.lblTotalHours.Location = New System.Drawing.Point(128, 0)
-        Me.lblTotalHours.Name = "lblTotalHours"
-        Me.lblTotalHours.Size = New System.Drawing.Size(119, 58)
-        Me.lblTotalHours.TabIndex = 1
-        Me.lblTotalHours.Text = "Total: 0"
-        Me.lblTotalHours.TextAlign = System.Drawing.ContentAlignment.MiddleCenter
-        '
-        'lblReg
-        '
-        Me.lblReg.BackColor = System.Drawing.Color.FromArgb(255, 224, 192)
-        Me.lblReg.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle
-        Me.lblReg.Dock = System.Windows.Forms.DockStyle.Fill
-        Me.lblReg.Font = New System.Drawing.Font("Verdana", 9.75!, System.Drawing.FontStyle.Bold)
-        Me.lblReg.Location = New System.Drawing.Point(253, 0)
-        Me.lblReg.Name = "lblReg"
-        Me.lblReg.Size = New System.Drawing.Size(119, 58)
-        Me.lblReg.TabIndex = 2
-        Me.lblReg.Text = "REG: 0"
-        Me.lblReg.TextAlign = System.Drawing.ContentAlignment.MiddleCenter
-        '
-        'lblSun
-        '
-        Me.lblSun.BackColor = System.Drawing.Color.FromArgb(255, 224, 192)
-        Me.lblSun.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle
-        Me.lblSun.Dock = System.Windows.Forms.DockStyle.Fill
-        Me.lblSun.Font = New System.Drawing.Font("Verdana", 9.75!, System.Drawing.FontStyle.Bold)
-        Me.lblSun.Location = New System.Drawing.Point(378, 0)
-        Me.lblSun.Name = "lblSun"
-        Me.lblSun.Size = New System.Drawing.Size(119, 58)
-        Me.lblSun.TabIndex = 3
-        Me.lblSun.Text = "SUN: 0"
-        Me.lblSun.TextAlign = System.Drawing.ContentAlignment.MiddleCenter
-        '
-        'lblSh
-        '
-        Me.lblSh.BackColor = System.Drawing.Color.FromArgb(255, 224, 192)
-        Me.lblSh.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle
-        Me.lblSh.Dock = System.Windows.Forms.DockStyle.Fill
-        Me.lblSh.Font = New System.Drawing.Font("Verdana", 9.75!, System.Drawing.FontStyle.Bold)
-        Me.lblSh.Location = New System.Drawing.Point(503, 0)
-        Me.lblSh.Name = "lblSh"
-        Me.lblSh.Size = New System.Drawing.Size(119, 58)
-        Me.lblSh.TabIndex = 4
-        Me.lblSh.Text = "SH: 0"
-        Me.lblSh.TextAlign = System.Drawing.ContentAlignment.MiddleCenter
-        '
-        'lblLh
-        '
-        Me.lblLh.BackColor = System.Drawing.Color.FromArgb(255, 224, 192)
-        Me.lblLh.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle
-        Me.lblLh.Dock = System.Windows.Forms.DockStyle.Fill
-        Me.lblLh.Font = New System.Drawing.Font("Verdana", 9.75!, System.Drawing.FontStyle.Bold)
-        Me.lblLh.Location = New System.Drawing.Point(628, 0)
-        Me.lblLh.Name = "lblLh"
-        Me.lblLh.Size = New System.Drawing.Size(119, 58)
-        Me.lblLh.TabIndex = 5
-        Me.lblLh.Text = "LH: 0"
-        Me.lblLh.TextAlign = System.Drawing.ContentAlignment.MiddleCenter
-        '
-        'lblOt
-        '
-        Me.lblOt.BackColor = System.Drawing.Color.FromArgb(255, 224, 192)
-        Me.lblOt.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle
-        Me.lblOt.Dock = System.Windows.Forms.DockStyle.Fill
-        Me.lblOt.Font = New System.Drawing.Font("Verdana", 9.75!, System.Drawing.FontStyle.Bold)
-        Me.lblOt.Location = New System.Drawing.Point(753, 0)
-        Me.lblOt.Name = "lblOt"
-        Me.lblOt.Size = New System.Drawing.Size(119, 58)
-        Me.lblOt.TabIndex = 6
-        Me.lblOt.Text = "OT: 0"
-        Me.lblOt.TextAlign = System.Drawing.ContentAlignment.MiddleCenter
-        '
-        'lblNdDays
-        '
-        Me.lblNdDays.BackColor = System.Drawing.Color.FromArgb(255, 224, 192)
-        Me.lblNdDays.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle
-        Me.lblNdDays.Dock = System.Windows.Forms.DockStyle.Fill
-        Me.lblNdDays.Font = New System.Drawing.Font("Verdana", 9.75!, System.Drawing.FontStyle.Bold)
-        Me.lblNdDays.Location = New System.Drawing.Point(878, 0)
-        Me.lblNdDays.Name = "lblNdDays"
-        Me.lblNdDays.Size = New System.Drawing.Size(119, 58)
-        Me.lblNdDays.TabIndex = 7
-        Me.lblNdDays.Text = "ND Days: 0"
-        Me.lblNdDays.TextAlign = System.Drawing.ContentAlignment.MiddleCenter
         '
         'btnSave
         '
@@ -713,9 +679,9 @@ Partial Class FRM_DTR_SHIFT_MANUAL
         Me.btnSave.FlatAppearance.BorderSize = 0
         Me.btnSave.FlatStyle = System.Windows.Forms.FlatStyle.Flat
         Me.btnSave.ForeColor = System.Drawing.Color.White
-        Me.btnSave.Location = New System.Drawing.Point(1003, 3)
+        Me.btnSave.Location = New System.Drawing.Point(3, 3)
         Me.btnSave.Name = "btnSave"
-        Me.btnSave.Size = New System.Drawing.Size(89, 52)
+        Me.btnSave.Size = New System.Drawing.Size(147, 46)
         Me.btnSave.TabIndex = 8
         Me.btnSave.Text = "Save"
         Me.btnSave.UseVisualStyleBackColor = False
@@ -727,9 +693,9 @@ Partial Class FRM_DTR_SHIFT_MANUAL
         Me.btnClose.FlatAppearance.BorderColor = System.Drawing.Color.Teal
         Me.btnClose.FlatStyle = System.Windows.Forms.FlatStyle.Flat
         Me.btnClose.ForeColor = System.Drawing.Color.Black
-        Me.btnClose.Location = New System.Drawing.Point(1098, 3)
+        Me.btnClose.Location = New System.Drawing.Point(156, 3)
         Me.btnClose.Name = "btnClose"
-        Me.btnClose.Size = New System.Drawing.Size(93, 52)
+        Me.btnClose.Size = New System.Drawing.Size(147, 46)
         Me.btnClose.TabIndex = 9
         Me.btnClose.Text = "Close"
         Me.btnClose.UseVisualStyleBackColor = False
@@ -761,6 +727,8 @@ Partial Class FRM_DTR_SHIFT_MANUAL
         Me.pnlAddress.ResumeLayout(False)
         Me.pnlSchedType.ResumeLayout(False)
         Me.pnlCoverage.ResumeLayout(False)
+        Me.pnlActualReportingDays.ResumeLayout(False)
+        Me.pnlNightDifferentialDays.ResumeLayout(False)
         Me.footerPanel.ResumeLayout(False)
         Me.ResumeLayout(False)
 
@@ -799,15 +767,13 @@ Partial Class FRM_DTR_SHIFT_MANUAL
     Friend WithEvents pnlCoverage As System.Windows.Forms.Panel
     Friend WithEvents lblCoverage As System.Windows.Forms.Label
     Friend WithEvents lblCoverageCaption As System.Windows.Forms.Label
+    Friend WithEvents pnlActualReportingDays As System.Windows.Forms.Panel
+    Friend WithEvents lblActualReportingDays As System.Windows.Forms.Label
+    Friend WithEvents lblActualReportingDaysCaption As System.Windows.Forms.Label
+    Friend WithEvents pnlNightDifferentialDays As System.Windows.Forms.Panel
+    Friend WithEvents lblNightDifferentialDays As System.Windows.Forms.Label
+    Friend WithEvents lblNightDifferentialDaysCaption As System.Windows.Forms.Label
     Friend WithEvents footerPanel As System.Windows.Forms.TableLayoutPanel
-    Friend WithEvents lblNumDays As System.Windows.Forms.Label
-    Friend WithEvents lblTotalHours As System.Windows.Forms.Label
-    Friend WithEvents lblReg As System.Windows.Forms.Label
-    Friend WithEvents lblSun As System.Windows.Forms.Label
-    Friend WithEvents lblSh As System.Windows.Forms.Label
-    Friend WithEvents lblLh As System.Windows.Forms.Label
-    Friend WithEvents lblOt As System.Windows.Forms.Label
-    Friend WithEvents lblNdDays As System.Windows.Forms.Label
     Friend WithEvents btnSave As System.Windows.Forms.Button
     Friend WithEvents btnClose As System.Windows.Forms.Button
 End Class

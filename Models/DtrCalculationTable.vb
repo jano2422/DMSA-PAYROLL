@@ -132,7 +132,7 @@ Namespace Models
         Private Shared Function MetricLabel(metric As DtrCalculationMetric) As String
             Select Case metric
                 Case DtrCalculationMetric.TotalHours
-                    Return "Total Hours"
+                    Return "Daily Hours"
                 Case DtrCalculationMetric.RegularHours
                     Return "Regular"
                 Case DtrCalculationMetric.SundayHours

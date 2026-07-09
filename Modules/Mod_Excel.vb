@@ -32,9 +32,7 @@ Module Mod_Excel
                     .GView_DTR.Rows.Add()
                 Next
 
-                .DTR_Lbl_Period.Text = worksheet.Cells(6, 3).Value
-                .Lbl_IDNumber.Text = GlobalVariables.DTR_Selected_Employee_ID
-                .Lbl_Name.Text = worksheet.Cells(10, 3).Value
+                .DTR_Lbl_Period.Text = Convert.ToString(worksheet.Cells(6, 3).Value)
 
 
                 ' Find the location of "Date" in cells

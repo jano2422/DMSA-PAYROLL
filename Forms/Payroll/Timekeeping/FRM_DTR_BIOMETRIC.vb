@@ -27,6 +27,39 @@ Public Class FRM_DTR_BIOMETRIC
         End Get
     End Property
 
+    Private Sub ConfigureBiometricGridPresentation()
+        ConfigureMatrixGridSelection(GView_DTR)
+        ConfigureMatrixGridSelection(GView_Classification)
+        ConfigureMatrixGridSelection(GView_TimeCalculation)
+        ConfigureBreakdownGridSurface()
+
+        AddHandler GView_Classification.CellPainting, AddressOf ClassificationCheckBoxCellPainting
+        AddHandler GView_TimeCalculation.Resize, Sub(sender, e) FillBreakdownRows()
+    End Sub
+
+    Private Sub ConfigureMatrixGridSelection(grid As DataGridView)
+        If grid Is Nothing Then Return
+
+        grid.DefaultCellStyle.SelectionBackColor = Color.FromArgb(255, 244, 184)
+        grid.DefaultCellStyle.SelectionForeColor = Color.Black
+    End Sub
+
+    Private Sub ConfigureBreakdownGridSurface()
+        If GView_TimeCalculation Is Nothing Then Return
+
+        GView_TimeCalculation.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.None
+        GView_TimeCalculation.AutoSizeRowsMode = DataGridViewAutoSizeRowsMode.None
+        GView_TimeCalculation.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter
+        GView_TimeCalculation.ColumnHeadersDefaultCellStyle.WrapMode = DataGridViewTriState.True
+        GView_TimeCalculation.ColumnHeadersDefaultCellStyle.Font = New Font("Verdana", 10.0!, FontStyle.Bold)
+        GView_TimeCalculation.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.DisableResizing
+        GView_TimeCalculation.ColumnHeadersHeight = 46
+        GView_TimeCalculation.DefaultCellStyle.Font = New Font("Verdana", 10.0!, FontStyle.Regular)
+        GView_TimeCalculation.DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleRight
+        GView_TimeCalculation.RowTemplate.Height = 30
+        GView_TimeCalculation.ScrollBars = ScrollBars.Horizontal
+    End Sub
+
     Public Sub StartForSelectedEmployee()
         StartDtrSelection(False)
     End Sub
@@ -64,8 +97,10 @@ Public Class FRM_DTR_BIOMETRIC
 
         ' Extract selected employee's name
         Dim szSelectedEmpName As String = GlobalVariables.DTR_Selected_Employee_Name
-        Lbl_IDNumber.Text = GlobalVariables.DTR_Selected_Employee_ID
-        Lbl_Name.Text = GlobalVariables.DTR_Selected_Employee_Name
+        Lbl_IDNumber.Text = GlobalVariables.DTR_Selected_Employee_ID & " - " & GlobalVariables.DTR_Selected_Employee_Name
+        Lbl_Name.Text = GlobalVariables.DTR_Selected_SubClient_Name
+        Lbl_Address.Text = GlobalVariables.DTR_Selected_SubClient_Address
+        Lbl_ScheduleType.Text = GlobalVariables.DTR_Selected_Sched_Type
         DTR_Lbl_Period.Text = GlobalVariables.sPayroll_Cutoff
 
         ' Split the full name into last name and first name
@@ -234,6 +269,7 @@ Public Class FRM_DTR_BIOMETRIC
         GView_TimeCalculation.ReadOnly = True
         GView_TimeCalculation.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.None
         GView_TimeCalculation.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize
+        ConfigureBreakdownGridSurface()
 
         GView_TimeCalculation.DataSource = DtrCalculations.ToBreakdownTable(PeriodCoverageDates())
 
@@ -241,12 +277,15 @@ Public Class FRM_DTR_BIOMETRIC
             With GView_TimeCalculation.Columns("BreakdownLabel")
                 .HeaderText = "Breakdown of Hours"
                 .Frozen = True
+                .DisplayIndex = 0
                 .ReadOnly = True
                 .SortMode = DataGridViewColumnSortMode.NotSortable
-                .Width = 150
+                .Width = 170
+                .DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleLeft
             End With
         End If
 
+        Dim dateDisplayIndex As Integer = 2
         For Each coveredDate In PeriodCoverageDates()
             Dim columnName = DtrCalculationTable.DateColumnName(coveredDate)
             If Not GView_TimeCalculation.Columns.Contains(columnName) Then Continue For
@@ -254,11 +293,13 @@ Public Class FRM_DTR_BIOMETRIC
             With GView_TimeCalculation.Columns(columnName)
                 .HeaderText = coveredDate.ToString("MMM d", Globalization.CultureInfo.InvariantCulture) & vbCrLf & coveredDate.ToString("ddd", Globalization.CultureInfo.InvariantCulture)
                 .ReadOnly = True
+                .DisplayIndex = dateDisplayIndex
                 .SortMode = DataGridViewColumnSortMode.NotSortable
                 .Width = 74
                 .DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleRight
                 .DefaultCellStyle.Format = "0.##"
             End With
+            dateDisplayIndex += 1
         Next
 
         If GView_TimeCalculation.Columns.Contains("Total") Then
@@ -270,11 +311,27 @@ Public Class FRM_DTR_BIOMETRIC
                 .Width = 76
                 .DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleRight
                 .DefaultCellStyle.Format = "0.##"
-                .DefaultCellStyle.BackColor = Color.FromArgb(235, 245, 245)
+                .DefaultCellStyle.BackColor = Color.FromArgb(213, 236, 236)
+                .DefaultCellStyle.ForeColor = Color.FromArgb(0, 72, 72)
+                .DefaultCellStyle.SelectionBackColor = Color.FromArgb(174, 218, 218)
+                .DefaultCellStyle.SelectionForeColor = Color.Black
+                .DefaultCellStyle.Font = New Font("Verdana", 9.75!, FontStyle.Bold)
+                .HeaderCell.Style.BackColor = Color.FromArgb(0, 100, 100)
+                .HeaderCell.Style.ForeColor = Color.White
+                .HeaderCell.Style.Alignment = DataGridViewContentAlignment.MiddleCenter
             End With
         End If
 
         For Each row As DataGridViewRow In GView_TimeCalculation.Rows
+            If GView_TimeCalculation.Columns.Contains("Total") Then
+                Dim totalCell = row.Cells("Total")
+                totalCell.Style.BackColor = Color.FromArgb(213, 236, 236)
+                totalCell.Style.ForeColor = Color.FromArgb(0, 72, 72)
+                totalCell.Style.SelectionBackColor = Color.FromArgb(174, 218, 218)
+                totalCell.Style.SelectionForeColor = Color.Black
+                totalCell.Style.Font = New Font("Verdana", 9.75!, FontStyle.Bold)
+            End If
+
             For columnIndex As Integer = 1 To GView_TimeCalculation.Columns.Count - 1
                 If GView_TimeCalculation.Columns(columnIndex).Name = "Total" Then Continue For
                 If row.Cells(columnIndex).Value Is Nothing OrElse row.Cells(columnIndex).Value Is DBNull.Value Then
@@ -282,6 +339,24 @@ Public Class FRM_DTR_BIOMETRIC
                     row.Cells(columnIndex).Style.SelectionBackColor = Color.LightGray
                 End If
             Next
+        Next
+        FillBreakdownRows()
+    End Sub
+
+    Private Sub FillBreakdownRows()
+        If GView_TimeCalculation Is Nothing OrElse GView_TimeCalculation.Rows.Count = 0 OrElse GView_TimeCalculation.ClientSize.Height <= 0 Then Return
+
+        Dim horizontalScrollReserve As Integer = 18
+        Dim availableHeight = GView_TimeCalculation.ClientSize.Height - GView_TimeCalculation.ColumnHeadersHeight - horizontalScrollReserve - 2
+        If availableHeight <= 0 Then Return
+
+        Dim minimumRowHeight = If(availableHeight >= GView_TimeCalculation.Rows.Count * 24, 24, 1)
+        Dim baseHeight = Math.Max(minimumRowHeight, availableHeight \ GView_TimeCalculation.Rows.Count)
+        Dim usedHeight = baseHeight * GView_TimeCalculation.Rows.Count
+        Dim remainder = Math.Max(0, availableHeight - usedHeight)
+
+        For rowIndex As Integer = 0 To GView_TimeCalculation.Rows.Count - 1
+            GView_TimeCalculation.Rows(rowIndex).Height = baseHeight + If(rowIndex = GView_TimeCalculation.Rows.Count - 1, remainder, 0)
         Next
     End Sub
 
@@ -315,6 +390,7 @@ Public Class FRM_DTR_BIOMETRIC
             GView_Classification.ReadOnly = True
             GView_Classification.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.None
             GView_Classification.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize
+            ConfigureMatrixGridSelection(GView_Classification)
 
             GView_Classification.Columns.Add(New DataGridViewTextBoxColumn With {
                 .Name = "Label",
@@ -371,6 +447,52 @@ Public Class FRM_DTR_BIOMETRIC
         Finally
             isUpdatingClassificationGrid = False
         End Try
+    End Sub
+
+    Private Sub ClassificationCheckBoxCellPainting(sender As Object, e As DataGridViewCellPaintingEventArgs)
+        If e.RowIndex < 0 OrElse e.ColumnIndex < 0 Then Return
+
+        Dim grid = TryCast(sender, DataGridView)
+        If grid Is Nothing OrElse Not TypeOf grid.Columns(e.ColumnIndex) Is DataGridViewCheckBoxColumn Then Return
+
+        e.Paint(e.ClipBounds, e.PaintParts And Not DataGridViewPaintParts.ContentForeground)
+
+        Dim checked = IsCellChecked(grid.Rows(e.RowIndex).Cells(e.ColumnIndex))
+        Dim boxSize = Math.Min(24, Math.Max(18, Math.Min(e.CellBounds.Width, e.CellBounds.Height) - 8))
+        Dim boxLeft = e.CellBounds.Left + ((e.CellBounds.Width - boxSize) \ 2)
+        Dim boxTop = e.CellBounds.Top + ((e.CellBounds.Height - boxSize) \ 2)
+        Dim boxBounds As New Rectangle(boxLeft, boxTop, boxSize, boxSize)
+
+        Dim borderColor = If(checked, Color.FromArgb(0, 112, 112), Color.FromArgb(110, 110, 110))
+        Dim fillColor = If(checked, Color.Teal, Color.White)
+
+        Using fillBrush As New SolidBrush(fillColor)
+            e.Graphics.FillRectangle(fillBrush, boxBounds)
+        End Using
+
+        Using borderPen As New Pen(borderColor, 2.0!)
+            e.Graphics.DrawRectangle(borderPen, boxBounds)
+        End Using
+
+        If checked Then
+            Dim oldSmoothingMode = e.Graphics.SmoothingMode
+            e.Graphics.SmoothingMode = Drawing2D.SmoothingMode.AntiAlias
+
+            Using checkPen As New Pen(Color.White, 3.0!)
+                checkPen.StartCap = Drawing2D.LineCap.Round
+                checkPen.EndCap = Drawing2D.LineCap.Round
+
+                Dim firstPoint As New Point(boxBounds.Left + CInt(boxSize * 0.24), boxBounds.Top + CInt(boxSize * 0.54))
+                Dim middlePoint As New Point(boxBounds.Left + CInt(boxSize * 0.43), boxBounds.Top + CInt(boxSize * 0.72))
+                Dim lastPoint As New Point(boxBounds.Left + CInt(boxSize * 0.78), boxBounds.Top + CInt(boxSize * 0.3))
+
+                e.Graphics.DrawLines(checkPen, New Point() {firstPoint, middlePoint, lastPoint})
+            End Using
+
+            e.Graphics.SmoothingMode = oldSmoothingMode
+        End If
+
+        e.Handled = True
     End Sub
 
     Private Function DateColumnName(d As Date) As String
@@ -1004,6 +1126,8 @@ Public Class FRM_DTR_BIOMETRIC
 
     Private Sub FRM_BIOMETRIC_DTR_Load(sender As Object, e As EventArgs) Handles MyBase.Load
         Try
+            ConfigureBiometricGridPresentation()
+
             ' Disable buttons at form load
             SetButtonState(False, Btn_Save_DTR)
 
@@ -1077,8 +1201,8 @@ Public Class FRM_DTR_BIOMETRIC
                 If enable Then
                     ' Enable button, restore appearance, and set cursor to default
                     btn.Enabled = True
-                    btn.BackColor = Color.YellowGreen ' Default background color
-                    btn.ForeColor = System.Drawing.SystemColors.ControlText ' Default text color
+                    btn.BackColor = Color.Teal
+                    btn.ForeColor = Color.White
                     btn.Cursor = Cursors.Hand ' Change cursor to Hand when enabled (for better UX)
                 Else
                     ' Disable button, visually gray it out, and set cursor to Arrow

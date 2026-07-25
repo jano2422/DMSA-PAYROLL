@@ -1,6 +1,11 @@
 ﻿Imports System.Data.OleDb
 
 Public Class FRM_LOGIN
+    Public Sub New()
+        InitializeComponent()
+        Me.Icon = System.Drawing.Icon.ExtractAssociatedIcon(System.Windows.Forms.Application.ExecutablePath)
+    End Sub
+
     Private Sub FRM_LOGIN_Load(sender As Object, e As EventArgs) Handles MyBase.Load
 
         'If Now.Year = 2024 Then

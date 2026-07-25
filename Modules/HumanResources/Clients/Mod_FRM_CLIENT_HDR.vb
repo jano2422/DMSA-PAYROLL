@@ -45,11 +45,7 @@ Module Mod_FRM_CLIENT_HDR
         End Try
 
         GlobalVariables.GlobalCon.Close()
-
-
-
-
-
+        Return 0
     End Function
     Public Sub Insert_Client_Status_History(iSub_Client_ID As Integer, sNew_Status As String)
         Dim SQL As String
@@ -120,7 +116,7 @@ Module Mod_FRM_CLIENT_HDR
 
     Public Sub Activate_Deactivate_Main_Client(iMain_Client_ID As Integer, sClient_Desc As String, sStatus As String)
 
-        Dim SQL, SQL2 As String
+        Dim SQL As String
         Connect_to_MDB()
 
         Try

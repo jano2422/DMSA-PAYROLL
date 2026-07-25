@@ -42,10 +42,11 @@ Public Class FRM_DTR_CLIENT_LIST_ALL
     Private Sub LoadDtrClients(category As String, searchText As String)
         Dim safeCategory As String = NormalizeSearchCategory(category)
         Dim sql As String =
-            "SELECT SUB_CLIENT_ID, SUB_CLIENT_NAME, ADDRESS, DAILY_WAGE " &
-            "FROM TBL_CLIENT_SUB " &
-            "WHERE SUB_CLIENT_STATUS = 'Active' AND " & safeCategory & " LIKE ? " &
-            "ORDER BY SUB_CLIENT_NAME ASC"
+            "SELECT S.SUB_CLIENT_ID, M.MAIN_CLIENT_NAME, S.SUB_CLIENT_NAME, S.ADDRESS, S.DAILY_WAGE " &
+            "FROM TBL_CLIENT_SUB AS S INNER JOIN TBL_CLIENT_MAIN AS M " &
+            "ON S.MAIN_CLIENT_ID = M.MAIN_CLIENT_ID " &
+            "WHERE S.SUB_CLIENT_STATUS = 'Active' AND " & safeCategory & " LIKE ? " &
+            "ORDER BY S.SUB_CLIENT_NAME ASC"
 
         LV_Client_List.Items.Clear()
 
@@ -63,6 +64,7 @@ Public Class FRM_DTR_CLIENT_LIST_ALL
                         item.SubItems.Add(GetReaderString(reader, "SUB_CLIENT_NAME"))
                         item.SubItems.Add(GetReaderString(reader, "ADDRESS"))
                         item.SubItems.Add(GetReaderString(reader, "DAILY_WAGE"))
+                        item.Tag = GetReaderString(reader, "MAIN_CLIENT_NAME")
                         LV_Client_List.Items.Add(item)
                         rowNumber += 1
                     End While
@@ -82,13 +84,13 @@ Public Class FRM_DTR_CLIENT_LIST_ALL
     Private Function NormalizeSearchCategory(category As String) As String
         Select Case category
             Case "SUB_CLIENT_ID"
-                Return "CStr(SUB_CLIENT_ID)"
+                Return "CStr(S.SUB_CLIENT_ID)"
             Case "ADDRESS"
-                Return "ADDRESS"
+                Return "S.ADDRESS"
             Case "SUB_CLIENT_NAME"
-                Return "SUB_CLIENT_NAME"
+                Return "S.SUB_CLIENT_NAME"
             Case Else
-                Return "SUB_CLIENT_NAME"
+                Return "S.SUB_CLIENT_NAME"
         End Select
     End Function
 
@@ -105,6 +107,7 @@ Public Class FRM_DTR_CLIENT_LIST_ALL
         End If
 
         With LV_Client_List.SelectedItems(0)
+            FRM_DTR_EXPORTS.SelectedMainClientName = Convert.ToString(.Tag).Trim()
             FRM_DTR_EXPORTS.Lbl_ClientID.Text = .SubItems(1).Text
             FRM_DTR_EXPORTS.Lbl_Client_Name.Text = .SubItems(2).Text
             FRM_DTR_EXPORTS.Lbl_Client_Address.Text = .SubItems(3).Text

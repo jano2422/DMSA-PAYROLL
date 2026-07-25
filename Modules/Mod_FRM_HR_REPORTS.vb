@@ -3,6 +3,27 @@ Imports Microsoft.Office.Interop
 Imports System.Configuration
 
 Module Mod_FRM_HR_REPORTS
+    Public Function SuspendReportListUpdates(view As ListView) As IDisposable
+        Return New ReportListUpdateScope(view)
+    End Function
+
+    Private NotInheritable Class ReportListUpdateScope
+        Implements IDisposable
+
+        Private reportList As ListView
+
+        Public Sub New(view As ListView)
+            reportList = view
+            reportList.BeginUpdate()
+        End Sub
+
+        Public Sub Dispose() Implements IDisposable.Dispose
+            If reportList Is Nothing Then Return
+            reportList.EndUpdate()
+            reportList = Nothing
+        End Sub
+    End Class
+
     Public Sub Show_Client_Contract_Expiry(filter As ExpiryFilter)
 
         Dim da As New OleDb.OleDbDataAdapter
@@ -55,11 +76,12 @@ WHERE
             da = New OleDb.OleDbDataAdapter(SQL, GlobalVariables.GlobalCon)
             da.Fill(dt)
 
-            With FRM_HR_REPORTS.LV_Client_Contract_Exp
-                .Items.Clear()
+            Using SuspendReportListUpdates(FRM_HR_REPORTS.LV_Client_Contract_Exp)
+                With FRM_HR_REPORTS.LV_Client_Contract_Exp
+                    .Items.Clear()
 
-                If dt.Rows.Count > 0 Then
-                    For Each row As DataRow In dt.Rows
+                    If dt.Rows.Count > 0 Then
+                        For Each row As DataRow In dt.Rows
 
                         Dim startDate As String = ""
                         Dim endDate As String = ""
@@ -75,16 +97,17 @@ WHERE
                             daysExpired = (Date.Now - expDate).Days
                         End If
 
-                        Dim item As ListViewItem = .Items.Add(row("SUB_CLIENT_NAME").ToString())
-                        item.SubItems.Add(row("ADDRESS").ToString())
-                        item.SubItems.Add(startDate)
-                        item.SubItems.Add(endDate)
-                        item.SubItems.Add(row("SUB_CLIENT_STATUS").ToString())
-                        item.SubItems.Add(daysExpired.ToString())
+                            Dim item As ListViewItem = .Items.Add(row("SUB_CLIENT_NAME").ToString())
+                            item.SubItems.Add(row("ADDRESS").ToString())
+                            item.SubItems.Add(startDate)
+                            item.SubItems.Add(endDate)
+                            item.SubItems.Add(row("SUB_CLIENT_STATUS").ToString())
+                            item.SubItems.Add(daysExpired.ToString())
 
-                    Next
-                End If
-            End With
+                        Next
+                    End If
+                End With
+            End Using
 
         Catch ex As Exception
             MsgBox(ex.ToString)
@@ -114,7 +137,8 @@ WHERE
 
 
             If dt.Rows.Count > 0 Then ' SHOW DATAS
-                With FRM_HR_REPORTS.LV_MAIN_CLIENT_EMPLOYEE_COUNT
+                Using SuspendReportListUpdates(FRM_HR_REPORTS.LV_MAIN_CLIENT_EMPLOYEE_COUNT)
+                    With FRM_HR_REPORTS.LV_MAIN_CLIENT_EMPLOYEE_COUNT
 
                     Dim myRow As DataRow
                     Dim iRow As Integer
@@ -129,7 +153,8 @@ WHERE
 
                         iRow = iRow + 1
                     Next
-                End With
+                    End With
+                End Using
             Else
                 FRM_HR_REPORTS.LV_MAIN_CLIENT_EMPLOYEE_COUNT.Items.Clear()
             End If
@@ -161,7 +186,8 @@ WHERE
 
 
             If dt.Rows.Count > 0 Then ' SHOW DATAS
-                With FRM_HR_REPORTS.LV_SubClient_EmployeeCount
+                Using SuspendReportListUpdates(FRM_HR_REPORTS.LV_SubClient_EmployeeCount)
+                    With FRM_HR_REPORTS.LV_SubClient_EmployeeCount
 
                     Dim myRow As DataRow
                     Dim iRow As Integer
@@ -176,7 +202,8 @@ WHERE
 
                         iRow = iRow + 1
                     Next
-                End With
+                    End With
+                End Using
             Else
                 FRM_HR_REPORTS.LV_SubClient_EmployeeCount.Items.Clear()
             End If
@@ -208,7 +235,8 @@ WHERE
 
 
             If dt.Rows.Count > 0 Then ' SHOW DATAS
-                With FRM_HR_REPORTS.LV_Client_Count
+                Using SuspendReportListUpdates(FRM_HR_REPORTS.LV_Client_Count)
+                    With FRM_HR_REPORTS.LV_Client_Count
 
                     Dim myRow As DataRow
                     Dim iRow As Integer
@@ -223,7 +251,8 @@ WHERE
 
                         iRow = iRow + 1
                     Next
-                End With
+                    End With
+                End Using
             Else
                 FRM_HR_REPORTS.LV_Client_Count.Items.Clear()
             End If
@@ -584,7 +613,8 @@ WHERE
 
 
             If dt.Rows.Count > 0 Then ' SHOW DATAS
-                With FRM_HR_REPORTS.LV_Leave_List
+                Using SuspendReportListUpdates(FRM_HR_REPORTS.LV_Leave_List)
+                    With FRM_HR_REPORTS.LV_Leave_List
 
                     Dim myRow As DataRow
 
@@ -601,7 +631,8 @@ WHERE
 
 
                     Next
-                End With
+                    End With
+                End Using
             Else
                 'MsgBox("No records found from your filter", vbExclamation, "No records")
                 FRM_HR_REPORTS.LV_Leave_List.Items.Clear()
@@ -637,7 +668,8 @@ WHERE
 
 
             If dt.Rows.Count > 0 Then ' SHOW DATAS
-                With FRM_HR_REPORTS.LV_Pending_List
+                Using SuspendReportListUpdates(FRM_HR_REPORTS.LV_Pending_List)
+                    With FRM_HR_REPORTS.LV_Pending_List
 
                     Dim myRow As DataRow
 
@@ -651,7 +683,8 @@ WHERE
                         .Items(.Items.Count - 1).SubItems.Add(myRow.Item("SUB_CLIENT_NAME"))
                         .Items(.Items.Count - 1).SubItems.Add("No Available Information")
                     Next
-                End With
+                    End With
+                End Using
             Else
                 'MsgBox("No records found from your filter", vbExclamation, "No records")
                 FRM_HR_REPORTS.LV_Pending_List.Items.Clear()
@@ -744,18 +777,44 @@ WHERE
 
 
             If dt.Rows.Count > 0 Then ' SHOW DATAS
+                ' Individual ages produce dozens of chart categories and make the
+                ' report unreadable. Aggregate valid working ages into stable bands.
+                Dim ageBandLabels As String() = {"18-24", "25-34", "35-44", "45-54", "55-64", "65+"}
+                Dim ageBandCounts(ageBandLabels.Length - 1) As Integer
+
+                For Each myRow As DataRow In dt.Rows
+                    Dim employeeAge As Integer
+                    Dim employeeCount As Integer
+
+                    If Integer.TryParse(Convert.ToString(myRow.Item("Age")), employeeAge) AndAlso
+                       Integer.TryParse(Convert.ToString(myRow.Item("TotalCount")), employeeCount) AndAlso
+                       employeeAge >= 18 AndAlso employeeAge <= 100 Then
+
+                        Select Case employeeAge
+                            Case 18 To 24
+                                ageBandCounts(0) += employeeCount
+                            Case 25 To 34
+                                ageBandCounts(1) += employeeCount
+                            Case 35 To 44
+                                ageBandCounts(2) += employeeCount
+                            Case 45 To 54
+                                ageBandCounts(3) += employeeCount
+                            Case 55 To 64
+                                ageBandCounts(4) += employeeCount
+                            Case Else
+                                ageBandCounts(5) += employeeCount
+                        End Select
+                    End If
+                Next
+
                 With FRM_HR_REPORTS.LV_Report_Statistics1
-
-                    Dim myRow As DataRow
+                    .BeginUpdate()
                     .Items.Clear()
-                    For Each myRow In dt.Rows
-
-                        .Items.Add(myRow.Item("Age")) ' Company ID
-                        .Items(.Items.Count - 1).SubItems.Add(myRow.Item("TotalCount"))
-
-
+                    For bandIndex As Integer = 0 To ageBandLabels.Length - 1
+                        .Items.Add(ageBandLabels(bandIndex))
+                        .Items(.Items.Count - 1).SubItems.Add(ageBandCounts(bandIndex).ToString())
                     Next
-
+                    .EndUpdate()
                 End With
             Else
                 FRM_HR_REPORTS.LV_Report_Statistics1.Items.Clear()
@@ -781,10 +840,13 @@ WHERE
 
         Try
 
-            'SQL = "Select FORMAT(DATE_HIRED,'yyyy') AS YEAR_VALUE, count(*) as status_count From HR_EMPLOYEE_RECORD_HDR WHERE EMPLOYMENT_STATUS = '" & sStatus & "' Group By FORMAT(DATE_HIRED,'yyyy') order by 2 desc"
-
-            ' I Removed the Status, since status can change over time
-            SQL = "Select FORMAT(DATE_HIRED,'yyyy') AS YEAR_VALUE, count(*) as status_count From HR_EMPLOYEE_RECORD_HDR Group By FORMAT(DATE_HIRED,'yyyy') order by 2 desc"
+            ' Employment status is intentionally not filtered because it can change over time.
+            ' Sort by the actual hire year so the table and chart read chronologically.
+            SQL = "SELECT Year([DATE_HIRED]) AS YEAR_VALUE, Count(*) AS status_count " &
+                  "FROM HR_EMPLOYEE_RECORD_HDR " &
+                  "WHERE [DATE_HIRED] IS NOT NULL " &
+                  "GROUP BY Year([DATE_HIRED]) " &
+                  "ORDER BY Year([DATE_HIRED]) ASC"
 
             da = New OleDbDataAdapter(SQL, Mod_GlobalVariables.GlobalVariables.GlobalCon)
             da.Fill(dt)
@@ -1005,8 +1067,9 @@ WHERE B.EMPLOYMENT_STATUS = 'Active'
 
     Public Sub FillListView_Expiry(dt As DataTable, dateField As String)
 
-        With FRM_HR_REPORTS.LV_Expiry_List
-            .Items.Clear()
+        Using SuspendReportListUpdates(FRM_HR_REPORTS.LV_Expiry_List)
+            With FRM_HR_REPORTS.LV_Expiry_List
+                .Items.Clear()
 
             For Each row As DataRow In dt.Rows
 
@@ -1039,9 +1102,10 @@ WHERE B.EMPLOYMENT_STATUS = 'Active'
                     .Item(.Count - 1).SubItems.Add(daysExpired)
                 End With
 
-            Next
+                Next
 
-        End With
+            End With
+        End Using
 
     End Sub
 

@@ -2,6 +2,11 @@
 Imports System.Globalization
 
 Public Class FRM_MAIN
+    Public Sub New()
+        InitializeComponent()
+        Me.Icon = System.Drawing.Icon.ExtractAssociatedIcon(System.Windows.Forms.Application.ExecutablePath)
+    End Sub
+
     Private Sub PictureBox1_Click(sender As Object, e As EventArgs)
 
     End Sub
@@ -40,7 +45,7 @@ Public Class FRM_MAIN
     End Sub
 
     Private Sub Btn_Client_Click(sender As Object, e As EventArgs)
-        FRM_CLIENT_HDR.ShowDialog()
+        FRM_HR_CLIENTS.ShowDialog()
     End Sub
 
 
@@ -93,7 +98,7 @@ Public Class FRM_MAIN
     End Sub
 
     Private Sub Btn_ClientManagement_Click(sender As Object, e As EventArgs) Handles Btn_ClientManagement.Click
-        FRM_CLIENT_HDR.ShowDialog()
+        FRM_HR_CLIENTS.ShowDialog()
     End Sub
 
     Private Sub Btn_HR_Reports_Click_1(sender As Object, e As EventArgs) Handles Btn_HR_Reports.Click

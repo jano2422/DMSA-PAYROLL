@@ -119,7 +119,6 @@ Partial Class FRM_DTR_EXPORTS
         Me.periodPanel.Controls.Add(Me.Cmb_CutOff)
         Me.periodPanel.Controls.Add(Me.Btn_Client)
         Me.periodPanel.Controls.Add(Me.Btn_Show)
-        Me.periodPanel.Controls.Add(Me.Lbl_LoadedPeriod)
         Me.periodPanel.Dock = System.Windows.Forms.DockStyle.Fill
         Me.periodPanel.FlowDirection = System.Windows.Forms.FlowDirection.LeftToRight
         Me.periodPanel.Location = New System.Drawing.Point(3, 3)
@@ -242,13 +241,14 @@ Partial Class FRM_DTR_EXPORTS
         Me.Lbl_LoadedPeriod.AutoEllipsis = True
         Me.Lbl_LoadedPeriod.BackColor = System.Drawing.Color.FromArgb(255, 224, 192)
         Me.Lbl_LoadedPeriod.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle
+        Me.Lbl_LoadedPeriod.Dock = System.Windows.Forms.DockStyle.Fill
         Me.Lbl_LoadedPeriod.Font = New System.Drawing.Font("Verdana", 8.5!, System.Drawing.FontStyle.Bold)
         Me.Lbl_LoadedPeriod.ForeColor = System.Drawing.Color.FromArgb(74, 55, 32)
-        Me.Lbl_LoadedPeriod.Location = New System.Drawing.Point(908, 10)
-        Me.Lbl_LoadedPeriod.Margin = New System.Windows.Forms.Padding(0, 2, 8, 0)
+        Me.Lbl_LoadedPeriod.Location = New System.Drawing.Point(0, 316)
+        Me.Lbl_LoadedPeriod.Margin = New System.Windows.Forms.Padding(0, 0, 0, 6)
         Me.Lbl_LoadedPeriod.Name = "Lbl_LoadedPeriod"
         Me.Lbl_LoadedPeriod.Padding = New System.Windows.Forms.Padding(10, 0, 10, 0)
-        Me.Lbl_LoadedPeriod.Size = New System.Drawing.Size(170, 32)
+        Me.Lbl_LoadedPeriod.Size = New System.Drawing.Size(305, 54)
         Me.Lbl_LoadedPeriod.TabIndex = 9
         Me.Lbl_LoadedPeriod.Text = "Showing: none"
         Me.Lbl_LoadedPeriod.TextAlign = System.Drawing.ContentAlignment.MiddleLeft
@@ -260,7 +260,7 @@ Partial Class FRM_DTR_EXPORTS
         Me.Btn_Close.FlatAppearance.BorderColor = System.Drawing.Color.Teal
         Me.Btn_Close.FlatStyle = System.Windows.Forms.FlatStyle.Flat
         Me.Btn_Close.ForeColor = System.Drawing.Color.Black
-        Me.Btn_Close.Location = New System.Drawing.Point(0, 526)
+        Me.Btn_Close.Location = New System.Drawing.Point(0, 574)
         Me.Btn_Close.Margin = New System.Windows.Forms.Padding(0, 12, 0, 0)
         Me.Btn_Close.Name = "Btn_Close"
         Me.Btn_Close.Size = New System.Drawing.Size(305, 42)
@@ -381,7 +381,7 @@ Partial Class FRM_DTR_EXPORTS
         Me.sidePanel.Location = New System.Drawing.Point(886, 3)
         Me.sidePanel.Name = "sidePanel"
         Me.sidePanel.RowCount = 3
-        Me.sidePanel.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 336.0!))
+        Me.sidePanel.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 384.0!))
         Me.sidePanel.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 178.0!))
         Me.sidePanel.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100.0!))
         Me.sidePanel.Size = New System.Drawing.Size(305, 634)
@@ -397,6 +397,7 @@ Partial Class FRM_DTR_EXPORTS
         Me.clientPanel.Controls.Add(Me.pnlClientAddress, 0, 2)
         Me.clientPanel.Controls.Add(Me.pnlClientId, 0, 3)
         Me.clientPanel.Controls.Add(Me.pnlDailyWage, 0, 4)
+        Me.clientPanel.Controls.Add(Me.Lbl_LoadedPeriod, 0, 5)
         Me.clientPanel.Dock = System.Windows.Forms.DockStyle.Fill
         Me.clientPanel.Location = New System.Drawing.Point(0, 0)
         Me.clientPanel.Margin = New System.Windows.Forms.Padding(0, 0, 0, 8)
@@ -408,7 +409,7 @@ Partial Class FRM_DTR_EXPORTS
         Me.clientPanel.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 64.0!))
         Me.clientPanel.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 64.0!))
         Me.clientPanel.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100.0!))
-        Me.clientPanel.Size = New System.Drawing.Size(305, 328)
+        Me.clientPanel.Size = New System.Drawing.Size(305, 376)
         Me.clientPanel.TabIndex = 0
         '
         'Label5
@@ -598,7 +599,7 @@ Partial Class FRM_DTR_EXPORTS
         Me.exportPanel.Controls.Add(Me.btnDtrHrsExport, 0, 1)
         Me.exportPanel.Controls.Add(Me.Btn_Export_to_Excell, 0, 2)
         Me.exportPanel.Dock = System.Windows.Forms.DockStyle.Fill
-        Me.exportPanel.Location = New System.Drawing.Point(0, 336)
+        Me.exportPanel.Location = New System.Drawing.Point(0, 384)
         Me.exportPanel.Margin = New System.Windows.Forms.Padding(0)
         Me.exportPanel.Name = "exportPanel"
         Me.exportPanel.RowCount = 4

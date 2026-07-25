@@ -25,6 +25,8 @@ Partial Class FRM_HR_REPORTS
         Dim ChartArea2 As System.Windows.Forms.DataVisualization.Charting.ChartArea = New System.Windows.Forms.DataVisualization.Charting.ChartArea()
         Dim Legend2 As System.Windows.Forms.DataVisualization.Charting.Legend = New System.Windows.Forms.DataVisualization.Charting.Legend()
         Dim Series2 As System.Windows.Forms.DataVisualization.Charting.Series = New System.Windows.Forms.DataVisualization.Charting.Series()
+        Dim ChartTitle1 As System.Windows.Forms.DataVisualization.Charting.Title = New System.Windows.Forms.DataVisualization.Charting.Title()
+        Dim ChartTitle2 As System.Windows.Forms.DataVisualization.Charting.Title = New System.Windows.Forms.DataVisualization.Charting.Title()
         Me.MenuStrip1 = New System.Windows.Forms.MenuStrip()
         Me.Label2 = New System.Windows.Forms.Label()
         Me.Tab_Logs = New System.Windows.Forms.TabPage()
@@ -142,6 +144,56 @@ Partial Class FRM_HR_REPORTS
         Me.ColumnHeader17 = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
         Me.ColumnHeader18 = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
         Me.PictureBox2 = New System.Windows.Forms.PictureBox()
+        Me.ReportsWorkspaceRoot = New System.Windows.Forms.TableLayoutPanel()
+        Me.ReportsHeaderPanel = New System.Windows.Forms.Panel()
+        Me.ReportsBodyPanel = New System.Windows.Forms.Panel()
+        Me.ReportsLogo = New System.Windows.Forms.PictureBox()
+        Me.ReportsTitleLabel = New System.Windows.Forms.Label()
+        Me.ReportsSubtitleLabel = New System.Windows.Forms.Label()
+        Me.ReportsSectionLabel = New System.Windows.Forms.Label()
+        Me.ReportsCloseButton = New System.Windows.Forms.Button()
+        Me.ReportsNavInfoPanel = New System.Windows.Forms.Panel()
+        Me.ReportsNavInfoTitle = New System.Windows.Forms.Label()
+        Me.ReportsNavInfoBody = New System.Windows.Forms.Label()
+        Me.ReportsNavPanel = New System.Windows.Forms.Panel()
+        Me.ReportsContentHost = New System.Windows.Forms.Panel()
+        Me.NavComplianceButton = New System.Windows.Forms.Button()
+        Me.NavMissingButton = New System.Windows.Forms.Button()
+        Me.NavLeaveButton = New System.Windows.Forms.Button()
+        Me.NavWorkforceButton = New System.Windows.Forms.Button()
+        Me.NavClientsButton = New System.Windows.Forms.Button()
+        Me.NavAuditButton = New System.Windows.Forms.Button()
+        Me.EmpExpiryTitleLabel = New System.Windows.Forms.Label()
+        Me.EmpExpiryDescriptionLabel = New System.Windows.Forms.Label()
+        Me.EmpExpiryFilterPanel = New System.Windows.Forms.Panel()
+        Me.ClientExpiryTitleLabel = New System.Windows.Forms.Label()
+        Me.ClientExpiryDescriptionLabel = New System.Windows.Forms.Label()
+        Me.ClientExpiryFilterPanel = New System.Windows.Forms.Panel()
+        Me.MissingTitleLabel = New System.Windows.Forms.Label()
+        Me.MissingDescriptionLabel = New System.Windows.Forms.Label()
+        Me.MissingFilterPanel = New System.Windows.Forms.Panel()
+        Me.LeaveTitleLabel = New System.Windows.Forms.Label()
+        Me.LeaveDescriptionLabel = New System.Windows.Forms.Label()
+        Me.LeaveFilterPanel = New System.Windows.Forms.Panel()
+        Me.AuditTitleLabel = New System.Windows.Forms.Label()
+        Me.AuditDescriptionLabel = New System.Windows.Forms.Label()
+        Me.AuditFilterPanel = New System.Windows.Forms.Panel()
+        Me.Btn_Export_Audit_Log = New FontAwesome.Sharp.IconButton()
+        Me.AnalyticsTitleLabel = New System.Windows.Forms.Label()
+        Me.AnalyticsDescriptionLabel = New System.Windows.Forms.Label()
+        Me.AnalyticsPickerPanel = New System.Windows.Forms.Panel()
+        Me.AnalyticsPickerLabel = New System.Windows.Forms.Label()
+        Me.AnalyticsStatusLabel = New System.Windows.Forms.Label()
+        Me.Btn_Export_Workforce_Analytics = New FontAwesome.Sharp.IconButton()
+        Me.PortfolioTitleLabel = New System.Windows.Forms.Label()
+        Me.PortfolioDescriptionLabel = New System.Windows.Forms.Label()
+        Me.PortfolioSummaryPanel = New System.Windows.Forms.Panel()
+        Me.SubClientTitleLabel = New System.Windows.Forms.Label()
+        Me.SubClientDescriptionLabel = New System.Windows.Forms.Label()
+        Me.SubClientFilterPanel = New System.Windows.Forms.Panel()
+        Me.MainClientTitleLabel = New System.Windows.Forms.Label()
+        Me.MainClientDescriptionLabel = New System.Windows.Forms.Label()
+        Me.MainClientFilterPanel = New System.Windows.Forms.Panel()
         Me.Tab_Logs.SuspendLayout()
         Me.Tab_Security_License.SuspendLayout()
         Me.TabControl1.SuspendLayout()
@@ -557,7 +609,6 @@ Partial Class FRM_HR_REPORTS
         '
         Me.Tab_HR1.BackColor = System.Drawing.Color.FromArgb(CType(CType(255, Byte), Integer), CType(CType(224, Byte), Integer), CType(CType(192, Byte), Integer))
         Me.Tab_HR1.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle
-        Me.Tab_HR1.Controls.Add(Me.TabControl4)
         Me.Tab_HR1.Location = New System.Drawing.Point(4, 29)
         Me.Tab_HR1.Name = "Tab_HR1"
         Me.Tab_HR1.Padding = New System.Windows.Forms.Padding(3)
@@ -680,26 +731,50 @@ Partial Class FRM_HR_REPORTS
         '
         Me.CH_Emp_Status.BackColor = System.Drawing.Color.FromArgb(CType(CType(255, Byte), Integer), CType(CType(224, Byte), Integer), CType(CType(192, Byte), Integer))
         Me.CH_Emp_Status.BackSecondaryColor = System.Drawing.Color.Yellow
-        Me.CH_Emp_Status.BorderlineColor = System.Drawing.Color.FromArgb(CType(CType(255, Byte), Integer), CType(CType(128, Byte), Integer), CType(CType(0, Byte), Integer))
+        Me.CH_Emp_Status.BorderlineColor = System.Drawing.Color.FromArgb(224, 176, 128)
         Me.CH_Emp_Status.BorderlineDashStyle = System.Windows.Forms.DataVisualization.Charting.ChartDashStyle.Solid
-        Me.CH_Emp_Status.BorderlineWidth = 5
+        Me.CH_Emp_Status.BorderlineWidth = 1
+        ChartArea2.BackColor = System.Drawing.Color.FromArgb(255, 224, 192)
+        ChartArea2.AxisX.MajorGrid.Enabled = False
+        ChartArea2.AxisX.LineColor = System.Drawing.Color.FromArgb(224, 176, 128)
+        ChartArea2.AxisX.LabelStyle.ForeColor = System.Drawing.Color.FromArgb(92, 70, 48)
+        ChartArea2.AxisX.LabelStyle.Font = New System.Drawing.Font("Segoe UI", 8.25!, System.Drawing.FontStyle.Regular)
+        ChartArea2.AxisY.MajorGrid.LineColor = System.Drawing.Color.FromArgb(224, 176, 128)
+        ChartArea2.AxisY.LineColor = System.Drawing.Color.FromArgb(224, 176, 128)
+        ChartArea2.AxisY.LabelStyle.ForeColor = System.Drawing.Color.FromArgb(92, 70, 48)
+        ChartArea2.AxisY.LabelStyle.Font = New System.Drawing.Font("Segoe UI", 8.25!, System.Drawing.FontStyle.Regular)
         ChartArea2.Name = "ChartArea1"
         Me.CH_Emp_Status.ChartAreas.Add(ChartArea2)
+        Legend2.BackColor = System.Drawing.Color.Transparent
+        Legend2.Enabled = False
+        Legend2.Font = New System.Drawing.Font("Segoe UI", 8.5!, System.Drawing.FontStyle.Regular)
         Legend2.Name = "L_Hired"
         Me.CH_Emp_Status.Legends.Add(Legend2)
         Me.CH_Emp_Status.Location = New System.Drawing.Point(278, 19)
         Me.CH_Emp_Status.Name = "CH_Emp_Status"
         Series2.ChartArea = "ChartArea1"
-        Series2.Color = System.Drawing.Color.Black
+        Series2.Color = System.Drawing.Color.FromArgb(111, 29, 48)
         Series2.IsValueShownAsLabel = True
-        Series2.LabelBackColor = System.Drawing.Color.Cyan
+        Series2.LabelBackColor = System.Drawing.Color.Transparent
+        Series2.LabelForeColor = System.Drawing.Color.FromArgb(31, 41, 51)
         Series2.Legend = "L_Hired"
         Series2.Name = "Count"
-        Series2.Palette = System.Windows.Forms.DataVisualization.Charting.ChartColorPalette.Chocolate
         Me.CH_Emp_Status.Series.Add(Series2)
         Me.CH_Emp_Status.Size = New System.Drawing.Size(944, 540)
         Me.CH_Emp_Status.TabIndex = 52
         Me.CH_Emp_Status.Text = "Chart1"
+        ChartTitle1.Alignment = System.Drawing.ContentAlignment.TopLeft
+        ChartTitle1.Font = New System.Drawing.Font("Bahnschrift SemiBold", 13.0!, System.Drawing.FontStyle.Regular)
+        ChartTitle1.ForeColor = System.Drawing.Color.FromArgb(31, 41, 51)
+        ChartTitle1.Name = "ReportTitle"
+        ChartTitle1.Text = "Select a report"
+        ChartTitle2.Alignment = System.Drawing.ContentAlignment.TopLeft
+        ChartTitle2.Font = New System.Drawing.Font("Segoe UI", 8.75!, System.Drawing.FontStyle.Regular)
+        ChartTitle2.ForeColor = System.Drawing.Color.FromArgb(92, 70, 48)
+        ChartTitle2.Name = "ReportCaption"
+        ChartTitle2.Text = "Choose a report view from the left panel"
+        Me.CH_Emp_Status.Titles.Add(ChartTitle1)
+        Me.CH_Emp_Status.Titles.Add(ChartTitle2)
         '
         'TabPage10
         '
@@ -843,7 +918,6 @@ Partial Class FRM_HR_REPORTS
         'TabPage4
         '
         Me.TabPage4.BackColor = System.Drawing.Color.FromArgb(CType(CType(255, Byte), Integer), CType(CType(192, Byte), Integer), CType(CType(128, Byte), Integer))
-        Me.TabPage4.Controls.Add(Me.TabControl2)
         Me.TabPage4.Location = New System.Drawing.Point(4, 29)
         Me.TabPage4.Name = "TabPage4"
         Me.TabPage4.Padding = New System.Windows.Forms.Padding(3)
@@ -1307,6 +1381,1078 @@ Partial Class FRM_HR_REPORTS
         Me.ColumnHeader18.TextAlign = System.Windows.Forms.HorizontalAlignment.Center
         Me.ColumnHeader18.Width = 200
         '
+        'ReportsWorkspaceRoot
+        '
+        Me.ReportsWorkspaceRoot.BackColor = System.Drawing.Color.FromArgb(255, 192, 128)
+        Me.ReportsWorkspaceRoot.ColumnCount = 1
+        Me.ReportsWorkspaceRoot.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100.0!))
+        Me.ReportsWorkspaceRoot.Controls.Add(Me.ReportsHeaderPanel, 0, 0)
+        Me.ReportsWorkspaceRoot.Controls.Add(Me.ReportsBodyPanel, 0, 1)
+        Me.ReportsWorkspaceRoot.Dock = System.Windows.Forms.DockStyle.Fill
+        Me.ReportsWorkspaceRoot.Location = New System.Drawing.Point(0, 0)
+        Me.ReportsWorkspaceRoot.Margin = New System.Windows.Forms.Padding(0)
+        Me.ReportsWorkspaceRoot.Name = "ReportsWorkspaceRoot"
+        Me.ReportsWorkspaceRoot.RowCount = 2
+        Me.ReportsWorkspaceRoot.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 94.0!))
+        Me.ReportsWorkspaceRoot.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100.0!))
+        Me.ReportsWorkspaceRoot.Size = New System.Drawing.Size(1440, 860)
+        Me.ReportsWorkspaceRoot.TabIndex = 200
+        '
+        'ReportsHeaderPanel
+        '
+        Me.ReportsHeaderPanel.BackColor = System.Drawing.Color.FromArgb(68, 18, 31)
+        Me.ReportsHeaderPanel.Controls.Add(Me.ReportsSectionLabel)
+        Me.ReportsHeaderPanel.Controls.Add(Me.ReportsCloseButton)
+        Me.ReportsHeaderPanel.Controls.Add(Me.ReportsSubtitleLabel)
+        Me.ReportsHeaderPanel.Controls.Add(Me.ReportsTitleLabel)
+        Me.ReportsHeaderPanel.Controls.Add(Me.ReportsLogo)
+        Me.ReportsHeaderPanel.Dock = System.Windows.Forms.DockStyle.Fill
+        Me.ReportsHeaderPanel.Location = New System.Drawing.Point(0, 0)
+        Me.ReportsHeaderPanel.Margin = New System.Windows.Forms.Padding(0)
+        Me.ReportsHeaderPanel.Name = "ReportsHeaderPanel"
+        Me.ReportsHeaderPanel.Padding = New System.Windows.Forms.Padding(24, 14, 24, 12)
+        Me.ReportsHeaderPanel.Size = New System.Drawing.Size(1440, 94)
+        Me.ReportsHeaderPanel.TabIndex = 0
+        '
+        'ReportsLogo
+        '
+        Me.ReportsLogo.BackColor = System.Drawing.Color.Transparent
+        Me.ReportsLogo.Dock = System.Windows.Forms.DockStyle.Left
+        Me.ReportsLogo.Image = Global.DMSA_System.My.Resources.Resources.DeltaMaroon_NoBg
+        Me.ReportsLogo.Location = New System.Drawing.Point(24, 14)
+        Me.ReportsLogo.Name = "ReportsLogo"
+        Me.ReportsLogo.Size = New System.Drawing.Size(62, 68)
+        Me.ReportsLogo.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom
+        Me.ReportsLogo.TabIndex = 0
+        Me.ReportsLogo.TabStop = False
+        '
+        'ReportsTitleLabel
+        '
+        Me.ReportsTitleLabel.AutoSize = True
+        Me.ReportsTitleLabel.BackColor = System.Drawing.Color.Transparent
+        Me.ReportsTitleLabel.Font = New System.Drawing.Font("Bahnschrift SemiBold", 18.0!, System.Drawing.FontStyle.Regular)
+        Me.ReportsTitleLabel.ForeColor = System.Drawing.Color.White
+        Me.ReportsTitleLabel.Location = New System.Drawing.Point(104, 20)
+        Me.ReportsTitleLabel.Name = "ReportsTitleLabel"
+        Me.ReportsTitleLabel.Size = New System.Drawing.Size(377, 29)
+        Me.ReportsTitleLabel.TabIndex = 1
+        Me.ReportsTitleLabel.Text = "HUMAN RESOURCES  /  REPORTS"
+        '
+        'ReportsSubtitleLabel
+        '
+        Me.ReportsSubtitleLabel.AutoSize = True
+        Me.ReportsSubtitleLabel.BackColor = System.Drawing.Color.Transparent
+        Me.ReportsSubtitleLabel.Font = New System.Drawing.Font("Segoe UI", 9.5!, System.Drawing.FontStyle.Regular)
+        Me.ReportsSubtitleLabel.ForeColor = System.Drawing.Color.FromArgb(223, 207, 212)
+        Me.ReportsSubtitleLabel.Location = New System.Drawing.Point(106, 58)
+        Me.ReportsSubtitleLabel.Name = "ReportsSubtitleLabel"
+        Me.ReportsSubtitleLabel.Size = New System.Drawing.Size(425, 17)
+        Me.ReportsSubtitleLabel.TabIndex = 2
+        Me.ReportsSubtitleLabel.Text = "Compliance, workforce and client records in one reporting workspace"
+        '
+        'ReportsSectionLabel
+        '
+        Me.ReportsSectionLabel.BackColor = System.Drawing.Color.Transparent
+        Me.ReportsSectionLabel.Dock = System.Windows.Forms.DockStyle.Right
+        Me.ReportsSectionLabel.Font = New System.Drawing.Font("Bahnschrift SemiBold", 11.0!, System.Drawing.FontStyle.Regular)
+        Me.ReportsSectionLabel.ForeColor = System.Drawing.Color.FromArgb(245, 205, 112)
+        Me.ReportsSectionLabel.Anchor = CType((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
+        Me.ReportsSectionLabel.Dock = System.Windows.Forms.DockStyle.None
+        Me.ReportsSectionLabel.Location = New System.Drawing.Point(1080, 14)
+        Me.ReportsSectionLabel.Name = "ReportsSectionLabel"
+        Me.ReportsSectionLabel.Size = New System.Drawing.Size(220, 68)
+        Me.ReportsSectionLabel.TabIndex = 3
+        Me.ReportsSectionLabel.Text = "COMPLIANCE"
+        Me.ReportsSectionLabel.TextAlign = System.Drawing.ContentAlignment.MiddleRight
+        '
+        'ReportsCloseButton
+        '
+        Me.ReportsCloseButton.Anchor = CType((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
+        Me.ReportsCloseButton.BackColor = System.Drawing.Color.White
+        Me.ReportsCloseButton.Cursor = System.Windows.Forms.Cursors.Hand
+        Me.ReportsCloseButton.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(245, 205, 112)
+        Me.ReportsCloseButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat
+        Me.ReportsCloseButton.Font = New System.Drawing.Font("Segoe UI Semibold", 9.0!, System.Drawing.FontStyle.Regular)
+        Me.ReportsCloseButton.ForeColor = System.Drawing.Color.FromArgb(68, 18, 31)
+        Me.ReportsCloseButton.Location = New System.Drawing.Point(1316, 29)
+        Me.ReportsCloseButton.Name = "ReportsCloseButton"
+        Me.ReportsCloseButton.Size = New System.Drawing.Size(100, 36)
+        Me.ReportsCloseButton.TabIndex = 4
+        Me.ReportsCloseButton.Text = "Close"
+        Me.ReportsCloseButton.UseVisualStyleBackColor = False
+        '
+        'ReportsBodyPanel
+        '
+        Me.ReportsBodyPanel.BackColor = System.Drawing.Color.FromArgb(255, 192, 128)
+        Me.ReportsBodyPanel.Controls.Add(Me.ReportsContentHost)
+        Me.ReportsBodyPanel.Controls.Add(Me.ReportsNavPanel)
+        Me.ReportsBodyPanel.Dock = System.Windows.Forms.DockStyle.Fill
+        Me.ReportsBodyPanel.Location = New System.Drawing.Point(0, 94)
+        Me.ReportsBodyPanel.Margin = New System.Windows.Forms.Padding(0)
+        Me.ReportsBodyPanel.Name = "ReportsBodyPanel"
+        Me.ReportsBodyPanel.Padding = New System.Windows.Forms.Padding(18, 14, 18, 18)
+        Me.ReportsBodyPanel.Size = New System.Drawing.Size(1440, 766)
+        Me.ReportsBodyPanel.TabIndex = 1
+        '
+        'ReportsNavPanel
+        '
+        Me.ReportsNavPanel.BackColor = System.Drawing.Color.FromArgb(255, 192, 128)
+        Me.ReportsNavPanel.Controls.Add(Me.ReportsNavInfoPanel)
+        Me.ReportsNavPanel.Controls.Add(Me.NavAuditButton)
+        Me.ReportsNavPanel.Controls.Add(Me.NavClientsButton)
+        Me.ReportsNavPanel.Controls.Add(Me.NavWorkforceButton)
+        Me.ReportsNavPanel.Controls.Add(Me.NavLeaveButton)
+        Me.ReportsNavPanel.Controls.Add(Me.NavMissingButton)
+        Me.ReportsNavPanel.Controls.Add(Me.NavComplianceButton)
+        Me.ReportsNavPanel.Dock = System.Windows.Forms.DockStyle.Left
+        Me.ReportsNavPanel.Location = New System.Drawing.Point(18, 14)
+        Me.ReportsNavPanel.Name = "ReportsNavPanel"
+        Me.ReportsNavPanel.Size = New System.Drawing.Size(196, 734)
+        Me.ReportsNavPanel.TabIndex = 0
+        '
+        'ReportsContentHost
+        '
+        Me.ReportsContentHost.BackColor = System.Drawing.Color.FromArgb(255, 192, 128)
+        Me.ReportsContentHost.Controls.Add(Me.Tab_Recruitment)
+        Me.ReportsContentHost.Dock = System.Windows.Forms.DockStyle.Fill
+        Me.ReportsContentHost.Location = New System.Drawing.Point(214, 14)
+        Me.ReportsContentHost.Name = "ReportsContentHost"
+        Me.ReportsContentHost.Padding = New System.Windows.Forms.Padding(14, 0, 0, 0)
+        Me.ReportsContentHost.Size = New System.Drawing.Size(1208, 734)
+        Me.ReportsContentHost.TabIndex = 1
+        '
+        'Report navigation buttons
+        '
+        Me.NavComplianceButton.BackColor = System.Drawing.Color.FromArgb(255, 224, 192)
+        Me.NavComplianceButton.Cursor = System.Windows.Forms.Cursors.Hand
+        Me.NavComplianceButton.Dock = System.Windows.Forms.DockStyle.Top
+        Me.NavComplianceButton.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(111, 29, 48)
+        Me.NavComplianceButton.FlatAppearance.BorderSize = 2
+        Me.NavComplianceButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat
+        Me.NavComplianceButton.Font = New System.Drawing.Font("Segoe UI Semibold", 9.5!, System.Drawing.FontStyle.Regular)
+        Me.NavComplianceButton.ForeColor = System.Drawing.Color.FromArgb(111, 29, 48)
+        Me.NavComplianceButton.Location = New System.Drawing.Point(0, 0)
+        Me.NavComplianceButton.Name = "NavComplianceButton"
+        Me.NavComplianceButton.Padding = New System.Windows.Forms.Padding(14, 0, 0, 0)
+        Me.NavComplianceButton.Size = New System.Drawing.Size(196, 58)
+        Me.NavComplianceButton.TabIndex = 0
+        Me.NavComplianceButton.Tag = "0"
+        Me.NavComplianceButton.Text = "CO    Compliance"
+        Me.NavComplianceButton.TextAlign = System.Drawing.ContentAlignment.MiddleLeft
+        Me.NavComplianceButton.UseVisualStyleBackColor = False
+        Me.NavMissingButton.BackColor = System.Drawing.Color.FromArgb(255, 192, 128)
+        Me.NavMissingButton.Cursor = System.Windows.Forms.Cursors.Hand
+        Me.NavMissingButton.Dock = System.Windows.Forms.DockStyle.Top
+        Me.NavMissingButton.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(224, 176, 128)
+        Me.NavMissingButton.FlatAppearance.BorderSize = 1
+        Me.NavMissingButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat
+        Me.NavMissingButton.Font = New System.Drawing.Font("Segoe UI Semibold", 9.5!, System.Drawing.FontStyle.Regular)
+        Me.NavMissingButton.Location = New System.Drawing.Point(0, 58)
+        Me.NavMissingButton.Name = "NavMissingButton"
+        Me.NavMissingButton.Padding = New System.Windows.Forms.Padding(14, 0, 0, 0)
+        Me.NavMissingButton.Size = New System.Drawing.Size(196, 58)
+        Me.NavMissingButton.TabIndex = 1
+        Me.NavMissingButton.Tag = "1"
+        Me.NavMissingButton.Text = "MR    Missing records"
+        Me.NavMissingButton.TextAlign = System.Drawing.ContentAlignment.MiddleLeft
+        Me.NavMissingButton.UseVisualStyleBackColor = False
+        Me.NavLeaveButton.BackColor = System.Drawing.Color.FromArgb(255, 192, 128)
+        Me.NavLeaveButton.Cursor = System.Windows.Forms.Cursors.Hand
+        Me.NavLeaveButton.Dock = System.Windows.Forms.DockStyle.Top
+        Me.NavLeaveButton.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(224, 176, 128)
+        Me.NavLeaveButton.FlatAppearance.BorderSize = 1
+        Me.NavLeaveButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat
+        Me.NavLeaveButton.Font = New System.Drawing.Font("Segoe UI Semibold", 9.5!, System.Drawing.FontStyle.Regular)
+        Me.NavLeaveButton.Location = New System.Drawing.Point(0, 116)
+        Me.NavLeaveButton.Name = "NavLeaveButton"
+        Me.NavLeaveButton.Padding = New System.Windows.Forms.Padding(14, 0, 0, 0)
+        Me.NavLeaveButton.Size = New System.Drawing.Size(196, 58)
+        Me.NavLeaveButton.TabIndex = 2
+        Me.NavLeaveButton.Tag = "2"
+        Me.NavLeaveButton.Text = "LR    Leave records"
+        Me.NavLeaveButton.TextAlign = System.Drawing.ContentAlignment.MiddleLeft
+        Me.NavLeaveButton.UseVisualStyleBackColor = False
+        Me.NavWorkforceButton.BackColor = System.Drawing.Color.FromArgb(255, 192, 128)
+        Me.NavWorkforceButton.Cursor = System.Windows.Forms.Cursors.Hand
+        Me.NavWorkforceButton.Dock = System.Windows.Forms.DockStyle.Top
+        Me.NavWorkforceButton.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(224, 176, 128)
+        Me.NavWorkforceButton.FlatAppearance.BorderSize = 1
+        Me.NavWorkforceButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat
+        Me.NavWorkforceButton.Font = New System.Drawing.Font("Segoe UI Semibold", 9.5!, System.Drawing.FontStyle.Regular)
+        Me.NavWorkforceButton.Location = New System.Drawing.Point(0, 174)
+        Me.NavWorkforceButton.Name = "NavWorkforceButton"
+        Me.NavWorkforceButton.Padding = New System.Windows.Forms.Padding(14, 0, 0, 0)
+        Me.NavWorkforceButton.Size = New System.Drawing.Size(196, 58)
+        Me.NavWorkforceButton.TabIndex = 3
+        Me.NavWorkforceButton.Tag = "3"
+        Me.NavWorkforceButton.Text = "WF    Workforce"
+        Me.NavWorkforceButton.TextAlign = System.Drawing.ContentAlignment.MiddleLeft
+        Me.NavWorkforceButton.UseVisualStyleBackColor = False
+        Me.NavClientsButton.BackColor = System.Drawing.Color.FromArgb(255, 192, 128)
+        Me.NavClientsButton.Cursor = System.Windows.Forms.Cursors.Hand
+        Me.NavClientsButton.Dock = System.Windows.Forms.DockStyle.Top
+        Me.NavClientsButton.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(224, 176, 128)
+        Me.NavClientsButton.FlatAppearance.BorderSize = 1
+        Me.NavClientsButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat
+        Me.NavClientsButton.Font = New System.Drawing.Font("Segoe UI Semibold", 9.5!, System.Drawing.FontStyle.Regular)
+        Me.NavClientsButton.Location = New System.Drawing.Point(0, 232)
+        Me.NavClientsButton.Name = "NavClientsButton"
+        Me.NavClientsButton.Padding = New System.Windows.Forms.Padding(14, 0, 0, 0)
+        Me.NavClientsButton.Size = New System.Drawing.Size(196, 58)
+        Me.NavClientsButton.TabIndex = 4
+        Me.NavClientsButton.Tag = "4"
+        Me.NavClientsButton.Text = "CC    Client coverage"
+        Me.NavClientsButton.TextAlign = System.Drawing.ContentAlignment.MiddleLeft
+        Me.NavClientsButton.UseVisualStyleBackColor = False
+        Me.NavAuditButton.BackColor = System.Drawing.Color.FromArgb(255, 192, 128)
+        Me.NavAuditButton.Cursor = System.Windows.Forms.Cursors.Hand
+        Me.NavAuditButton.Dock = System.Windows.Forms.DockStyle.Top
+        Me.NavAuditButton.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(224, 176, 128)
+        Me.NavAuditButton.FlatAppearance.BorderSize = 1
+        Me.NavAuditButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat
+        Me.NavAuditButton.Font = New System.Drawing.Font("Segoe UI Semibold", 9.5!, System.Drawing.FontStyle.Regular)
+        Me.NavAuditButton.Location = New System.Drawing.Point(0, 290)
+        Me.NavAuditButton.Name = "NavAuditButton"
+        Me.NavAuditButton.Padding = New System.Windows.Forms.Padding(14, 0, 0, 0)
+        Me.NavAuditButton.Size = New System.Drawing.Size(196, 58)
+        Me.NavAuditButton.TabIndex = 5
+        Me.NavAuditButton.Tag = "5"
+        Me.NavAuditButton.Text = "AL    Audit log"
+        Me.NavAuditButton.TextAlign = System.Drawing.ContentAlignment.MiddleLeft
+        Me.NavAuditButton.UseVisualStyleBackColor = False
+        '
+        'ReportsNavInfoPanel
+        '
+        Me.ReportsNavInfoPanel.Anchor = CType((((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Bottom) Or System.Windows.Forms.AnchorStyles.Left) Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
+        Me.ReportsNavInfoPanel.BackColor = System.Drawing.Color.FromArgb(255, 224, 192)
+        Me.ReportsNavInfoPanel.Controls.Add(Me.ReportsNavInfoBody)
+        Me.ReportsNavInfoPanel.Controls.Add(Me.ReportsNavInfoTitle)
+        Me.ReportsNavInfoPanel.Location = New System.Drawing.Point(0, 348)
+        Me.ReportsNavInfoPanel.Name = "ReportsNavInfoPanel"
+        Me.ReportsNavInfoPanel.Padding = New System.Windows.Forms.Padding(14)
+        Me.ReportsNavInfoPanel.Size = New System.Drawing.Size(196, 386)
+        Me.ReportsNavInfoPanel.TabIndex = 2
+        Me.ReportsNavInfoPanel.BringToFront()
+        '
+        'ReportsNavInfoTitle
+        '
+        Me.ReportsNavInfoTitle.AutoSize = True
+        Me.ReportsNavInfoTitle.Font = New System.Drawing.Font("Verdana", 8.5!, System.Drawing.FontStyle.Bold)
+        Me.ReportsNavInfoTitle.ForeColor = System.Drawing.Color.Teal
+        Me.ReportsNavInfoTitle.Location = New System.Drawing.Point(14, 16)
+        Me.ReportsNavInfoTitle.Name = "ReportsNavInfoTitle"
+        Me.ReportsNavInfoTitle.Text = "REPORT GUIDE"
+        '
+        'ReportsNavInfoBody
+        '
+        Me.ReportsNavInfoBody.Font = New System.Drawing.Font("Segoe UI", 8.75!, System.Drawing.FontStyle.Regular)
+        Me.ReportsNavInfoBody.ForeColor = System.Drawing.Color.FromArgb(74, 55, 32)
+        Me.ReportsNavInfoBody.Location = New System.Drawing.Point(14, 48)
+        Me.ReportsNavInfoBody.Name = "ReportsNavInfoBody"
+        Me.ReportsNavInfoBody.Size = New System.Drawing.Size(168, 130)
+        Me.ReportsNavInfoBody.Text = "Choose a report category." & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "Apply filters to load records." & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "Export the current view to Excel."
+        '
+        'Tab_Recruitment - redesigned navigation
+        '
+        Me.Tab_Recruitment.Alignment = System.Windows.Forms.TabAlignment.Top
+        Me.Tab_Recruitment.Appearance = System.Windows.Forms.TabAppearance.FlatButtons
+        Me.Tab_Recruitment.BackColor = System.Drawing.Color.FromArgb(255, 192, 128)
+        Me.Tab_Recruitment.Cursor = System.Windows.Forms.Cursors.Default
+        Me.Tab_Recruitment.Dock = System.Windows.Forms.DockStyle.Fill
+        Me.Tab_Recruitment.DrawMode = System.Windows.Forms.TabDrawMode.Normal
+        Me.Tab_Recruitment.Font = New System.Drawing.Font("Segoe UI Semibold", 9.5!, System.Drawing.FontStyle.Regular)
+        Me.Tab_Recruitment.ItemSize = New System.Drawing.Size(0, 1)
+        Me.Tab_Recruitment.Location = New System.Drawing.Point(14, 0)
+        Me.Tab_Recruitment.Padding = New System.Drawing.Point(0, 0)
+        Me.Tab_Recruitment.Size = New System.Drawing.Size(1194, 734)
+        Me.Tab_Recruitment.SizeMode = System.Windows.Forms.TabSizeMode.Fixed
+        '
+        'Top-level report pages
+        '
+        Me.Tab_Security_License.BackColor = System.Drawing.Color.FromArgb(255, 192, 128)
+        Me.Tab_Security_License.Padding = New System.Windows.Forms.Padding(12)
+        Me.Tab_Security_License.Text = "Compliance"
+        Me.Tab_Pending_Docs.BackColor = System.Drawing.Color.FromArgb(255, 192, 128)
+        Me.Tab_Pending_Docs.Padding = New System.Windows.Forms.Padding(0)
+        Me.Tab_Pending_Docs.Text = "Missing records"
+        Me.TabPage4.BackColor = System.Drawing.Color.FromArgb(255, 192, 128)
+        Me.TabPage4.Padding = New System.Windows.Forms.Padding(0)
+        Me.TabPage4.Text = "Leave records"
+        Me.Tab_HR1.BackColor = System.Drawing.Color.FromArgb(255, 192, 128)
+        Me.Tab_HR1.Padding = New System.Windows.Forms.Padding(0)
+        Me.Tab_HR1.Text = "Workforce"
+        Me.Tab_Client.BackColor = System.Drawing.Color.FromArgb(255, 192, 128)
+        Me.Tab_Client.Padding = New System.Windows.Forms.Padding(12)
+        Me.Tab_Client.Text = "Client coverage"
+        Me.Tab_Logs.BackColor = System.Drawing.Color.FromArgb(255, 192, 128)
+        Me.Tab_Logs.Padding = New System.Windows.Forms.Padding(0)
+        Me.Tab_Logs.Text = "Audit log"
+        '
+        'Compliance tab host
+        '
+        Me.TabControl1.Dock = System.Windows.Forms.DockStyle.Fill
+        Me.TabControl1.DrawMode = System.Windows.Forms.TabDrawMode.OwnerDrawFixed
+        Me.TabControl1.Font = New System.Drawing.Font("Segoe UI Semibold", 9.25!, System.Drawing.FontStyle.Regular)
+        Me.TabControl1.ItemSize = New System.Drawing.Size(185, 38)
+        Me.TabControl1.Location = New System.Drawing.Point(12, 12)
+        Me.TabControl1.SizeMode = System.Windows.Forms.TabSizeMode.Fixed
+        Me.TabPage1.BackColor = System.Drawing.Color.FromArgb(255, 192, 128)
+        Me.TabPage1.Text = "Employee credentials"
+        Me.TabPage7.BackColor = System.Drawing.Color.FromArgb(255, 192, 128)
+        Me.TabPage7.Text = "Client contracts"
+        '
+        'Employee credential page
+        '
+        Me.EmpExpiryTitleLabel.AutoSize = True
+        Me.EmpExpiryTitleLabel.Font = New System.Drawing.Font("Bahnschrift SemiBold", 14.0!, System.Drawing.FontStyle.Regular)
+        Me.EmpExpiryTitleLabel.ForeColor = System.Drawing.Color.FromArgb(31, 41, 51)
+        Me.EmpExpiryTitleLabel.Location = New System.Drawing.Point(28, 22)
+        Me.EmpExpiryTitleLabel.Name = "EmpExpiryTitleLabel"
+        Me.EmpExpiryTitleLabel.Text = "Employee credential expiry"
+        Me.EmpExpiryDescriptionLabel.AutoSize = True
+        Me.EmpExpiryDescriptionLabel.Font = New System.Drawing.Font("Segoe UI", 9.25!, System.Drawing.FontStyle.Regular)
+        Me.EmpExpiryDescriptionLabel.ForeColor = System.Drawing.Color.FromArgb(98, 108, 118)
+        Me.EmpExpiryDescriptionLabel.Location = New System.Drawing.Point(29, 54)
+        Me.EmpExpiryDescriptionLabel.Name = "EmpExpiryDescriptionLabel"
+        Me.EmpExpiryDescriptionLabel.Text = "Track medical, licence and insurance renewals before they interrupt deployment."
+        Me.EmpExpiryFilterPanel.Anchor = CType(((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Left) Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
+        Me.EmpExpiryFilterPanel.BackColor = System.Drawing.Color.FromArgb(255, 224, 192)
+        Me.EmpExpiryFilterPanel.Controls.Add(Me.Label10)
+        Me.EmpExpiryFilterPanel.Controls.Add(Me.Cmb_Exp_Category)
+        Me.EmpExpiryFilterPanel.Controls.Add(Me.Label1)
+        Me.EmpExpiryFilterPanel.Controls.Add(Me.Cmb_Expiry_Status)
+        Me.EmpExpiryFilterPanel.Controls.Add(Me.Label3)
+        Me.EmpExpiryFilterPanel.Location = New System.Drawing.Point(24, 86)
+        Me.EmpExpiryFilterPanel.Name = "EmpExpiryFilterPanel"
+        Me.EmpExpiryFilterPanel.Size = New System.Drawing.Size(1110, 58)
+        Me.Label10.Location = New System.Drawing.Point(18, 19)
+        Me.Label10.Text = "Category:"
+        Me.Cmb_Exp_Category.Location = New System.Drawing.Point(96, 15)
+        Me.Cmb_Exp_Category.Size = New System.Drawing.Size(180, 25)
+        Me.Label1.Location = New System.Drawing.Point(306, 19)
+        Me.Label1.ForeColor = System.Drawing.Color.FromArgb(31, 41, 51)
+        Me.Label1.Text = "Expiration:"
+        Me.Cmb_Expiry_Status.Location = New System.Drawing.Point(390, 15)
+        Me.Cmb_Expiry_Status.Size = New System.Drawing.Size(180, 25)
+        Me.Label3.Location = New System.Drawing.Point(598, 19)
+        Me.Label3.Text = "For active employees only."
+        Me.LV_Expiry_List.Anchor = CType((((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Bottom) Or System.Windows.Forms.AnchorStyles.Left) Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
+        Me.LV_Expiry_List.BackColor = System.Drawing.Color.FromArgb(255, 224, 192)
+        Me.LV_Expiry_List.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle
+        Me.LV_Expiry_List.Font = New System.Drawing.Font("Segoe UI", 9.25!, System.Drawing.FontStyle.Regular)
+        Me.LV_Expiry_List.Location = New System.Drawing.Point(24, 156)
+        Me.LV_Expiry_List.Size = New System.Drawing.Size(1110, 330)
+        Me.Lbl_Export_SecLicense.Anchor = CType((System.Windows.Forms.AnchorStyles.Bottom Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
+        Me.Lbl_Export_SecLicense.BackColor = System.Drawing.Color.FromArgb(0, 128, 128)
+        Me.Lbl_Export_SecLicense.ForeColor = System.Drawing.Color.White
+        Me.Lbl_Export_SecLicense.Font = New System.Drawing.Font("Segoe UI Semibold", 9.0!, System.Drawing.FontStyle.Regular)
+        Me.Lbl_Export_SecLicense.Location = New System.Drawing.Point(978, 500)
+        Me.Lbl_Export_SecLicense.Size = New System.Drawing.Size(156, 36)
+        Me.Lbl_Export_SecLicense.Text = "Export to Excel"
+        Me.Lbl_Export_SecLicense.TextAlign = System.Drawing.ContentAlignment.MiddleCenter
+        Me.TabPage1.Controls.Add(Me.EmpExpiryTitleLabel)
+        Me.TabPage1.Controls.Add(Me.EmpExpiryDescriptionLabel)
+        Me.TabPage1.Controls.Add(Me.EmpExpiryFilterPanel)
+        Me.TabPage1.Controls.Add(Me.LV_Expiry_List)
+        Me.TabPage1.Controls.Add(Me.Lbl_Export_SecLicense)
+        '
+        'Client contract page
+        '
+        Me.ClientExpiryTitleLabel.AutoSize = True
+        Me.ClientExpiryTitleLabel.Font = New System.Drawing.Font("Bahnschrift SemiBold", 14.0!, System.Drawing.FontStyle.Regular)
+        Me.ClientExpiryTitleLabel.ForeColor = System.Drawing.Color.FromArgb(31, 41, 51)
+        Me.ClientExpiryTitleLabel.Location = New System.Drawing.Point(28, 22)
+        Me.ClientExpiryTitleLabel.Name = "ClientExpiryTitleLabel"
+        Me.ClientExpiryTitleLabel.Text = "Client contract expiry"
+        Me.ClientExpiryDescriptionLabel.AutoSize = True
+        Me.ClientExpiryDescriptionLabel.Font = New System.Drawing.Font("Segoe UI", 9.25!, System.Drawing.FontStyle.Regular)
+        Me.ClientExpiryDescriptionLabel.ForeColor = System.Drawing.Color.FromArgb(98, 108, 118)
+        Me.ClientExpiryDescriptionLabel.Location = New System.Drawing.Point(29, 54)
+        Me.ClientExpiryDescriptionLabel.Name = "ClientExpiryDescriptionLabel"
+        Me.ClientExpiryDescriptionLabel.Text = "Review contract dates and prioritise client renewals."
+        Me.ClientExpiryFilterPanel.Anchor = CType(((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Left) Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
+        Me.ClientExpiryFilterPanel.BackColor = System.Drawing.Color.FromArgb(255, 224, 192)
+        Me.ClientExpiryFilterPanel.Controls.Add(Me.Label17)
+        Me.ClientExpiryFilterPanel.Controls.Add(Me.Cmb_Client_Expiration)
+        Me.ClientExpiryFilterPanel.Location = New System.Drawing.Point(24, 86)
+        Me.ClientExpiryFilterPanel.Name = "ClientExpiryFilterPanel"
+        Me.ClientExpiryFilterPanel.Size = New System.Drawing.Size(1110, 58)
+        Me.Label17.Location = New System.Drawing.Point(18, 19)
+        Me.Label17.ForeColor = System.Drawing.Color.FromArgb(31, 41, 51)
+        Me.Label17.Text = "Expiration:"
+        Me.Cmb_Client_Expiration.Location = New System.Drawing.Point(104, 15)
+        Me.Cmb_Client_Expiration.Size = New System.Drawing.Size(190, 25)
+        Me.LV_Client_Contract_Exp.Anchor = CType((((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Bottom) Or System.Windows.Forms.AnchorStyles.Left) Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
+        Me.LV_Client_Contract_Exp.BackColor = System.Drawing.Color.FromArgb(255, 224, 192)
+        Me.LV_Client_Contract_Exp.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle
+        Me.LV_Client_Contract_Exp.Font = New System.Drawing.Font("Segoe UI", 9.25!, System.Drawing.FontStyle.Regular)
+        Me.LV_Client_Contract_Exp.Location = New System.Drawing.Point(24, 156)
+        Me.LV_Client_Contract_Exp.Size = New System.Drawing.Size(1110, 330)
+        Me.Lbl_Export_Client_Contract_Exp.Anchor = CType((System.Windows.Forms.AnchorStyles.Bottom Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
+        Me.Lbl_Export_Client_Contract_Exp.BackColor = System.Drawing.Color.FromArgb(0, 128, 128)
+        Me.Lbl_Export_Client_Contract_Exp.ForeColor = System.Drawing.Color.White
+        Me.Lbl_Export_Client_Contract_Exp.Font = New System.Drawing.Font("Segoe UI Semibold", 9.0!, System.Drawing.FontStyle.Regular)
+        Me.Lbl_Export_Client_Contract_Exp.Location = New System.Drawing.Point(978, 500)
+        Me.Lbl_Export_Client_Contract_Exp.Size = New System.Drawing.Size(156, 36)
+        Me.Lbl_Export_Client_Contract_Exp.Text = "Export to Excel"
+        Me.Lbl_Export_Client_Contract_Exp.TextAlign = System.Drawing.ContentAlignment.MiddleCenter
+        Me.TabPage7.Controls.Add(Me.ClientExpiryTitleLabel)
+        Me.TabPage7.Controls.Add(Me.ClientExpiryDescriptionLabel)
+        Me.TabPage7.Controls.Add(Me.ClientExpiryFilterPanel)
+        Me.TabPage7.Controls.Add(Me.LV_Client_Contract_Exp)
+        Me.TabPage7.Controls.Add(Me.Lbl_Export_Client_Contract_Exp)
+        '
+        'Missing records page
+        '
+        Me.MissingTitleLabel.AutoSize = True
+        Me.MissingTitleLabel.Font = New System.Drawing.Font("Bahnschrift SemiBold", 14.0!, System.Drawing.FontStyle.Regular)
+        Me.MissingTitleLabel.ForeColor = System.Drawing.Color.FromArgb(31, 41, 51)
+        Me.MissingTitleLabel.Location = New System.Drawing.Point(28, 24)
+        Me.MissingTitleLabel.Name = "MissingTitleLabel"
+        Me.MissingTitleLabel.Text = "Missing employee records"
+        Me.MissingDescriptionLabel.AutoSize = True
+        Me.MissingDescriptionLabel.Font = New System.Drawing.Font("Segoe UI", 9.25!, System.Drawing.FontStyle.Regular)
+        Me.MissingDescriptionLabel.ForeColor = System.Drawing.Color.FromArgb(98, 108, 118)
+        Me.MissingDescriptionLabel.Location = New System.Drawing.Point(29, 56)
+        Me.MissingDescriptionLabel.Name = "MissingDescriptionLabel"
+        Me.MissingDescriptionLabel.Text = "Find incomplete government, bank and payroll information by requirement."
+        Me.MissingFilterPanel.Anchor = CType(((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Left) Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
+        Me.MissingFilterPanel.BackColor = System.Drawing.Color.FromArgb(255, 224, 192)
+        Me.MissingFilterPanel.Controls.Add(Me.Label5)
+        Me.MissingFilterPanel.Controls.Add(Me.Cmb_Pending_Category)
+        Me.MissingFilterPanel.Controls.Add(Me.Btn_ShowPendingRecords)
+        Me.MissingFilterPanel.Controls.Add(Me.Label9)
+        Me.MissingFilterPanel.Location = New System.Drawing.Point(24, 88)
+        Me.MissingFilterPanel.Name = "MissingFilterPanel"
+        Me.MissingFilterPanel.Size = New System.Drawing.Size(1140, 58)
+        Me.Label5.Location = New System.Drawing.Point(18, 19)
+        Me.Cmb_Pending_Category.Location = New System.Drawing.Point(96, 15)
+        Me.Cmb_Pending_Category.Size = New System.Drawing.Size(180, 25)
+        Me.Btn_ShowPendingRecords.BackColor = System.Drawing.Color.Teal
+        Me.Btn_ShowPendingRecords.FlatStyle = System.Windows.Forms.FlatStyle.Flat
+        Me.Btn_ShowPendingRecords.ForeColor = System.Drawing.Color.White
+        Me.Btn_ShowPendingRecords.Location = New System.Drawing.Point(296, 11)
+        Me.Btn_ShowPendingRecords.Size = New System.Drawing.Size(168, 36)
+        Me.Btn_ShowPendingRecords.Text = "Show records"
+        Me.Label9.Location = New System.Drawing.Point(492, 19)
+        Me.Label9.Text = "Government, bank and payroll requirements"
+        Me.LV_Pending_List.Anchor = CType((((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Bottom) Or System.Windows.Forms.AnchorStyles.Left) Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
+        Me.LV_Pending_List.BackColor = System.Drawing.Color.FromArgb(255, 224, 192)
+        Me.LV_Pending_List.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle
+        Me.LV_Pending_List.Font = New System.Drawing.Font("Segoe UI", 9.25!, System.Drawing.FontStyle.Regular)
+        Me.LV_Pending_List.Location = New System.Drawing.Point(24, 158)
+        Me.LV_Pending_List.Size = New System.Drawing.Size(1140, 393)
+        Me.Lbl_Export_PendingDocs.Anchor = CType((System.Windows.Forms.AnchorStyles.Bottom Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
+        Me.Lbl_Export_PendingDocs.BackColor = System.Drawing.Color.FromArgb(0, 128, 128)
+        Me.Lbl_Export_PendingDocs.ForeColor = System.Drawing.Color.White
+        Me.Lbl_Export_PendingDocs.Font = New System.Drawing.Font("Segoe UI Semibold", 9.0!, System.Drawing.FontStyle.Regular)
+        Me.Lbl_Export_PendingDocs.Location = New System.Drawing.Point(1008, 555)
+        Me.Lbl_Export_PendingDocs.Size = New System.Drawing.Size(156, 36)
+        Me.Lbl_Export_PendingDocs.Text = "Export to Excel"
+        Me.Lbl_Export_PendingDocs.TextAlign = System.Drawing.ContentAlignment.MiddleCenter
+        Me.Tab_Pending_Docs.Controls.Add(Me.MissingTitleLabel)
+        Me.Tab_Pending_Docs.Controls.Add(Me.MissingDescriptionLabel)
+        Me.Tab_Pending_Docs.Controls.Add(Me.MissingFilterPanel)
+        Me.Tab_Pending_Docs.Controls.Add(Me.LV_Pending_List)
+        Me.Tab_Pending_Docs.Controls.Add(Me.Lbl_Export_PendingDocs)
+        '
+        'Leave records page
+        '
+        Me.LeaveTitleLabel.AutoSize = True
+        Me.LeaveTitleLabel.Font = New System.Drawing.Font("Bahnschrift SemiBold", 14.0!, System.Drawing.FontStyle.Regular)
+        Me.LeaveTitleLabel.ForeColor = System.Drawing.Color.FromArgb(31, 41, 51)
+        Me.LeaveTitleLabel.Location = New System.Drawing.Point(28, 24)
+        Me.LeaveTitleLabel.Name = "LeaveTitleLabel"
+        Me.LeaveTitleLabel.Text = "Leave and suspension register"
+        Me.LeaveDescriptionLabel.AutoSize = True
+        Me.LeaveDescriptionLabel.Font = New System.Drawing.Font("Segoe UI", 9.25!, System.Drawing.FontStyle.Regular)
+        Me.LeaveDescriptionLabel.ForeColor = System.Drawing.Color.FromArgb(98, 108, 118)
+        Me.LeaveDescriptionLabel.Location = New System.Drawing.Point(29, 56)
+        Me.LeaveDescriptionLabel.Name = "LeaveDescriptionLabel"
+        Me.LeaveDescriptionLabel.Text = "Review filed employee absences within a selected date range."
+        Me.LeaveFilterPanel.Anchor = CType(((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Left) Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
+        Me.LeaveFilterPanel.BackColor = System.Drawing.Color.FromArgb(255, 224, 192)
+        Me.LeaveFilterPanel.Controls.Add(Me.Label16)
+        Me.LeaveFilterPanel.Controls.Add(Me.Cmb_LeaveType)
+        Me.LeaveFilterPanel.Controls.Add(Me.Label12)
+        Me.LeaveFilterPanel.Controls.Add(Me.DP_Leave_DateFrom)
+        Me.LeaveFilterPanel.Controls.Add(Me.Label11)
+        Me.LeaveFilterPanel.Controls.Add(Me.DP_Leave_DateTo)
+        Me.LeaveFilterPanel.Controls.Add(Me.Btn_Show_Leave)
+        Me.LeaveFilterPanel.Location = New System.Drawing.Point(24, 88)
+        Me.LeaveFilterPanel.Name = "LeaveFilterPanel"
+        Me.LeaveFilterPanel.Size = New System.Drawing.Size(1140, 58)
+        Me.Label16.Location = New System.Drawing.Point(18, 19)
+        Me.Cmb_LeaveType.Location = New System.Drawing.Point(66, 15)
+        Me.Cmb_LeaveType.Size = New System.Drawing.Size(160, 25)
+        Me.Label12.Location = New System.Drawing.Point(250, 19)
+        Me.Label12.Text = "Date from:"
+        Me.DP_Leave_DateFrom.CustomFormat = "dd-MMM-yyyy"
+        Me.DP_Leave_DateFrom.Format = System.Windows.Forms.DateTimePickerFormat.Custom
+        Me.DP_Leave_DateFrom.Location = New System.Drawing.Point(326, 15)
+        Me.DP_Leave_DateFrom.Size = New System.Drawing.Size(154, 25)
+        Me.Label11.Location = New System.Drawing.Point(504, 19)
+        Me.Label11.Text = "Date to:"
+        Me.DP_Leave_DateTo.CustomFormat = "dd-MMM-yyyy"
+        Me.DP_Leave_DateTo.Format = System.Windows.Forms.DateTimePickerFormat.Custom
+        Me.DP_Leave_DateTo.Location = New System.Drawing.Point(562, 15)
+        Me.DP_Leave_DateTo.Size = New System.Drawing.Size(154, 25)
+        Me.Btn_Show_Leave.BackColor = System.Drawing.Color.Teal
+        Me.Btn_Show_Leave.FlatStyle = System.Windows.Forms.FlatStyle.Flat
+        Me.Btn_Show_Leave.ForeColor = System.Drawing.Color.White
+        Me.Btn_Show_Leave.Location = New System.Drawing.Point(738, 11)
+        Me.Btn_Show_Leave.Size = New System.Drawing.Size(132, 36)
+        Me.Btn_Show_Leave.Text = "Apply filters"
+        Me.LV_Leave_List.Anchor = CType((((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Bottom) Or System.Windows.Forms.AnchorStyles.Left) Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
+        Me.LV_Leave_List.BackColor = System.Drawing.Color.FromArgb(255, 224, 192)
+        Me.LV_Leave_List.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle
+        Me.LV_Leave_List.Font = New System.Drawing.Font("Segoe UI", 9.25!, System.Drawing.FontStyle.Regular)
+        Me.LV_Leave_List.Location = New System.Drawing.Point(24, 158)
+        Me.LV_Leave_List.Size = New System.Drawing.Size(1140, 393)
+        Me.Lbl_Export_LeaveStatus.Anchor = CType((System.Windows.Forms.AnchorStyles.Bottom Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
+        Me.Lbl_Export_LeaveStatus.BackColor = System.Drawing.Color.FromArgb(0, 128, 128)
+        Me.Lbl_Export_LeaveStatus.ForeColor = System.Drawing.Color.White
+        Me.Lbl_Export_LeaveStatus.Font = New System.Drawing.Font("Segoe UI Semibold", 9.0!, System.Drawing.FontStyle.Regular)
+        Me.Lbl_Export_LeaveStatus.Location = New System.Drawing.Point(1008, 555)
+        Me.Lbl_Export_LeaveStatus.Size = New System.Drawing.Size(156, 36)
+        Me.Lbl_Export_LeaveStatus.Text = "Export to Excel"
+        Me.Lbl_Export_LeaveStatus.TextAlign = System.Drawing.ContentAlignment.MiddleCenter
+        Me.TabPage4.Controls.Add(Me.LeaveTitleLabel)
+        Me.TabPage4.Controls.Add(Me.LeaveDescriptionLabel)
+        Me.TabPage4.Controls.Add(Me.LeaveFilterPanel)
+        Me.TabPage4.Controls.Add(Me.LV_Leave_List)
+        Me.TabPage4.Controls.Add(Me.Lbl_Export_LeaveStatus)
+        '
+        'Audit log page
+        '
+        Me.AuditTitleLabel.AutoSize = True
+        Me.AuditTitleLabel.Font = New System.Drawing.Font("Bahnschrift SemiBold", 14.0!, System.Drawing.FontStyle.Regular)
+        Me.AuditTitleLabel.ForeColor = System.Drawing.Color.FromArgb(31, 41, 51)
+        Me.AuditTitleLabel.Location = New System.Drawing.Point(28, 24)
+        Me.AuditTitleLabel.Name = "AuditTitleLabel"
+        Me.AuditTitleLabel.Text = "Employee record audit log"
+        Me.AuditDescriptionLabel.AutoSize = True
+        Me.AuditDescriptionLabel.Font = New System.Drawing.Font("Segoe UI", 9.25!, System.Drawing.FontStyle.Regular)
+        Me.AuditDescriptionLabel.ForeColor = System.Drawing.Color.FromArgb(98, 108, 118)
+        Me.AuditDescriptionLabel.Location = New System.Drawing.Point(29, 56)
+        Me.AuditDescriptionLabel.Name = "AuditDescriptionLabel"
+        Me.AuditDescriptionLabel.Text = "Trace changes to employee records across a selected date range."
+        Me.AuditFilterPanel.Anchor = CType(((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Left) Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
+        Me.AuditFilterPanel.BackColor = System.Drawing.Color.FromArgb(255, 224, 192)
+        Me.AuditFilterPanel.Controls.Add(Me.Label13)
+        Me.AuditFilterPanel.Controls.Add(Me.DP_Logs_From)
+        Me.AuditFilterPanel.Controls.Add(Me.Label4)
+        Me.AuditFilterPanel.Controls.Add(Me.DP_Logs_To)
+        Me.AuditFilterPanel.Controls.Add(Me.Btn_Logs_Show)
+        Me.AuditFilterPanel.Location = New System.Drawing.Point(24, 88)
+        Me.AuditFilterPanel.Name = "AuditFilterPanel"
+        Me.AuditFilterPanel.Size = New System.Drawing.Size(1140, 58)
+        Me.Label13.Location = New System.Drawing.Point(18, 19)
+        Me.Label13.Text = "Date from:"
+        Me.DP_Logs_From.CustomFormat = "dd-MMM-yyyy"
+        Me.DP_Logs_From.Format = System.Windows.Forms.DateTimePickerFormat.Custom
+        Me.DP_Logs_From.Location = New System.Drawing.Point(96, 15)
+        Me.DP_Logs_From.Size = New System.Drawing.Size(154, 25)
+        Me.Label4.Location = New System.Drawing.Point(276, 19)
+        Me.Label4.Text = "Date to:"
+        Me.DP_Logs_To.CustomFormat = "dd-MMM-yyyy"
+        Me.DP_Logs_To.Format = System.Windows.Forms.DateTimePickerFormat.Custom
+        Me.DP_Logs_To.Location = New System.Drawing.Point(336, 15)
+        Me.DP_Logs_To.Size = New System.Drawing.Size(154, 25)
+        Me.Btn_Logs_Show.BackColor = System.Drawing.Color.Teal
+        Me.Btn_Logs_Show.FlatStyle = System.Windows.Forms.FlatStyle.Flat
+        Me.Btn_Logs_Show.ForeColor = System.Drawing.Color.White
+        Me.Btn_Logs_Show.Location = New System.Drawing.Point(512, 11)
+        Me.Btn_Logs_Show.Size = New System.Drawing.Size(200, 36)
+        Me.Btn_Logs_Show.Text = "Apply date range"
+        Me.LV_SystemLogs.Anchor = CType((((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Bottom) Or System.Windows.Forms.AnchorStyles.Left) Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
+        Me.LV_SystemLogs.BackColor = System.Drawing.Color.FromArgb(255, 224, 192)
+        Me.LV_SystemLogs.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle
+        Me.LV_SystemLogs.Font = New System.Drawing.Font("Segoe UI", 9.25!, System.Drawing.FontStyle.Regular)
+        Me.LV_SystemLogs.Location = New System.Drawing.Point(24, 158)
+        Me.LV_SystemLogs.Size = New System.Drawing.Size(1140, 377)
+        Me.Btn_Export_Audit_Log.Anchor = CType((System.Windows.Forms.AnchorStyles.Bottom Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
+        Me.Btn_Export_Audit_Log.BackColor = System.Drawing.Color.FromArgb(0, 128, 128)
+        Me.Btn_Export_Audit_Log.Cursor = System.Windows.Forms.Cursors.Hand
+        Me.Btn_Export_Audit_Log.FlatAppearance.BorderSize = 0
+        Me.Btn_Export_Audit_Log.FlatStyle = System.Windows.Forms.FlatStyle.Flat
+        Me.Btn_Export_Audit_Log.Font = New System.Drawing.Font("Segoe UI Semibold", 9.0!, System.Drawing.FontStyle.Regular)
+        Me.Btn_Export_Audit_Log.ForeColor = System.Drawing.Color.White
+        Me.Btn_Export_Audit_Log.IconChar = FontAwesome.Sharp.IconChar.FileExcel
+        Me.Btn_Export_Audit_Log.IconColor = System.Drawing.Color.White
+        Me.Btn_Export_Audit_Log.IconFont = FontAwesome.Sharp.IconFont.[Auto]
+        Me.Btn_Export_Audit_Log.IconSize = 20
+        Me.Btn_Export_Audit_Log.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft
+        Me.Btn_Export_Audit_Log.Location = New System.Drawing.Point(1008, 555)
+        Me.Btn_Export_Audit_Log.Name = "Btn_Export_Audit_Log"
+        Me.Btn_Export_Audit_Log.Size = New System.Drawing.Size(156, 36)
+        Me.Btn_Export_Audit_Log.TabIndex = 206
+        Me.Btn_Export_Audit_Log.Text = "Export to Excel"
+        Me.Btn_Export_Audit_Log.UseVisualStyleBackColor = False
+        Me.Tab_Logs.Controls.Add(Me.AuditTitleLabel)
+        Me.Tab_Logs.Controls.Add(Me.AuditDescriptionLabel)
+        Me.Tab_Logs.Controls.Add(Me.AuditFilterPanel)
+        Me.Tab_Logs.Controls.Add(Me.LV_SystemLogs)
+        Me.Tab_Logs.Controls.Add(Me.Btn_Export_Audit_Log)
+        '
+        'Workforce analytics page
+        '
+        Me.AnalyticsTitleLabel.AutoSize = True
+        Me.AnalyticsTitleLabel.Font = New System.Drawing.Font("Bahnschrift SemiBold", 14.0!, System.Drawing.FontStyle.Regular)
+        Me.AnalyticsTitleLabel.ForeColor = System.Drawing.Color.FromArgb(31, 41, 51)
+        Me.AnalyticsTitleLabel.Location = New System.Drawing.Point(28, 24)
+        Me.AnalyticsTitleLabel.Name = "AnalyticsTitleLabel"
+        Me.AnalyticsTitleLabel.Text = "Workforce analytics"
+        Me.AnalyticsDescriptionLabel.AutoSize = True
+        Me.AnalyticsDescriptionLabel.Font = New System.Drawing.Font("Segoe UI", 9.25!, System.Drawing.FontStyle.Regular)
+        Me.AnalyticsDescriptionLabel.ForeColor = System.Drawing.Color.FromArgb(98, 108, 118)
+        Me.AnalyticsDescriptionLabel.Location = New System.Drawing.Point(29, 56)
+        Me.AnalyticsDescriptionLabel.Name = "AnalyticsDescriptionLabel"
+        Me.AnalyticsDescriptionLabel.Text = "Explore current workforce composition and hiring patterns."
+        Me.AnalyticsPickerPanel.Anchor = CType(((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Bottom) Or System.Windows.Forms.AnchorStyles.Left), System.Windows.Forms.AnchorStyles)
+        Me.AnalyticsPickerPanel.BackColor = System.Drawing.Color.FromArgb(255, 224, 192)
+        Me.AnalyticsPickerPanel.Controls.Add(Me.AnalyticsPickerLabel)
+        Me.AnalyticsPickerPanel.Controls.Add(Me.Btn_Load_Chart_Data)
+        Me.AnalyticsPickerPanel.Controls.Add(Me.Btn_Hired_Per_Year)
+        Me.AnalyticsPickerPanel.Controls.Add(Me.Btn_Gender_Count)
+        Me.AnalyticsPickerPanel.Controls.Add(Me.Btn_Age_Count)
+        Me.AnalyticsPickerPanel.Controls.Add(Me.AnalyticsStatusLabel)
+        Me.AnalyticsPickerPanel.Controls.Add(Me.Cmb_Emp_Status)
+        Me.AnalyticsPickerPanel.Controls.Add(Me.Btn_Hired_Per_Month)
+        Me.AnalyticsPickerPanel.Location = New System.Drawing.Point(24, 90)
+        Me.AnalyticsPickerPanel.Name = "AnalyticsPickerPanel"
+        Me.AnalyticsPickerPanel.Size = New System.Drawing.Size(224, 445)
+        Me.AnalyticsPickerLabel.AutoSize = True
+        Me.AnalyticsPickerLabel.Font = New System.Drawing.Font("Segoe UI Semibold", 8.5!, System.Drawing.FontStyle.Regular)
+        Me.AnalyticsPickerLabel.ForeColor = System.Drawing.Color.FromArgb(111, 29, 48)
+        Me.AnalyticsPickerLabel.Location = New System.Drawing.Point(16, 18)
+        Me.AnalyticsPickerLabel.Name = "AnalyticsPickerLabel"
+        Me.AnalyticsPickerLabel.Text = "REPORT VIEW"
+        Me.Btn_Load_Chart_Data.Location = New System.Drawing.Point(12, 50)
+        Me.Btn_Load_Chart_Data.Size = New System.Drawing.Size(200, 36)
+        Me.Btn_Load_Chart_Data.Text = "Employment status"
+        Me.Btn_Hired_Per_Year.Location = New System.Drawing.Point(12, 92)
+        Me.Btn_Hired_Per_Year.Size = New System.Drawing.Size(200, 36)
+        Me.Btn_Hired_Per_Year.Text = "Hires by year"
+        Me.Btn_Gender_Count.Location = New System.Drawing.Point(12, 134)
+        Me.Btn_Gender_Count.Size = New System.Drawing.Size(200, 36)
+        Me.Btn_Gender_Count.Text = "Gender distribution"
+        Me.Btn_Age_Count.Location = New System.Drawing.Point(12, 176)
+        Me.Btn_Age_Count.Size = New System.Drawing.Size(200, 36)
+        Me.Btn_Age_Count.Text = "Age distribution"
+        Me.AnalyticsStatusLabel.AutoSize = True
+        Me.AnalyticsStatusLabel.Font = New System.Drawing.Font("Segoe UI Semibold", 8.5!, System.Drawing.FontStyle.Regular)
+        Me.AnalyticsStatusLabel.ForeColor = System.Drawing.Color.FromArgb(98, 108, 118)
+        Me.AnalyticsStatusLabel.Location = New System.Drawing.Point(16, 238)
+        Me.AnalyticsStatusLabel.Name = "AnalyticsStatusLabel"
+        Me.AnalyticsStatusLabel.Text = "MONTHLY STATUS"
+        Me.Cmb_Emp_Status.Location = New System.Drawing.Point(12, 266)
+        Me.Cmb_Emp_Status.Size = New System.Drawing.Size(200, 25)
+        Me.Btn_Hired_Per_Month.Location = New System.Drawing.Point(12, 304)
+        Me.Btn_Hired_Per_Month.Size = New System.Drawing.Size(200, 36)
+        Me.Btn_Hired_Per_Month.Text = "Employees by month"
+        Me.CH_Emp_Status.Anchor = CType((((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Bottom) Or System.Windows.Forms.AnchorStyles.Left) Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
+        Me.CH_Emp_Status.BackColor = System.Drawing.Color.FromArgb(255, 224, 192)
+        Me.CH_Emp_Status.Location = New System.Drawing.Point(262, 90)
+        Me.CH_Emp_Status.Size = New System.Drawing.Size(646, 445)
+        Me.LV_Report_Statistics1.Anchor = CType(((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Bottom) Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
+        Me.LV_Report_Statistics1.BackColor = System.Drawing.Color.FromArgb(255, 224, 192)
+        Me.LV_Report_Statistics1.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle
+        Me.LV_Report_Statistics1.Font = New System.Drawing.Font("Segoe UI", 9.25!, System.Drawing.FontStyle.Regular)
+        Me.LV_Report_Statistics1.Location = New System.Drawing.Point(922, 90)
+        Me.LV_Report_Statistics1.Size = New System.Drawing.Size(242, 445)
+        Me.Btn_Export_Workforce_Analytics.Anchor = CType((System.Windows.Forms.AnchorStyles.Bottom Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
+        Me.Btn_Export_Workforce_Analytics.BackColor = System.Drawing.Color.FromArgb(0, 128, 128)
+        Me.Btn_Export_Workforce_Analytics.Cursor = System.Windows.Forms.Cursors.Hand
+        Me.Btn_Export_Workforce_Analytics.FlatAppearance.BorderSize = 0
+        Me.Btn_Export_Workforce_Analytics.FlatStyle = System.Windows.Forms.FlatStyle.Flat
+        Me.Btn_Export_Workforce_Analytics.Font = New System.Drawing.Font("Segoe UI Semibold", 9.0!, System.Drawing.FontStyle.Regular)
+        Me.Btn_Export_Workforce_Analytics.ForeColor = System.Drawing.Color.White
+        Me.Btn_Export_Workforce_Analytics.IconChar = FontAwesome.Sharp.IconChar.FileExcel
+        Me.Btn_Export_Workforce_Analytics.IconColor = System.Drawing.Color.White
+        Me.Btn_Export_Workforce_Analytics.IconFont = FontAwesome.Sharp.IconFont.[Auto]
+        Me.Btn_Export_Workforce_Analytics.IconSize = 20
+        Me.Btn_Export_Workforce_Analytics.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft
+        Me.Btn_Export_Workforce_Analytics.Location = New System.Drawing.Point(1008, 555)
+        Me.Btn_Export_Workforce_Analytics.Name = "Btn_Export_Workforce_Analytics"
+        Me.Btn_Export_Workforce_Analytics.Size = New System.Drawing.Size(156, 36)
+        Me.Btn_Export_Workforce_Analytics.TabIndex = 207
+        Me.Btn_Export_Workforce_Analytics.Text = "Export all analytics"
+        Me.Btn_Export_Workforce_Analytics.UseVisualStyleBackColor = False
+        Me.Tab_HR1.Controls.Add(Me.AnalyticsTitleLabel)
+        Me.Tab_HR1.Controls.Add(Me.AnalyticsDescriptionLabel)
+        Me.Tab_HR1.Controls.Add(Me.AnalyticsPickerPanel)
+        Me.Tab_HR1.Controls.Add(Me.CH_Emp_Status)
+        Me.Tab_HR1.Controls.Add(Me.LV_Report_Statistics1)
+        Me.Tab_HR1.Controls.Add(Me.Btn_Export_Workforce_Analytics)
+        '
+        'Client tab host
+        '
+        Me.TabControl3.Dock = System.Windows.Forms.DockStyle.Fill
+        Me.TabControl3.DrawMode = System.Windows.Forms.TabDrawMode.OwnerDrawFixed
+        Me.TabControl3.Font = New System.Drawing.Font("Segoe UI Semibold", 9.25!, System.Drawing.FontStyle.Regular)
+        Me.TabControl3.ItemSize = New System.Drawing.Size(185, 38)
+        Me.TabControl3.Location = New System.Drawing.Point(12, 12)
+        Me.TabControl3.SizeMode = System.Windows.Forms.TabSizeMode.Fixed
+        Me.TabPage2.BackColor = System.Drawing.Color.FromArgb(255, 192, 128)
+        Me.TabPage2.Text = "Portfolio"
+        Me.TabPage3.BackColor = System.Drawing.Color.FromArgb(255, 192, 128)
+        Me.TabPage3.Text = "Employees by detachment"
+        Me.TabPage6.BackColor = System.Drawing.Color.FromArgb(255, 192, 128)
+        Me.TabPage6.Text = "Employees by client"
+        '
+        'Client portfolio page
+        '
+        Me.PortfolioTitleLabel.AutoSize = True
+        Me.PortfolioTitleLabel.Font = New System.Drawing.Font("Bahnschrift SemiBold", 14.0!, System.Drawing.FontStyle.Regular)
+        Me.PortfolioTitleLabel.ForeColor = System.Drawing.Color.FromArgb(31, 41, 51)
+        Me.PortfolioTitleLabel.Location = New System.Drawing.Point(28, 22)
+        Me.PortfolioTitleLabel.Name = "PortfolioTitleLabel"
+        Me.PortfolioTitleLabel.Text = "Active client portfolio"
+        Me.PortfolioDescriptionLabel.AutoSize = True
+        Me.PortfolioDescriptionLabel.Font = New System.Drawing.Font("Segoe UI", 9.25!, System.Drawing.FontStyle.Regular)
+        Me.PortfolioDescriptionLabel.ForeColor = System.Drawing.Color.FromArgb(98, 108, 118)
+        Me.PortfolioDescriptionLabel.Location = New System.Drawing.Point(29, 54)
+        Me.PortfolioDescriptionLabel.Name = "PortfolioDescriptionLabel"
+        Me.PortfolioDescriptionLabel.Text = "See the main-client and detachment structure at a glance."
+        Me.PortfolioSummaryPanel.Anchor = CType(((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Bottom) Or System.Windows.Forms.AnchorStyles.Left), System.Windows.Forms.AnchorStyles)
+        Me.PortfolioSummaryPanel.BackColor = System.Drawing.Color.FromArgb(255, 224, 192)
+        Me.PortfolioSummaryPanel.Controls.Add(Me.Btn_Client_Show)
+        Me.PortfolioSummaryPanel.Controls.Add(Me.Label6)
+        Me.PortfolioSummaryPanel.Controls.Add(Me.Txt_Active_MainClient)
+        Me.PortfolioSummaryPanel.Controls.Add(Me.Label14)
+        Me.PortfolioSummaryPanel.Controls.Add(Me.Txt_Active_SubClient)
+        Me.PortfolioSummaryPanel.Location = New System.Drawing.Point(24, 90)
+        Me.PortfolioSummaryPanel.Name = "PortfolioSummaryPanel"
+        Me.PortfolioSummaryPanel.Size = New System.Drawing.Size(300, 364)
+        Me.Btn_Client_Show.BackColor = System.Drawing.Color.Teal
+        Me.Btn_Client_Show.FlatStyle = System.Windows.Forms.FlatStyle.Flat
+        Me.Btn_Client_Show.ForeColor = System.Drawing.Color.White
+        Me.Btn_Client_Show.Location = New System.Drawing.Point(18, 18)
+        Me.Btn_Client_Show.Size = New System.Drawing.Size(264, 36)
+        Me.Btn_Client_Show.Text = "Refresh summary"
+        Me.Label6.Font = New System.Drawing.Font("Segoe UI Semibold", 8.5!, System.Drawing.FontStyle.Regular)
+        Me.Label6.ForeColor = System.Drawing.Color.FromArgb(98, 108, 118)
+        Me.Label6.Location = New System.Drawing.Point(18, 82)
+        Me.Label6.Text = "ACTIVE MAIN CLIENTS"
+        Me.Txt_Active_MainClient.BackColor = System.Drawing.Color.FromArgb(255, 224, 192)
+        Me.Txt_Active_MainClient.BorderStyle = System.Windows.Forms.BorderStyle.None
+        Me.Txt_Active_MainClient.Font = New System.Drawing.Font("Bahnschrift SemiBold", 24.0!, System.Drawing.FontStyle.Regular)
+        Me.Txt_Active_MainClient.ForeColor = System.Drawing.Color.FromArgb(111, 29, 48)
+        Me.Txt_Active_MainClient.Location = New System.Drawing.Point(18, 108)
+        Me.Txt_Active_MainClient.Size = New System.Drawing.Size(250, 39)
+        Me.Label14.Font = New System.Drawing.Font("Segoe UI Semibold", 8.5!, System.Drawing.FontStyle.Regular)
+        Me.Label14.ForeColor = System.Drawing.Color.FromArgb(98, 108, 118)
+        Me.Label14.Location = New System.Drawing.Point(18, 176)
+        Me.Label14.Text = "ACTIVE DETACHMENTS"
+        Me.Txt_Active_SubClient.BackColor = System.Drawing.Color.FromArgb(255, 224, 192)
+        Me.Txt_Active_SubClient.BorderStyle = System.Windows.Forms.BorderStyle.None
+        Me.Txt_Active_SubClient.Font = New System.Drawing.Font("Bahnschrift SemiBold", 24.0!, System.Drawing.FontStyle.Regular)
+        Me.Txt_Active_SubClient.ForeColor = System.Drawing.Color.FromArgb(111, 29, 48)
+        Me.Txt_Active_SubClient.Location = New System.Drawing.Point(18, 202)
+        Me.Txt_Active_SubClient.Size = New System.Drawing.Size(250, 39)
+        Me.LV_Client_Count.Anchor = CType((((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Bottom) Or System.Windows.Forms.AnchorStyles.Left) Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
+        Me.LV_Client_Count.BackColor = System.Drawing.Color.FromArgb(255, 224, 192)
+        Me.LV_Client_Count.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle
+        Me.LV_Client_Count.Font = New System.Drawing.Font("Segoe UI", 9.25!, System.Drawing.FontStyle.Regular)
+        Me.LV_Client_Count.Location = New System.Drawing.Point(340, 90)
+        Me.LV_Client_Count.Size = New System.Drawing.Size(794, 364)
+        Me.BtnExport_MainClientCount.Anchor = CType((System.Windows.Forms.AnchorStyles.Bottom Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
+        Me.BtnExport_MainClientCount.BackColor = System.Drawing.Color.FromArgb(0, 128, 128)
+        Me.BtnExport_MainClientCount.FlatStyle = System.Windows.Forms.FlatStyle.Flat
+        Me.BtnExport_MainClientCount.ForeColor = System.Drawing.Color.White
+        Me.BtnExport_MainClientCount.Location = New System.Drawing.Point(978, 474)
+        Me.BtnExport_MainClientCount.Size = New System.Drawing.Size(156, 36)
+        Me.BtnExport_MainClientCount.Text = "Export to Excel"
+        Me.TabPage2.Controls.Add(Me.PortfolioTitleLabel)
+        Me.TabPage2.Controls.Add(Me.PortfolioDescriptionLabel)
+        Me.TabPage2.Controls.Add(Me.PortfolioSummaryPanel)
+        Me.TabPage2.Controls.Add(Me.LV_Client_Count)
+        Me.TabPage2.Controls.Add(Me.BtnExport_MainClientCount)
+        '
+        'Detachment report page
+        '
+        Me.SubClientTitleLabel.AutoSize = True
+        Me.SubClientTitleLabel.Font = New System.Drawing.Font("Bahnschrift SemiBold", 14.0!, System.Drawing.FontStyle.Regular)
+        Me.SubClientTitleLabel.ForeColor = System.Drawing.Color.FromArgb(31, 41, 51)
+        Me.SubClientTitleLabel.Location = New System.Drawing.Point(28, 22)
+        Me.SubClientTitleLabel.Name = "SubClientTitleLabel"
+        Me.SubClientTitleLabel.Text = "Employees by detachment"
+        Me.SubClientDescriptionLabel.AutoSize = True
+        Me.SubClientDescriptionLabel.Font = New System.Drawing.Font("Segoe UI", 9.25!, System.Drawing.FontStyle.Regular)
+        Me.SubClientDescriptionLabel.ForeColor = System.Drawing.Color.FromArgb(98, 108, 118)
+        Me.SubClientDescriptionLabel.Location = New System.Drawing.Point(29, 54)
+        Me.SubClientDescriptionLabel.Name = "SubClientDescriptionLabel"
+        Me.SubClientDescriptionLabel.Text = "Compare active staffing across client detachments."
+        Me.SubClientFilterPanel.Anchor = CType(((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Left) Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
+        Me.SubClientFilterPanel.BackColor = System.Drawing.Color.FromArgb(255, 224, 192)
+        Me.SubClientFilterPanel.Controls.Add(Me.Btn_Show_SubClient_EmpCount)
+        Me.SubClientFilterPanel.Location = New System.Drawing.Point(24, 86)
+        Me.SubClientFilterPanel.Name = "SubClientFilterPanel"
+        Me.SubClientFilterPanel.Size = New System.Drawing.Size(1110, 58)
+        Me.Btn_Show_SubClient_EmpCount.BackColor = System.Drawing.Color.Teal
+        Me.Btn_Show_SubClient_EmpCount.FlatStyle = System.Windows.Forms.FlatStyle.Flat
+        Me.Btn_Show_SubClient_EmpCount.ForeColor = System.Drawing.Color.White
+        Me.Btn_Show_SubClient_EmpCount.Location = New System.Drawing.Point(16, 11)
+        Me.Btn_Show_SubClient_EmpCount.Size = New System.Drawing.Size(142, 36)
+        Me.Btn_Show_SubClient_EmpCount.Text = "Load report"
+        Me.LV_SubClient_EmployeeCount.Anchor = CType((((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Bottom) Or System.Windows.Forms.AnchorStyles.Left) Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
+        Me.LV_SubClient_EmployeeCount.BackColor = System.Drawing.Color.FromArgb(255, 224, 192)
+        Me.LV_SubClient_EmployeeCount.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle
+        Me.LV_SubClient_EmployeeCount.Font = New System.Drawing.Font("Segoe UI", 9.25!, System.Drawing.FontStyle.Regular)
+        Me.LV_SubClient_EmployeeCount.Location = New System.Drawing.Point(24, 156)
+        Me.LV_SubClient_EmployeeCount.Size = New System.Drawing.Size(1110, 298)
+        Me.Btn_Export_SubClient_Count.Anchor = CType((System.Windows.Forms.AnchorStyles.Bottom Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
+        Me.Btn_Export_SubClient_Count.BackColor = System.Drawing.Color.FromArgb(0, 128, 128)
+        Me.Btn_Export_SubClient_Count.FlatStyle = System.Windows.Forms.FlatStyle.Flat
+        Me.Btn_Export_SubClient_Count.ForeColor = System.Drawing.Color.White
+        Me.Btn_Export_SubClient_Count.Location = New System.Drawing.Point(978, 474)
+        Me.Btn_Export_SubClient_Count.Size = New System.Drawing.Size(156, 36)
+        Me.Btn_Export_SubClient_Count.Text = "Export to Excel"
+        Me.TabPage3.Controls.Add(Me.SubClientTitleLabel)
+        Me.TabPage3.Controls.Add(Me.SubClientDescriptionLabel)
+        Me.TabPage3.Controls.Add(Me.SubClientFilterPanel)
+        Me.TabPage3.Controls.Add(Me.LV_SubClient_EmployeeCount)
+        Me.TabPage3.Controls.Add(Me.Btn_Export_SubClient_Count)
+        '
+        'Main client employee report page
+        '
+        Me.MainClientTitleLabel.AutoSize = True
+        Me.MainClientTitleLabel.Font = New System.Drawing.Font("Bahnschrift SemiBold", 14.0!, System.Drawing.FontStyle.Regular)
+        Me.MainClientTitleLabel.ForeColor = System.Drawing.Color.FromArgb(31, 41, 51)
+        Me.MainClientTitleLabel.Location = New System.Drawing.Point(28, 22)
+        Me.MainClientTitleLabel.Name = "MainClientTitleLabel"
+        Me.MainClientTitleLabel.Text = "Employees by main client"
+        Me.MainClientDescriptionLabel.AutoSize = True
+        Me.MainClientDescriptionLabel.Font = New System.Drawing.Font("Segoe UI", 9.25!, System.Drawing.FontStyle.Regular)
+        Me.MainClientDescriptionLabel.ForeColor = System.Drawing.Color.FromArgb(98, 108, 118)
+        Me.MainClientDescriptionLabel.Location = New System.Drawing.Point(29, 54)
+        Me.MainClientDescriptionLabel.Name = "MainClientDescriptionLabel"
+        Me.MainClientDescriptionLabel.Text = "Review active employee coverage for each main client."
+        Me.MainClientFilterPanel.Anchor = CType(((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Left) Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
+        Me.MainClientFilterPanel.BackColor = System.Drawing.Color.FromArgb(255, 224, 192)
+        Me.MainClientFilterPanel.Controls.Add(Me.Btn_Show_MainClient_EmpCount)
+        Me.MainClientFilterPanel.Location = New System.Drawing.Point(24, 86)
+        Me.MainClientFilterPanel.Name = "MainClientFilterPanel"
+        Me.MainClientFilterPanel.Size = New System.Drawing.Size(1110, 58)
+        Me.Btn_Show_MainClient_EmpCount.BackColor = System.Drawing.Color.Teal
+        Me.Btn_Show_MainClient_EmpCount.FlatStyle = System.Windows.Forms.FlatStyle.Flat
+        Me.Btn_Show_MainClient_EmpCount.ForeColor = System.Drawing.Color.White
+        Me.Btn_Show_MainClient_EmpCount.Location = New System.Drawing.Point(16, 11)
+        Me.Btn_Show_MainClient_EmpCount.Size = New System.Drawing.Size(142, 36)
+        Me.Btn_Show_MainClient_EmpCount.Text = "Load report"
+        Me.LV_MAIN_CLIENT_EMPLOYEE_COUNT.Anchor = CType((((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Bottom) Or System.Windows.Forms.AnchorStyles.Left) Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
+        Me.LV_MAIN_CLIENT_EMPLOYEE_COUNT.BackColor = System.Drawing.Color.FromArgb(255, 224, 192)
+        Me.LV_MAIN_CLIENT_EMPLOYEE_COUNT.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle
+        Me.LV_MAIN_CLIENT_EMPLOYEE_COUNT.Font = New System.Drawing.Font("Segoe UI", 9.25!, System.Drawing.FontStyle.Regular)
+        Me.LV_MAIN_CLIENT_EMPLOYEE_COUNT.Location = New System.Drawing.Point(24, 156)
+        Me.LV_MAIN_CLIENT_EMPLOYEE_COUNT.Size = New System.Drawing.Size(1110, 298)
+        Me.Btn_Export_Employee_Count.Anchor = CType((System.Windows.Forms.AnchorStyles.Bottom Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
+        Me.Btn_Export_Employee_Count.BackColor = System.Drawing.Color.FromArgb(0, 128, 128)
+        Me.Btn_Export_Employee_Count.FlatStyle = System.Windows.Forms.FlatStyle.Flat
+        Me.Btn_Export_Employee_Count.ForeColor = System.Drawing.Color.White
+        Me.Btn_Export_Employee_Count.Location = New System.Drawing.Point(978, 474)
+        Me.Btn_Export_Employee_Count.Size = New System.Drawing.Size(156, 36)
+        Me.Btn_Export_Employee_Count.Text = "Export to Excel"
+        Me.TabPage6.Controls.Add(Me.MainClientTitleLabel)
+        Me.TabPage6.Controls.Add(Me.MainClientDescriptionLabel)
+        Me.TabPage6.Controls.Add(Me.MainClientFilterPanel)
+        Me.TabPage6.Controls.Add(Me.LV_MAIN_CLIENT_EMPLOYEE_COUNT)
+        Me.TabPage6.Controls.Add(Me.Btn_Export_Employee_Count)
+        '
+        'Designer-owned shared report styling
+        '
+        Me.Txt_Leave_DateFrom.Visible = False
+        Me.Txt_Leave_DateTo.Visible = False
+        Me.Txt_Logs_DateFrom.Visible = False
+        Me.Txt_Logs_DateTo.Visible = False
+        Me.Txt_Active_MainClient.ReadOnly = True
+        Me.Txt_Active_SubClient.ReadOnly = True
+        '
+        Me.Cmb_Exp_Category.FlatStyle = System.Windows.Forms.FlatStyle.Flat
+        Me.Cmb_Exp_Category.Font = New System.Drawing.Font("Segoe UI", 9.5!, System.Drawing.FontStyle.Regular)
+        Me.Cmb_Expiry_Status.FlatStyle = System.Windows.Forms.FlatStyle.Flat
+        Me.Cmb_Expiry_Status.Font = New System.Drawing.Font("Segoe UI", 9.5!, System.Drawing.FontStyle.Regular)
+        Me.Cmb_Client_Expiration.FlatStyle = System.Windows.Forms.FlatStyle.Flat
+        Me.Cmb_Client_Expiration.Font = New System.Drawing.Font("Segoe UI", 9.5!, System.Drawing.FontStyle.Regular)
+        Me.Cmb_Pending_Category.FlatStyle = System.Windows.Forms.FlatStyle.Flat
+        Me.Cmb_Pending_Category.Font = New System.Drawing.Font("Segoe UI", 9.5!, System.Drawing.FontStyle.Regular)
+        Me.Cmb_LeaveType.FlatStyle = System.Windows.Forms.FlatStyle.Flat
+        Me.Cmb_LeaveType.Font = New System.Drawing.Font("Segoe UI", 9.5!, System.Drawing.FontStyle.Regular)
+        Me.Cmb_Emp_Status.FlatStyle = System.Windows.Forms.FlatStyle.Flat
+        Me.Cmb_Emp_Status.Font = New System.Drawing.Font("Segoe UI", 9.5!, System.Drawing.FontStyle.Regular)
+        '
+        Me.DP_Leave_DateFrom.Font = New System.Drawing.Font("Segoe UI", 9.5!, System.Drawing.FontStyle.Regular)
+        Me.DP_Leave_DateTo.Font = New System.Drawing.Font("Segoe UI", 9.5!, System.Drawing.FontStyle.Regular)
+        Me.DP_Logs_From.Font = New System.Drawing.Font("Segoe UI", 9.5!, System.Drawing.FontStyle.Regular)
+        Me.DP_Logs_To.Font = New System.Drawing.Font("Segoe UI", 9.5!, System.Drawing.FontStyle.Regular)
+        '
+        Me.Label10.Font = New System.Drawing.Font("Segoe UI Semibold", 9.0!, System.Drawing.FontStyle.Regular)
+        Me.Label10.BackColor = System.Drawing.Color.Transparent
+        Me.Label10.ForeColor = System.Drawing.Color.FromArgb(31, 41, 51)
+        Me.Label1.Font = New System.Drawing.Font("Segoe UI Semibold", 9.0!, System.Drawing.FontStyle.Regular)
+        Me.Label1.BackColor = System.Drawing.Color.Transparent
+        Me.Label1.ForeColor = System.Drawing.Color.FromArgb(31, 41, 51)
+        Me.Label3.Font = New System.Drawing.Font("Segoe UI Semibold", 9.0!, System.Drawing.FontStyle.Regular)
+        Me.Label3.BackColor = System.Drawing.Color.Transparent
+        Me.Label3.ForeColor = System.Drawing.Color.FromArgb(92, 70, 48)
+        Me.Label17.Font = New System.Drawing.Font("Segoe UI Semibold", 9.0!, System.Drawing.FontStyle.Regular)
+        Me.Label17.BackColor = System.Drawing.Color.Transparent
+        Me.Label17.ForeColor = System.Drawing.Color.FromArgb(31, 41, 51)
+        Me.Label5.Font = New System.Drawing.Font("Segoe UI Semibold", 9.0!, System.Drawing.FontStyle.Regular)
+        Me.Label5.BackColor = System.Drawing.Color.Transparent
+        Me.Label5.ForeColor = System.Drawing.Color.FromArgb(31, 41, 51)
+        Me.Label9.Font = New System.Drawing.Font("Segoe UI Semibold", 9.0!, System.Drawing.FontStyle.Regular)
+        Me.Label9.BackColor = System.Drawing.Color.Transparent
+        Me.Label9.ForeColor = System.Drawing.Color.FromArgb(92, 70, 48)
+        Me.Label16.Font = New System.Drawing.Font("Segoe UI Semibold", 9.0!, System.Drawing.FontStyle.Regular)
+        Me.Label16.BackColor = System.Drawing.Color.Transparent
+        Me.Label16.ForeColor = System.Drawing.Color.FromArgb(31, 41, 51)
+        Me.Label12.Font = New System.Drawing.Font("Segoe UI Semibold", 9.0!, System.Drawing.FontStyle.Regular)
+        Me.Label12.BackColor = System.Drawing.Color.Transparent
+        Me.Label12.ForeColor = System.Drawing.Color.FromArgb(31, 41, 51)
+        Me.Label11.Font = New System.Drawing.Font("Segoe UI Semibold", 9.0!, System.Drawing.FontStyle.Regular)
+        Me.Label11.BackColor = System.Drawing.Color.Transparent
+        Me.Label11.ForeColor = System.Drawing.Color.FromArgb(31, 41, 51)
+        Me.Label13.Font = New System.Drawing.Font("Segoe UI Semibold", 9.0!, System.Drawing.FontStyle.Regular)
+        Me.Label13.BackColor = System.Drawing.Color.Transparent
+        Me.Label13.ForeColor = System.Drawing.Color.FromArgb(31, 41, 51)
+        Me.Label4.Font = New System.Drawing.Font("Segoe UI Semibold", 9.0!, System.Drawing.FontStyle.Regular)
+        Me.Label4.BackColor = System.Drawing.Color.Transparent
+        Me.Label4.ForeColor = System.Drawing.Color.FromArgb(31, 41, 51)
+        '
+        Me.Btn_Load_Chart_Data.BackColor = System.Drawing.Color.FromArgb(255, 224, 192)
+        Me.Btn_Load_Chart_Data.Cursor = System.Windows.Forms.Cursors.Hand
+        Me.Btn_Load_Chart_Data.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(224, 176, 128)
+        Me.Btn_Load_Chart_Data.FlatStyle = System.Windows.Forms.FlatStyle.Flat
+        Me.Btn_Load_Chart_Data.Font = New System.Drawing.Font("Segoe UI Semibold", 9.0!, System.Drawing.FontStyle.Regular)
+        Me.Btn_Load_Chart_Data.ForeColor = System.Drawing.Color.FromArgb(31, 41, 51)
+        Me.Btn_Load_Chart_Data.UseVisualStyleBackColor = False
+        Me.Btn_Hired_Per_Year.BackColor = System.Drawing.Color.FromArgb(255, 224, 192)
+        Me.Btn_Hired_Per_Year.Cursor = System.Windows.Forms.Cursors.Hand
+        Me.Btn_Hired_Per_Year.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(224, 176, 128)
+        Me.Btn_Hired_Per_Year.FlatStyle = System.Windows.Forms.FlatStyle.Flat
+        Me.Btn_Hired_Per_Year.Font = New System.Drawing.Font("Segoe UI Semibold", 9.0!, System.Drawing.FontStyle.Regular)
+        Me.Btn_Hired_Per_Year.ForeColor = System.Drawing.Color.FromArgb(31, 41, 51)
+        Me.Btn_Hired_Per_Year.UseVisualStyleBackColor = False
+        Me.Btn_Gender_Count.BackColor = System.Drawing.Color.FromArgb(255, 224, 192)
+        Me.Btn_Gender_Count.Cursor = System.Windows.Forms.Cursors.Hand
+        Me.Btn_Gender_Count.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(224, 176, 128)
+        Me.Btn_Gender_Count.FlatStyle = System.Windows.Forms.FlatStyle.Flat
+        Me.Btn_Gender_Count.Font = New System.Drawing.Font("Segoe UI Semibold", 9.0!, System.Drawing.FontStyle.Regular)
+        Me.Btn_Gender_Count.ForeColor = System.Drawing.Color.FromArgb(31, 41, 51)
+        Me.Btn_Gender_Count.UseVisualStyleBackColor = False
+        Me.Btn_Age_Count.BackColor = System.Drawing.Color.FromArgb(255, 224, 192)
+        Me.Btn_Age_Count.Cursor = System.Windows.Forms.Cursors.Hand
+        Me.Btn_Age_Count.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(224, 176, 128)
+        Me.Btn_Age_Count.FlatStyle = System.Windows.Forms.FlatStyle.Flat
+        Me.Btn_Age_Count.Font = New System.Drawing.Font("Segoe UI Semibold", 9.0!, System.Drawing.FontStyle.Regular)
+        Me.Btn_Age_Count.ForeColor = System.Drawing.Color.FromArgb(31, 41, 51)
+        Me.Btn_Age_Count.UseVisualStyleBackColor = False
+        Me.Btn_Hired_Per_Month.BackColor = System.Drawing.Color.FromArgb(255, 224, 192)
+        Me.Btn_Hired_Per_Month.Cursor = System.Windows.Forms.Cursors.Hand
+        Me.Btn_Hired_Per_Month.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(224, 176, 128)
+        Me.Btn_Hired_Per_Month.FlatStyle = System.Windows.Forms.FlatStyle.Flat
+        Me.Btn_Hired_Per_Month.Font = New System.Drawing.Font("Segoe UI Semibold", 9.0!, System.Drawing.FontStyle.Regular)
+        Me.Btn_Hired_Per_Month.ForeColor = System.Drawing.Color.FromArgb(31, 41, 51)
+        Me.Btn_Hired_Per_Month.UseVisualStyleBackColor = False
+        '
+        Me.Btn_ShowPendingRecords.FlatAppearance.BorderSize = 0
+        Me.Btn_ShowPendingRecords.Font = New System.Drawing.Font("Segoe UI Semibold", 9.0!, System.Drawing.FontStyle.Regular)
+        Me.Btn_ShowPendingRecords.Cursor = System.Windows.Forms.Cursors.Hand
+        Me.Btn_Show_Leave.FlatAppearance.BorderSize = 0
+        Me.Btn_Show_Leave.Font = New System.Drawing.Font("Segoe UI Semibold", 9.0!, System.Drawing.FontStyle.Regular)
+        Me.Btn_Show_Leave.Cursor = System.Windows.Forms.Cursors.Hand
+        Me.Btn_Logs_Show.FlatAppearance.BorderSize = 0
+        Me.Btn_Logs_Show.Font = New System.Drawing.Font("Segoe UI Semibold", 9.0!, System.Drawing.FontStyle.Regular)
+        Me.Btn_Logs_Show.Cursor = System.Windows.Forms.Cursors.Hand
+        Me.Btn_Client_Show.FlatAppearance.BorderSize = 0
+        Me.Btn_Client_Show.Font = New System.Drawing.Font("Segoe UI Semibold", 9.0!, System.Drawing.FontStyle.Regular)
+        Me.Btn_Client_Show.Cursor = System.Windows.Forms.Cursors.Hand
+        Me.Btn_Show_SubClient_EmpCount.FlatAppearance.BorderSize = 0
+        Me.Btn_Show_SubClient_EmpCount.Font = New System.Drawing.Font("Segoe UI Semibold", 9.0!, System.Drawing.FontStyle.Regular)
+        Me.Btn_Show_SubClient_EmpCount.Cursor = System.Windows.Forms.Cursors.Hand
+        Me.Btn_Show_MainClient_EmpCount.FlatAppearance.BorderSize = 0
+        Me.Btn_Show_MainClient_EmpCount.Font = New System.Drawing.Font("Segoe UI Semibold", 9.0!, System.Drawing.FontStyle.Regular)
+        Me.Btn_Show_MainClient_EmpCount.Cursor = System.Windows.Forms.Cursors.Hand
+        '
+        Me.Lbl_Export_SecLicense.AutoSize = False
+        Me.Lbl_Export_SecLicense.Cursor = System.Windows.Forms.Cursors.Hand
+        Me.Lbl_Export_SecLicense.Size = New System.Drawing.Size(156, 36)
+        Me.Lbl_Export_Client_Contract_Exp.AutoSize = False
+        Me.Lbl_Export_Client_Contract_Exp.Cursor = System.Windows.Forms.Cursors.Hand
+        Me.Lbl_Export_Client_Contract_Exp.Size = New System.Drawing.Size(156, 36)
+        Me.Lbl_Export_PendingDocs.AutoSize = False
+        Me.Lbl_Export_PendingDocs.Cursor = System.Windows.Forms.Cursors.Hand
+        Me.Lbl_Export_PendingDocs.Size = New System.Drawing.Size(156, 36)
+        Me.Lbl_Export_LeaveStatus.AutoSize = False
+        Me.Lbl_Export_LeaveStatus.Cursor = System.Windows.Forms.Cursors.Hand
+        Me.Lbl_Export_LeaveStatus.Size = New System.Drawing.Size(156, 36)
+        Me.BtnExport_MainClientCount.Cursor = System.Windows.Forms.Cursors.Hand
+        Me.BtnExport_MainClientCount.FlatAppearance.BorderSize = 0
+        Me.BtnExport_MainClientCount.Font = New System.Drawing.Font("Segoe UI Semibold", 9.0!, System.Drawing.FontStyle.Regular)
+        Me.BtnExport_MainClientCount.IconChar = FontAwesome.Sharp.IconChar.FileExcel
+        Me.BtnExport_MainClientCount.IconColor = System.Drawing.Color.White
+        Me.BtnExport_MainClientCount.IconSize = 20
+        Me.Btn_Export_SubClient_Count.Cursor = System.Windows.Forms.Cursors.Hand
+        Me.Btn_Export_SubClient_Count.FlatAppearance.BorderSize = 0
+        Me.Btn_Export_SubClient_Count.Font = New System.Drawing.Font("Segoe UI Semibold", 9.0!, System.Drawing.FontStyle.Regular)
+        Me.Btn_Export_SubClient_Count.IconChar = FontAwesome.Sharp.IconChar.FileExcel
+        Me.Btn_Export_SubClient_Count.IconColor = System.Drawing.Color.White
+        Me.Btn_Export_SubClient_Count.IconSize = 20
+        Me.Btn_Export_Employee_Count.Cursor = System.Windows.Forms.Cursors.Hand
+        Me.Btn_Export_Employee_Count.FlatAppearance.BorderSize = 0
+        Me.Btn_Export_Employee_Count.Font = New System.Drawing.Font("Segoe UI Semibold", 9.0!, System.Drawing.FontStyle.Regular)
+        Me.Btn_Export_Employee_Count.IconChar = FontAwesome.Sharp.IconChar.FileExcel
+        Me.Btn_Export_Employee_Count.IconColor = System.Drawing.Color.White
+        Me.Btn_Export_Employee_Count.IconSize = 20
+        '
+        Me.LV_Expiry_List.BorderStyle = System.Windows.Forms.BorderStyle.None
+        Me.LV_Expiry_List.ForeColor = System.Drawing.Color.FromArgb(31, 41, 51)
+        Me.LV_Expiry_List.GridLines = False
+        Me.LV_Expiry_List.OwnerDraw = True
+        Me.LV_Client_Contract_Exp.BorderStyle = System.Windows.Forms.BorderStyle.None
+        Me.LV_Client_Contract_Exp.ForeColor = System.Drawing.Color.FromArgb(31, 41, 51)
+        Me.LV_Client_Contract_Exp.GridLines = False
+        Me.LV_Client_Contract_Exp.OwnerDraw = True
+        Me.LV_Pending_List.BorderStyle = System.Windows.Forms.BorderStyle.None
+        Me.LV_Pending_List.ForeColor = System.Drawing.Color.FromArgb(31, 41, 51)
+        Me.LV_Pending_List.GridLines = False
+        Me.LV_Pending_List.OwnerDraw = True
+        Me.LV_Leave_List.BorderStyle = System.Windows.Forms.BorderStyle.None
+        Me.LV_Leave_List.ForeColor = System.Drawing.Color.FromArgb(31, 41, 51)
+        Me.LV_Leave_List.GridLines = False
+        Me.LV_Leave_List.OwnerDraw = True
+        Me.LV_SystemLogs.BorderStyle = System.Windows.Forms.BorderStyle.None
+        Me.LV_SystemLogs.ForeColor = System.Drawing.Color.FromArgb(31, 41, 51)
+        Me.LV_SystemLogs.GridLines = False
+        Me.LV_SystemLogs.OwnerDraw = True
+        Me.LV_Report_Statistics1.BorderStyle = System.Windows.Forms.BorderStyle.None
+        Me.LV_Report_Statistics1.ForeColor = System.Drawing.Color.FromArgb(31, 41, 51)
+        Me.LV_Report_Statistics1.GridLines = False
+        Me.LV_Report_Statistics1.OwnerDraw = True
+        Me.LV_Client_Count.BorderStyle = System.Windows.Forms.BorderStyle.None
+        Me.LV_Client_Count.ForeColor = System.Drawing.Color.FromArgb(31, 41, 51)
+        Me.LV_Client_Count.GridLines = False
+        Me.LV_Client_Count.OwnerDraw = True
+        Me.LV_SubClient_EmployeeCount.BorderStyle = System.Windows.Forms.BorderStyle.None
+        Me.LV_SubClient_EmployeeCount.ForeColor = System.Drawing.Color.FromArgb(31, 41, 51)
+        Me.LV_SubClient_EmployeeCount.GridLines = False
+        Me.LV_SubClient_EmployeeCount.OwnerDraw = True
+        Me.LV_MAIN_CLIENT_EMPLOYEE_COUNT.BorderStyle = System.Windows.Forms.BorderStyle.None
+        Me.LV_MAIN_CLIENT_EMPLOYEE_COUNT.ForeColor = System.Drawing.Color.FromArgb(31, 41, 51)
+        Me.LV_MAIN_CLIENT_EMPLOYEE_COUNT.GridLines = False
+        Me.LV_MAIN_CLIENT_EMPLOYEE_COUNT.OwnerDraw = True
+        '
+        Me.CH_Emp_Status.Palette = System.Windows.Forms.DataVisualization.Charting.ChartColorPalette.None
+        Me.CH_Emp_Status.PaletteCustomColors = New System.Drawing.Color() {
+            System.Drawing.Color.FromArgb(111, 29, 48),
+            System.Drawing.Color.FromArgb(0, 128, 128),
+            System.Drawing.Color.FromArgb(213, 145, 36),
+            System.Drawing.Color.FromArgb(74, 103, 133),
+            System.Drawing.Color.FromArgb(158, 91, 105),
+            System.Drawing.Color.FromArgb(78, 151, 137)}
+        '
         'PictureBox2
         '
         Me.PictureBox2.BackColor = System.Drawing.Color.FromArgb(CType(CType(0, Byte), Integer), CType(CType(192, Byte), Integer), CType(CType(192, Byte), Integer))
@@ -1318,15 +2464,14 @@ Partial Class FRM_HR_REPORTS
         '
         'FRM_HR_REPORTS
         '
-        Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
-        Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
-        Me.BackColor = System.Drawing.Color.Black
-        Me.ClientSize = New System.Drawing.Size(1309, 809)
-        Me.Controls.Add(Me.PictureBox2)
-        Me.Controls.Add(Me.Label2)
-        Me.Controls.Add(Me.Tab_Recruitment)
-        Me.Controls.Add(Me.MenuStrip1)
-        Me.MainMenuStrip = Me.MenuStrip1
+        Me.AutoScaleDimensions = New System.Drawing.SizeF(96.0!, 96.0!)
+        Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi
+        Me.BackColor = System.Drawing.Color.FromArgb(255, 192, 128)
+        Me.ClientSize = New System.Drawing.Size(1440, 860)
+        Me.Controls.Add(Me.ReportsWorkspaceRoot)
+        Me.Font = New System.Drawing.Font("Segoe UI", 9.5!, System.Drawing.FontStyle.Regular)
+        Me.MinimumSize = New System.Drawing.Size(1180, 720)
+        Me.WindowState = System.Windows.Forms.FormWindowState.Maximized
         Me.Name = "FRM_HR_REPORTS"
         Me.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen
         Me.Text = "Human Resources Reports"
@@ -1478,4 +2623,54 @@ Partial Class FRM_HR_REPORTS
     Friend WithEvents TabPage10 As TabPage
     Friend WithEvents Btn_Age_Count As Button
     Friend WithEvents Cmb_Emp_Status As ComboBox
+    Friend WithEvents ReportsWorkspaceRoot As TableLayoutPanel
+    Friend WithEvents ReportsHeaderPanel As Panel
+    Friend WithEvents ReportsBodyPanel As Panel
+    Friend WithEvents ReportsLogo As PictureBox
+    Friend WithEvents ReportsTitleLabel As Label
+    Friend WithEvents ReportsSubtitleLabel As Label
+    Friend WithEvents ReportsSectionLabel As Label
+    Friend WithEvents ReportsCloseButton As Button
+    Friend WithEvents ReportsNavInfoPanel As Panel
+    Friend WithEvents ReportsNavInfoTitle As Label
+    Friend WithEvents ReportsNavInfoBody As Label
+    Friend WithEvents ReportsNavPanel As Panel
+    Friend WithEvents ReportsContentHost As Panel
+    Friend WithEvents NavComplianceButton As Button
+    Friend WithEvents NavMissingButton As Button
+    Friend WithEvents NavLeaveButton As Button
+    Friend WithEvents NavWorkforceButton As Button
+    Friend WithEvents NavClientsButton As Button
+    Friend WithEvents NavAuditButton As Button
+    Friend WithEvents EmpExpiryTitleLabel As Label
+    Friend WithEvents EmpExpiryDescriptionLabel As Label
+    Friend WithEvents EmpExpiryFilterPanel As Panel
+    Friend WithEvents ClientExpiryTitleLabel As Label
+    Friend WithEvents ClientExpiryDescriptionLabel As Label
+    Friend WithEvents ClientExpiryFilterPanel As Panel
+    Friend WithEvents MissingTitleLabel As Label
+    Friend WithEvents MissingDescriptionLabel As Label
+    Friend WithEvents MissingFilterPanel As Panel
+    Friend WithEvents LeaveTitleLabel As Label
+    Friend WithEvents LeaveDescriptionLabel As Label
+    Friend WithEvents LeaveFilterPanel As Panel
+    Friend WithEvents AuditTitleLabel As Label
+    Friend WithEvents AuditDescriptionLabel As Label
+    Friend WithEvents AuditFilterPanel As Panel
+    Friend WithEvents Btn_Export_Audit_Log As IconButton
+    Friend WithEvents AnalyticsTitleLabel As Label
+    Friend WithEvents AnalyticsDescriptionLabel As Label
+    Friend WithEvents AnalyticsPickerPanel As Panel
+    Friend WithEvents AnalyticsPickerLabel As Label
+    Friend WithEvents AnalyticsStatusLabel As Label
+    Friend WithEvents Btn_Export_Workforce_Analytics As IconButton
+    Friend WithEvents PortfolioTitleLabel As Label
+    Friend WithEvents PortfolioDescriptionLabel As Label
+    Friend WithEvents PortfolioSummaryPanel As Panel
+    Friend WithEvents SubClientTitleLabel As Label
+    Friend WithEvents SubClientDescriptionLabel As Label
+    Friend WithEvents SubClientFilterPanel As Panel
+    Friend WithEvents MainClientTitleLabel As Label
+    Friend WithEvents MainClientDescriptionLabel As Label
+    Friend WithEvents MainClientFilterPanel As Panel
 End Class

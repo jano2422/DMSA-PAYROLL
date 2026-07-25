@@ -15,6 +15,7 @@ Module Mod_FRM_LOG_IN
 
         If dt.Rows.Count > 0 Then
             Mod_GlobalVariables.GlobalVariables.sEmployee_ID_Logged_in = sCompany_id
+            Mod_GlobalVariables.GlobalVariables.sUser_Level = Convert.ToString(dt.Rows(0)("USER_LEVEL")).Trim()
             'Mod_GlobalVariables.GlobalVariables.sEmployee_ID_Logged_in = sCompany_id
 
             FRM_MAIN.Show()

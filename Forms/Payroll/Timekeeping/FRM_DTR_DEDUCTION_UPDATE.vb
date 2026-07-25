@@ -34,6 +34,7 @@ Public Partial Class FRM_DTR_DEDUCTION_UPDATE
     Private ReadOnly _initialLhHours As Decimal
     Private _dailyWage As Decimal
     Private _subClientName As String
+    Private ReadOnly _reportSettings As PayrollReportSettings = PayrollReportSettingsService.LoadSettingsOrDefault()
 
     Public Sub New()
         _employeeId = "230096"
@@ -140,6 +141,10 @@ Public Partial Class FRM_DTR_DEDUCTION_UPDATE
         AddHandler btnResetAll.Click, AddressOf HandleResetToOriginal
         AddHandler btnSave.Click, AddressOf HandleSave
         AddHandler btnCancel.Click, AddressOf HandleCancel
+        AddHandler txtOfficerAllowanceFirst.TextChanged, Sub() RefreshWorkValueSummary()
+        AddHandler txtSgUniformAllowanceFirst.TextChanged, Sub() RefreshWorkValueSummary()
+        AddHandler txtOfficerAllowanceSecond.TextChanged, Sub() RefreshWorkValueSummary()
+        AddHandler txtSgUniformAllowanceSecond.TextChanged, Sub() RefreshWorkValueSummary()
     End Sub
 
     Private Sub LoadDialogData(useDatabaseWage As Boolean)
@@ -176,13 +181,30 @@ Public Partial Class FRM_DTR_DEDUCTION_UPDATE
     End Sub
 
     Private Sub RefreshWorkValueSummary()
-        Dim hourlyRate As Decimal = If(_dailyWage > 0D, _dailyWage / 8D, 0D)
-        Dim workAmount As Decimal = _totalHours * hourlyRate
+        Dim hourlyRate As Decimal = If(_dailyWage > 0D, _dailyWage / _reportSettings.HoursPerDay, 0D)
+        Dim officerAllowance = If(_isFirstCutoff,
+            ReadDisplayDecimal(txtOfficerAllowanceFirst),
+            ReadDisplayDecimal(txtOfficerAllowanceSecond))
+        Dim sgUniformAllowance = If(_isFirstCutoff,
+            ReadDisplayDecimal(txtSgUniformAllowanceFirst),
+            ReadDisplayDecimal(txtSgUniformAllowanceSecond))
+        Dim totalEarnings = PayrollReportSettingsService.CalculateTotalEarnings(
+            _reportSettings,
+            _dailyWage,
+            _totalHours,
+            _regHours,
+            _sunHours,
+            _shHours,
+            _lhHours,
+            _otRegHours,
+            sgUniformAllowance,
+            officerAllowance)
 
         lblTotalWorkingHoursValue.Text = _totalHours.ToString("0.##")
         lblHourlyRateValue.Text = FormatPeso(hourlyRate)
-        lblTotalWorkPesoValue.Text = FormatPeso(workAmount)
-        lblFooterStatus.Text = "Total working hours are valued using Daily Wage / 8."
+        lblTotalWorkPesoCaption.Text = "TOTAL EARNINGS"
+        lblTotalWorkPesoValue.Text = FormatPeso(totalEarnings)
+        lblFooterStatus.Text = "Total Earnings includes premiums, OT, incentive pay, and allowances using the admin report settings."
     End Sub
 
     Private Sub LoadSubClientDetails()
@@ -295,7 +317,15 @@ Public Partial Class FRM_DTR_DEDUCTION_UPDATE
         lblLhValue.Text = _lhHours.ToString("0.##")
         lblUnallocatedValue.Text = _unallocatedHours.ToString("0.##")
         lblUnallocatedValue.ForeColor = If(_unallocatedHours = 0D, Color.Teal, Color.FromArgb(194, 77, 0))
+        RefreshWorkValueSummary()
     End Sub
+
+    Private Function ReadDisplayDecimal(textBox As TextBox) As Decimal
+        If textBox Is Nothing Then Return 0D
+        Dim value As Decimal
+        Decimal.TryParse(textBox.Text.Trim().Replace(",", ""), value)
+        Return value
+    End Function
 
     Private Sub HandleSave(sender As Object, e As EventArgs)
         Dim cbDeduct As Decimal = _defaultCbDeduct

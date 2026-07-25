@@ -1,6 +1,5 @@
 ﻿Imports System.Data.OleDb
 Imports System.IO
-Imports ClosedXML.Excel
 
 Module Mod_FRM_DTR_EXPORTS
 
@@ -11,86 +10,6 @@ Module Mod_FRM_DTR_EXPORTS
         End If
 
         Return 0
-    End Function
-
-    Private Sub ApplySundayHeaderStyle(cell As IXLCell)
-        If cell Is Nothing Then Return
-        cell.Style.Fill.BackgroundColor = XLColor.LightGreen
-    End Sub
-
-    Private Sub WriteDtrHoursMatrixToSheet(dtrSheet As IXLWorksheet, dgv As DataGridView)
-        If dtrSheet Is Nothing OrElse dgv Is Nothing OrElse dgv.Columns.Count = 0 Then Return
-
-        Dim dayHeaderRow As Integer = 12
-        Dim dayNumberRow As Integer = 13
-        Dim dataStartRow As Integer = 15
-        Dim nameCol As Integer = 1
-        Dim dayStartCol As Integer = 2
-
-        Dim dayColumns As New List(Of DataGridViewColumn)
-        For i As Integer = 1 To dgv.Columns.Count - 2
-            dayColumns.Add(dgv.Columns(i))
-        Next
-
-        Dim hasDayNameRow As Boolean = dgv.Rows.Count > 0 AndAlso Not dgv.Rows(0).IsNewRow
-        If hasDayNameRow Then
-            For i As Integer = 0 To dayColumns.Count - 1
-                Dim dayNameValue = dgv.Rows(0).Cells(dayColumns(i).Index).Value
-                Dim displayValue As String = If(dayNameValue, "").ToString()
-                Dim headerCell = dtrSheet.Cell(dayHeaderRow, dayStartCol + i)
-                headerCell.Value = displayValue
-                If displayValue.Trim().Equals("Sun", StringComparison.OrdinalIgnoreCase) Then
-                    ApplySundayHeaderStyle(headerCell)
-                End If
-            Next
-        End If
-
-        For i As Integer = 0 To dayColumns.Count - 1
-            dtrSheet.Cell(dayNumberRow, dayStartCol + i).Value = dayColumns(i).HeaderText
-        Next
-
-        Dim excelRow As Integer = dataStartRow
-        For Each row As DataGridViewRow In dgv.Rows
-            If row.IsNewRow Then Continue For
-            If hasDayNameRow AndAlso row.Index = 0 Then Continue For
-
-            dtrSheet.Cell(excelRow, nameCol).Value = Convert.ToString(row.Cells(0).Value)
-            For i As Integer = 0 To dayColumns.Count - 1
-                Dim rawValue As String = Convert.ToString(row.Cells(dayColumns(i).Index).Value)
-                dtrSheet.Cell(excelRow, dayStartCol + i).Value = TryGetNumericValue(rawValue)
-            Next
-
-            excelRow += 1
-        Next
-    End Sub
-
-    Private Function ConvertCutOffStringToReadable(input As String) As String
-        If String.IsNullOrWhiteSpace(input) Then Return ""
-
-        Dim parts = input.Split("_"c)
-        If parts.Length <> 3 Then
-            Throw New FormatException("Invalid cutoff format. Expected: M_1st|2nd_YYYY")
-        End If
-
-        Dim monthNum As Integer = Integer.Parse(parts(0))
-        Dim cutOffPart As String = parts(1).ToLower()
-        Dim yearNum As Integer = Integer.Parse(parts(2))
-
-        Dim startDate As Date
-        Dim endDate As Date
-
-        Select Case cutOffPart
-            Case "1st"
-                startDate = New Date(yearNum, monthNum, 1)
-                endDate = New Date(yearNum, monthNum, 15)
-            Case "2nd"
-                startDate = New Date(yearNum, monthNum, 16)
-                endDate = New Date(yearNum, monthNum, Date.DaysInMonth(yearNum, monthNum))
-            Case Else
-                Throw New FormatException("Cutoff must be '1st' or '2nd'")
-        End Select
-
-        Return $"{startDate.Day}-{endDate.Day} {startDate:MMMM yyyy}".ToUpper()
     End Function
 
     Public Function IsFirstCutoff(cutoff As String) As Boolean
@@ -164,133 +83,59 @@ Module Mod_FRM_DTR_EXPORTS
         End If
     End Sub
 
-    Public Sub Export_DTR_Per_Client_to_Excell(sClient As String, sAddress As String, sDailyWage As String, sCutOff As String)
+    Public Sub Export_DTR_Per_Client_to_Excell(sMainClient As String, sDetachment As String, sAddress As String, sDailyWage As String, sCutOff As String)
         Try
-            Dim templateFileName As String
-
-            If IsFirstCutoff(sCutOff) Then
-                templateFileName = "PayrollTemplate_1st.xlsx"
-            ElseIf IsSecondCutoff(sCutOff) Then
-                templateFileName = "PayrollTemplate_2nd.xlsx"
-            Else
+            If Not IsFirstCutoff(sCutOff) AndAlso Not IsSecondCutoff(sCutOff) Then
                 Throw New Exception("Invalid cutoff format: " & sCutOff)
             End If
 
-            Dim templatePath As String = Path.Combine(Application.StartupPath, "Templates", templateFileName)
-            If Not File.Exists(templatePath) Then
-                Throw New FileNotFoundException("Template not found: " & templatePath)
-            End If
-
-            Dim safeClient As String = MakeSafeFileName(sClient)
+            Dim safeClient As String = MakeSafeFileName(sDetachment)
             Dim safeCutoff As String = MakeSafeFileName(sCutOff)
 
-            Dim exportFolder As String = BuildExportFolder("Payroll EXPORTS", sClient, sCutOff)
+            Dim exportFolder As String = BuildExportFolder("Payroll EXPORTS", sDetachment, sCutOff)
             Dim outPath As String = Path.Combine(exportFolder,
             $"Payroll_{safeClient}_{safeCutoff}_{DateTime.Now:yyyyMMdd_HHmmss}.xlsx")
 
-            Using workbook As New XLWorkbook(templatePath)
-                Dim payrollSheet = workbook.Worksheet("PAYROLL")
-                Dim payslipSheet = workbook.Worksheet("PAYSLIP")
-                Dim dtrHoursSheet = workbook.Worksheet("DTR_Hours")
-
-                Dim readableCutOff As String = ConvertCutOffStringToReadable(sCutOff)
-
-                payrollSheet.Cell("B7").Value = sClient
-                payrollSheet.Cell("B8").Value = sAddress
-                payrollSheet.Cell("B9").Value = readableCutOff
-                payslipSheet.Cell("C11").Value = sDailyWage
-
-                dtrHoursSheet.Cell("B7").Value = sClient
-                dtrHoursSheet.Cell("B8").Value = sAddress
-                dtrHoursSheet.Cell("B10").Value = readableCutOff
-
-                Dim payrollDataStartRow As Integer = 15
-                Dim firstCutoff As Boolean = IsFirstCutoff(sCutOff)
-
-                Dim dgv = FRM_DTR_EXPORTS.DGV_DTR_Per_Client
-                Dim rowIndex As Integer = 0
-                For Each row As DataGridViewRow In dgv.Rows
-                    If row.IsNewRow Then Continue For
-                    Dim r As Integer = payrollDataStartRow + rowIndex
-
-                    payrollSheet.Cell(r, 1).Value = Convert.ToString(row.Cells("colName").Value)
-                    payrollSheet.Cell(r, 2).Value = row.Cells("colNumDays").Value
-                    payrollSheet.Cell(r, 3).Value = row.Cells("colTotalHours").Value
-                    payrollSheet.Cell(r, 4).Value = row.Cells("colReg").Value
-                    payrollSheet.Cell(r, 5).Value = row.Cells("colSun").Value
-                    payrollSheet.Cell(r, 8).Value = row.Cells("colLh").Value
-                    payrollSheet.Cell(r, 9).Value = row.Cells("colSh").Value
-                    payrollSheet.Cell(r, 10).Value = row.Cells("colNumNdDays").Value
-                    payrollSheet.Cell(r, 11).Value = row.Cells("colOtReg").Value
-                    payrollSheet.Cell(r, 18).Value = row.Cells("colSgUniformAllowance").Value
-                    payrollSheet.Cell(r, 19).Value = row.Cells("colOfficerAllo").Value
-
-                    If firstCutoff Then
-                        payrollSheet.Cell(r, 21).Value = row.Cells("colSss").Value
-                        payrollSheet.Cell(r, 22).Value = row.Cells("colPhilHealth").Value
-                        payrollSheet.Cell(r, 23).Value = row.Cells("colPagIbig").Value
-                    Else
-                        payrollSheet.Cell(r, 21).Value = row.Cells("colCb").Value
-                        payrollSheet.Cell(r, 22).Value = row.Cells("colSssLoan").Value
-                        payrollSheet.Cell(r, 23).Value = row.Cells("colSssCalLoan").Value
-                        payrollSheet.Cell(r, 24).Value = row.Cells("colPiLoan").Value
-                        payrollSheet.Cell(r, 25).Value = row.Cells("colPiCalLoan").Value
-
-                    End If
-
-                    rowIndex += 1
-                Next
-
-                WriteDtrHoursMatrixToSheet(dtrHoursSheet, FRM_DTR_EXPORTS.DGV_DTR_MATRIX)
-                workbook.SaveAs(outPath)
-            End Using
+            PayrollReportService.CreatePayrollReport(
+                outPath,
+                sMainClient,
+                sDetachment,
+                sAddress,
+                CDec(TryGetNumericValue(sDailyWage)),
+                sCutOff,
+                FRM_DTR_EXPORTS.DGV_DTR_Per_Client,
+                FRM_DTR_EXPORTS.DGV_DTR_MATRIX)
 
             Process.Start(outPath)
         Catch ex As Exception
-            MsgBox(ex.ToString)
+            MsgBox(ex.Message, vbCritical, "Payroll Report Export")
         End Try
     End Sub
 
     Public Sub Export_DTR_Hours_Per_Client_to_Excell(
-    sClient As String,
+    sMainClient As String,
+    sDetachment As String,
     sAddress As String,
     sCutOff As String)
         Try
-            Dim templateFileName As String
-
-            If IsFirstCutoff(sCutOff) Then
-                templateFileName = "DtrHoursTemplate_1st.xlsx"
-            ElseIf IsSecondCutoff(sCutOff) Then
-                templateFileName = "DtrHoursTemplate_2nd.xlsx"
-            Else
+            If Not IsFirstCutoff(sCutOff) AndAlso Not IsSecondCutoff(sCutOff) Then
                 Throw New Exception("Invalid cutoff format: " & sCutOff)
             End If
 
-            Dim templatePath As String =
-            Path.Combine(Application.StartupPath, "Templates", templateFileName)
-
-            If Not File.Exists(templatePath) Then
-                Throw New FileNotFoundException("Template not found: " & templatePath)
-            End If
-
-            Dim safeClient = MakeSafeFileName(sClient)
+            Dim safeClient = MakeSafeFileName(sDetachment)
             Dim safeCutoff = MakeSafeFileName(sCutOff)
 
-            Dim exportFolder = BuildExportFolder("DTR EXPORTS", sClient, sCutOff)
+            Dim exportFolder = BuildExportFolder("DTR EXPORTS", sDetachment, sCutOff)
             Dim outPath = Path.Combine(exportFolder,
             $"DTR_Hours_{safeClient}_{safeCutoff}_{DateTime.Now:yyyyMMdd_HHmmss}.xlsx")
 
-            Using workbook As New XLWorkbook(templatePath)
-                Dim dtrHoursSheet = workbook.Worksheet("DTR_Hours")
-                Dim readableCutOff = ConvertCutOffStringToReadable(sCutOff)
-
-                dtrHoursSheet.Cell("B7").Value = sClient
-                dtrHoursSheet.Cell("B8").Value = sAddress
-                dtrHoursSheet.Cell("B10").Value = readableCutOff
-
-                WriteDtrHoursMatrixToSheet(dtrHoursSheet, FRM_DTR_EXPORTS.DGV_DTR_MATRIX)
-                workbook.SaveAs(outPath)
-            End Using
+            PayrollReportService.CreateDtrHoursReport(
+                outPath,
+                sMainClient,
+                sDetachment,
+                sAddress,
+                sCutOff,
+                FRM_DTR_EXPORTS.DGV_DTR_MATRIX)
 
             Process.Start(outPath)
 

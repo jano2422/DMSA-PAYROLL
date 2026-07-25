@@ -9,6 +9,8 @@ Public Partial Class FRM_DTR_EXPORTS
     Private _displayedYearText As String = ""
     Private _displayedClientId As String = ""
     Private _displayedHasRecords As Boolean = False
+    Private _reportSettingsLink As LinkLabel
+    Public Property SelectedMainClientName As String = ""
 
     Private Function TryBuildCutoff(ByRef cutoff As String) As Boolean
         cutoff = ""
@@ -81,6 +83,7 @@ Public Partial Class FRM_DTR_EXPORTS
     Private Sub SetupRuntimeUi()
         ApplyGridStyle(DGV_DTR_Per_Client)
         ApplyGridStyle(DGV_DTR_MATRIX)
+        AddReportSettingsLinkForAdministrator()
 
         AddHandler Lbl_ClientID.TextChanged, Sub(sender, e)
                                                  If Not String.IsNullOrWhiteSpace(_displayedCutoff) AndAlso
@@ -105,6 +108,35 @@ Public Partial Class FRM_DTR_EXPORTS
         AddHandler Cmb_Year.SelectedIndexChanged, Sub(sender, e) UpdateLoadedPeriodStatus()
         AddHandler Cmb_Month.SelectedIndexChanged, Sub(sender, e) UpdateLoadedPeriodStatus()
         AddHandler Cmb_CutOff.SelectedIndexChanged, Sub(sender, e) UpdateLoadedPeriodStatus()
+    End Sub
+
+    Private Sub AddReportSettingsLinkForAdministrator()
+        Dim userLevel = If(GlobalVariables.sUser_Level, String.Empty).Trim()
+        If Not String.Equals(userLevel, "Administrator", StringComparison.OrdinalIgnoreCase) Then Return
+        If _reportSettingsLink IsNot Nothing Then Return
+
+        _reportSettingsLink = New LinkLabel With {
+            .Dock = DockStyle.Fill,
+            .Text = "Payroll & report settings",
+            .TextAlign = ContentAlignment.MiddleCenter,
+            .LinkColor = Color.Teal,
+            .ActiveLinkColor = Color.Maroon,
+            .Font = New Font("Verdana", 8.5!, FontStyle.Bold)
+        }
+        AddHandler _reportSettingsLink.LinkClicked, AddressOf OpenPayrollReportSettings
+        exportPanel.Controls.Add(_reportSettingsLink, 0, 3)
+    End Sub
+
+    Private Sub OpenPayrollReportSettings(sender As Object, e As LinkLabelLinkClickedEventArgs)
+        Try
+            Using settingsForm As New FRM_PAYROLL_REPORT_SETTINGS()
+                settingsForm.ShowDialog(Me)
+            End Using
+        Catch ex As UnauthorizedAccessException
+            AppNotification.Show(ex.Message, "Access Denied", MessageBoxButtons.OK, MessageBoxIcon.Warning)
+        Catch ex As Exception
+            AppNotification.Show(ex.Message, "Payroll & Report Settings", MessageBoxButtons.OK, MessageBoxIcon.Warning)
+        End Try
     End Sub
 
     Private Sub ApplyGridStyle(grid As DataGridView)
@@ -271,14 +303,16 @@ Public Partial Class FRM_DTR_EXPORTS
             If Not TryGetDisplayedCutoff(sCut_Off) Then Exit Sub
 
             ' Validate client details
-            If String.IsNullOrWhiteSpace(Lbl_ClientID.Text) OrElse String.IsNullOrWhiteSpace(Lbl_Client_Address.Text) Then
+            If String.IsNullOrWhiteSpace(Lbl_ClientID.Text) OrElse
+               String.IsNullOrWhiteSpace(SelectedMainClientName) OrElse
+               String.IsNullOrWhiteSpace(Lbl_Client_Address.Text) Then
                 AppNotification.Show("Client information is missing.", "Data Error", MessageBoxButtons.OK, MessageBoxIcon.Warning)
                 Exit Sub
             End If
 
             ' Call export function
             RunWithProcessing("Exporting payroll to Excel...", Sub()
-                                                                   Export_DTR_Per_Client_to_Excell(Lbl_Client_Name.Text, Lbl_Client_Address.Text, Lbl_Client_Daily_Wage.Text, sCut_Off)
+                                                                   Export_DTR_Per_Client_to_Excell(SelectedMainClientName, Lbl_Client_Name.Text, Lbl_Client_Address.Text, Lbl_Client_Daily_Wage.Text, sCut_Off)
                                                                End Sub)
 
         Catch ex As Exception
@@ -297,14 +331,16 @@ Public Partial Class FRM_DTR_EXPORTS
             If Not TryGetDisplayedCutoff(sCut_Off) Then Exit Sub
 
             ' Validate client details
-            If String.IsNullOrWhiteSpace(Lbl_ClientID.Text) OrElse String.IsNullOrWhiteSpace(Lbl_Client_Address.Text) Then
+            If String.IsNullOrWhiteSpace(Lbl_ClientID.Text) OrElse
+               String.IsNullOrWhiteSpace(SelectedMainClientName) OrElse
+               String.IsNullOrWhiteSpace(Lbl_Client_Address.Text) Then
                 AppNotification.Show("Client information is missing.", "Data Error", MessageBoxButtons.OK, MessageBoxIcon.Warning)
                 Exit Sub
             End If
 
             ' Call export function
             RunWithProcessing("Exporting DTR hours to Excel...", Sub()
-                                                                     Export_DTR_Hours_Per_Client_to_Excell(Lbl_Client_Name.Text, Lbl_Client_Address.Text, sCut_Off)
+                                                                     Export_DTR_Hours_Per_Client_to_Excell(SelectedMainClientName, Lbl_Client_Name.Text, Lbl_Client_Address.Text, sCut_Off)
                                                                  End Sub)
         Catch ex As Exception
             AppNotification.Show("An unexpected error occurred: " & ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error)

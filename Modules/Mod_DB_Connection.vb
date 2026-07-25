@@ -1,5 +1,6 @@
 ﻿Imports System.Data.OleDb
 Imports System.IO
+Imports System.Configuration
 
 Module Mod_DB_Connection
 
@@ -8,26 +9,53 @@ Module Mod_DB_Connection
     ''' </summary>
     Public Sub MDB_Connection_Init()
         Try
-            ' If connection is already set, do not reinitialize
-            If GlobalVariables.GlobalCon IsNot Nothing AndAlso GlobalVariables.GlobalCon.State <> ConnectionState.Closed Then
+            ' A closed connection can still be fully initialized and reused. Checking
+            ' only its State caused provider detection to run again whenever callers
+            ' explicitly initialized a connection that had already been closed.
+            If GlobalVariables.GlobalCon IsNot Nothing AndAlso
+               Not String.IsNullOrWhiteSpace(GlobalVariables.GlobalCon.ConnectionString) Then
+                GlobalVariables.GlobalConStr = GlobalVariables.GlobalCon.ConnectionString
                 Debug.WriteLine("Database connection already initialized.")
-                Exit Sub ' Prevent unnecessary reinitialization
+                Exit Sub
             End If
 
-            ' Define the database file path
-            Dim dbfile As String = Path.Combine(Application.StartupPath, "DMSA.mdb")
-            'Dim dbfile As String = "\\DMSAC-SERVER\Files\DMSA_SYSTEM\DMSA.mdb"
+            ' Read the database location from App.config. Relative paths remain
+            ' relative to the application folder for local development.
+            Dim configuredDatabasePath As String = ConfigurationManager.AppSettings("DatabasePath")
+            If String.IsNullOrWhiteSpace(configuredDatabasePath) Then
+                Throw New ConfigurationErrorsException("The DatabasePath app setting is missing or empty.")
+            End If
+
+            configuredDatabasePath = Environment.ExpandEnvironmentVariables(configuredDatabasePath.Trim())
+            Dim dbfile As String
+            If Path.IsPathRooted(configuredDatabasePath) Then
+                dbfile = Path.GetFullPath(configuredDatabasePath)
+            Else
+                dbfile = Path.GetFullPath(Path.Combine(Application.StartupPath, configuredDatabasePath))
+            End If
 
             ' Ensure the database file exists before proceeding
             If Not File.Exists(dbfile) Then
                 Throw New FileNotFoundException("Database file not found at: " & dbfile)
             End If
 
-            Dim candidateConnectionStrings As String() = {
-                $"Provider=Microsoft.ACE.OLEDB.16.0;Data Source={dbfile};Jet OLEDB:Database Password=DMSA001;Persist Security Info=False;",
-                $"Provider=Microsoft.ACE.OLEDB.12.0;Data Source={dbfile};Jet OLEDB:Database Password=DMSA001;Persist Security Info=False;",
-                $"Provider=Microsoft.Jet.OLEDB.4.0;Data Source={dbfile};Jet OLEDB:Database Password=DMSA001;"
-            }
+            ' AnyCPU WinForms executables run as 32-bit when Prefer 32-bit is enabled.
+            ' Prefer Jet in that process because probing unavailable 64-bit ACE
+            ' providers raises caught first-chance InvalidOperationExceptions in VS.
+            Dim candidateConnectionStrings As String()
+            If Environment.Is64BitProcess Then
+                candidateConnectionStrings = {
+                    $"Provider=Microsoft.ACE.OLEDB.16.0;Data Source={dbfile};Jet OLEDB:Database Password=DMSA001;Persist Security Info=False;",
+                    $"Provider=Microsoft.ACE.OLEDB.12.0;Data Source={dbfile};Jet OLEDB:Database Password=DMSA001;Persist Security Info=False;",
+                    $"Provider=Microsoft.Jet.OLEDB.4.0;Data Source={dbfile};Jet OLEDB:Database Password=DMSA001;"
+                }
+            Else
+                candidateConnectionStrings = {
+                    $"Provider=Microsoft.Jet.OLEDB.4.0;Data Source={dbfile};Jet OLEDB:Database Password=DMSA001;",
+                    $"Provider=Microsoft.ACE.OLEDB.16.0;Data Source={dbfile};Jet OLEDB:Database Password=DMSA001;Persist Security Info=False;",
+                    $"Provider=Microsoft.ACE.OLEDB.12.0;Data Source={dbfile};Jet OLEDB:Database Password=DMSA001;Persist Security Info=False;"
+                }
+            End If
 
             Dim selectedConnectionString As String = Nothing
             Dim lastError As Exception = Nothing
@@ -45,7 +73,7 @@ Module Mod_DB_Connection
             Next
 
             If String.IsNullOrWhiteSpace(selectedConnectionString) Then
-                Throw New InvalidOperationException("No installed Access database provider could open DMSA.mdb.", lastError)
+                Throw New InvalidOperationException($"No installed Access database provider could open the database at: {dbfile}", lastError)
             End If
 
             ' Set the global connection string
@@ -69,8 +97,13 @@ Module Mod_DB_Connection
     Public Sub Connect_to_MDB()
         Try
             ' Ensure the connection is initialized first
-            If GlobalVariables.GlobalCon Is Nothing Then
+            If GlobalVariables.GlobalCon Is Nothing OrElse
+               String.IsNullOrWhiteSpace(GlobalVariables.GlobalCon.ConnectionString) Then
                 MDB_Connection_Init()
+            End If
+
+            If GlobalVariables.GlobalCon.State = ConnectionState.Broken Then
+                GlobalVariables.GlobalCon.Close()
             End If
 
             ' Open the connection if it's closed

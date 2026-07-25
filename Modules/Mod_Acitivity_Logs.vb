@@ -21,7 +21,8 @@ Module Mod_Acitivity_Logs
 
 
             If dt.Rows.Count > 0 Then ' SHOW DATAS
-                With FRM_HR_REPORTS.LV_SystemLogs
+                Using SuspendReportListUpdates(FRM_HR_REPORTS.LV_SystemLogs)
+                    With FRM_HR_REPORTS.LV_SystemLogs
 
                     Dim myRow As DataRow
 
@@ -36,7 +37,8 @@ Module Mod_Acitivity_Logs
 
 
                     Next
-                End With
+                    End With
+                End Using
             Else
                 MsgBox("No records found from your filter", vbExclamation, "No records")
                 FRM_HR_REPORTS.LV_SystemLogs.Items.Clear()

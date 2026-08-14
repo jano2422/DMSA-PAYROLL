@@ -10,6 +10,7 @@ Public Partial Class FRM_DTR_EXPORTS
     Private _displayedClientId As String = ""
     Private _displayedHasRecords As Boolean = False
     Private _reportSettingsLink As LinkLabel
+    Private _payrollRuleSettingsLink As LinkLabel
     Public Property SelectedMainClientName As String = ""
 
     Private Function TryBuildCutoff(ByRef cutoff As String) As Boolean
@@ -91,6 +92,7 @@ Public Partial Class FRM_DTR_EXPORTS
                                                      ClearDisplayedRecords()
                                                  End If
 
+                                                 UpdatePayrollRuleStatus()
                                                  UpdateActionStates()
                                              End Sub
         AddHandler DGV_DTR_Per_Client.RowsAdded, Sub(sender, e) UpdateActionStates()
@@ -115,16 +117,75 @@ Public Partial Class FRM_DTR_EXPORTS
         If Not String.Equals(userLevel, "Administrator", StringComparison.OrdinalIgnoreCase) Then Return
         If _reportSettingsLink IsNot Nothing Then Return
 
+        Dim adminLinks As New TableLayoutPanel With {
+            .Dock = DockStyle.Fill,
+            .ColumnCount = 1,
+            .RowCount = 2,
+            .BackColor = Color.FromArgb(255, 192, 128),
+            .Margin = New Padding(0)
+        }
+        adminLinks.RowStyles.Add(New RowStyle(SizeType.Percent, 50.0!))
+        adminLinks.RowStyles.Add(New RowStyle(SizeType.Percent, 50.0!))
+
+        _payrollRuleSettingsLink = New LinkLabel With {
+            .Dock = DockStyle.Fill,
+            .Text = "Payroll rules: select a sub-client",
+            .TextAlign = ContentAlignment.MiddleCenter,
+            .LinkColor = Color.Maroon,
+            .ActiveLinkColor = Color.Teal,
+            .Font = New Font("Verdana", 7.75!, FontStyle.Bold),
+            .AutoEllipsis = True,
+            .Enabled = False
+        }
+        AddHandler _payrollRuleSettingsLink.LinkClicked, AddressOf OpenSubClientPayrollSettings
         _reportSettingsLink = New LinkLabel With {
             .Dock = DockStyle.Fill,
-            .Text = "Payroll & report settings",
+            .Text = "Company & report settings",
             .TextAlign = ContentAlignment.MiddleCenter,
             .LinkColor = Color.Teal,
             .ActiveLinkColor = Color.Maroon,
-            .Font = New Font("Verdana", 8.5!, FontStyle.Bold)
+            .Font = New Font("Verdana", 7.75!, FontStyle.Bold)
         }
         AddHandler _reportSettingsLink.LinkClicked, AddressOf OpenPayrollReportSettings
-        exportPanel.Controls.Add(_reportSettingsLink, 0, 3)
+        adminLinks.Controls.Add(_payrollRuleSettingsLink, 0, 0)
+        adminLinks.Controls.Add(_reportSettingsLink, 0, 1)
+        exportPanel.Controls.Add(adminLinks, 0, 3)
+        UpdatePayrollRuleStatus()
+    End Sub
+
+    Private Sub UpdatePayrollRuleStatus()
+        If _payrollRuleSettingsLink Is Nothing Then Return
+
+        Dim subClientId As Integer
+        If Not Integer.TryParse(Lbl_ClientID.Text.Trim(), subClientId) OrElse subClientId <= 0 Then
+            _payrollRuleSettingsLink.Text = "Payroll rules: select a sub-client"
+            _payrollRuleSettingsLink.Enabled = False
+            Return
+        End If
+
+        Try
+            Dim policy = SubClientPayrollPolicyService.LoadPolicy(subClientId)
+            _payrollRuleSettingsLink.Text = "Payroll rules: " & SubClientPayrollPolicyService.DescribePolicy(policy)
+            _payrollRuleSettingsLink.Enabled = True
+        Catch ex As Exception
+            _payrollRuleSettingsLink.Text = "Payroll rules: unavailable"
+            _payrollRuleSettingsLink.Enabled = True
+        End Try
+    End Sub
+
+    Private Sub OpenSubClientPayrollSettings(sender As Object, e As LinkLabelLinkClickedEventArgs)
+        Dim subClientId As Integer
+        Integer.TryParse(Lbl_ClientID.Text.Trim(), subClientId)
+        Try
+            Using settingsForm As New FRM_SUB_CLIENT_PAYROLL_SETTINGS(subClientId)
+                settingsForm.ShowDialog(Me)
+            End Using
+            UpdatePayrollRuleStatus()
+        Catch ex As UnauthorizedAccessException
+            AppNotification.Show(ex.Message, "Access Denied", MessageBoxButtons.OK, MessageBoxIcon.Warning)
+        Catch ex As Exception
+            AppNotification.Show(ex.Message, "Sub-client Payroll Rules", MessageBoxButtons.OK, MessageBoxIcon.Warning)
+        End Try
     End Sub
 
     Private Sub OpenPayrollReportSettings(sender As Object, e As LinkLabelLinkClickedEventArgs)
@@ -312,7 +373,7 @@ Public Partial Class FRM_DTR_EXPORTS
 
             ' Call export function
             RunWithProcessing("Exporting payroll to Excel...", Sub()
-                                                                   Export_DTR_Per_Client_to_Excell(SelectedMainClientName, Lbl_Client_Name.Text, Lbl_Client_Address.Text, Lbl_Client_Daily_Wage.Text, sCut_Off)
+                                                                   Export_DTR_Per_Client_to_Excell(CInt(Lbl_ClientID.Text), SelectedMainClientName, Lbl_Client_Name.Text, Lbl_Client_Address.Text, Lbl_Client_Daily_Wage.Text, sCut_Off)
                                                                End Sub)
 
         Catch ex As Exception

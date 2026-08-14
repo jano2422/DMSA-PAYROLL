@@ -11,10 +11,19 @@ Public Class PayrollExportRow
     Public Property SpecialHolidayHours As Decimal
     Public Property LegalHolidayHours As Decimal
     Public Property NightDifferentialDays As Decimal
+    Public Property NightDifferentialRegularHours As Decimal
+    Public Property NightDifferentialSundayHours As Decimal
+    Public Property NightDifferentialLegalHolidayHours As Decimal
+    Public Property NightDifferentialSpecialHolidayHours As Decimal
     Public Property OvertimeRegularHours As Decimal
+    Public Property OvertimeSundayHours As Decimal
+    Public Property OvertimeLegalHolidayHours As Decimal
+    Public Property OvertimeSpecialHolidayHours As Decimal
     Public Property SgUniformAllowance As Decimal
     Public Property OfficerAllowance As Decimal
+    Public Property OtherEarnings As Decimal
     Public Property SssDeduction As Decimal
+    Public Property SssProvidentDeduction As Decimal
     Public Property PhilHealthDeduction As Decimal
     Public Property PagIbigDeduction As Decimal
     Public Property CashBondDeduction As Decimal
@@ -22,6 +31,7 @@ Public Class PayrollExportRow
     Public Property SssCalLoanDeduction As Decimal
     Public Property PagIbigLoanDeduction As Decimal
     Public Property PagIbigCalLoanDeduction As Decimal
+    Public Property OtherDeductions As Decimal
 End Class
 
 Public Module PayrollReportService
@@ -38,17 +48,19 @@ Public Module PayrollReportService
         detachmentName As String,
         clientAddress As String,
         dailyWage As Decimal,
+        subClientId As Integer,
         cutoff As String,
         payrollGrid As DataGridView,
         dtrGrid As DataGridView
     )
         Dim settings = PayrollReportSettingsService.LoadSettings()
+        Dim policy = SubClientPayrollPolicyService.LoadPolicy(subClientId)
         Dim rows = ReadPayrollRows(payrollGrid, IsFirstCutoff(cutoff))
         If rows.Count = 0 Then Throw New InvalidOperationException("There are no payroll rows to export.")
 
         Using workbook As New XLWorkbook()
-            BuildSettingsSheet(workbook, dailyWage, settings)
-            BuildPayrollSheet(workbook, detachmentName, clientAddress, cutoff, rows, IsFirstCutoff(cutoff), settings)
+            BuildUniversalSettingsSheet(workbook, dailyWage, cutoff, policy, settings)
+            BuildUniversalPayrollSheet(workbook, mainClientName, detachmentName, clientAddress, dailyWage, cutoff, rows, settings)
             BuildPayslipSheet(workbook, detachmentName, clientAddress, cutoff, rows.Count, IsFirstCutoff(cutoff), settings)
             BuildDtrHoursSheet(workbook, mainClientName, detachmentName, clientAddress, cutoff, dtrGrid, settings)
             workbook.CalculateMode = XLCalculateMode.Auto
@@ -96,7 +108,14 @@ Public Module PayrollReportService
                 .SpecialHolidayHours = ReadDecimal(row, "colSh"),
                 .LegalHolidayHours = ReadDecimal(row, "colLh"),
                 .NightDifferentialDays = ReadDecimal(row, "colNumNdDays"),
+                .NightDifferentialRegularHours = ReadDecimal(row, "colNdReg"),
+                .NightDifferentialSundayHours = ReadDecimal(row, "colNdSun"),
+                .NightDifferentialLegalHolidayHours = ReadDecimal(row, "colNdLh"),
+                .NightDifferentialSpecialHolidayHours = ReadDecimal(row, "colNdSh"),
                 .OvertimeRegularHours = ReadDecimal(row, "colOtReg"),
+                .OvertimeSundayHours = ReadDecimal(row, "colOtSun"),
+                .OvertimeLegalHolidayHours = ReadDecimal(row, "colOtLh"),
+                .OvertimeSpecialHolidayHours = ReadDecimal(row, "colOtSh"),
                 .SgUniformAllowance = ReadDecimal(row, "colSgUniformAllowance"),
                 .OfficerAllowance = ReadDecimal(row, "colOfficerAllo")
             }
@@ -117,6 +136,373 @@ Public Module PayrollReportService
         Next
         Return result
     End Function
+
+    Private Sub BuildUniversalSettingsSheet(
+        workbook As XLWorkbook,
+        dailyWage As Decimal,
+        cutoff As String,
+        policy As SubClientPayrollPolicy,
+        settings As PayrollReportSettings
+    )
+        Dim sheet = workbook.Worksheets.Add("SETTINGS")
+        sheet.Cell("A1").Value = "Setting"
+        sheet.Cell("B1").Value = "Value"
+        sheet.Cell("A2").Value = "Daily wage"
+        sheet.Cell("B2").Value = dailyWage
+        sheet.Cell("A3").Value = "Hours per day"
+        sheet.Cell("B3").Value = policy.HoursPerDay
+        sheet.Cell("A4").Value = "Cutoff calendar days"
+        sheet.Cell("B4").Value = SubClientPayrollPolicyService.CutoffDayCount(cutoff)
+        sheet.Cell("A5").Value = "Night differential mode"
+        sheet.Cell("B5").Value = If(
+            policy.NightDifferentialMode = SubClientPayrollPolicy.NightDifferentialFixedCutoffPool,
+            1,
+            If(policy.NightDifferentialMode = SubClientPayrollPolicy.NightDifferentialDisabled, 2, 0))
+        sheet.Cell("A6").Value = "Monthly ND amount (paid by reporting days)"
+        sheet.Cell("B6").Value = policy.NightDifferentialFixedCutoffAmount
+        sheet.Cell("A7").Value = "Incentive enabled"
+        sheet.Cell("B7").Value = If(policy.IncentiveEnabled, 1, 0)
+        sheet.Cell("A8").Value = "Incentive days"
+        sheet.Cell("B8").Value = policy.IncentiveDays
+        sheet.Cell("A9").Value = "Incentive month divisor"
+        sheet.Cell("B9").Value = policy.IncentiveMonthDivisor
+        sheet.Cell("A10").Value = "Incentive cutoff divisor"
+        sheet.Cell("B10").Value = policy.IncentiveCutoffDivisor
+        sheet.Cell("A11").Value = "Payroll cutoffs per month"
+        sheet.Cell("B11").Value = 2
+        sheet.Cell("A12").Value = "Policy notes"
+        sheet.Cell("B12").Value = policy.Notes
+        sheet.Cell("A13").Value = "Manual DTR duty mode"
+        sheet.Cell("B13").Value = policy.DutyEntryMode
+        sheet.Cell("A14").Value = "Configured single-shift hours"
+        sheet.Cell("B14").Value = policy.SingleShiftHours
+        sheet.Cell("A15").Value = "Configured shift is night"
+        sheet.Cell("B15").Value = If(policy.SingleShiftIsNight, 1, 0)
+
+        sheet.Cell("D1").Value = "Pay code"
+        sheet.Cell("E1").Value = "Enabled"
+        sheet.Cell("F1").Value = "Multiplier"
+        For index As Integer = 0 To SubClientPayrollPolicyService.PayCodeOrder.Length - 1
+            Dim rule = policy.GetRule(SubClientPayrollPolicyService.PayCodeOrder(index))
+            Dim rowNumber = index + 2
+            sheet.Cell(rowNumber, 4).Value = rule.Code
+            sheet.Cell(rowNumber, 5).Value = If(rule.Enabled, 1, 0)
+            sheet.Cell(rowNumber, 6).Value = rule.Multiplier
+        Next
+
+        sheet.Cell("H1").Value = "Report setting"
+        sheet.Cell("I1").Value = "Value"
+        Dim reportSettings = New KeyValuePair(Of String, String)() {
+            New KeyValuePair(Of String, String)("Company name", settings.CompanyName),
+            New KeyValuePair(Of String, String)("Company address", settings.CompanyAddress),
+            New KeyValuePair(Of String, String)("Company phone", settings.CompanyPhone),
+            New KeyValuePair(Of String, String)("Company email", settings.CompanyEmail),
+            New KeyValuePair(Of String, String)("Payroll prepared by", settings.PayrollPreparedName),
+            New KeyValuePair(Of String, String)("Payroll approved by", settings.PayrollApprovedName)
+        }
+        For index As Integer = 0 To reportSettings.Length - 1
+            sheet.Cell(index + 2, 8).Value = reportSettings(index).Key
+            sheet.Cell(index + 2, 9).Value = reportSettings(index).Value
+        Next
+
+        For Each headerRange In {sheet.Range("A1:B1"), sheet.Range("D1:F1"), sheet.Range("H1:I1")}
+            headerRange.Style.Font.Bold = True
+            headerRange.Style.Fill.BackgroundColor = Teal
+            headerRange.Style.Font.FontColor = XLColor.White
+        Next
+        sheet.Column(1).Width = 31
+        sheet.Column(2).Width = 54
+        sheet.Column(4).Width = 20
+        sheet.Columns(5, 6).Width = 14
+        sheet.Column(8).Width = 28
+        sheet.Column(9).Width = 54
+        sheet.Range("B2:B11").Style.NumberFormat.Format = "0.######"
+        sheet.Range("B14:B15").Style.NumberFormat.Format = "0.######"
+        sheet.Range("F2:F13").Style.NumberFormat.Format = "0.######"
+        sheet.Visibility = XLWorksheetVisibility.VeryHidden
+    End Sub
+
+    Private Sub BuildUniversalPayrollSheet(
+        workbook As XLWorkbook,
+        mainClientName As String,
+        detachmentName As String,
+        clientAddress As String,
+        dailyWage As Decimal,
+        cutoff As String,
+        rows As List(Of PayrollExportRow),
+        settings As PayrollReportSettings
+    )
+        Const lastColumn As Integer = 46
+        Const dataStartRow As Integer = 12
+        Dim sheet = workbook.Worksheets.Add("PAYROLL SHEET")
+        Dim dataEndRow = dataStartRow + rows.Count - 1
+        Dim totalRow = dataEndRow + 1
+
+        WriteCompanyHeader(sheet, lastColumn, settings)
+        WriteUniversalContext(sheet, mainClientName, detachmentName, clientAddress, cutoff, lastColumn)
+        WriteUniversalSummary(sheet, dataStartRow, dataEndRow, totalRow, lastColumn)
+        WriteUniversalHeaders(sheet)
+
+        For index As Integer = 0 To rows.Count - 1
+            WriteUniversalPayrollDataRow(sheet, dataStartRow + index, rows(index), dailyWage)
+        Next
+
+        sheet.Cell(totalRow, 1).Value = "TOTAL AMOUNT"
+        For column As Integer = 3 To 45
+            sheet.Cell(totalRow, column).FormulaA1 = $"SUM({ColumnLetter(column)}{dataStartRow}:{ColumnLetter(column)}{dataEndRow})"
+        Next
+        StyleTotalRow(sheet.Range(totalRow, 1, totalRow, lastColumn))
+        sheet.Range(totalRow, 2, totalRow, 2).Clear(XLClearOptions.Contents)
+        sheet.Range(totalRow, 46, totalRow, 46).Clear(XLClearOptions.Contents)
+
+        Dim certificationRow = totalRow + 2
+        sheet.Range(certificationRow, 1, certificationRow, lastColumn).Merge()
+        sheet.Cell(certificationRow, 1).Value = "I hereby certify that the employees listed above received their corresponding payroll for the stated period."
+        sheet.Cell(certificationRow, 1).Style.Font.Italic = True
+        WriteSignatoryBlock(sheet, certificationRow + 2, certificationRow + 4, certificationRow + 5, 1, 15,
+            "Prepared by:", settings.PayrollPreparedName, settings.PayrollPreparedTitle)
+        WriteSignatoryBlock(sheet, certificationRow + 2, certificationRow + 4, certificationRow + 5, 16, 31,
+            "Checked by:", settings.DtrCheckedName, settings.DtrCheckedTitle)
+        WriteSignatoryBlock(sheet, certificationRow + 2, certificationRow + 4, certificationRow + 5, 32, lastColumn,
+            "Approved for payment:", settings.PayrollApprovedName, settings.PayrollApprovedTitle)
+
+        FormatUniversalPayrollSheet(sheet, dataStartRow, totalRow, certificationRow + 5, lastColumn)
+    End Sub
+
+    Private Sub WriteUniversalContext(
+        sheet As IXLWorksheet,
+        mainClientName As String,
+        detachmentName As String,
+        clientAddress As String,
+        cutoff As String,
+        lastColumn As Integer
+    )
+        sheet.Range(6, 1, 6, 5).Merge()
+        sheet.Cell(6, 1).Value = "MAIN CLIENT: " & mainClientName
+        sheet.Range(6, 6, 6, 16).Merge()
+        sheet.Cell(6, 6).Value = "DETACHMENT: " & detachmentName
+        sheet.Range(6, 17, 6, 34).Merge()
+        sheet.Cell(6, 17).Value = "ADDRESS: " & clientAddress
+        sheet.Range(6, 35, 6, lastColumn).Merge()
+        sheet.Cell(6, 35).Value = "PERIOD: " & ConvertCutoffToReadable(cutoff)
+        With sheet.Range(6, 1, 6, lastColumn).Style
+            .Font.Bold = True
+            .Font.FontSize = 8
+            .Fill.BackgroundColor = XLColor.FromHtml("#F4F6F7")
+            .Alignment.Vertical = XLAlignmentVerticalValues.Center
+            .Alignment.WrapText = True
+            .Border.BottomBorder = XLBorderStyleValues.Thin
+        End With
+    End Sub
+
+    Private Sub WriteUniversalSummary(
+        sheet As IXLWorksheet,
+        dataStartRow As Integer,
+        dataEndRow As Integer,
+        totalRow As Integer,
+        lastColumn As Integer
+    )
+        Dim blocks = New Tuple(Of Integer, Integer, String, String)() {
+            Tuple.Create(1, 11, "TOTAL EARNINGS", "AG"),
+            Tuple.Create(12, 22, "TOTAL DEDUCTIONS", "AR"),
+            Tuple.Create(23, 33, "NET PAYROLL", "AS"),
+            Tuple.Create(34, lastColumn, "EMPLOYEES ENTERED", String.Empty)
+        }
+        For Each block In blocks
+            sheet.Range(7, block.Item1, 7, block.Item2).Merge()
+            sheet.Cell(7, block.Item1).Value = block.Item3
+            sheet.Range(8, block.Item1, 8, block.Item2).Merge()
+            If block.Item4 = String.Empty Then
+                sheet.Cell(8, block.Item1).FormulaA1 = $"COUNTA(A{dataStartRow}:A{dataEndRow})"
+                sheet.Cell(8, block.Item1).Style.NumberFormat.Format = "0"
+            Else
+                sheet.Cell(8, block.Item1).FormulaA1 = $"{block.Item4}{totalRow}"
+                sheet.Cell(8, block.Item1).Style.NumberFormat.Format = MoneyFormat
+            End If
+        Next
+
+        With sheet.Range(7, 1, 7, lastColumn).Style
+            .Fill.BackgroundColor = XLColor.FromHtml("#006B66")
+            .Font.FontColor = XLColor.White
+            .Font.Bold = True
+            .Alignment.Horizontal = XLAlignmentHorizontalValues.Center
+        End With
+        With sheet.Range(8, 1, 8, lastColumn).Style
+            .Fill.BackgroundColor = XLColor.FromHtml("#D9F0ED")
+            .Font.Bold = True
+            .Alignment.Horizontal = XLAlignmentHorizontalValues.Center
+            .Border.BottomBorder = XLBorderStyleValues.Thin
+        End With
+        sheet.Range(9, 1, 9, lastColumn).Merge()
+        sheet.Cell(9, 1).Value = "COLOR GUIDE: Yellow cells are DTR/pay-basis inputs. Green cells are policy-driven formulas. Blue cells are allowances and deductions."
+        sheet.Cell(9, 1).Style.Font.Italic = True
+        sheet.Cell(9, 1).Style.Font.FontSize = 7
+        sheet.Cell(9, 1).Style.Font.FontColor = XLColor.FromHtml("#006B66")
+    End Sub
+
+    Private Sub WriteUniversalHeaders(sheet As IXLWorksheet)
+        SetUniversalGroupHeader(sheet, 1, 1, "EMPLOYEE")
+        SetUniversalGroupHeader(sheet, 2, 4, "PAY BASIS")
+        SetUniversalGroupHeader(sheet, 5, 16, "TIME INPUTS (HOURS)")
+        SetUniversalGroupHeader(sheet, 17, 28, "CALCULATED EARNINGS")
+        SetUniversalGroupHeader(sheet, 29, 32, "MANUAL EARNINGS")
+        SetUniversalGroupHeader(sheet, 33, 33, "TOTAL")
+        SetUniversalGroupHeader(sheet, 34, 44, "DEDUCTIONS")
+        SetUniversalGroupHeader(sheet, 45, 45, "RESULTS")
+        SetUniversalGroupHeader(sheet, 46, 46, "SIGNATURE")
+
+        Dim headers = {
+            "EMPLOYEE NAME", "DAILY WAGE", "NO. DAYS", "TOTAL HRS",
+            "REG", "SUN", "LH", "SH", "ND REG", "ND SUN", "ND LH", "ND SH", "OT REG", "OT SUN", "OT LH", "OT SH",
+            "BASIC PAY", "SUNDAY PAY", "LEGAL HOLIDAY", "SPECIAL HOLIDAY", "ND REG PAY", "ND SUN PAY", "ND LH PAY", "ND SH PAY",
+            "OT REG PAY", "OT SUN PAY", "OT LH PAY", "OT SH PAY",
+            "INCENTIVE PAY", "OFFICER ALLOW.", "UNIFORM ALLOW.", "OTHER EARNINGS", "TOTAL EARNINGS",
+            "SSS", "SSS PROVIDENT", "PHILHEALTH", "PAG-IBIG", "CASH BOND", "SSS LOAN", "SSS CAL LOAN",
+            "PAG-IBIG LOAN", "PAG-IBIG CAL LOAN", "OTHER DEDUCTIONS", "TOTAL DEDUCTIONS", "NET AMOUNT PAID", "SIGNATURE"
+        }
+        For index As Integer = 0 To headers.Length - 1
+            sheet.Cell(11, index + 1).Value = headers(index)
+        Next
+
+        With sheet.Range(11, 1, 11, 46).Style
+            .Fill.BackgroundColor = XLColor.FromHtml("#E8EEF2")
+            .Font.Bold = True
+            .Font.FontSize = 7
+            .Alignment.Horizontal = XLAlignmentHorizontalValues.Center
+            .Alignment.Vertical = XLAlignmentVerticalValues.Center
+            .Alignment.WrapText = True
+            .Border.TopBorder = XLBorderStyleValues.Thin
+            .Border.BottomBorder = XLBorderStyleValues.Thin
+            .Border.LeftBorder = XLBorderStyleValues.Thin
+            .Border.RightBorder = XLBorderStyleValues.Thin
+        End With
+    End Sub
+
+    Private Sub SetUniversalGroupHeader(sheet As IXLWorksheet, firstColumn As Integer, lastColumn As Integer, text As String)
+        If lastColumn > firstColumn Then sheet.Range(10, firstColumn, 10, lastColumn).Merge()
+        sheet.Cell(10, firstColumn).Value = text
+        With sheet.Range(10, firstColumn, 10, lastColumn).Style
+            .Fill.BackgroundColor = XLColor.FromHtml("#008985")
+            .Font.FontColor = XLColor.White
+            .Font.Bold = True
+            .Font.FontSize = 7
+            .Alignment.Horizontal = XLAlignmentHorizontalValues.Center
+            .Alignment.Vertical = XLAlignmentVerticalValues.Center
+            .Border.TopBorder = XLBorderStyleValues.Thin
+            .Border.BottomBorder = XLBorderStyleValues.Thin
+            .Border.LeftBorder = XLBorderStyleValues.Thin
+            .Border.RightBorder = XLBorderStyleValues.Thin
+        End With
+    End Sub
+
+    Private Sub WriteUniversalPayrollDataRow(sheet As IXLWorksheet, rowNumber As Integer, item As PayrollExportRow, dailyWage As Decimal)
+        Dim values = New Decimal() {
+            item.RegularHours, item.SundayHours, item.LegalHolidayHours, item.SpecialHolidayHours,
+            item.NightDifferentialRegularHours, item.NightDifferentialSundayHours,
+            item.NightDifferentialLegalHolidayHours, item.NightDifferentialSpecialHolidayHours,
+            item.OvertimeRegularHours, item.OvertimeSundayHours,
+            item.OvertimeLegalHolidayHours, item.OvertimeSpecialHolidayHours
+        }
+        sheet.Cell(rowNumber, 1).Value = item.EmployeeName
+        sheet.Cell(rowNumber, 2).Value = dailyWage
+        sheet.Cell(rowNumber, 3).Value = item.NumberOfDays
+        sheet.Cell(rowNumber, 4).Value = item.TotalHours
+        For index As Integer = 0 To values.Length - 1
+            sheet.Cell(rowNumber, 5 + index).Value = values(index)
+        Next
+
+        For index As Integer = 0 To SubClientPayrollPolicyService.PayCodeOrder.Length - 1
+            Dim code = SubClientPayrollPolicyService.PayCodeOrder(index)
+            Dim settingsRow = index + 2
+            Dim inputColumn = ColumnLetter(5 + index)
+            Dim payColumn = 17 + index
+            Dim formula As String
+            If code.Equals("ND_REG", StringComparison.OrdinalIgnoreCase) Then
+                formula = $"IF('SETTINGS'!$E${settingsRow}=0,0,IF('SETTINGS'!$B$5=1,'SETTINGS'!$B$6/'SETTINGS'!$B$11/'SETTINGS'!$B$4*$C{rowNumber},$B{rowNumber}/'SETTINGS'!$B$3*'SETTINGS'!$F${settingsRow}*{inputColumn}{rowNumber}))"
+            Else
+                formula = $"IF('SETTINGS'!$E${settingsRow}=0,0,$B{rowNumber}/'SETTINGS'!$B$3*'SETTINGS'!$F${settingsRow}*{inputColumn}{rowNumber})"
+            End If
+            sheet.Cell(rowNumber, payColumn).FormulaA1 = formula
+        Next
+
+        sheet.Cell(rowNumber, 29).FormulaA1 =
+            $"IF('SETTINGS'!$B$7=0,0,$B{rowNumber}*'SETTINGS'!$B$8/'SETTINGS'!$B$9/'SETTINGS'!$B$10/'SETTINGS'!$B$4*$C{rowNumber})"
+        sheet.Cell(rowNumber, 30).Value = item.OfficerAllowance
+        sheet.Cell(rowNumber, 31).Value = item.SgUniformAllowance
+        sheet.Cell(rowNumber, 32).Value = item.OtherEarnings
+        sheet.Cell(rowNumber, 33).FormulaA1 = $"SUM(Q{rowNumber}:AF{rowNumber})"
+        sheet.Cell(rowNumber, 34).Value = item.SssDeduction
+        sheet.Cell(rowNumber, 35).Value = item.SssProvidentDeduction
+        sheet.Cell(rowNumber, 36).Value = item.PhilHealthDeduction
+        sheet.Cell(rowNumber, 37).Value = item.PagIbigDeduction
+        sheet.Cell(rowNumber, 38).Value = item.CashBondDeduction
+        sheet.Cell(rowNumber, 39).Value = item.SssLoanDeduction
+        sheet.Cell(rowNumber, 40).Value = item.SssCalLoanDeduction
+        sheet.Cell(rowNumber, 41).Value = item.PagIbigLoanDeduction
+        sheet.Cell(rowNumber, 42).Value = item.PagIbigCalLoanDeduction
+        sheet.Cell(rowNumber, 43).Value = item.OtherDeductions
+        sheet.Cell(rowNumber, 44).FormulaA1 = $"SUM(AH{rowNumber}:AQ{rowNumber})"
+        sheet.Cell(rowNumber, 45).FormulaA1 = $"AG{rowNumber}-AR{rowNumber}"
+    End Sub
+
+    Private Sub FormatUniversalPayrollSheet(
+        sheet As IXLWorksheet,
+        dataStartRow As Integer,
+        totalRow As Integer,
+        lastPrintRow As Integer,
+        lastColumn As Integer
+    )
+        Dim dataRange = sheet.Range(dataStartRow, 1, totalRow, lastColumn)
+        With dataRange.Style
+            .Border.TopBorder = XLBorderStyleValues.Thin
+            .Border.BottomBorder = XLBorderStyleValues.Thin
+            .Border.LeftBorder = XLBorderStyleValues.Thin
+            .Border.RightBorder = XLBorderStyleValues.Thin
+            .Alignment.Vertical = XLAlignmentVerticalValues.Center
+            .Font.FontSize = 7.5
+        End With
+        sheet.Range(dataStartRow, 2, totalRow, 16).Style.Fill.BackgroundColor = XLColor.FromHtml("#FFF7DC")
+        sheet.Range(dataStartRow, 17, totalRow, 28).Style.Fill.BackgroundColor = XLColor.FromHtml("#E6F4E8")
+        sheet.Range(dataStartRow, 29, totalRow, 32).Style.Fill.BackgroundColor = XLColor.FromHtml("#EAF2F8")
+        sheet.Range(dataStartRow, 33, totalRow, 33).Style.Fill.BackgroundColor = XLColor.FromHtml("#E6F4E8")
+        sheet.Range(dataStartRow, 34, totalRow, 43).Style.Fill.BackgroundColor = XLColor.FromHtml("#EAF2F8")
+        sheet.Range(dataStartRow, 44, totalRow, 45).Style.Fill.BackgroundColor = XLColor.FromHtml("#E6F4E8")
+
+        sheet.Range(dataStartRow, 2, totalRow, 2).Style.NumberFormat.Format = MoneyFormat
+        sheet.Range(dataStartRow, 3, totalRow, 16).Style.NumberFormat.Format = QuantityFormat
+        sheet.Range(dataStartRow, 17, totalRow, 45).Style.NumberFormat.Format = MoneyFormat
+        sheet.Range(dataStartRow, 2, totalRow, 45).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Right
+
+        sheet.Column(1).Width = 27
+        sheet.Columns(2, 4).Width = 10
+        sheet.Columns(5, 16).Width = 8.5
+        sheet.Columns(17, 28).Width = 12
+        sheet.Columns(29, 32).Width = 13
+        sheet.Column(33).Width = 14
+        sheet.Columns(34, 43).Width = 12
+        sheet.Columns(44, 45).Width = 15
+        sheet.Column(46).Width = 17
+        sheet.Row(6).Height = 30
+        sheet.Row(7).Height = 24
+        sheet.Row(8).Height = 24
+        sheet.Row(10).Height = 24
+        sheet.Row(11).Height = 44
+        sheet.Rows(dataStartRow, totalRow).Height = 20
+
+        sheet.SheetView.FreezeRows(11)
+        sheet.SheetView.FreezeColumns(1)
+        sheet.ShowGridLines = False
+        sheet.PageSetup.PageOrientation = XLPageOrientation.Landscape
+        sheet.PageSetup.PaperSize = XLPaperSize.LegalPaper
+        sheet.PageSetup.FitToPages(1, 0)
+        sheet.PageSetup.SetRowsToRepeatAtTop(1, 11)
+        sheet.PageSetup.PrintAreas.Add(1, 1, lastPrintRow, lastColumn)
+        sheet.PageSetup.Margins.Left = 0.15
+        sheet.PageSetup.Margins.Right = 0.15
+        sheet.PageSetup.Margins.Top = 0.25
+        sheet.PageSetup.Margins.Bottom = 0.25
+        sheet.PageSetup.CenterHorizontally = True
+    End Sub
 
     Private Sub BuildSettingsSheet(workbook As XLWorkbook, dailyWage As Decimal, settings As PayrollReportSettings)
         Dim sheet = workbook.Worksheets.Add("SETTINGS")
@@ -373,7 +759,7 @@ Public Module PayrollReportService
             Dim pairRowIndex = index \ slipsPerRow
             Dim startRow = 1 + pairRowIndex * blockHeight
             Dim startColumn = If(index Mod slipsPerRow = 0, 1, 9)
-            Dim payrollRow = 15 + index
+            Dim payrollRow = 12 + index
             WritePayslipBlock(sheet, startRow, startColumn, payrollRow, clientName, clientAddress, cutoff, firstCutoff, settings)
         Next
 
@@ -439,14 +825,14 @@ Public Module PayrollReportService
         sheet.Cell(startRow + 3, valueStartColumn).Value = clientAddress
         sheet.Cell(startRow + 4, typeColumn).Value = "Name:"
         sheet.Range(startRow + 4, valueStartColumn, startRow + 4, deductionAmountColumn).Merge()
-        sheet.Cell(startRow + 4, valueStartColumn).FormulaA1 = $"'PAYROLL'!A{payrollRow}"
+        sheet.Cell(startRow + 4, valueStartColumn).FormulaA1 = $"'PAYROLL SHEET'!A{payrollRow}"
         sheet.Cell(startRow + 5, typeColumn).Value = "Period Covered:"
         sheet.Range(startRow + 5, valueStartColumn, startRow + 5, deductionAmountColumn).Merge()
         sheet.Cell(startRow + 5, valueStartColumn).Value = ConvertCutoffToReadable(cutoff)
         sheet.Cell(startRow + 6, typeColumn).Value = "Total Number of Days"
-        sheet.Cell(startRow + 6, hoursColumn).FormulaA1 = $"'PAYROLL'!B{payrollRow}"
+        sheet.Cell(startRow + 6, hoursColumn).FormulaA1 = $"'PAYROLL SHEET'!C{payrollRow}"
         sheet.Cell(startRow + 6, deductionTypeColumn).Value = "Total Number of Hrs."
-        sheet.Cell(startRow + 6, deductionAmountColumn).FormulaA1 = $"'PAYROLL'!C{payrollRow}"
+        sheet.Cell(startRow + 6, deductionAmountColumn).FormulaA1 = $"'PAYROLL SHEET'!D{payrollRow}"
 
         sheet.Range(startRow + 7, startColumn, startRow + 7, amountColumn).Merge()
         sheet.Cell(startRow + 7, startColumn).Value = "SALARY"
@@ -461,51 +847,53 @@ Public Module PayrollReportService
         sheet.Cell(startRow + 8, deductionTypeColumn).Value = "TYPE"
         sheet.Cell(startRow + 8, deductionAmountColumn).Value = "AMOUNT (PHP)"
 
-        Dim earningLabels = New String() {"Daily Wage", "Basic Pay", "Sunday", "Special Holiday", "Legal Holiday", "OT Regular Day", "Incentive Pay", "SG Uniform Allowance", "Officer's Allowance"}
+        Dim earningLabels = New String() {"Daily Wage", "Basic Pay", "Sunday Pay", "Legal Holiday", "Special Holiday", "Night Differential", "Overtime", "Incentive Pay", "Allowances / Other"}
         For offset As Integer = 0 To earningLabels.Length - 1
             sheet.Cell(startRow + 9 + offset, typeColumn).Value = earningLabels(offset)
         Next
-        sheet.Cell(startRow + 9, amountColumn).FormulaA1 = "'SETTINGS'!$B$2"
-        sheet.Cell(startRow + 10, hoursColumn).FormulaA1 = $"'PAYROLL'!D{payrollRow}"
-        sheet.Cell(startRow + 10, amountColumn).FormulaA1 = $"'PAYROLL'!L{payrollRow}"
-        sheet.Cell(startRow + 11, hoursColumn).FormulaA1 = $"'PAYROLL'!E{payrollRow}"
-        sheet.Cell(startRow + 11, amountColumn).FormulaA1 = $"'PAYROLL'!M{payrollRow}"
-        sheet.Cell(startRow + 12, hoursColumn).FormulaA1 = $"'PAYROLL'!I{payrollRow}"
-        sheet.Cell(startRow + 12, amountColumn).FormulaA1 = $"'PAYROLL'!O{payrollRow}"
-        sheet.Cell(startRow + 13, hoursColumn).FormulaA1 = $"'PAYROLL'!H{payrollRow}"
-        sheet.Cell(startRow + 13, amountColumn).FormulaA1 = $"'PAYROLL'!N{payrollRow}"
-        sheet.Cell(startRow + 14, hoursColumn).FormulaA1 = $"'PAYROLL'!K{payrollRow}"
-        sheet.Cell(startRow + 14, amountColumn).FormulaA1 = $"'PAYROLL'!P{payrollRow}"
-        sheet.Cell(startRow + 15, amountColumn).FormulaA1 = $"'PAYROLL'!Q{payrollRow}"
-        sheet.Cell(startRow + 16, amountColumn).FormulaA1 = $"'PAYROLL'!R{payrollRow}"
-        sheet.Cell(startRow + 17, amountColumn).FormulaA1 = $"'PAYROLL'!S{payrollRow}"
+        sheet.Cell(startRow + 9, amountColumn).FormulaA1 = $"'PAYROLL SHEET'!B{payrollRow}"
+        sheet.Cell(startRow + 10, hoursColumn).FormulaA1 = $"'PAYROLL SHEET'!E{payrollRow}"
+        sheet.Cell(startRow + 10, amountColumn).FormulaA1 = $"'PAYROLL SHEET'!Q{payrollRow}"
+        sheet.Cell(startRow + 11, hoursColumn).FormulaA1 = $"'PAYROLL SHEET'!F{payrollRow}"
+        sheet.Cell(startRow + 11, amountColumn).FormulaA1 = $"'PAYROLL SHEET'!R{payrollRow}"
+        sheet.Cell(startRow + 12, hoursColumn).FormulaA1 = $"'PAYROLL SHEET'!G{payrollRow}"
+        sheet.Cell(startRow + 12, amountColumn).FormulaA1 = $"'PAYROLL SHEET'!S{payrollRow}"
+        sheet.Cell(startRow + 13, hoursColumn).FormulaA1 = $"'PAYROLL SHEET'!H{payrollRow}"
+        sheet.Cell(startRow + 13, amountColumn).FormulaA1 = $"'PAYROLL SHEET'!T{payrollRow}"
+        sheet.Cell(startRow + 14, hoursColumn).FormulaA1 = $"SUM('PAYROLL SHEET'!I{payrollRow}:L{payrollRow})"
+        sheet.Cell(startRow + 14, amountColumn).FormulaA1 = $"SUM('PAYROLL SHEET'!U{payrollRow}:X{payrollRow})"
+        sheet.Cell(startRow + 15, hoursColumn).FormulaA1 = $"SUM('PAYROLL SHEET'!M{payrollRow}:P{payrollRow})"
+        sheet.Cell(startRow + 15, amountColumn).FormulaA1 = $"SUM('PAYROLL SHEET'!Y{payrollRow}:AB{payrollRow})"
+        sheet.Cell(startRow + 16, amountColumn).FormulaA1 = $"'PAYROLL SHEET'!AC{payrollRow}"
+        sheet.Cell(startRow + 17, amountColumn).FormulaA1 = $"SUM('PAYROLL SHEET'!AD{payrollRow}:AF{payrollRow})"
 
         If firstCutoff Then
-            WritePayslipDeduction(sheet, startRow + 9, startColumn, "SSS", $"'PAYROLL'!U{payrollRow}")
-            WritePayslipDeduction(sheet, startRow + 10, startColumn, "PhilHealth", $"'PAYROLL'!V{payrollRow}")
-            WritePayslipDeduction(sheet, startRow + 11, startColumn, "Pag-IBIG", $"'PAYROLL'!W{payrollRow}")
+            WritePayslipDeduction(sheet, startRow + 9, startColumn, "SSS", $"'PAYROLL SHEET'!AH{payrollRow}")
+            WritePayslipDeduction(sheet, startRow + 10, startColumn, "SSS Provident", $"'PAYROLL SHEET'!AI{payrollRow}")
+            WritePayslipDeduction(sheet, startRow + 11, startColumn, "PhilHealth", $"'PAYROLL SHEET'!AJ{payrollRow}")
+            WritePayslipDeduction(sheet, startRow + 12, startColumn, "Pag-IBIG", $"'PAYROLL SHEET'!AK{payrollRow}")
+            WritePayslipDeduction(sheet, startRow + 13, startColumn, "Other", $"'PAYROLL SHEET'!AQ{payrollRow}")
         Else
-            WritePayslipDeduction(sheet, startRow + 9, startColumn, "Cash Bond", $"'PAYROLL'!U{payrollRow}")
-            WritePayslipDeduction(sheet, startRow + 10, startColumn, "SSS Loan", $"'PAYROLL'!V{payrollRow}")
-            WritePayslipDeduction(sheet, startRow + 11, startColumn, "SSS Cal Loan", $"'PAYROLL'!W{payrollRow}")
-            WritePayslipDeduction(sheet, startRow + 12, startColumn, "Pag-IBIG Loan", $"'PAYROLL'!X{payrollRow}")
-            WritePayslipDeduction(sheet, startRow + 13, startColumn, "Pag-IBIG Cal Loan", $"'PAYROLL'!Y{payrollRow}")
+            WritePayslipDeduction(sheet, startRow + 9, startColumn, "Cash Bond", $"'PAYROLL SHEET'!AL{payrollRow}")
+            WritePayslipDeduction(sheet, startRow + 10, startColumn, "SSS Loan", $"'PAYROLL SHEET'!AM{payrollRow}")
+            WritePayslipDeduction(sheet, startRow + 11, startColumn, "SSS Cal Loan", $"'PAYROLL SHEET'!AN{payrollRow}")
+            WritePayslipDeduction(sheet, startRow + 12, startColumn, "Pag-IBIG Loan", $"'PAYROLL SHEET'!AO{payrollRow}")
+            WritePayslipDeduction(sheet, startRow + 13, startColumn, "Pag-IBIG Cal Loan", $"'PAYROLL SHEET'!AP{payrollRow}")
+            WritePayslipDeduction(sheet, startRow + 14, startColumn, "Other", $"'PAYROLL SHEET'!AQ{payrollRow}")
         End If
 
-        Dim totalDeductionColumn = If(firstCutoff, "X", "Z")
-        Dim netColumn = If(firstCutoff, "Y", "AA")
         sheet.Cell(startRow + 18, typeColumn).Value = "TOTAL EARNINGS"
         sheet.Range(startRow + 18, typeColumn, startRow + 18, hoursColumn).Merge()
-        sheet.Cell(startRow + 18, amountColumn).FormulaA1 = $"'PAYROLL'!T{payrollRow}"
+        sheet.Cell(startRow + 18, amountColumn).FormulaA1 = $"'PAYROLL SHEET'!AG{payrollRow}"
         sheet.Cell(startRow + 18, deductionTypeColumn).Value = "TOTAL DEDUCTIONS"
         sheet.Range(startRow + 18, deductionTypeColumn, startRow + 18, deductionValueStartColumn).Merge()
-        sheet.Cell(startRow + 18, deductionAmountColumn).FormulaA1 = $"'PAYROLL'!{totalDeductionColumn}{payrollRow}"
+        sheet.Cell(startRow + 18, deductionAmountColumn).FormulaA1 = $"'PAYROLL SHEET'!AR{payrollRow}"
         sheet.Range(startRow + 19, typeColumn, startRow + 19, deductionValueStartColumn).Merge()
         sheet.Cell(startRow + 19, typeColumn).Value = "**** NET PAY ****"
         sheet.Cell(startRow + 19, typeColumn).Style.Font.Bold = True
         sheet.Cell(startRow + 19, typeColumn).Style.Font.Italic = True
         sheet.Cell(startRow + 19, typeColumn).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center
-        sheet.Cell(startRow + 19, deductionAmountColumn).FormulaA1 = $"'PAYROLL'!{netColumn}{payrollRow}"
+        sheet.Cell(startRow + 19, deductionAmountColumn).FormulaA1 = $"'PAYROLL SHEET'!AS{payrollRow}"
 
         Dim blockRange = sheet.Range(startRow, startColumn, endRow - 1, deductionAmountColumn)
         blockRange.Style.Border.TopBorder = XLBorderStyleValues.Thin

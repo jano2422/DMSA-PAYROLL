@@ -1,3 +1,4 @@
+Imports System.Data
 Imports System.Data.OleDb
 Imports System.Globalization
 
@@ -34,7 +35,14 @@ Public Partial Class FRM_DTR_DEDUCTION_UPDATE
     Private ReadOnly _initialLhHours As Decimal
     Private _dailyWage As Decimal
     Private _subClientName As String
-    Private ReadOnly _reportSettings As PayrollReportSettings = PayrollReportSettingsService.LoadSettingsOrDefault()
+    Private _payrollPolicy As SubClientPayrollPolicy
+    Private _ndRegHours As Decimal
+    Private _ndSunHours As Decimal
+    Private _ndLhHours As Decimal
+    Private _ndShHours As Decimal
+    Private _otSunHours As Decimal
+    Private _otLhHours As Decimal
+    Private _otShHours As Decimal
 
     Public Sub New()
         _employeeId = "230096"
@@ -153,6 +161,7 @@ Public Partial Class FRM_DTR_DEDUCTION_UPDATE
         If useDatabaseWage Then
             LoadSubClientDetails()
         End If
+        LoadPayrollPolicyAndExtendedHours()
 
         lblEmployeeValue.Text = _employeeId & " - " & _employeeName
         lblCutoffValue.Text = FormatCutoff(_cutoff)
@@ -181,31 +190,67 @@ Public Partial Class FRM_DTR_DEDUCTION_UPDATE
     End Sub
 
     Private Sub RefreshWorkValueSummary()
-        Dim hourlyRate As Decimal = If(_dailyWage > 0D, _dailyWage / _reportSettings.HoursPerDay, 0D)
+        If _payrollPolicy Is Nothing Then _payrollPolicy = SubClientPayrollPolicy.CreateDefault(_subClientId)
+        Dim hourlyRate As Decimal = If(_dailyWage > 0D, _dailyWage / _payrollPolicy.HoursPerDay, 0D)
         Dim officerAllowance = If(_isFirstCutoff,
             ReadDisplayDecimal(txtOfficerAllowanceFirst),
             ReadDisplayDecimal(txtOfficerAllowanceSecond))
         Dim sgUniformAllowance = If(_isFirstCutoff,
             ReadDisplayDecimal(txtSgUniformAllowanceFirst),
             ReadDisplayDecimal(txtSgUniformAllowanceSecond))
-        Dim totalEarnings = PayrollReportSettingsService.CalculateTotalEarnings(
-            _reportSettings,
+        Dim totalEarnings = SubClientPayrollPolicyService.CalculateTotalEarnings(
+            _payrollPolicy,
             _dailyWage,
-            _totalHours,
+            _cutoff,
+            _numDays,
             _regHours,
             _sunHours,
-            _shHours,
             _lhHours,
+            _shHours,
+            _ndRegHours,
+            _ndSunHours,
+            _ndLhHours,
+            _ndShHours,
             _otRegHours,
+            _otSunHours,
+            _otLhHours,
+            _otShHours,
+            officerAllowance,
             sgUniformAllowance,
-            officerAllowance)
+            0D)
 
         lblTotalWorkingHoursValue.Text = _totalHours.ToString("0.##")
         lblHourlyRateValue.Text = FormatPeso(hourlyRate)
         lblTotalWorkPesoCaption.Text = "TOTAL EARNINGS"
         lblTotalWorkPesoValue.Text = FormatPeso(totalEarnings)
-        lblFooterStatus.Text = "Total Earnings includes premiums, OT, incentive pay, and allowances using the admin report settings."
+        lblFooterStatus.Text = "Total Earnings preview uses the selected sub-client payroll rules: " &
+            SubClientPayrollPolicyService.DescribePolicy(_payrollPolicy) & "."
     End Sub
+
+    Private Sub LoadPayrollPolicyAndExtendedHours()
+        Try
+            _payrollPolicy = SubClientPayrollPolicyService.LoadPolicy(_subClientId)
+        Catch
+            _payrollPolicy = SubClientPayrollPolicy.CreateDefault(_subClientId)
+        End Try
+
+        Dim latest = GetLatestDtrTotals(_employeeId, _cutoff)
+        _ndRegHours = ReadRowDecimal(latest, "ND_REG")
+        _ndSunHours = ReadRowDecimal(latest, "ND_SUN")
+        _ndLhHours = ReadRowDecimal(latest, "ND_LH")
+        _ndShHours = ReadRowDecimal(latest, "ND_SH")
+        _otSunHours = ReadRowDecimal(latest, "OT_SUN")
+        _otLhHours = ReadRowDecimal(latest, "OT_LH")
+        _otShHours = ReadRowDecimal(latest, "OT_SH")
+    End Sub
+
+    Private Function ReadRowDecimal(row As DataRow, columnName As String) As Decimal
+        If row Is Nothing OrElse Not row.Table.Columns.Contains(columnName) OrElse row.IsNull(columnName) Then Return 0D
+        Dim value As Decimal
+        Decimal.TryParse(Convert.ToString(row(columnName), CultureInfo.InvariantCulture), NumberStyles.Any,
+            CultureInfo.InvariantCulture, value)
+        Return value
+    End Function
 
     Private Sub LoadSubClientDetails()
         If _subClientId <= 0 Then Return

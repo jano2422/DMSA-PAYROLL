@@ -64,7 +64,13 @@ Public Class FRM_HR_REPORTS
         Show_in_Chart_Hired_Per_Month(sEmp_Status)
         ConfigureColumnChart()
         LoadChartPointsFromReportList()
-        SetChartHeading("Employees by month", "Monthly hiring activity for the selected status")
+        If sEmp_Status = String.Empty Then
+            SetChartHeading("Employees hired by month", "Monthly hires based on employee date hired")
+        Else
+            SetChartHeading(
+                sEmp_Status & " employees by month",
+                "Monthly effective status changes from employee status history")
+        End If
     End Sub
 
     Private Sub Btn_Gender_Count_Click(sender As Object, e As EventArgs) Handles Btn_Gender_Count.Click
@@ -355,7 +361,10 @@ Public Class FRM_HR_REPORTS
             Show_in_Chart_Age_Statistics("Active")
             worksheets.Add(CaptureWorksheetData("Age Bands", "Active workforce by age band", LV_Report_Statistics1))
 
-            For Each employmentStatus In New String() {"Hired", "Active", "Resigned", "AWOL", "Floating"}
+            For Each employmentStatus In New String() {
+                "Hired", "Active", "Resigned", "AWOL", "Floating",
+                "Suspended", "Terminated", "Finished Contract"
+            }
                 UpdateProcessingMessage(processingForm, "Collecting monthly " & employmentStatus.ToLowerInvariant() & " records...")
                 Dim statusFilter = If(employmentStatus = "Hired", String.Empty, employmentStatus)
                 Show_in_Chart_Hired_Per_Month(statusFilter)

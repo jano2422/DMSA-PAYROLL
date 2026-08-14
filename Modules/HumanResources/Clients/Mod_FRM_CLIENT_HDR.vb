@@ -76,41 +76,28 @@ Module Mod_FRM_CLIENT_HDR
 
 
     Public Sub Activate_Deactivate_Sub_Client(iSub_Client_ID As Integer, sClient_Desc As String, sStatus As String)
-
-        Dim SQL As String
-        Connect_to_MDB()
-
         Try
-            With FRM_CLIENT_HDR
+            Dim result As ClientOperationResult =
+                New ClientManagementService().SetWorkSiteStatus(iSub_Client_ID, sStatus)
+            If result Is Nothing OrElse Not result.Success Then
+                MsgBox(If(result Is Nothing, "The subclient status was not changed.", result.Message),
+                       vbExclamation,
+                       "Status Change Not Allowed")
+                Return
+            End If
 
+            Call Record_activity_log(
+                GlobalVariables.sEmployee_ID_Logged_in,
+                "Set to " & sStatus & " for " & sClient_Desc)
 
-                SQL = "Update TBL_CLIENT_SUB set SUB_CLIENT_STATUS = '" & sStatus & "' where sub_client_id = " & iSub_Client_ID & ""
-
-                Dim SQLcmd2 As OleDbCommand = New OleDbCommand(SQL, GlobalVariables.GlobalCon)
-                SQLcmd2.ExecuteNonQuery()
-                SQLcmd2.Dispose()
-
-                Call Insert_Client_Status_History(iSub_Client_ID, sStatus)
-
-                Call Record_activity_log(GlobalVariables.sEmployee_ID_Logged_in, "Set to " & sStatus & " for " & sClient_Desc)
-
-                If sStatus = "Inactive" Then
-                    MsgBox(sClient_Desc & " was successfully Deactivated! ", vbInformation, "Deactivated")
-                Else
-                    MsgBox(sClient_Desc & " was successfully Re-Activated! ", vbInformation, "Re-Activated")
-                End If
-
-            End With
+            If String.Equals(sStatus, "Inactive", StringComparison.OrdinalIgnoreCase) Then
+                MsgBox(sClient_Desc & " was successfully deactivated.", vbInformation, "Deactivated")
+            Else
+                MsgBox(sClient_Desc & " was successfully reactivated.", vbInformation, "Reactivated")
+            End If
         Catch ex As Exception
-            MsgBox(ex.Message, vbCritical, "Error Re or dE Activating Main Client")
-
+            MsgBox(ex.Message, vbCritical, "Error Changing Subclient Status")
         End Try
-
-        GlobalVariables.GlobalCon.Close()
-
-
-
-
     End Sub
 
 

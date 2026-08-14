@@ -880,26 +880,46 @@ WHERE
 
     Public Sub Show_in_Chart_Hired_Per_Month(sStatus As String)
 
-        Dim da As New OleDb.OleDbDataAdapter
         Dim dt As New DataTable
 
-        dt.Clear()
-        dt.Reset()
-        Dim SQL As String
-
         Try
+            Dim normalizedStatus = If(sStatus, String.Empty).Trim()
+            Dim sql As String
 
-            'SQL = "Select FORMAT(DATE_HIRED,'yyyy') AS YEAR_VALUE, count(*) as status_count From HR_EMPLOYEE_RECORD_HDR WHERE EMPLOYMENT_STATUS = '" & sStatus & "' Group By FORMAT(DATE_HIRED,'yyyy') order by 2 desc"
+            If normalizedStatus = String.Empty Then
+                ' "Hired" is the only monthly event whose business date is DATE_HIRED.
+                sql = "SELECT Format([DATE_HIRED], ""yyyy-mm"") AS ReportMonth, Count(*) AS TotalEmployees " &
+                      "FROM HR_EMPLOYEE_RECORD_HDR " &
+                      "WHERE [DATE_HIRED] Is Not Null " &
+                      "AND Year([DATE_HIRED]) IN (Year(Date()), Year(Date()) - 1) " &
+                      "GROUP BY Format([DATE_HIRED], ""yyyy-mm"") " &
+                      "ORDER BY Format([DATE_HIRED], ""yyyy-mm"")"
+            Else
+                ' Employment statuses are effective-dated events. Count each employee once
+                ' per status/month so duplicate history rows do not inflate the report.
+                sql = "SELECT ReportMonth, Count(*) AS TotalEmployees " &
+                      "FROM (" &
+                      "SELECT D.EMPLOYEE_ID, Format(D.EFFECTIVITY_DATE, ""yyyy-mm"") AS ReportMonth " &
+                      "FROM HR_STATUS_CHANGE_DTL AS D " &
+                      "WHERE D.EMPLOYEE_ID Is Not Null " &
+                      "AND D.EFFECTIVITY_DATE Is Not Null " &
+                      "AND Year(D.EFFECTIVITY_DATE) IN (Year(Date()), Year(Date()) - 1) " &
+                      "AND UCase(Trim(D.EMPLOYMENT_STATUS)) = UCase(Trim(?)) " &
+                      "GROUP BY D.EMPLOYEE_ID, Format(D.EFFECTIVITY_DATE, ""yyyy-mm"")" &
+                      ") AS MonthlyStatusEvents " &
+                      "GROUP BY ReportMonth " &
+                      "ORDER BY ReportMonth"
+            End If
 
-            SQL = "SELECT Format([DATE_HIRED], ""yyyy-mm"") AS HireMonth, Count(*) AS TotalHired"
-            SQL = SQL & " From HR_EMPLOYEE_RECORD_HDR"
-            SQL = SQL & "  Where DATE_HIRED Is Not NULL AND Year([DATE_HIRED]) IN (Year(Date()), Year(Date()) - 1)"
-            SQL = SQL & "  AND UCase(EMPLOYMENT_STATUS) like '%" & sStatus & "%'"
-            SQL = SQL & " GROUP BY Format([DATE_HIRED], ""yyyy-mm"")"
-            SQL = SQL & "  ORDER BY Format([DATE_HIRED], ""yyyy-mm"")"
+            Using command As New OleDbCommand(sql, Mod_GlobalVariables.GlobalVariables.GlobalCon)
+                If normalizedStatus <> String.Empty Then
+                    command.Parameters.Add("@EmploymentStatus", OleDbType.VarWChar, 50).Value = normalizedStatus
+                End If
 
-            da = New OleDbDataAdapter(SQL, Mod_GlobalVariables.GlobalVariables.GlobalCon)
-            da.Fill(dt)
+                Using adapter As New OleDbDataAdapter(command)
+                    adapter.Fill(dt)
+                End Using
+            End Using
 
 
             If dt.Rows.Count > 0 Then ' SHOW DATAS
@@ -909,8 +929,8 @@ WHERE
                     .Items.Clear()
                     For Each myRow In dt.Rows
 
-                        .Items.Add(myRow.Item("HireMonth")) ' Company ID
-                        .Items(.Items.Count - 1).SubItems.Add(myRow.Item("TotalHired"))
+                        .Items.Add(myRow.Item("ReportMonth"))
+                        .Items(.Items.Count - 1).SubItems.Add(myRow.Item("TotalEmployees"))
 
 
                     Next

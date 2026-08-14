@@ -261,6 +261,14 @@ Public Class ClientManagementService
         Return Nothing
     End Function
 
+    Public Function GetActiveEmployeeCountForWorkSite(id As Integer) As Integer
+        If id <= 0 Then Return 0
+
+        Using connection As OleDbConnection = CreateOpenConnection()
+            Return CountActiveEmployeesForWorkSite(connection, Nothing, id)
+        End Using
+    End Function
+
     Public Function GetContracts(siteId As Integer) As List(Of ContractRecord)
         Dim records As New List(Of ContractRecord)()
         If siteId <= 0 Then Return records
@@ -682,6 +690,16 @@ Public Class ClientManagementService
                             String.IsNullOrEmpty(siteData.RequestedStatus), currentStatus,
                             siteData.RequestedStatus)
 
+                        If String.Equals(siteData.RequestedStatus, InactiveStatus, StringComparison.Ordinal) AndAlso
+                           Not String.Equals(currentStatus, InactiveStatus, StringComparison.OrdinalIgnoreCase) Then
+                            Dim activeEmployeeCount As Integer = CountActiveEmployeesForWorkSite(
+                                connection, transaction, draft.Id)
+                            If activeEmployeeCount > 0 Then
+                                transaction.Rollback()
+                                Return Failure(ActiveEmployeeDeactivationMessage(activeEmployeeCount), draft.Id)
+                            End If
+                        End If
+
                         Const updateSql As String =
                             "UPDATE [TBL_CLIENT_SUB] SET [MAIN_CLIENT_ID] = ?, [SUB_CLIENT_NAME] = ?, " &
                             "[ADDRESS] = ?, [DAILY_WAGE] = ?, [SCHED_TYPE] = ?, [CONTACT_PERSON] = ?, " &
@@ -954,6 +972,15 @@ Public Class ClientManagementService
                            Not IsActive(parentStatus) Then
                             transaction.Rollback()
                             Return Failure("Reactivate the parent company before activating this work site.", id)
+                        End If
+
+                        If String.Equals(canonicalStatus, InactiveStatus, StringComparison.Ordinal) Then
+                            Dim activeEmployeeCount As Integer = CountActiveEmployeesForWorkSite(
+                                connection, transaction, id)
+                            If activeEmployeeCount > 0 Then
+                                transaction.Rollback()
+                                Return Failure(ActiveEmployeeDeactivationMessage(activeEmployeeCount), id)
+                            End If
                         End If
 
                         Const updateSql As String =
@@ -1653,6 +1680,32 @@ Public Class ClientManagementService
             If value Is Nothing OrElse value Is DBNull.Value Then Return Nothing
             Return SafeString(value)
         End Using
+    End Function
+
+    Private Shared Function CountActiveEmployeesForWorkSite(
+        connection As OleDbConnection,
+        transaction As OleDbTransaction,
+        workSiteId As Integer) As Integer
+
+        Const sql As String =
+            "SELECT COUNT(*) FROM [HR_EMPLOYEE_RECORD_HDR] " &
+            "WHERE [SUB_CLIENT_ID] = ? " &
+            "AND UCase(Trim([EMPLOYMENT_STATUS])) = ?"
+        Using command As New OleDbCommand(sql, connection, transaction)
+            AddIntegerParameter(command, workSiteId)
+            AddTextParameter(command, ActiveStatus.ToUpperInvariant())
+            Return SafeInteger(command.ExecuteScalar())
+        End Using
+    End Function
+
+    Private Shared Function ActiveEmployeeDeactivationMessage(activeEmployeeCount As Integer) As String
+        Return "This subclient cannot be deactivated because " &
+               activeEmployeeCount.ToString(CultureInfo.InvariantCulture) & " active " &
+               If(activeEmployeeCount = 1, "employee is", "employees are") &
+               " assigned to it. Transfer " & If(activeEmployeeCount = 1, "the employee", "them") &
+               " to another active subclient or change " &
+               If(activeEmployeeCount = 1, "the employee's", "their") &
+               " employment status first."
     End Function
 
     Private Shared Function GenerateNextWorkSiteId(connection As OleDbConnection,

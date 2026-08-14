@@ -648,7 +648,7 @@ Partial Class FRM_HR_REPORTS
         '
         Me.Cmb_Emp_Status.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
         Me.Cmb_Emp_Status.FormattingEnabled = True
-        Me.Cmb_Emp_Status.Items.AddRange(New Object() {"Hired", "Active", "Resigned", "AWOL", "Floating"})
+        Me.Cmb_Emp_Status.Items.AddRange(New Object() {"Hired", "Active", "Resigned", "AWOL", "Floating", "Suspended", "Terminated", "Finished Contract"})
         Me.Cmb_Emp_Status.Location = New System.Drawing.Point(146, 449)
         Me.Cmb_Emp_Status.Name = "Cmb_Emp_Status"
         Me.Cmb_Emp_Status.Size = New System.Drawing.Size(126, 28)

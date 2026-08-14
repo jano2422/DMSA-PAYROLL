@@ -18,13 +18,17 @@ Public Partial Class FRM_DTR_SHIFT_MANUAL
     Private ReadOnly shifts As New List(Of ShiftDefinition)
     Private ReadOnly coveredDates As New List(Of Date)
     Private isUpdatingGrid As Boolean
+    Private payrollPolicy As SubClientPayrollPolicy
+    Private payrollPolicyStatusLabel As Label
 
     Public Sub New()
         InitializeComponent()
         SetupGridPresentation()
         SetupPeriodControls()
         SetupRuntimeHandlers()
+        LoadPayrollPolicy()
         LoadSelectedEmployee()
+        SetupPayrollPolicyPanel()
         BuildPeriodDates()
     End Sub
 
@@ -45,11 +49,11 @@ Public Partial Class FRM_DTR_SHIFT_MANUAL
         If workPanel.RowStyles.Count < 3 Then Return
 
         workPanel.RowStyles(0).SizeType = SizeType.Percent
-        workPanel.RowStyles(0).Height = 34.0!
+        workPanel.RowStyles(0).Height = 30.0!
         workPanel.RowStyles(1).SizeType = SizeType.Percent
-        workPanel.RowStyles(1).Height = 26.0!
+        workPanel.RowStyles(1).Height = 20.0!
         workPanel.RowStyles(2).SizeType = SizeType.Percent
-        workPanel.RowStyles(2).Height = 40.0!
+        workPanel.RowStyles(2).Height = 50.0!
     End Sub
 
     Private Sub ConfigureGridForFullSurface(grid As DataGridView)
@@ -65,11 +69,12 @@ Public Partial Class FRM_DTR_SHIFT_MANUAL
         grid.DefaultCellStyle.SelectionBackColor = Color.FromArgb(255, 244, 184)
         grid.DefaultCellStyle.SelectionForeColor = Color.Black
         grid.RowTemplate.Height = 36
-        grid.ScrollBars = ScrollBars.None
+        grid.ScrollBars = ScrollBars.Both
     End Sub
 
     Private Sub SetupRuntimeHandlers()
         AddHandler shiftGrid.CurrentCellDirtyStateChanged, AddressOf GridCurrentCellDirtyStateChanged
+        AddHandler shiftGrid.CellClick, AddressOf ShiftGridCellClick
         AddHandler shiftGrid.CellValueChanged, AddressOf ShiftGridCellValueChanged
         AddHandler holidayGrid.CellClick, AddressOf HolidayGridCellClick
         AddHandler btnSave.Click, AddressOf BtnSave_Click
@@ -123,6 +128,21 @@ Public Partial Class FRM_DTR_SHIFT_MANUAL
         lblSchedType.Text = GlobalVariables.DTR_Selected_Sched_Type
 
         shifts.Clear()
+        If UsesConfiguredSingleShift() Then
+            Dim totalHours = payrollPolicy.SingleShiftHours
+            Dim regularHours = Math.Min(payrollPolicy.HoursPerDay, totalHours)
+            lblSchedType.Text = "SINGLE SHIFT (" & totalHours.ToString("0.##", CultureInfo.CurrentCulture) & " HRS)"
+            shifts.Add(New ShiftDefinition With {
+                .Name = "Single Shift",
+                .Coverage = totalHours.ToString("0.##", CultureInfo.CurrentCulture) & " configured hours",
+                .TotalHours = totalHours,
+                .RegularHours = regularHours,
+                .BaseOtHours = Math.Max(0D, totalHours - regularHours),
+                .IsNightShift = payrollPolicy.SingleShiftIsNight
+            })
+            Return
+        End If
+
         Select Case GlobalVariables.DTR_Selected_Sched_Type
             Case "2SHIFTS"
                 shifts.Add(New ShiftDefinition With {.Name = "Shift A", .Coverage = "7AM-7PM", .TotalHours = 12D, .RegularHours = 8D, .BaseOtHours = 4D, .IsNightShift = False})
@@ -132,6 +152,84 @@ Public Partial Class FRM_DTR_SHIFT_MANUAL
                 shifts.Add(New ShiftDefinition With {.Name = "Shift B", .Coverage = "2PM-10PM", .TotalHours = 8D, .RegularHours = 8D, .BaseOtHours = 0D, .IsNightShift = False})
                 shifts.Add(New ShiftDefinition With {.Name = "Shift C", .Coverage = "10PM-6AM", .TotalHours = 8D, .RegularHours = 8D, .BaseOtHours = 0D, .IsNightShift = True})
         End Select
+    End Sub
+
+    Private Sub LoadPayrollPolicy()
+        If LicenseManager.UsageMode = LicenseUsageMode.Designtime Then
+            payrollPolicy = SubClientPayrollPolicy.CreateDefault(1)
+            Return
+        End If
+
+        Dim subClientId As Integer
+        If Not Integer.TryParse(GlobalVariables.DTR_Selected_SubClient_ID, subClientId) OrElse subClientId <= 0 Then
+            payrollPolicy = SubClientPayrollPolicy.CreateDefault(1)
+            Return
+        End If
+
+        Try
+            payrollPolicy = SubClientPayrollPolicyService.LoadPolicy(subClientId)
+        Catch
+            payrollPolicy = SubClientPayrollPolicy.CreateDefault(subClientId)
+        End Try
+    End Sub
+
+    Private Sub SetupPayrollPolicyPanel()
+        If headerPanel Is Nothing OrElse payrollPolicyStatusLabel IsNot Nothing Then Return
+
+        Dim policyPanel As New Panel With {
+            .Dock = DockStyle.Fill,
+            .BackColor = Color.FromArgb(222, 245, 235),
+            .Padding = New Padding(10, 7, 10, 7),
+            .Margin = New Padding(0, 0, 0, 6)
+        }
+        Dim caption As New Label With {
+            .Dock = DockStyle.Top,
+            .Height = 18,
+            .Text = "PAYROLL RULES",
+            .Font = New Font("Verdana", 7.5!, FontStyle.Bold),
+            .ForeColor = Color.Teal,
+            .TextAlign = ContentAlignment.MiddleLeft
+        }
+        payrollPolicyStatusLabel = New Label With {
+            .Dock = DockStyle.Fill,
+            .Text = SubClientPayrollPolicyService.DescribePolicy(payrollPolicy),
+            .Font = New Font("Verdana", 8.5!, FontStyle.Bold),
+            .ForeColor = Color.FromArgb(0, 92, 92),
+            .TextAlign = ContentAlignment.MiddleLeft,
+            .AutoEllipsis = True
+        }
+        policyPanel.Controls.Add(payrollPolicyStatusLabel)
+        policyPanel.Controls.Add(caption)
+
+        Dim userLevel = If(GlobalVariables.sUser_Level, String.Empty).Trim()
+        If String.Equals(userLevel, "Administrator", StringComparison.OrdinalIgnoreCase) Then
+            Dim configureLink As New LinkLabel With {
+                .Dock = DockStyle.Bottom,
+                .Height = 20,
+                .Text = "Configure sub-client rules",
+                .LinkColor = Color.Maroon,
+                .TextAlign = ContentAlignment.MiddleLeft
+            }
+            AddHandler configureLink.LinkClicked, AddressOf ConfigurePayrollPolicy
+            policyPanel.Controls.Add(configureLink)
+        End If
+
+        headerPanel.Controls.Add(policyPanel, 0, 9)
+    End Sub
+
+    Private Sub ConfigurePayrollPolicy(sender As Object, e As LinkLabelLinkClickedEventArgs)
+        Dim subClientId As Integer
+        If Not Integer.TryParse(GlobalVariables.DTR_Selected_SubClient_ID, subClientId) Then Return
+
+        Try
+            Using form As New FRM_SUB_CLIENT_PAYROLL_SETTINGS(subClientId)
+                form.ShowDialog(Me)
+            End Using
+            LoadPayrollPolicy()
+            payrollPolicyStatusLabel.Text = SubClientPayrollPolicyService.DescribePolicy(payrollPolicy)
+        Catch ex As Exception
+            AppNotification.Show(ex.Message, "Payroll Rules", MessageBoxButtons.OK, MessageBoxIcon.Warning)
+        End Try
     End Sub
 
     Private Sub PeriodChanged(sender As Object, e As EventArgs)
@@ -180,6 +278,7 @@ Public Partial Class FRM_DTR_SHIFT_MANUAL
             shiftGrid.Columns.Add(New DataGridViewCheckBoxColumn With {
                 .Name = DateColumnName(d),
                 .HeaderText = d.ToString("MMM d", CultureInfo.InvariantCulture) & vbCrLf & d.ToString("ddd", CultureInfo.InvariantCulture),
+                .ReadOnly = True,
                 .Width = 74
             })
         Next
@@ -188,6 +287,10 @@ Public Partial Class FRM_DTR_SHIFT_MANUAL
             Dim rowIndex = shiftGrid.Rows.Add()
             shiftGrid.Rows(rowIndex).Cells("ShiftName").Value = shiftDef.Name
             shiftGrid.Rows(rowIndex).Cells("Coverage").Value = shiftDef.Coverage
+
+            For Each d As Date In coveredDates
+                shiftGrid.Rows(rowIndex).Cells(DateColumnName(d)).Value = True
+            Next
         Next
 
         ApplyFullGridLayout(shiftGrid, 118, 128)
@@ -221,13 +324,15 @@ Public Partial Class FRM_DTR_SHIFT_MANUAL
         For Each d As Date In coveredDates
             Dim columnName = DateColumnName(d)
             Dim sundayCell = holidayGrid.Rows(sundayRowIndex).Cells(columnName)
-            sundayCell.Value = (d.DayOfWeek = DayOfWeek.Sunday)
+            sundayCell.Value = False
 
             If d.DayOfWeek <> DayOfWeek.Sunday Then
                 sundayCell.ReadOnly = True
                 sundayCell.Style.BackColor = Color.LightGray
                 sundayCell.Style.SelectionBackColor = Color.LightGray
                 sundayCell.ToolTipText = "Sunday can only be selected on an actual Sunday date."
+            Else
+                sundayCell.ToolTipText = "Select Sunday to allocate this date's shift hours to SUN instead of REG."
             End If
 
             holidayGrid.Rows(shRowIndex).Cells(columnName).Value = False
@@ -254,7 +359,21 @@ Public Partial Class FRM_DTR_SHIFT_MANUAL
             })
         Next
 
-        For Each rowLabel As String In {"Daily Hours", "Regular (REG)", "Sunday (SUN)", "Special Holiday (SH)", "Legal Holiday (LH)", "Overtime (OT)"}
+        For Each rowLabel As String In {
+            "Daily Hours",
+            "Regular (REG)",
+            "Sunday (SUN)",
+            "Legal Holiday (LH)",
+            "Special Holiday (SH)",
+            "Night Diff. Regular (ND REG)",
+            "Night Diff. Sunday (ND SUN)",
+            "Night Diff. Legal Holiday (ND LH)",
+            "Night Diff. Special Holiday (ND SH)",
+            "Overtime Regular (OT REG)",
+            "Overtime Sunday (OT SUN)",
+            "Overtime Legal Holiday (OT LH)",
+            "Overtime Special Holiday (OT SH)"
+        }
             Dim rowIndex = dailyHoursGrid.Rows.Add()
             dailyHoursGrid.Rows(rowIndex).Cells("Label").Value = rowLabel
         Next
@@ -290,7 +409,7 @@ Public Partial Class FRM_DTR_SHIFT_MANUAL
         Dim availableHeight = grid.ClientSize.Height - grid.ColumnHeadersHeight - 2
         If availableHeight <= 0 Then Return
 
-        Dim baseHeight = Math.Max(1, availableHeight \ grid.Rows.Count)
+        Dim baseHeight = Math.Max(grid.RowTemplate.Height, availableHeight \ grid.Rows.Count)
         Dim usedHeight = baseHeight * grid.Rows.Count
         Dim remainder = Math.Max(0, availableHeight - usedHeight)
 
@@ -397,9 +516,13 @@ Public Partial Class FRM_DTR_SHIFT_MANUAL
         isUpdatingGrid = True
         For Each d As Date In coveredDates
             Dim columnName = DateColumnName(d)
-            For rowIndex As Integer = 0 To shiftGrid.Rows.Count - 1
-                shiftGrid.Rows(rowIndex).Cells(columnName).Value = (rowIndex = shiftIndex)
-            Next
+            If AllowsMultipleShiftsPerDate() Then
+                shiftGrid.Rows(shiftIndex).Cells(columnName).Value = True
+            Else
+                For rowIndex As Integer = 0 To shiftGrid.Rows.Count - 1
+                    shiftGrid.Rows(rowIndex).Cells(columnName).Value = (rowIndex = shiftIndex)
+                Next
+            End If
         Next
         isUpdatingGrid = False
         RecalculateTotals()
@@ -414,7 +537,7 @@ Public Partial Class FRM_DTR_SHIFT_MANUAL
         Next
         For Each d As Date In coveredDates
             Dim columnName = DateColumnName(d)
-            holidayGrid.Rows(0).Cells(columnName).Value = (d.DayOfWeek = DayOfWeek.Sunday)
+            holidayGrid.Rows(0).Cells(columnName).Value = False
             holidayGrid.Rows(1).Cells(columnName).Value = False
             holidayGrid.Rows(2).Cells(columnName).Value = False
             ApplyHolidayExclusionState(holidayGrid.Columns(columnName).Index)
@@ -433,7 +556,7 @@ Public Partial Class FRM_DTR_SHIFT_MANUAL
     Private Sub ShiftGridCellValueChanged(sender As Object, e As DataGridViewCellEventArgs)
         If isUpdatingGrid OrElse e.RowIndex < 0 OrElse e.ColumnIndex < 2 Then Return
 
-        If IsCellChecked(shiftGrid.Rows(e.RowIndex).Cells(e.ColumnIndex)) Then
+        If Not AllowsMultipleShiftsPerDate() AndAlso IsCellChecked(shiftGrid.Rows(e.RowIndex).Cells(e.ColumnIndex)) Then
             isUpdatingGrid = True
             For rowIndex As Integer = 0 To shiftGrid.Rows.Count - 1
                 If rowIndex <> e.RowIndex Then
@@ -442,6 +565,29 @@ Public Partial Class FRM_DTR_SHIFT_MANUAL
             Next
             isUpdatingGrid = False
         End If
+
+        RecalculateTotals()
+    End Sub
+
+    Private Sub ShiftGridCellClick(sender As Object, e As DataGridViewCellEventArgs)
+        If e.RowIndex < 0 OrElse e.ColumnIndex < 2 Then Return
+
+        isUpdatingGrid = True
+        Try
+            Dim cell = shiftGrid.Rows(e.RowIndex).Cells(e.ColumnIndex)
+            Dim isSelected = Not IsCellChecked(cell)
+            cell.Value = isSelected
+
+            If isSelected AndAlso Not AllowsMultipleShiftsPerDate() Then
+                For rowIndex As Integer = 0 To shiftGrid.Rows.Count - 1
+                    If rowIndex <> e.RowIndex Then
+                        shiftGrid.Rows(rowIndex).Cells(e.ColumnIndex).Value = False
+                    End If
+                Next
+            End If
+        Finally
+            isUpdatingGrid = False
+        End Try
 
         RecalculateTotals()
     End Sub
@@ -524,14 +670,44 @@ Public Partial Class FRM_DTR_SHIFT_MANUAL
         Return checkedValue
     End Function
 
-    Private Function SelectedShiftForDate(d As Date) As ShiftDefinition
+    Private Function AllowsMultipleShiftsPerDate() As Boolean
+        If UsesConfiguredSingleShift() Then Return False
+        Return IsTriShiftSchedule() OrElse
+            String.Equals(lblSchedType.Text.Trim(), "2SHIFTS", StringComparison.OrdinalIgnoreCase)
+    End Function
+
+    Private Function IsTriShiftSchedule() As Boolean
+        If UsesConfiguredSingleShift() Then Return False
+        Return String.Equals(lblSchedType.Text.Trim(), "TRI_SHIFT", StringComparison.OrdinalIgnoreCase)
+    End Function
+
+    Private Function UsesConfiguredSingleShift() As Boolean
+        Return payrollPolicy IsNot Nothing AndAlso
+            payrollPolicy.DutyEntryMode = SubClientPayrollPolicy.DutyEntrySingleShift
+    End Function
+
+    Private Function RegularHoursForSelections(selectedShifts As IEnumerable(Of ShiftDefinition)) As Decimal
+        If IsTriShiftSchedule() Then
+            Return selectedShifts.Sum(Function(shift) shift.TotalHours)
+        End If
+
+        Return selectedShifts.Sum(Function(shift) shift.RegularHours)
+    End Function
+
+    Private Function OvertimeHoursForSelections(selectedShifts As IEnumerable(Of ShiftDefinition)) As Decimal
+        If IsTriShiftSchedule() Then Return 0D
+        Return selectedShifts.Sum(Function(shift) shift.BaseOtHours)
+    End Function
+
+    Private Function SelectedShiftsForDate(d As Date) As List(Of ShiftDefinition)
+        Dim selectedShifts As New List(Of ShiftDefinition)
         Dim columnName = DateColumnName(d)
         For rowIndex As Integer = 0 To shifts.Count - 1
             If IsCellChecked(shiftGrid.Rows(rowIndex).Cells(columnName)) Then
-                Return shifts(rowIndex)
+                selectedShifts.Add(shifts(rowIndex))
             End If
         Next
-        Return Nothing
+        Return selectedShifts
     End Function
 
     Private Function HolidayForDate(d As Date) As String
@@ -543,7 +719,7 @@ Public Partial Class FRM_DTR_SHIFT_MANUAL
     End Function
 
     Private Function IsSundaySelected(d As Date) As Boolean
-        If holidayGrid.Rows.Count = 0 Then Return d.DayOfWeek = DayOfWeek.Sunday
+        If holidayGrid.Rows.Count = 0 Then Return False
         If d.DayOfWeek <> DayOfWeek.Sunday Then Return False
         Return IsCellChecked(holidayGrid.Rows(0).Cells(DateColumnName(d)))
     End Function
@@ -554,33 +730,52 @@ Public Partial Class FRM_DTR_SHIFT_MANUAL
             {"TOTAL_HOURS", 0D},
             {"REG", 0D},
             {"SUN", 0D},
-            {"SH", 0D},
             {"LH", 0D},
+            {"SH", 0D},
+            {"ND_REG", 0D},
+            {"ND_SUN", 0D},
+            {"ND_LH", 0D},
+            {"ND_SH", 0D},
             {"OT_REG", 0D},
+            {"OT_SUN", 0D},
+            {"OT_LH", 0D},
+            {"OT_SH", 0D},
             {"ND_DAYS", 0D}
         }
 
         For Each d As Date In coveredDates
-            Dim selectedShift = SelectedShiftForDate(d)
-            If selectedShift Is Nothing Then Continue For
+            Dim selectedShifts = SelectedShiftsForDate(d)
+            If selectedShifts.Count = 0 Then Continue For
 
-            totals("NUM_DAYS") += 1D
-            totals("TOTAL_HOURS") += selectedShift.TotalHours
-            totals("OT_REG") += selectedShift.BaseOtHours
-            If selectedShift.IsNightShift Then totals("ND_DAYS") += 1D
+            Dim totalHours = selectedShifts.Sum(Function(shift) shift.TotalHours)
+            Dim regularHours = RegularHoursForSelections(selectedShifts)
+            Dim nightHours = selectedShifts.Where(Function(shift) shift.IsNightShift).
+                Sum(Function(shift) If(IsTriShiftSchedule(), shift.TotalHours, shift.RegularHours))
+            Dim overtimeHours = OvertimeHoursForSelections(selectedShifts)
+            Dim baseHours = If(payrollPolicy Is Nothing OrElse payrollPolicy.HoursPerDay <= 0D, 8D, payrollPolicy.HoursPerDay)
+            ' Each selected shift is one reporting day. Multiple shifts selected
+            ' on the same calendar date remain separate reporting days.
+            totals("NUM_DAYS") += selectedShifts.Count
+            totals("TOTAL_HOURS") += totalHours
+            totals("ND_DAYS") += nightHours / baseHours
 
+            Dim dayCode As String
             If IsSundaySelected(d) Then
-                totals("SUN") += selectedShift.RegularHours
+                dayCode = "SUN"
             Else
                 Select Case HolidayForDate(d)
                     Case "SH"
-                        totals("SH") += selectedShift.RegularHours
+                        dayCode = "SH"
                     Case "LH"
-                        totals("LH") += selectedShift.RegularHours
+                        dayCode = "LH"
                     Case Else
-                        totals("REG") += selectedShift.RegularHours
+                        dayCode = "REG"
                 End Select
             End If
+
+            totals(dayCode) += regularHours
+            totals("ND_" & dayCode) += nightHours
+            totals("OT_" & dayCode) += overtimeHours
         Next
 
         Return totals
@@ -589,9 +784,9 @@ Public Partial Class FRM_DTR_SHIFT_MANUAL
     Private Function DailyTotals() As Dictionary(Of Date, Decimal)
         Dim daily As New Dictionary(Of Date, Decimal)
         For Each d As Date In coveredDates
-            Dim selectedShift = SelectedShiftForDate(d)
-            If selectedShift Is Nothing Then Continue For
-            daily(d) = selectedShift.TotalHours
+            Dim selectedShifts = SelectedShiftsForDate(d)
+            If selectedShifts.Count = 0 Then Continue For
+            daily(d) = selectedShifts.Sum(Function(shift) shift.TotalHours)
         Next
         Return daily
     End Function
@@ -606,47 +801,51 @@ Public Partial Class FRM_DTR_SHIFT_MANUAL
     Private Sub UpdateDailyHoursDisplay(totals As Dictionary(Of String, Decimal))
         If dailyHoursGrid.Rows.Count = 0 Then Return
 
-        dailyHoursGrid.Rows(0).Cells("Total").Value = FormatBreakdownValue(totals("TOTAL_HOURS"))
-        dailyHoursGrid.Rows(1).Cells("Total").Value = FormatBreakdownValue(totals("REG"))
-        dailyHoursGrid.Rows(2).Cells("Total").Value = FormatBreakdownValue(totals("SUN"))
-        dailyHoursGrid.Rows(3).Cells("Total").Value = FormatBreakdownValue(totals("SH"))
-        dailyHoursGrid.Rows(4).Cells("Total").Value = FormatBreakdownValue(totals("LH"))
-        dailyHoursGrid.Rows(5).Cells("Total").Value = FormatBreakdownValue(totals("OT_REG"))
+        Dim breakdownKeys = {
+            "TOTAL_HOURS", "REG", "SUN", "LH", "SH",
+            "ND_REG", "ND_SUN", "ND_LH", "ND_SH",
+            "OT_REG", "OT_SUN", "OT_LH", "OT_SH"
+        }
+        For rowIndex As Integer = 0 To breakdownKeys.Length - 1
+            dailyHoursGrid.Rows(rowIndex).Cells("Total").Value = FormatBreakdownValue(totals(breakdownKeys(rowIndex)))
+        Next
 
         For Each d As Date In coveredDates
-            Dim selectedShift = SelectedShiftForDate(d)
-            Dim dailyHours As Decimal = 0D
-            Dim regHours As Decimal = 0D
-            Dim sunHours As Decimal = 0D
-            Dim shHours As Decimal = 0D
-            Dim lhHours As Decimal = 0D
-            Dim otHours As Decimal = 0D
+            Dim selectedShifts = SelectedShiftsForDate(d)
+            Dim dailyValues As New Dictionary(Of String, Decimal)(StringComparer.OrdinalIgnoreCase)
+            For Each key In breakdownKeys
+                dailyValues(key) = 0D
+            Next
 
-            If selectedShift IsNot Nothing Then
-                dailyHours = selectedShift.TotalHours
-                otHours = selectedShift.BaseOtHours
+            If selectedShifts.Count > 0 Then
+                dailyValues("TOTAL_HOURS") = selectedShifts.Sum(Function(shift) shift.TotalHours)
+                Dim regularHours = RegularHoursForSelections(selectedShifts)
+                Dim nightHours = selectedShifts.Where(Function(shift) shift.IsNightShift).
+                    Sum(Function(shift) If(IsTriShiftSchedule(), shift.TotalHours, shift.RegularHours))
+                Dim overtimeHours = OvertimeHoursForSelections(selectedShifts)
 
+                Dim dayCode As String
                 If IsSundaySelected(d) Then
-                    sunHours = selectedShift.RegularHours
+                    dayCode = "SUN"
                 Else
                     Select Case HolidayForDate(d)
                         Case "SH"
-                            shHours = selectedShift.RegularHours
+                            dayCode = "SH"
                         Case "LH"
-                            lhHours = selectedShift.RegularHours
+                            dayCode = "LH"
                         Case Else
-                            regHours = selectedShift.RegularHours
+                            dayCode = "REG"
                     End Select
                 End If
+                dailyValues(dayCode) = regularHours
+                dailyValues("ND_" & dayCode) = nightHours
+                dailyValues("OT_" & dayCode) = overtimeHours
             End If
 
             Dim columnName = DateColumnName(d)
-            dailyHoursGrid.Rows(0).Cells(columnName).Value = FormatBreakdownValue(dailyHours)
-            dailyHoursGrid.Rows(1).Cells(columnName).Value = FormatBreakdownValue(regHours)
-            dailyHoursGrid.Rows(2).Cells(columnName).Value = FormatBreakdownValue(sunHours)
-            dailyHoursGrid.Rows(3).Cells(columnName).Value = FormatBreakdownValue(shHours)
-            dailyHoursGrid.Rows(4).Cells(columnName).Value = FormatBreakdownValue(lhHours)
-            dailyHoursGrid.Rows(5).Cells(columnName).Value = FormatBreakdownValue(otHours)
+            For rowIndex As Integer = 0 To breakdownKeys.Length - 1
+                dailyHoursGrid.Rows(rowIndex).Cells(columnName).Value = FormatBreakdownValue(dailyValues(breakdownKeys(rowIndex)))
+            Next
         Next
     End Sub
 
@@ -669,11 +868,14 @@ Public Partial Class FRM_DTR_SHIFT_MANUAL
         End If
 
         Try
+            SubClientPayrollPolicyService.EnsureSchema()
             Connect_to_MDB()
             Using tx = GlobalVariables.GlobalCon.BeginTransaction()
                 Dim totalSql As String = "INSERT INTO PRL_DTR_TOTAL_HOURS " &
-                    "(EMPLOYEE_ID, SUB_CLIENT_ID, CUTOFF_PERIOD, NUM_OF_DAYS, TOTAL_HOURS, REG, SUN, SH, LH, OT_REG, ND_DAYS) " &
-                    "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"
+                    "(EMPLOYEE_ID, SUB_CLIENT_ID, CUTOFF_PERIOD, NUM_OF_DAYS, TOTAL_HOURS, " &
+                    "REG, SUN, SH, LH, ND_DAYS, ND_REG, ND_SUN, ND_SH, ND_LH, " &
+                    "OT_REG, OT_SUN, OT_SH, OT_LH) " &
+                    "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"
 
                 Using cmd As New OleDbCommand(totalSql, GlobalVariables.GlobalCon, tx)
                     cmd.Parameters.AddWithValue("?", GlobalVariables.DTR_Selected_Employee_ID)
@@ -684,9 +886,16 @@ Public Partial Class FRM_DTR_SHIFT_MANUAL
                     cmd.Parameters.AddWithValue("?", totals("REG"))
                     cmd.Parameters.AddWithValue("?", totals("SUN"))
                     cmd.Parameters.AddWithValue("?", totals("SH"))
-                    cmd.Parameters.AddWithValue("?", CInt(totals("LH")))
-                    cmd.Parameters.AddWithValue("?", totals("OT_REG"))
+                    cmd.Parameters.AddWithValue("?", totals("LH"))
                     cmd.Parameters.AddWithValue("?", CInt(totals("ND_DAYS")))
+                    cmd.Parameters.AddWithValue("?", totals("ND_REG"))
+                    cmd.Parameters.AddWithValue("?", totals("ND_SUN"))
+                    cmd.Parameters.AddWithValue("?", totals("ND_SH"))
+                    cmd.Parameters.AddWithValue("?", totals("ND_LH"))
+                    cmd.Parameters.AddWithValue("?", totals("OT_REG"))
+                    cmd.Parameters.AddWithValue("?", totals("OT_SUN"))
+                    cmd.Parameters.AddWithValue("?", totals("OT_SH"))
+                    cmd.Parameters.AddWithValue("?", totals("OT_LH"))
                     cmd.ExecuteNonQuery()
                 End Using
 

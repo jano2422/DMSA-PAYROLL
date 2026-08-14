@@ -36,12 +36,10 @@ Module Mod_FRM_DTR_EXPORTS
             .Name = name,
             .HeaderText = header,
             .ReadOnly = True,
-            .AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill
+            .AutoSizeMode = DataGridViewAutoSizeColumnMode.None,
+            .Width = If(width > 0, width, 76)
         }
-        If width > 0 Then
-            column.MinimumWidth = width
-            column.FillWeight = width
-        End If
+        column.MinimumWidth = Math.Min(column.Width, 48)
         dgv.Columns.Add(column)
     End Sub
 
@@ -50,21 +48,30 @@ Module Mod_FRM_DTR_EXPORTS
         dgv.Rows.Clear()
         dgv.Columns.Clear()
         dgv.AutoGenerateColumns = False
-        dgv.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill
+        dgv.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.None
         dgv.AllowUserToAddRows = False
         dgv.AllowUserToDeleteRows = False
 
         AddPerClientHiddenColumn(dgv, "colEmployeeId")
-        AddPerClientColumn(dgv, "colItem", "Item", 50)
-        AddPerClientColumn(dgv, "colName", "Name", 200)
-        AddPerClientColumn(dgv, "colNumDays", "No. of Days", 90)
-        AddPerClientColumn(dgv, "colNumNdDays", "Night Diiferential Days", 90)
+        AddPerClientColumn(dgv, "colItem", "Item", 52)
+        AddPerClientColumn(dgv, "colName", "Employee Name", 220)
+        dgv.Columns("colItem").Frozen = True
+        dgv.Columns("colName").Frozen = True
+        AddPerClientColumn(dgv, "colNumDays", "No. Days", 84)
         AddPerClientColumn(dgv, "colTotalHours", "Total Hours", 90)
-        AddPerClientColumn(dgv, "colReg", "REG", 50)
-        AddPerClientColumn(dgv, "colSun", "SUN", 50)
-        AddPerClientColumn(dgv, "colSh", "SH", 50)
-        AddPerClientColumn(dgv, "colLh", "LH", 50)
-        AddPerClientColumn(dgv, "colOtReg", "OT REG", 90)
+        AddPerClientColumn(dgv, "colReg", "REG", 66)
+        AddPerClientColumn(dgv, "colSun", "SUN", 66)
+        AddPerClientColumn(dgv, "colLh", "LH", 66)
+        AddPerClientColumn(dgv, "colSh", "SH", 66)
+        AddPerClientColumn(dgv, "colNdReg", "ND REG", 78)
+        AddPerClientColumn(dgv, "colNdSun", "ND SUN", 78)
+        AddPerClientColumn(dgv, "colNdLh", "ND LH", 78)
+        AddPerClientColumn(dgv, "colNdSh", "ND SH", 78)
+        AddPerClientColumn(dgv, "colOtReg", "OT REG", 78)
+        AddPerClientColumn(dgv, "colOtSun", "OT SUN", 78)
+        AddPerClientColumn(dgv, "colOtLh", "OT LH", 78)
+        AddPerClientColumn(dgv, "colOtSh", "OT SH", 78)
+        AddPerClientHiddenColumn(dgv, "colNumNdDays")
 
         If IsFirstCutoff(cutoff) Then
             AddPerClientColumn(dgv, "colSss", "SSS", 70)
@@ -83,7 +90,7 @@ Module Mod_FRM_DTR_EXPORTS
         End If
     End Sub
 
-    Public Sub Export_DTR_Per_Client_to_Excell(sMainClient As String, sDetachment As String, sAddress As String, sDailyWage As String, sCutOff As String)
+    Public Sub Export_DTR_Per_Client_to_Excell(iSubClientId As Integer, sMainClient As String, sDetachment As String, sAddress As String, sDailyWage As String, sCutOff As String)
         Try
             If Not IsFirstCutoff(sCutOff) AndAlso Not IsSecondCutoff(sCutOff) Then
                 Throw New Exception("Invalid cutoff format: " & sCutOff)
@@ -102,6 +109,7 @@ Module Mod_FRM_DTR_EXPORTS
                 sDetachment,
                 sAddress,
                 CDec(TryGetNumericValue(sDailyWage)),
+                iSubClientId,
                 sCutOff,
                 FRM_DTR_EXPORTS.DGV_DTR_Per_Client,
                 FRM_DTR_EXPORTS.DGV_DTR_MATRIX)
@@ -199,7 +207,11 @@ Module Mod_FRM_DTR_EXPORTS
             'SQL = "select LAST_NAME, FIRST_NAME, MIDDLE_NAME, NUM_OF_DAYS, TOTAL_HOURS, REG, SUN,SH,LH, RD_SUN_SH, RD_SUN_LH, ND_REG, ND_SUN, ND_SH, ND_LH, ND_RD_SUN_SH, ND_RD_SUN_LH, OT_REG from VIEW_DTR_PER_SUB_CLIENT"
             'SQL = SQL & " where A.SUB_CLIENT_ID = " & iClient_ID & " and CUTOFF_PERIOD = '" & sCut_Off & "'"
 
-            SQL = "SELECT A.A.EMPLOYEE_ID AS EMPLOYEE_ID, LAST_NAME, FIRST_NAME, MIDDLE_NAME, NUM_OF_DAYS, ND_DAYS, TOTAL_HOURS, REG, SUN, SH, LH, OT_REG, CB_DEDUCT, SSS_LOAN_DEDUCT, SSS_CAL_LOAN_DEDUCT, PI_LOAN_DEDUCT, PI_CAL_LOAN_DEDUCT, SSS_DEDUCT, PH_DEDUCT, PI_DEDUCT, OFFICERS_ALLOWANCE, SGUNIFORMALLOWANCE "
+            SubClientPayrollPolicyService.EnsureSchema()
+            SQL = "SELECT A.A.EMPLOYEE_ID AS EMPLOYEE_ID, LAST_NAME, FIRST_NAME, MIDDLE_NAME, NUM_OF_DAYS, ND_DAYS, TOTAL_HOURS, " &
+                "REG, SUN, SH, LH, ND_REG, ND_SUN, ND_SH, ND_LH, OT_REG, OT_SUN, OT_SH, OT_LH, " &
+                "CB_DEDUCT, SSS_LOAN_DEDUCT, SSS_CAL_LOAN_DEDUCT, PI_LOAN_DEDUCT, PI_CAL_LOAN_DEDUCT, " &
+                "SSS_DEDUCT, PH_DEDUCT, PI_DEDUCT, OFFICERS_ALLOWANCE, SGUNIFORMALLOWANCE "
             SQL = SQL & "FROM VIEW_DTR_PER_SUB_CLIENT A "
             SQL = SQL & "WHERE A.A.SUB_CLIENT_ID = " & iClient_ID & " AND A.CUTOFF_PERIOD = '" & sCut_Off & "' "
             SQL = SQL & "AND A.D.ID = (SELECT MAX(D.ID) FROM PRL_DTR_TOTAL_HOURS D WHERE D.EMPLOYEE_ID = A.A.EMPLOYEE_ID AND D.CUTOFF_PERIOD = A.CUTOFF_PERIOD) "
@@ -232,13 +244,20 @@ Module Mod_FRM_DTR_EXPORTS
                                 iRow.ToString(),
                                 fullName,
                                 NzZero(myRow, "NUM_OF_DAYS"),
-                                NzZero(myRow, "ND_DAYS"),
                                 NzZero(myRow, "TOTAL_HOURS"),
                                 NzZero(myRow, "REG"),
                                 NzZero(myRow, "SUN"),
-                                NzZero(myRow, "SH"),
                                 NzZero(myRow, "LH"),
+                                NzZero(myRow, "SH"),
+                                NzZero(myRow, "ND_REG"),
+                                NzZero(myRow, "ND_SUN"),
+                                NzZero(myRow, "ND_LH"),
+                                NzZero(myRow, "ND_SH"),
                                 NzZero(myRow, "OT_REG"),
+                                NzZero(myRow, "OT_SUN"),
+                                NzZero(myRow, "OT_LH"),
+                                NzZero(myRow, "OT_SH"),
+                                NzZero(myRow, "ND_DAYS"),
                                 NzZero(myRow, "SSS_DEDUCT"),
                                 NzZero(myRow, "PH_DEDUCT"),
                                 NzZero(myRow, "PI_DEDUCT"),
@@ -251,13 +270,20 @@ Module Mod_FRM_DTR_EXPORTS
                                 iRow.ToString(),
                                 fullName,
                                 NzZero(myRow, "NUM_OF_DAYS"),
-                                NzZero(myRow, "ND_DAYS"),
                                 NzZero(myRow, "TOTAL_HOURS"),
                                 NzZero(myRow, "REG"),
                                 NzZero(myRow, "SUN"),
-                                NzZero(myRow, "SH"),
                                 NzZero(myRow, "LH"),
+                                NzZero(myRow, "SH"),
+                                NzZero(myRow, "ND_REG"),
+                                NzZero(myRow, "ND_SUN"),
+                                NzZero(myRow, "ND_LH"),
+                                NzZero(myRow, "ND_SH"),
                                 NzZero(myRow, "OT_REG"),
+                                NzZero(myRow, "OT_SUN"),
+                                NzZero(myRow, "OT_LH"),
+                                NzZero(myRow, "OT_SH"),
+                                NzZero(myRow, "ND_DAYS"),
                                 NzZero(myRow, "CB_DEDUCT"),
                                 NzZero(myRow, "SSS_LOAN_DEDUCT"),
                                 NzZero(myRow, "SSS_CAL_LOAN_DEDUCT"),
@@ -356,11 +382,23 @@ Module Mod_FRM_DTR_EXPORTS
         officerAllowance As Decimal,
         sguniformallowance As Decimal
     )
+        SubClientPayrollPolicyService.EnsureSchema()
+        Dim latest = GetLatestDtrTotals(employeeId, cutoff)
+        Dim ndDays = LatestDecimal(latest, "ND_DAYS")
+        Dim ndReg = LatestDecimal(latest, "ND_REG")
+        Dim ndSun = LatestDecimal(latest, "ND_SUN")
+        Dim ndSh = LatestDecimal(latest, "ND_SH")
+        Dim ndLh = LatestDecimal(latest, "ND_LH")
+        Dim otSun = LatestDecimal(latest, "OT_SUN")
+        Dim otSh = LatestDecimal(latest, "OT_SH")
+        Dim otLh = LatestDecimal(latest, "OT_LH")
+
         Dim sql As String = "INSERT INTO PRL_DTR_TOTAL_HOURS " &
             "(EMPLOYEE_ID, SUB_CLIENT_ID, CUTOFF_PERIOD, NUM_OF_DAYS, " &
-            "TOTAL_HOURS, REG, SUN, SH, LH, OT_REG, " &
+            "TOTAL_HOURS, REG, SUN, SH, LH, ND_DAYS, ND_REG, ND_SUN, ND_SH, ND_LH, " &
+            "OT_REG, OT_SUN, OT_SH, OT_LH, " &
             "CB_DEDUCT, SSS_LOAN_DEDUCT, PI_LOAN_DEDUCT, PH_DEDUCT, SSS_DEDUCT, PI_DEDUCT, SSS_CAL_LOAN_DEDUCT, PI_CAL_LOAN_DEDUCT, OFFICERS_ALLOWANCE, SGUNIFORMALLOWANCE) " &
-            "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"
+            "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"
 
         Try
             Connect_to_MDB()
@@ -374,7 +412,15 @@ Module Mod_FRM_DTR_EXPORTS
                 cmd.Parameters.AddWithValue("?", sunHours)
                 cmd.Parameters.AddWithValue("?", shHours)
                 cmd.Parameters.AddWithValue("?", lhHours)
+                cmd.Parameters.AddWithValue("?", ndDays)
+                cmd.Parameters.AddWithValue("?", ndReg)
+                cmd.Parameters.AddWithValue("?", ndSun)
+                cmd.Parameters.AddWithValue("?", ndSh)
+                cmd.Parameters.AddWithValue("?", ndLh)
                 cmd.Parameters.AddWithValue("?", otRegHours)
+                cmd.Parameters.AddWithValue("?", otSun)
+                cmd.Parameters.AddWithValue("?", otSh)
+                cmd.Parameters.AddWithValue("?", otLh)
                 cmd.Parameters.AddWithValue("?", cbDeduct)
                 cmd.Parameters.AddWithValue("?", sssLoanDeduct)
                 cmd.Parameters.AddWithValue("?", piLoanDeduct)
@@ -391,6 +437,13 @@ Module Mod_FRM_DTR_EXPORTS
             MsgBox(ex.Message, vbCritical, "Error Saving Deductions")
         End Try
     End Sub
+
+    Private Function LatestDecimal(row As DataRow, columnName As String) As Decimal
+        If row Is Nothing OrElse Not row.Table.Columns.Contains(columnName) OrElse row.IsNull(columnName) Then Return 0D
+        Dim result As Decimal
+        Decimal.TryParse(Convert.ToString(row(columnName)), result)
+        Return result
+    End Function
 
     Public Sub Generate_DTR_Hours_Matrix(iClient_ID As Integer, sCut_Off As String)
 

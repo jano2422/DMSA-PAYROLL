@@ -425,7 +425,18 @@ Public Class FRM_HR_CLIENTS
         EditorTabs.SelectedTab = TabCompanyEditor
         LblEditorEyebrow.Text = "CLIENT ORGANIZATION"
         LblEditorTitle.Text = If(createNew, "Add client", "Edit client")
-        LblEditorSubtitle.Text = "Only the top-level legal identity belongs here."
+        If createNew Then
+            LblEditorSubtitle.Text = "Only the top-level legal identity belongs here."
+            LblCompanyEditorIntro.Text =
+                "Use the registered legal organization here. Branches, detachments and deployment locations belong under Subclients."
+        ElseIf _selectedCompany IsNot Nothing Then
+            LblEditorSubtitle.Text =
+                "Editing client #" & _selectedCompany.Id.ToString(CultureInfo.InvariantCulture) &
+                ": " & _selectedCompany.Name & "  |  " & _selectedCompany.Status
+            LblCompanyEditorIntro.Text =
+                "CURRENT CLIENT: " & _selectedCompany.Name & Environment.NewLine &
+                "Organization type: " & _selectedCompany.ClientType
+        End If
         BtnSaveEditor.Text = If(createNew, "Create client", "Save changes")
         ChkCompanyConfirmation.Visible = createNew
         BtnRouteToWorkSite.Visible = False
@@ -452,7 +463,16 @@ Public Class FRM_HR_CLIENTS
         EditorTabs.SelectedTab = TabWorkSiteEditor
         LblEditorEyebrow.Text = "CLIENT  →  SUBCLIENT"
         LblEditorTitle.Text = If(createNew, "Add subclient", "Edit subclient")
-        LblEditorSubtitle.Text = "The parent client is locked to prevent misclassification."
+        If createNew Then
+            LblEditorSubtitle.Text = "The parent client is locked to prevent misclassification."
+            LblLockedParentCaption.Text = "LOCKED PARENT CLIENT"
+        ElseIf _selectedWorkSite IsNot Nothing Then
+            LblEditorSubtitle.Text =
+                "Editing subclient #" & _selectedWorkSite.Id.ToString(CultureInfo.InvariantCulture) &
+                ": " & _selectedWorkSite.Name & "  |  Parent: " & _selectedCompany.Name &
+                "  |  " & _selectedWorkSite.Status
+            LblLockedParentCaption.Text = "PARENT CLIENT (LOCKED)"
+        End If
         LblLockedParent.Text = _selectedCompany.Name
         BtnSaveEditor.Text = If(createNew, "Create subclient", "Save changes")
         PnlInitialContract.Visible = createNew
@@ -526,6 +546,23 @@ Public Class FRM_HR_CLIENTS
                 ShowGuidance("Reactivate the parent client before reactivating this subclient.")
                 Return
             End If
+            If _pendingStatus = "Inactive" Then
+                Try
+                    Dim activeEmployeeCount = _service.GetActiveEmployeeCountForWorkSite(_selectedWorkSite.Id)
+                    If activeEmployeeCount > 0 Then
+                        ShowGuidance(
+                            "This subclient has " & activeEmployeeCount.ToString() & " active " &
+                            If(activeEmployeeCount = 1, "employee", "employees") &
+                            ". Transfer " & If(activeEmployeeCount = 1, "the employee", "them") &
+                            " or change " & If(activeEmployeeCount = 1, "the employee's", "their") &
+                            " employment status before deactivation.")
+                        Return
+                    End If
+                Catch ex As Exception
+                    ShowGuidance("The active employee assignment could not be verified. " & ex.Message)
+                    Return
+                End Try
+            End If
             _editorMode = InlineEditorMode.ChangeWorkSiteStatus
             LblEditorEyebrow.Text = "SUBCLIENT STATUS"
             LblStatusContext.Text = _selectedWorkSite.Name & Environment.NewLine & "New status: " & _pendingStatus
@@ -593,6 +630,9 @@ Public Class FRM_HR_CLIENTS
         _contractSourcePath = String.Empty
         _suggestedCompanyId = 0
         _pendingStatus = String.Empty
+        LblCompanyEditorIntro.Text =
+            "Use the registered legal organization here. Branches, detachments and deployment locations belong under Subclients."
+        LblLockedParentCaption.Text = "LOCKED PARENT CLIENT"
         TxtCompanyName.Clear()
         CmbCompanyType.SelectedIndex = -1
         ChkCompanyConfirmation.Checked = False

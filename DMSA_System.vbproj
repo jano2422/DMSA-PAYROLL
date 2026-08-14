@@ -100,6 +100,7 @@
     <Compile Include="Services\ScheduleService.vb" />
     <Compile Include="Services\ClientManagementService.vb" />
     <Compile Include="Services\PayrollReportSettingsService.vb" />
+    <Compile Include="Services\SubClientPayrollPolicyService.vb" />
     <Compile Include="Services\PayrollReportService.vb" />
     <Compile Include="Models\DtrCalculationTable.vb" />
     <Compile Include="Modules\AppNotification.vb" />
@@ -179,6 +180,12 @@
       <DependentUpon>FRM_PAYROLL_REPORT_SETTINGS.vb</DependentUpon>
     </Compile>
     <Compile Include="Forms\Payroll\Timekeeping\FRM_PAYROLL_REPORT_SETTINGS.vb">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\Payroll\Timekeeping\FRM_SUB_CLIENT_PAYROLL_SETTINGS.Designer.vb">
+      <DependentUpon>FRM_SUB_CLIENT_PAYROLL_SETTINGS.vb</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\Payroll\Timekeeping\FRM_SUB_CLIENT_PAYROLL_SETTINGS.vb">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="Forms\Payroll\Timekeeping\FRM_DTR_INPUT_16_31.Designer.vb">
@@ -403,6 +410,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\Authentication\FRM_LOGIN.resx">
       <DependentUpon>FRM_LOGIN.vb</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\Payroll\Timekeeping\FRM_SUB_CLIENT_PAYROLL_SETTINGS.resx">
+      <DependentUpon>FRM_SUB_CLIENT_PAYROLL_SETTINGS.vb</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\Shell\FRM_MAIN.resx">
       <DependentUpon>FRM_MAIN.vb</DependentUpon>

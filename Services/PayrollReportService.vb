@@ -19,6 +19,12 @@ Public Class PayrollExportRow
     Public Property OvertimeSundayHours As Decimal
     Public Property OvertimeLegalHolidayHours As Decimal
     Public Property OvertimeSpecialHolidayHours As Decimal
+    Public Property SundaySpecialHolidayHours As Decimal
+    Public Property SundayLegalHolidayHours As Decimal
+    Public Property NightDifferentialSundaySpecialHolidayHours As Decimal
+    Public Property NightDifferentialSundayLegalHolidayHours As Decimal
+    Public Property OvertimeSundaySpecialHolidayHours As Decimal
+    Public Property OvertimeSundayLegalHolidayHours As Decimal
     Public Property SgUniformAllowance As Decimal
     Public Property OfficerAllowance As Decimal
     Public Property OtherEarnings As Decimal
@@ -80,6 +86,7 @@ Public Module PayrollReportService
         Using workbook As New XLWorkbook()
             BuildUniversalSettingsSheet(workbook, dailyWage, cutoff, policy, settings)
             BuildUniversalPayrollSheet(workbook, mainClientName, detachmentName, clientAddress, dailyWage, cutoff, rows, policy, settings)
+            BuildClassificationDetailSheet(workbook, mainClientName, detachmentName, clientAddress, cutoff, rows, settings)
             BuildPayslipSheet(workbook, detachmentName, clientAddress, cutoff, rows.Count, IsFirstCutoff(cutoff), settings)
             BuildDtrHoursSheet(workbook, mainClientName, detachmentName, clientAddress, cutoff, dtrGrid, settings)
             workbook.CalculateMode = XLCalculateMode.Auto
@@ -228,6 +235,12 @@ Public Module PayrollReportService
                 .OvertimeSundayHours = ReadDecimal(row, "colOtSun"),
                 .OvertimeLegalHolidayHours = ReadDecimal(row, "colOtLh") + ReadDecimal(row, "colOtSunLh"),
                 .OvertimeSpecialHolidayHours = ReadDecimal(row, "colOtSh") + ReadDecimal(row, "colOtSunSh"),
+                .SundaySpecialHolidayHours = ReadDecimal(row, "colSunSh"),
+                .SundayLegalHolidayHours = ReadDecimal(row, "colSunLh"),
+                .NightDifferentialSundaySpecialHolidayHours = ReadDecimal(row, "colNdSunSh"),
+                .NightDifferentialSundayLegalHolidayHours = ReadDecimal(row, "colNdSunLh"),
+                .OvertimeSundaySpecialHolidayHours = ReadDecimal(row, "colOtSunSh"),
+                .OvertimeSundayLegalHolidayHours = ReadDecimal(row, "colOtSunLh"),
                 .SgUniformAllowance = ReadDecimal(row, "colSgUniformAllowance"),
                 .OfficerAllowance = ReadDecimal(row, "colOfficerAllo"),
                 .OtherEarnings = ReadDecimal(row, "colOtherEarnings"),
@@ -1093,6 +1106,161 @@ Public Module PayrollReportService
         sheet.Cell(row, startColumn + 4).Value = label
         sheet.Cell(row, startColumn + 6).FormulaA1 = formula
     End Sub
+
+    Private Sub BuildClassificationDetailSheet(
+        workbook As XLWorkbook,
+        mainClientName As String,
+        detachmentName As String,
+        clientAddress As String,
+        cutoff As String,
+        rows As List(Of PayrollExportRow),
+        settings As PayrollReportSettings
+    )
+        Const lastColumn As Integer = 20
+        Const headerRow As Integer = 13
+        Const dataStartRow As Integer = 14
+        Dim sheet = workbook.Worksheets.Add("CLASSIFICATION DETAIL")
+        WriteCompanyHeader(sheet, lastColumn, settings)
+
+        sheet.Range(7, 1, 7, 4).Merge()
+        sheet.Cell(7, 1).Value = "MAIN CLIENT"
+        sheet.Range(7, 5, 7, 10).Merge()
+        sheet.Cell(7, 5).Value = mainClientName
+        sheet.Range(7, 11, 7, 13).Merge()
+        sheet.Cell(7, 11).Value = "DETACHMENT"
+        sheet.Range(7, 14, 7, lastColumn).Merge()
+        sheet.Cell(7, 14).Value = detachmentName
+        sheet.Range(8, 1, 8, 4).Merge()
+        sheet.Cell(8, 1).Value = "ADDRESS"
+        sheet.Range(8, 5, 8, 14).Merge()
+        sheet.Cell(8, 5).Value = clientAddress
+        sheet.Range(8, 15, 8, 17).Merge()
+        sheet.Cell(8, 15).Value = "PERIOD"
+        sheet.Range(8, 18, 8, lastColumn).Merge()
+        sheet.Cell(8, 18).Value = ConvertCutoffToReadable(cutoff)
+        With sheet.Range(7, 1, 8, lastColumn).Style
+            .Font.Bold = True
+            .Fill.BackgroundColor = XLColor.FromHtml("#F4F6F7")
+            .Alignment.Vertical = XLAlignmentVerticalValues.Center
+            .Alignment.WrapText = True
+            .Border.BottomBorder = XLBorderStyleValues.Thin
+        End With
+
+        sheet.Range(10, 1, 10, lastColumn).Merge()
+        sheet.Cell(10, 1).Value =
+            "Sunday + SH/LH hours are separated from standalone holiday hours. " &
+            "ND and OT are premium-hour subsets and must not be added again when reconciling TOTAL HRS."
+        With sheet.Range(10, 1, 10, lastColumn).Style
+            .Font.Italic = True
+            .Font.FontColor = XLColor.FromHtml("#005B58")
+            .Fill.BackgroundColor = LightTeal
+            .Alignment.WrapText = True
+        End With
+
+        SetClassificationGroupHeader(sheet, 1, 2, "EMPLOYEE AND TOTAL")
+        SetClassificationGroupHeader(sheet, 3, 8, "DAY CLASSIFICATION HOURS")
+        SetClassificationGroupHeader(sheet, 9, 14, "NIGHT DIFFERENTIAL HOURS")
+        SetClassificationGroupHeader(sheet, 15, 20, "OVERTIME HOURS")
+
+        Dim headers = {
+            "EMPLOYEE NAME", "TOTAL HRS",
+            "REG", "SUN", "SH", "SUN + SH", "LH", "SUN + LH",
+            "ND REG", "ND SUN", "ND SH", "ND SUN + SH", "ND LH", "ND SUN + LH",
+            "OT REG", "OT SUN", "OT SH", "OT SUN + SH", "OT LH", "OT SUN + LH"
+        }
+        For index As Integer = 0 To headers.Length - 1
+            sheet.Cell(headerRow, index + 1).Value = headers(index)
+        Next
+        With sheet.Range(headerRow, 1, headerRow, lastColumn).Style
+            .Fill.BackgroundColor = XLColor.FromHtml("#E8EEF2")
+            .Font.Bold = True
+            .Font.FontSize = 8
+            .Alignment.Horizontal = XLAlignmentHorizontalValues.Center
+            .Alignment.Vertical = XLAlignmentVerticalValues.Center
+            .Alignment.WrapText = True
+            .Border.TopBorder = XLBorderStyleValues.Thin
+            .Border.BottomBorder = XLBorderStyleValues.Thin
+        End With
+
+        For index As Integer = 0 To rows.Count - 1
+            Dim rowNumber = dataStartRow + index
+            Dim item = rows(index)
+            Dim values As Object() = {
+                item.EmployeeName, item.TotalHours,
+                item.RegularHours, item.SundayHours,
+                StandaloneClassificationHours(item.SpecialHolidayHours, item.SundaySpecialHolidayHours), item.SundaySpecialHolidayHours,
+                StandaloneClassificationHours(item.LegalHolidayHours, item.SundayLegalHolidayHours), item.SundayLegalHolidayHours,
+                item.NightDifferentialRegularHours, item.NightDifferentialSundayHours,
+                StandaloneClassificationHours(item.NightDifferentialSpecialHolidayHours, item.NightDifferentialSundaySpecialHolidayHours), item.NightDifferentialSundaySpecialHolidayHours,
+                StandaloneClassificationHours(item.NightDifferentialLegalHolidayHours, item.NightDifferentialSundayLegalHolidayHours), item.NightDifferentialSundayLegalHolidayHours,
+                item.OvertimeRegularHours, item.OvertimeSundayHours,
+                StandaloneClassificationHours(item.OvertimeSpecialHolidayHours, item.OvertimeSundaySpecialHolidayHours), item.OvertimeSundaySpecialHolidayHours,
+                StandaloneClassificationHours(item.OvertimeLegalHolidayHours, item.OvertimeSundayLegalHolidayHours), item.OvertimeSundayLegalHolidayHours
+            }
+            For columnIndex As Integer = 0 To values.Length - 1
+                If TypeOf values(columnIndex) Is Decimal Then
+                    sheet.Cell(rowNumber, columnIndex + 1).Value = CDec(values(columnIndex))
+                Else
+                    sheet.Cell(rowNumber, columnIndex + 1).Value = Convert.ToString(values(columnIndex))
+                End If
+            Next
+        Next
+
+        Dim dataEndRow = Math.Max(dataStartRow, dataStartRow + rows.Count - 1)
+        Dim totalRow = dataStartRow + rows.Count
+        sheet.Cell(totalRow, 1).Value = "TOTAL"
+        For column As Integer = 2 To lastColumn
+            sheet.Cell(totalRow, column).FormulaA1 =
+                $"SUM({ColumnLetter(column)}{dataStartRow}:{ColumnLetter(column)}{dataEndRow})"
+        Next
+        StyleTotalRow(sheet.Range(totalRow, 1, totalRow, lastColumn))
+
+        sheet.Range(dataStartRow, 2, totalRow, lastColumn).Style.NumberFormat.Format = QuantityFormat
+        If rows.Count > 0 Then
+            sheet.Range(dataStartRow, 1, dataEndRow, lastColumn).Style.Border.BottomBorder = XLBorderStyleValues.Hair
+        End If
+        For Each combinedColumn In {6, 8, 12, 14, 18, 20}
+            sheet.Range(headerRow, combinedColumn, dataEndRow, combinedColumn).Style.Fill.BackgroundColor = LightTeal
+        Next
+        sheet.Range(headerRow, 1, totalRow, lastColumn).SetAutoFilter()
+        sheet.SheetView.FreezeRows(headerRow)
+        sheet.SheetView.FreezeColumns(1)
+        sheet.Column(1).Width = 30
+        sheet.Column(2).Width = 12
+        sheet.Columns(3, lastColumn).Width = 11
+        For Each combinedColumn In {6, 8, 12, 14, 18, 20}
+            sheet.Column(combinedColumn).Width = 14
+        Next
+        sheet.Row(10).Height = 34
+        sheet.Row(headerRow).Height = 34
+        sheet.ShowGridLines = False
+        sheet.PageSetup.PageOrientation = XLPageOrientation.Landscape
+        sheet.PageSetup.PaperSize = XLPaperSize.A4Paper
+        sheet.PageSetup.FitToPages(1, 0)
+        sheet.PageSetup.SetRowsToRepeatAtTop(1, headerRow)
+        sheet.PageSetup.PrintAreas.Add(1, 1, totalRow, lastColumn)
+        sheet.PageSetup.Margins.Left = 0.25
+        sheet.PageSetup.Margins.Right = 0.25
+    End Sub
+
+    Private Sub SetClassificationGroupHeader(sheet As IXLWorksheet, firstColumn As Integer, lastColumn As Integer, text As String)
+        sheet.Range(12, firstColumn, 12, lastColumn).Merge()
+        sheet.Cell(12, firstColumn).Value = text
+        With sheet.Range(12, firstColumn, 12, lastColumn).Style
+            .Fill.BackgroundColor = LightTeal
+            .Font.FontColor = XLColor.FromHtml("#005B58")
+            .Font.Bold = True
+            .Font.FontSize = 8
+            .Alignment.Horizontal = XLAlignmentHorizontalValues.Center
+            .Alignment.Vertical = XLAlignmentVerticalValues.Center
+            .Border.TopBorder = XLBorderStyleValues.Thin
+            .Border.BottomBorder = XLBorderStyleValues.Thin
+        End With
+    End Sub
+
+    Private Function StandaloneClassificationHours(inclusiveHours As Decimal, combinedHours As Decimal) As Decimal
+        Return Math.Max(0D, inclusiveHours - combinedHours)
+    End Function
 
     Private Sub BuildDtrHoursSheet(
         workbook As XLWorkbook,

@@ -518,13 +518,13 @@ Public Module OverallPayrollExportService
         SetGroupHeader(sheet, 24, 40, "EARNINGS")
         SetGroupHeader(sheet, 41, 52, "DEDUCTIONS AND NET PAY")
         SetGroupHeader(sheet, 53, 55, "AUDIT")
-        SetGroupHeader(sheet, 56, 61, "COMBINED CLASSIFICATION SUBSETS")
+        SetGroupHeader(sheet, 56, 61, "COMBINED SUNDAY + HOLIDAY HOURS")
         Dim headers = {
             "MAIN CLIENT", "DETACHMENT", "EMPLOYEE ID", "EMPLOYEE NAME", "CUTOFF", "RECORD STATUS", "REVISION", "SNAPSHOT SOURCE",
             "DAILY WAGE", "NO. DAYS", "TOTAL HOURS", "REG HRS", "SUN HRS", "LH HRS", "SH HRS", "ND REG HRS", "ND SUN HRS", "ND LH HRS", "ND SH HRS", "OT REG HRS", "OT SUN HRS", "OT LH HRS", "OT SH HRS",
-            "REG EARNINGS", "SUN EARNINGS", "LH EARNINGS", "SH EARNINGS", "ND REG EARNINGS", "ND SUN EARNINGS", "ND LH EARNINGS", "ND SH EARNINGS", "OT REG EARNINGS", "OT SUN EARNINGS", "OT LH EARNINGS", "OT SH EARNINGS", "INCENTIVE PAY", "OFFICER ALLOWANCE", "UNIFORM ALLOWANCE", "OTHER EARNINGS", "TOTAL EARNINGS",
+            "REG EARNINGS", "SUN EARNINGS", "LH EARNINGS (INCL SUN + LH)", "SH EARNINGS (INCL SUN + SH)", "ND REG EARNINGS", "ND SUN EARNINGS", "ND LH EARNINGS (INCL COMBINED)", "ND SH EARNINGS (INCL COMBINED)", "OT REG EARNINGS", "OT SUN EARNINGS", "OT LH EARNINGS (INCL COMBINED)", "OT SH EARNINGS (INCL COMBINED)", "INCENTIVE PAY", "OFFICER ALLOWANCE", "UNIFORM ALLOWANCE", "OTHER EARNINGS", "TOTAL EARNINGS",
             "SSS", "SSS PROVIDENT", "PHILHEALTH", "PAG-IBIG", "CASH BOND", "SSS LOAN", "SSS CAL LOAN", "PAG-IBIG LOAN", "PAG-IBIG CAL LOAN", "OTHER DEDUCTIONS", "TOTAL DEDUCTIONS", "NET PAY", "SUBMITTED AT", "SUBMITTED BY", "CALCULATION VERSION",
-            "SUN + SH HRS (SUBSET)", "SUN + LH HRS (SUBSET)", "ND SUN + SH HRS (SUBSET)", "ND SUN + LH HRS (SUBSET)", "OT SUN + SH HRS (SUBSET)", "OT SUN + LH HRS (SUBSET)"
+            "SUN + SH HRS", "SUN + LH HRS", "ND SUN + SH HRS", "ND SUN + LH HRS", "OT SUN + SH HRS", "OT SUN + LH HRS"
         }
         For index As Integer = 0 To headers.Length - 1
             sheet.Cell(5, index + 1).Value = headers(index)
@@ -560,9 +560,15 @@ Public Module OverallPayrollExportService
     Private Sub WriteEmployeeRow(sheet As IXLWorksheet, rowNumber As Integer, item As OverallPayrollRow)
         Dim values As Object() = {
             item.MainClientName, item.SubClientName, item.EmployeeId, item.EmployeeName, item.Cutoff, item.RecordStatus, item.RevisionNo, item.SnapshotSource,
-            item.DailyWage, item.NumberOfDays, item.TotalHours, item.RegularHours, item.SundayHours, item.LegalHolidayHours, item.SpecialHolidayHours,
-            item.NightDifferentialRegularHours, item.NightDifferentialSundayHours, item.NightDifferentialLegalHolidayHours, item.NightDifferentialSpecialHolidayHours,
-            item.OvertimeRegularHours, item.OvertimeSundayHours, item.OvertimeLegalHolidayHours, item.OvertimeSpecialHolidayHours,
+            item.DailyWage, item.NumberOfDays, item.TotalHours, item.RegularHours, item.SundayHours,
+            StandaloneClassificationHours(item.LegalHolidayHours, item.SundayLegalHolidayHours),
+            StandaloneClassificationHours(item.SpecialHolidayHours, item.SundaySpecialHolidayHours),
+            item.NightDifferentialRegularHours, item.NightDifferentialSundayHours,
+            StandaloneClassificationHours(item.NightDifferentialLegalHolidayHours, item.NightDifferentialSundayLegalHolidayHours),
+            StandaloneClassificationHours(item.NightDifferentialSpecialHolidayHours, item.NightDifferentialSundaySpecialHolidayHours),
+            item.OvertimeRegularHours, item.OvertimeSundayHours,
+            StandaloneClassificationHours(item.OvertimeLegalHolidayHours, item.OvertimeSundayLegalHolidayHours),
+            StandaloneClassificationHours(item.OvertimeSpecialHolidayHours, item.OvertimeSundaySpecialHolidayHours),
             item.RegularEarnings, item.SundayEarnings, item.LegalHolidayEarnings, item.SpecialHolidayEarnings,
             item.NightDifferentialRegularEarnings, item.NightDifferentialSundayEarnings, item.NightDifferentialLegalHolidayEarnings, item.NightDifferentialSpecialHolidayEarnings,
             item.OvertimeRegularEarnings, item.OvertimeSundayEarnings, item.OvertimeLegalHolidayEarnings, item.OvertimeSpecialHolidayEarnings,
@@ -693,6 +699,10 @@ Public Module OverallPayrollExportService
         Decimal.TryParse(RowText(row, columnName), NumberStyles.Any, CultureInfo.InvariantCulture, value)
         If value = 0D Then Decimal.TryParse(RowText(row, columnName), NumberStyles.Any, CultureInfo.CurrentCulture, value)
         Return value
+    End Function
+
+    Private Function StandaloneClassificationHours(inclusiveHours As Decimal, combinedHours As Decimal) As Decimal
+        Return Math.Max(0D, inclusiveHours - combinedHours)
     End Function
 
     Private Function RowBoolean(row As DataRow, columnName As String) As Boolean

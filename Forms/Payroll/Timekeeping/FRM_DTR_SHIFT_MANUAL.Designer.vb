@@ -81,8 +81,8 @@ Partial Class FRM_DTR_SHIFT_MANUAL
         'rootPanel
         '
         Me.rootPanel.ColumnCount = 2
-        Me.rootPanel.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 74.0!))
-        Me.rootPanel.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 26.0!))
+        Me.rootPanel.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 68.0!))
+        Me.rootPanel.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 32.0!))
         Me.rootPanel.Controls.Add(Me.toolbarPanel, 0, 0)
         Me.rootPanel.Controls.Add(Me.workPanel, 0, 1)
         Me.rootPanel.Controls.Add(Me.headerPanel, 1, 1)
@@ -705,13 +705,13 @@ Partial Class FRM_DTR_SHIFT_MANUAL
         Me.AutoScaleDimensions = New System.Drawing.SizeF(8.0!, 16.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
         Me.BackColor = System.Drawing.Color.FromArgb(255, 192, 128)
-        Me.ClientSize = New System.Drawing.Size(1220, 720)
+        Me.ClientSize = New System.Drawing.Size(1380, 820)
         Me.Controls.Add(Me.rootPanel)
         Me.Font = New System.Drawing.Font("Verdana", 9.75!, System.Drawing.FontStyle.Regular)
-        Me.MinimumSize = New System.Drawing.Size(1100, 650)
+        Me.MinimumSize = New System.Drawing.Size(1180, 720)
         Me.Name = "FRM_DTR_SHIFT_MANUAL"
         Me.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen
-        Me.Text = "DTR Manual Shift Entry"
+        Me.Text = "Manual DTR and Payroll Preparation"
         Me.WindowState = System.Windows.Forms.FormWindowState.Maximized
         Me.rootPanel.ResumeLayout(False)
         Me.toolbarPanel.ResumeLayout(False)

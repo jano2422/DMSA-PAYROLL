@@ -32,6 +32,25 @@ Public Class PayrollExportRow
     Public Property PagIbigLoanDeduction As Decimal
     Public Property PagIbigCalLoanDeduction As Decimal
     Public Property OtherDeductions As Decimal
+    Public Property HasMonetarySnapshot As Boolean
+    Public Property DailyWageSnapshot As Decimal
+    Public Property RegularEarnings As Decimal
+    Public Property SundayEarnings As Decimal
+    Public Property SpecialHolidayEarnings As Decimal
+    Public Property LegalHolidayEarnings As Decimal
+    Public Property NightDifferentialRegularEarnings As Decimal
+    Public Property NightDifferentialSundayEarnings As Decimal
+    Public Property NightDifferentialSpecialHolidayEarnings As Decimal
+    Public Property NightDifferentialLegalHolidayEarnings As Decimal
+    Public Property OvertimeRegularEarnings As Decimal
+    Public Property OvertimeSundayEarnings As Decimal
+    Public Property OvertimeSpecialHolidayEarnings As Decimal
+    Public Property OvertimeLegalHolidayEarnings As Decimal
+    Public Property IncentivePay As Decimal
+    Public Property TotalEarnings As Decimal
+    Public Property TotalDeductions As Decimal
+    Public Property NetPay As Decimal
+    Public Property CalculationVersion As String
 End Class
 
 Public Module PayrollReportService
@@ -60,7 +79,7 @@ Public Module PayrollReportService
 
         Using workbook As New XLWorkbook()
             BuildUniversalSettingsSheet(workbook, dailyWage, cutoff, policy, settings)
-            BuildUniversalPayrollSheet(workbook, mainClientName, detachmentName, clientAddress, dailyWage, cutoff, rows, settings)
+            BuildUniversalPayrollSheet(workbook, mainClientName, detachmentName, clientAddress, dailyWage, cutoff, rows, policy, settings)
             BuildPayslipSheet(workbook, detachmentName, clientAddress, cutoff, rows.Count, IsFirstCutoff(cutoff), settings)
             BuildDtrHoursSheet(workbook, mainClientName, detachmentName, clientAddress, cutoff, dtrGrid, settings)
             workbook.CalculateMode = XLCalculateMode.Auto
@@ -69,9 +88,102 @@ Public Module PayrollReportService
             Catch
                 ' Excel recalculates all formula cells when the generated workbook is opened.
             End Try
+            HideUnusedUniversalPayrollColumns(workbook.Worksheet("PAYROLL SHEET"), rows, dailyWage, cutoff, policy)
             workbook.SaveAs(outputPath)
         End Using
     End Sub
+
+    Private Sub HideUnusedUniversalPayrollColumns(
+        sheet As IXLWorksheet,
+        rows As IEnumerable(Of PayrollExportRow),
+        dailyWage As Decimal,
+        cutoff As String,
+        policy As SubClientPayrollPolicy
+    )
+        Dim columnsWithValues As New HashSet(Of Integer)()
+        For Each item In rows
+            Dim hours = UniversalHourValues(item, policy)
+            For index As Integer = 0 To hours.Length - 1
+                MarkColumnIfNonZero(columnsWithValues, 5 + index, hours(index))
+            Next
+
+            Dim earnings(SubClientPayrollPolicyService.PayCodeOrder.Length - 1) As Decimal
+            Dim incentivePay As Decimal
+            If item.HasMonetarySnapshot Then
+                earnings = {
+                    item.RegularEarnings, item.SundayEarnings, item.LegalHolidayEarnings, item.SpecialHolidayEarnings,
+                    item.NightDifferentialRegularEarnings, item.NightDifferentialSundayEarnings,
+                    item.NightDifferentialLegalHolidayEarnings, item.NightDifferentialSpecialHolidayEarnings,
+                    item.OvertimeRegularEarnings, item.OvertimeSundayEarnings,
+                    item.OvertimeLegalHolidayEarnings, item.OvertimeSpecialHolidayEarnings
+                }
+                incentivePay = item.IncentivePay
+            Else
+                Dim breakdown = SubClientPayrollPolicyService.CalculateEarningsBreakdown(
+                    policy, dailyWage, cutoff, item.NumberOfDays,
+                    hours(0), hours(1), hours(2), hours(3),
+                    hours(4), hours(5), hours(6), hours(7),
+                    hours(8), hours(9), hours(10), hours(11),
+                    item.OfficerAllowance, item.SgUniformAllowance, item.OtherEarnings)
+                For index As Integer = 0 To earnings.Length - 1
+                    earnings(index) = breakdown.AmountFor(SubClientPayrollPolicyService.PayCodeOrder(index))
+                Next
+                incentivePay = breakdown.IncentivePay
+            End If
+            For index As Integer = 0 To earnings.Length - 1
+                MarkColumnIfNonZero(columnsWithValues, 17 + index, earnings(index))
+            Next
+
+            MarkColumnIfNonZero(columnsWithValues, 29, incentivePay)
+            MarkColumnIfNonZero(columnsWithValues, 30, item.OfficerAllowance)
+            MarkColumnIfNonZero(columnsWithValues, 31, item.SgUniformAllowance)
+            MarkColumnIfNonZero(columnsWithValues, 32, item.OtherEarnings)
+            MarkColumnIfNonZero(columnsWithValues, 34, item.SssDeduction)
+            MarkColumnIfNonZero(columnsWithValues, 35, item.SssProvidentDeduction)
+            MarkColumnIfNonZero(columnsWithValues, 36, item.PhilHealthDeduction)
+            MarkColumnIfNonZero(columnsWithValues, 37, item.PagIbigDeduction)
+            MarkColumnIfNonZero(columnsWithValues, 38, item.CashBondDeduction)
+            MarkColumnIfNonZero(columnsWithValues, 39, item.SssLoanDeduction)
+            MarkColumnIfNonZero(columnsWithValues, 40, item.SssCalLoanDeduction)
+            MarkColumnIfNonZero(columnsWithValues, 41, item.PagIbigLoanDeduction)
+            MarkColumnIfNonZero(columnsWithValues, 42, item.PagIbigCalLoanDeduction)
+            MarkColumnIfNonZero(columnsWithValues, 43, item.OtherDeductions)
+        Next
+
+        Dim optionalColumns = Enumerable.Range(5, 28).
+            Concat(Enumerable.Range(34, 10)).
+            ToArray()
+        For Each columnNumber In optionalColumns
+            If Not columnsWithValues.Contains(columnNumber) Then sheet.Column(columnNumber).Hide()
+        Next
+    End Sub
+
+    Private Sub MarkColumnIfNonZero(columnsWithValues As ISet(Of Integer), columnNumber As Integer, value As Decimal)
+        If Math.Abs(value) > 0.0000001D Then columnsWithValues.Add(columnNumber)
+    End Sub
+
+    Private Function UniversalHourValues(item As PayrollExportRow, policy As SubClientPayrollPolicy) As Decimal()
+        Dim values = New Decimal() {
+            item.RegularHours, item.SundayHours, item.LegalHolidayHours, item.SpecialHolidayHours,
+            item.NightDifferentialRegularHours, item.NightDifferentialSundayHours,
+            item.NightDifferentialLegalHolidayHours, item.NightDifferentialSpecialHolidayHours,
+            item.OvertimeRegularHours, item.OvertimeSundayHours,
+            item.OvertimeLegalHolidayHours, item.OvertimeSpecialHolidayHours
+        }
+        If item.HasMonetarySnapshot Then Return values
+
+        Dim normalizedHours = SubClientPayrollPolicyService.NormalizePayHours(
+            policy,
+            item.RegularHours, item.SundayHours, item.LegalHolidayHours, item.SpecialHolidayHours,
+            item.NightDifferentialRegularHours, item.NightDifferentialSundayHours,
+            item.NightDifferentialLegalHolidayHours, item.NightDifferentialSpecialHolidayHours,
+            item.OvertimeRegularHours, item.OvertimeSundayHours,
+            item.OvertimeLegalHolidayHours, item.OvertimeSpecialHolidayHours)
+        For index As Integer = 0 To values.Length - 1
+            values(index) = normalizedHours(SubClientPayrollPolicyService.PayCodeOrder(index))
+        Next
+        Return values
+    End Function
 
     Public Sub CreateDtrHoursReport(
         outputPath As String,
@@ -105,23 +217,45 @@ Public Module PayrollReportService
                 .TotalHours = ReadDecimal(row, "colTotalHours"),
                 .RegularHours = ReadDecimal(row, "colReg"),
                 .SundayHours = ReadDecimal(row, "colSun"),
-                .SpecialHolidayHours = ReadDecimal(row, "colSh"),
-                .LegalHolidayHours = ReadDecimal(row, "colLh"),
+                .SpecialHolidayHours = ReadDecimal(row, "colSh") + ReadDecimal(row, "colSunSh"),
+                .LegalHolidayHours = ReadDecimal(row, "colLh") + ReadDecimal(row, "colSunLh"),
                 .NightDifferentialDays = ReadDecimal(row, "colNumNdDays"),
                 .NightDifferentialRegularHours = ReadDecimal(row, "colNdReg"),
                 .NightDifferentialSundayHours = ReadDecimal(row, "colNdSun"),
-                .NightDifferentialLegalHolidayHours = ReadDecimal(row, "colNdLh"),
-                .NightDifferentialSpecialHolidayHours = ReadDecimal(row, "colNdSh"),
+                .NightDifferentialLegalHolidayHours = ReadDecimal(row, "colNdLh") + ReadDecimal(row, "colNdSunLh"),
+                .NightDifferentialSpecialHolidayHours = ReadDecimal(row, "colNdSh") + ReadDecimal(row, "colNdSunSh"),
                 .OvertimeRegularHours = ReadDecimal(row, "colOtReg"),
                 .OvertimeSundayHours = ReadDecimal(row, "colOtSun"),
-                .OvertimeLegalHolidayHours = ReadDecimal(row, "colOtLh"),
-                .OvertimeSpecialHolidayHours = ReadDecimal(row, "colOtSh"),
+                .OvertimeLegalHolidayHours = ReadDecimal(row, "colOtLh") + ReadDecimal(row, "colOtSunLh"),
+                .OvertimeSpecialHolidayHours = ReadDecimal(row, "colOtSh") + ReadDecimal(row, "colOtSunSh"),
                 .SgUniformAllowance = ReadDecimal(row, "colSgUniformAllowance"),
-                .OfficerAllowance = ReadDecimal(row, "colOfficerAllo")
+                .OfficerAllowance = ReadDecimal(row, "colOfficerAllo"),
+                .OtherEarnings = ReadDecimal(row, "colOtherEarnings"),
+                .OtherDeductions = ReadDecimal(row, "colOtherDeductions"),
+                .HasMonetarySnapshot = ReadDecimal(row, "colSnapshotComplete") <> 0D,
+                .DailyWageSnapshot = ReadDecimal(row, "colDailyWageSnapshot"),
+                .RegularEarnings = ReadDecimal(row, "colRegEarnings"),
+                .SundayEarnings = ReadDecimal(row, "colSunEarnings"),
+                .LegalHolidayEarnings = ReadDecimal(row, "colLhEarnings"),
+                .SpecialHolidayEarnings = ReadDecimal(row, "colShEarnings"),
+                .NightDifferentialRegularEarnings = ReadDecimal(row, "colNdRegEarnings"),
+                .NightDifferentialSundayEarnings = ReadDecimal(row, "colNdSunEarnings"),
+                .NightDifferentialLegalHolidayEarnings = ReadDecimal(row, "colNdLhEarnings"),
+                .NightDifferentialSpecialHolidayEarnings = ReadDecimal(row, "colNdShEarnings"),
+                .OvertimeRegularEarnings = ReadDecimal(row, "colOtRegEarnings"),
+                .OvertimeSundayEarnings = ReadDecimal(row, "colOtSunEarnings"),
+                .OvertimeLegalHolidayEarnings = ReadDecimal(row, "colOtLhEarnings"),
+                .OvertimeSpecialHolidayEarnings = ReadDecimal(row, "colOtShEarnings"),
+                .IncentivePay = ReadDecimal(row, "colIncentiveEarnings"),
+                .TotalEarnings = ReadDecimal(row, "colTotalEarnings"),
+                .TotalDeductions = ReadDecimal(row, "colTotalDeductions"),
+                .NetPay = ReadDecimal(row, "colNetPay"),
+                .CalculationVersion = ReadText(row, "colCalculationVersion")
             }
 
             If firstCutoff Then
                 item.SssDeduction = ReadDecimal(row, "colSss")
+                item.SssProvidentDeduction = ReadDecimal(row, "colSssProvident")
                 item.PhilHealthDeduction = ReadDecimal(row, "colPhilHealth")
                 item.PagIbigDeduction = ReadDecimal(row, "colPagIbig")
             Else
@@ -181,13 +315,15 @@ Public Module PayrollReportService
 
         sheet.Cell("D1").Value = "Pay code"
         sheet.Cell("E1").Value = "Enabled"
-        sheet.Cell("F1").Value = "Multiplier"
+        sheet.Cell("F1").Value = "Additional premium"
+        sheet.Cell("G1").Value = "Effective earnings factor"
         For index As Integer = 0 To SubClientPayrollPolicyService.PayCodeOrder.Length - 1
             Dim rule = policy.GetRule(SubClientPayrollPolicyService.PayCodeOrder(index))
             Dim rowNumber = index + 2
             sheet.Cell(rowNumber, 4).Value = rule.Code
             sheet.Cell(rowNumber, 5).Value = If(rule.Enabled, 1, 0)
             sheet.Cell(rowNumber, 6).Value = rule.Multiplier
+            sheet.Cell(rowNumber, 7).Value = SubClientPayrollPolicyService.EarningsFactorForCode(policy, rule.Code)
         Next
 
         sheet.Cell("H1").Value = "Report setting"
@@ -205,7 +341,7 @@ Public Module PayrollReportService
             sheet.Cell(index + 2, 9).Value = reportSettings(index).Value
         Next
 
-        For Each headerRange In {sheet.Range("A1:B1"), sheet.Range("D1:F1"), sheet.Range("H1:I1")}
+        For Each headerRange In {sheet.Range("A1:B1"), sheet.Range("D1:G1"), sheet.Range("H1:I1")}
             headerRange.Style.Font.Bold = True
             headerRange.Style.Fill.BackgroundColor = Teal
             headerRange.Style.Font.FontColor = XLColor.White
@@ -213,12 +349,13 @@ Public Module PayrollReportService
         sheet.Column(1).Width = 31
         sheet.Column(2).Width = 54
         sheet.Column(4).Width = 20
-        sheet.Columns(5, 6).Width = 14
+        sheet.Columns(5, 6).Width = 18
+        sheet.Column(7).Width = 24
         sheet.Column(8).Width = 28
         sheet.Column(9).Width = 54
         sheet.Range("B2:B11").Style.NumberFormat.Format = "0.######"
         sheet.Range("B14:B15").Style.NumberFormat.Format = "0.######"
-        sheet.Range("F2:F13").Style.NumberFormat.Format = "0.######"
+        sheet.Range("F2:G13").Style.NumberFormat.Format = "0.######"
         sheet.Visibility = XLWorksheetVisibility.VeryHidden
     End Sub
 
@@ -230,6 +367,7 @@ Public Module PayrollReportService
         dailyWage As Decimal,
         cutoff As String,
         rows As List(Of PayrollExportRow),
+        policy As SubClientPayrollPolicy,
         settings As PayrollReportSettings
     )
         Const lastColumn As Integer = 46
@@ -244,7 +382,7 @@ Public Module PayrollReportService
         WriteUniversalHeaders(sheet)
 
         For index As Integer = 0 To rows.Count - 1
-            WriteUniversalPayrollDataRow(sheet, dataStartRow + index, rows(index), dailyWage)
+            WriteUniversalPayrollDataRow(sheet, dataStartRow + index, rows(index), dailyWage, policy)
         Next
 
         sheet.Cell(totalRow, 1).Value = "TOTAL AMOUNT"
@@ -395,42 +533,59 @@ Public Module PayrollReportService
         End With
     End Sub
 
-    Private Sub WriteUniversalPayrollDataRow(sheet As IXLWorksheet, rowNumber As Integer, item As PayrollExportRow, dailyWage As Decimal)
-        Dim values = New Decimal() {
-            item.RegularHours, item.SundayHours, item.LegalHolidayHours, item.SpecialHolidayHours,
-            item.NightDifferentialRegularHours, item.NightDifferentialSundayHours,
-            item.NightDifferentialLegalHolidayHours, item.NightDifferentialSpecialHolidayHours,
-            item.OvertimeRegularHours, item.OvertimeSundayHours,
-            item.OvertimeLegalHolidayHours, item.OvertimeSpecialHolidayHours
-        }
+    Private Sub WriteUniversalPayrollDataRow(
+        sheet As IXLWorksheet,
+        rowNumber As Integer,
+        item As PayrollExportRow,
+        dailyWage As Decimal,
+        policy As SubClientPayrollPolicy
+    )
+        Dim values = UniversalHourValues(item, policy)
         sheet.Cell(rowNumber, 1).Value = item.EmployeeName
-        sheet.Cell(rowNumber, 2).Value = dailyWage
+        sheet.Cell(rowNumber, 2).Value = If(item.HasMonetarySnapshot AndAlso item.DailyWageSnapshot > 0D, item.DailyWageSnapshot, dailyWage)
         sheet.Cell(rowNumber, 3).Value = item.NumberOfDays
         sheet.Cell(rowNumber, 4).Value = item.TotalHours
         For index As Integer = 0 To values.Length - 1
             sheet.Cell(rowNumber, 5 + index).Value = values(index)
         Next
 
-        For index As Integer = 0 To SubClientPayrollPolicyService.PayCodeOrder.Length - 1
-            Dim code = SubClientPayrollPolicyService.PayCodeOrder(index)
-            Dim settingsRow = index + 2
-            Dim inputColumn = ColumnLetter(5 + index)
-            Dim payColumn = 17 + index
-            Dim formula As String
-            If code.Equals("ND_REG", StringComparison.OrdinalIgnoreCase) Then
-                formula = $"IF('SETTINGS'!$E${settingsRow}=0,0,IF('SETTINGS'!$B$5=1,'SETTINGS'!$B$6/'SETTINGS'!$B$11/'SETTINGS'!$B$4*$C{rowNumber},$B{rowNumber}/'SETTINGS'!$B$3*'SETTINGS'!$F${settingsRow}*{inputColumn}{rowNumber}))"
-            Else
-                formula = $"IF('SETTINGS'!$E${settingsRow}=0,0,$B{rowNumber}/'SETTINGS'!$B$3*'SETTINGS'!$F${settingsRow}*{inputColumn}{rowNumber})"
-            End If
-            sheet.Cell(rowNumber, payColumn).FormulaA1 = formula
-        Next
-
-        sheet.Cell(rowNumber, 29).FormulaA1 =
-            $"IF('SETTINGS'!$B$7=0,0,$B{rowNumber}*'SETTINGS'!$B$8/'SETTINGS'!$B$9/'SETTINGS'!$B$10/'SETTINGS'!$B$4*$C{rowNumber})"
+        If item.HasMonetarySnapshot Then
+            Dim savedEarnings = {
+                item.RegularEarnings, item.SundayEarnings, item.LegalHolidayEarnings, item.SpecialHolidayEarnings,
+                item.NightDifferentialRegularEarnings, item.NightDifferentialSundayEarnings,
+                item.NightDifferentialLegalHolidayEarnings, item.NightDifferentialSpecialHolidayEarnings,
+                item.OvertimeRegularEarnings, item.OvertimeSundayEarnings,
+                item.OvertimeLegalHolidayEarnings, item.OvertimeSpecialHolidayEarnings
+            }
+            For index As Integer = 0 To savedEarnings.Length - 1
+                sheet.Cell(rowNumber, 17 + index).Value = savedEarnings(index)
+            Next
+            sheet.Cell(rowNumber, 29).Value = item.IncentivePay
+        Else
+            For index As Integer = 0 To SubClientPayrollPolicyService.PayCodeOrder.Length - 1
+                Dim code = SubClientPayrollPolicyService.PayCodeOrder(index)
+                Dim settingsRow = index + 2
+                Dim inputColumn = ColumnLetter(5 + index)
+                Dim payColumn = 17 + index
+                Dim formula As String
+                If code.Equals("ND_REG", StringComparison.OrdinalIgnoreCase) Then
+                    formula = $"IF('SETTINGS'!$E${settingsRow}=0,0,IF('SETTINGS'!$B$5=1,'SETTINGS'!$B$6/'SETTINGS'!$B$11/'SETTINGS'!$B$4*$C{rowNumber},$B{rowNumber}/'SETTINGS'!$B$3*'SETTINGS'!$G${settingsRow}*{inputColumn}{rowNumber}))"
+                Else
+                    formula = $"IF('SETTINGS'!$E${settingsRow}=0,0,$B{rowNumber}/'SETTINGS'!$B$3*'SETTINGS'!$G${settingsRow}*{inputColumn}{rowNumber})"
+                End If
+                sheet.Cell(rowNumber, payColumn).FormulaA1 = formula
+            Next
+            sheet.Cell(rowNumber, 29).FormulaA1 =
+                $"IF('SETTINGS'!$B$7=0,0,$B{rowNumber}*'SETTINGS'!$B$8/'SETTINGS'!$B$9/'SETTINGS'!$B$10/'SETTINGS'!$B$4*$C{rowNumber})"
+        End If
         sheet.Cell(rowNumber, 30).Value = item.OfficerAllowance
         sheet.Cell(rowNumber, 31).Value = item.SgUniformAllowance
         sheet.Cell(rowNumber, 32).Value = item.OtherEarnings
-        sheet.Cell(rowNumber, 33).FormulaA1 = $"SUM(Q{rowNumber}:AF{rowNumber})"
+        If item.HasMonetarySnapshot Then
+            sheet.Cell(rowNumber, 33).Value = item.TotalEarnings
+        Else
+            sheet.Cell(rowNumber, 33).FormulaA1 = $"SUM(Q{rowNumber}:AF{rowNumber})"
+        End If
         sheet.Cell(rowNumber, 34).Value = item.SssDeduction
         sheet.Cell(rowNumber, 35).Value = item.SssProvidentDeduction
         sheet.Cell(rowNumber, 36).Value = item.PhilHealthDeduction
@@ -441,8 +596,13 @@ Public Module PayrollReportService
         sheet.Cell(rowNumber, 41).Value = item.PagIbigLoanDeduction
         sheet.Cell(rowNumber, 42).Value = item.PagIbigCalLoanDeduction
         sheet.Cell(rowNumber, 43).Value = item.OtherDeductions
-        sheet.Cell(rowNumber, 44).FormulaA1 = $"SUM(AH{rowNumber}:AQ{rowNumber})"
-        sheet.Cell(rowNumber, 45).FormulaA1 = $"AG{rowNumber}-AR{rowNumber}"
+        If item.HasMonetarySnapshot Then
+            sheet.Cell(rowNumber, 44).Value = item.TotalDeductions
+            sheet.Cell(rowNumber, 45).Value = item.NetPay
+        Else
+            sheet.Cell(rowNumber, 44).FormulaA1 = $"SUM(AH{rowNumber}:AQ{rowNumber})"
+            sheet.Cell(rowNumber, 45).FormulaA1 = $"AG{rowNumber}-AR{rowNumber}"
+        End If
     End Sub
 
     Private Sub FormatUniversalPayrollSheet(
@@ -512,12 +672,12 @@ Public Module PayrollReportService
         sheet.Cell("B2").Value = dailyWage
         sheet.Cell("A3").Value = "Hours per day"
         sheet.Cell("B3").Value = settings.HoursPerDay
-        sheet.Cell("A4").Value = "Sunday multiplier"
-        sheet.Cell("B4").Value = settings.SundayMultiplier
-        sheet.Cell("A5").Value = "Special holiday multiplier"
-        sheet.Cell("B5").Value = settings.SpecialHolidayMultiplier
-        sheet.Cell("A6").Value = "Legal holiday multiplier"
-        sheet.Cell("B6").Value = settings.LegalHolidayMultiplier
+        sheet.Cell("A4").Value = "Sunday additional premium"
+        sheet.Cell("B4").Value = settings.SundayPremium
+        sheet.Cell("A5").Value = "Special holiday additional premium"
+        sheet.Cell("B5").Value = settings.SpecialHolidayPremium
+        sheet.Cell("A6").Value = "Legal holiday additional premium"
+        sheet.Cell("B6").Value = settings.LegalHolidayPremium
         sheet.Cell("A7").Value = "Overtime hourly rate"
         sheet.Cell("B7").Value = settings.OvertimeHourlyRate
         sheet.Cell("A8").Value = "Service incentive days"
@@ -565,7 +725,7 @@ Public Module PayrollReportService
         settings As PayrollReportSettings
     )
         Dim sheet = workbook.Worksheets.Add("PAYROLL")
-        Dim lastColumn As Integer = If(firstCutoff, 26, 28)
+        Dim lastColumn As Integer = If(firstCutoff, 27, 28)
         Dim dataStartRow As Integer = 15
         Dim dataEndRow As Integer = dataStartRow + rows.Count - 1
         Dim totalRow As Integer = dataEndRow + 1
@@ -619,14 +779,15 @@ Public Module PayrollReportService
         Next
 
         If firstCutoff Then
-            sheet.Range(12, 21, 12, 23).Merge()
+            sheet.Range(12, 21, 12, 24).Merge()
             sheet.Cell(12, 21).Value = "DEDUCTIONS"
             sheet.Cell(13, 21).Value = "SSS"
-            sheet.Cell(13, 22).Value = "PH"
-            sheet.Cell(13, 23).Value = "PI"
-            WriteMergedHeader(sheet, 24, "TOTAL DEDUCTIONS")
-            WriteMergedHeader(sheet, 25, "NET AMOUNT PAID")
-            WriteMergedHeader(sheet, 26, "SIGNATURE")
+            sheet.Cell(13, 22).Value = "SSS PROVIDENT"
+            sheet.Cell(13, 23).Value = "PH"
+            sheet.Cell(13, 24).Value = "PI"
+            WriteMergedHeader(sheet, 25, "TOTAL DEDUCTIONS")
+            WriteMergedHeader(sheet, 26, "NET AMOUNT PAID")
+            WriteMergedHeader(sheet, 27, "SIGNATURE")
         Else
             sheet.Range(12, 21, 12, 25).Merge()
             sheet.Cell(12, 21).Value = "DEDUCTIONS"
@@ -640,7 +801,7 @@ Public Module PayrollReportService
             WriteMergedHeader(sheet, 28, "SIGNATURE")
         End If
 
-        Dim lastColumn = If(firstCutoff, 26, 28)
+        Dim lastColumn = If(firstCutoff, 27, 28)
         With sheet.Range(12, 1, 13, lastColumn).Style
             .Font.Bold = True
             .Alignment.Horizontal = XLAlignmentHorizontalValues.Center
@@ -673,19 +834,20 @@ Public Module PayrollReportService
         sheet.Cell(rowNumber, 19).Value = item.OfficerAllowance
 
         sheet.Cell(rowNumber, 12).FormulaA1 = $"'SETTINGS'!$B$2/'SETTINGS'!$B$3*D{rowNumber}"
-        sheet.Cell(rowNumber, 13).FormulaA1 = $"'SETTINGS'!$B$2/'SETTINGS'!$B$3*'SETTINGS'!$B$4*E{rowNumber}"
-        sheet.Cell(rowNumber, 14).FormulaA1 = $"'SETTINGS'!$B$2/'SETTINGS'!$B$3*'SETTINGS'!$B$6*H{rowNumber}"
-        sheet.Cell(rowNumber, 15).FormulaA1 = $"'SETTINGS'!$B$2/'SETTINGS'!$B$3*'SETTINGS'!$B$5*I{rowNumber}"
+        sheet.Cell(rowNumber, 13).FormulaA1 = $"'SETTINGS'!$B$2/'SETTINGS'!$B$3*(1+'SETTINGS'!$B$4)*E{rowNumber}"
+        sheet.Cell(rowNumber, 14).FormulaA1 = $"'SETTINGS'!$B$2/'SETTINGS'!$B$3*(1+'SETTINGS'!$B$6)*H{rowNumber}"
+        sheet.Cell(rowNumber, 15).FormulaA1 = $"'SETTINGS'!$B$2/'SETTINGS'!$B$3*(1+'SETTINGS'!$B$5)*I{rowNumber}"
         sheet.Cell(rowNumber, 16).FormulaA1 = $"'SETTINGS'!$B$7*K{rowNumber}"
         sheet.Cell(rowNumber, 17).FormulaA1 = $"'SETTINGS'!$B$2*'SETTINGS'!$B$8/'SETTINGS'!$B$9/'SETTINGS'!$B$10*C{rowNumber}"
         sheet.Cell(rowNumber, 20).FormulaA1 = $"SUM(L{rowNumber}:S{rowNumber})"
 
         If firstCutoff Then
             sheet.Cell(rowNumber, 21).Value = item.SssDeduction
-            sheet.Cell(rowNumber, 22).Value = item.PhilHealthDeduction
-            sheet.Cell(rowNumber, 23).Value = item.PagIbigDeduction
-            sheet.Cell(rowNumber, 24).FormulaA1 = $"SUM(U{rowNumber}:W{rowNumber})"
-            sheet.Cell(rowNumber, 25).FormulaA1 = $"T{rowNumber}-X{rowNumber}"
+            sheet.Cell(rowNumber, 22).Value = item.SssProvidentDeduction
+            sheet.Cell(rowNumber, 23).Value = item.PhilHealthDeduction
+            sheet.Cell(rowNumber, 24).Value = item.PagIbigDeduction
+            sheet.Cell(rowNumber, 25).FormulaA1 = $"SUM(U{rowNumber}:X{rowNumber})"
+            sheet.Cell(rowNumber, 26).FormulaA1 = $"T{rowNumber}-Y{rowNumber}"
         Else
             sheet.Cell(rowNumber, 21).Value = item.CashBondDeduction
             sheet.Cell(rowNumber, 22).Value = item.SssLoanDeduction
@@ -751,9 +913,9 @@ Public Module PayrollReportService
         settings As PayrollReportSettings
     )
         Dim sheet = workbook.Worksheets.Add("PAYSLIP")
-        Const blockHeight As Integer = 22
+        Const blockHeight As Integer = 25
         Const slipsPerRow As Integer = 2
-        Const pairRowsPerPrintedPage As Integer = 4
+        Const pairRowsPerPrintedPage As Integer = 3
 
         For index As Integer = 0 To employeeCount - 1
             Dim pairRowIndex = index \ slipsPerRow
@@ -796,7 +958,7 @@ Public Module PayrollReportService
         firstCutoff As Boolean,
         settings As PayrollReportSettings
     )
-        Dim endRow = startRow + 20
+        Dim endRow = startRow + 23
         Dim typeColumn = startColumn
         Dim valueStartColumn = startColumn + 1
         Dim hoursColumn = startColumn + 2
@@ -847,7 +1009,11 @@ Public Module PayrollReportService
         sheet.Cell(startRow + 8, deductionTypeColumn).Value = "TYPE"
         sheet.Cell(startRow + 8, deductionAmountColumn).Value = "AMOUNT (PHP)"
 
-        Dim earningLabels = New String() {"Daily Wage", "Basic Pay", "Sunday Pay", "Legal Holiday", "Special Holiday", "Night Differential", "Overtime", "Incentive Pay", "Allowances / Other"}
+        Dim earningLabels = New String() {
+            "Daily Wage", "Basic Pay", "Sunday Pay", "Legal Holiday", "Special Holiday",
+            "Night Differential", "OT Regular", "OT Sunday", "OT Legal Holiday",
+            "OT Special Holiday", "Incentive Pay", "Allowances / Other"
+        }
         For offset As Integer = 0 To earningLabels.Length - 1
             sheet.Cell(startRow + 9 + offset, typeColumn).Value = earningLabels(offset)
         Next
@@ -862,10 +1028,16 @@ Public Module PayrollReportService
         sheet.Cell(startRow + 13, amountColumn).FormulaA1 = $"'PAYROLL SHEET'!T{payrollRow}"
         sheet.Cell(startRow + 14, hoursColumn).FormulaA1 = $"SUM('PAYROLL SHEET'!I{payrollRow}:L{payrollRow})"
         sheet.Cell(startRow + 14, amountColumn).FormulaA1 = $"SUM('PAYROLL SHEET'!U{payrollRow}:X{payrollRow})"
-        sheet.Cell(startRow + 15, hoursColumn).FormulaA1 = $"SUM('PAYROLL SHEET'!M{payrollRow}:P{payrollRow})"
-        sheet.Cell(startRow + 15, amountColumn).FormulaA1 = $"SUM('PAYROLL SHEET'!Y{payrollRow}:AB{payrollRow})"
-        sheet.Cell(startRow + 16, amountColumn).FormulaA1 = $"'PAYROLL SHEET'!AC{payrollRow}"
-        sheet.Cell(startRow + 17, amountColumn).FormulaA1 = $"SUM('PAYROLL SHEET'!AD{payrollRow}:AF{payrollRow})"
+        sheet.Cell(startRow + 15, hoursColumn).FormulaA1 = $"'PAYROLL SHEET'!M{payrollRow}"
+        sheet.Cell(startRow + 15, amountColumn).FormulaA1 = $"'PAYROLL SHEET'!Y{payrollRow}"
+        sheet.Cell(startRow + 16, hoursColumn).FormulaA1 = $"'PAYROLL SHEET'!N{payrollRow}"
+        sheet.Cell(startRow + 16, amountColumn).FormulaA1 = $"'PAYROLL SHEET'!Z{payrollRow}"
+        sheet.Cell(startRow + 17, hoursColumn).FormulaA1 = $"'PAYROLL SHEET'!O{payrollRow}"
+        sheet.Cell(startRow + 17, amountColumn).FormulaA1 = $"'PAYROLL SHEET'!AA{payrollRow}"
+        sheet.Cell(startRow + 18, hoursColumn).FormulaA1 = $"'PAYROLL SHEET'!P{payrollRow}"
+        sheet.Cell(startRow + 18, amountColumn).FormulaA1 = $"'PAYROLL SHEET'!AB{payrollRow}"
+        sheet.Cell(startRow + 19, amountColumn).FormulaA1 = $"'PAYROLL SHEET'!AC{payrollRow}"
+        sheet.Cell(startRow + 20, amountColumn).FormulaA1 = $"SUM('PAYROLL SHEET'!AD{payrollRow}:AF{payrollRow})"
 
         If firstCutoff Then
             WritePayslipDeduction(sheet, startRow + 9, startColumn, "SSS", $"'PAYROLL SHEET'!AH{payrollRow}")
@@ -882,18 +1054,18 @@ Public Module PayrollReportService
             WritePayslipDeduction(sheet, startRow + 14, startColumn, "Other", $"'PAYROLL SHEET'!AQ{payrollRow}")
         End If
 
-        sheet.Cell(startRow + 18, typeColumn).Value = "TOTAL EARNINGS"
-        sheet.Range(startRow + 18, typeColumn, startRow + 18, hoursColumn).Merge()
-        sheet.Cell(startRow + 18, amountColumn).FormulaA1 = $"'PAYROLL SHEET'!AG{payrollRow}"
-        sheet.Cell(startRow + 18, deductionTypeColumn).Value = "TOTAL DEDUCTIONS"
-        sheet.Range(startRow + 18, deductionTypeColumn, startRow + 18, deductionValueStartColumn).Merge()
-        sheet.Cell(startRow + 18, deductionAmountColumn).FormulaA1 = $"'PAYROLL SHEET'!AR{payrollRow}"
-        sheet.Range(startRow + 19, typeColumn, startRow + 19, deductionValueStartColumn).Merge()
-        sheet.Cell(startRow + 19, typeColumn).Value = "**** NET PAY ****"
-        sheet.Cell(startRow + 19, typeColumn).Style.Font.Bold = True
-        sheet.Cell(startRow + 19, typeColumn).Style.Font.Italic = True
-        sheet.Cell(startRow + 19, typeColumn).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center
-        sheet.Cell(startRow + 19, deductionAmountColumn).FormulaA1 = $"'PAYROLL SHEET'!AS{payrollRow}"
+        sheet.Cell(startRow + 21, typeColumn).Value = "TOTAL EARNINGS"
+        sheet.Range(startRow + 21, typeColumn, startRow + 21, hoursColumn).Merge()
+        sheet.Cell(startRow + 21, amountColumn).FormulaA1 = $"'PAYROLL SHEET'!AG{payrollRow}"
+        sheet.Cell(startRow + 21, deductionTypeColumn).Value = "TOTAL DEDUCTIONS"
+        sheet.Range(startRow + 21, deductionTypeColumn, startRow + 21, deductionValueStartColumn).Merge()
+        sheet.Cell(startRow + 21, deductionAmountColumn).FormulaA1 = $"'PAYROLL SHEET'!AR{payrollRow}"
+        sheet.Range(startRow + 22, typeColumn, startRow + 22, deductionValueStartColumn).Merge()
+        sheet.Cell(startRow + 22, typeColumn).Value = "**** NET PAY ****"
+        sheet.Cell(startRow + 22, typeColumn).Style.Font.Bold = True
+        sheet.Cell(startRow + 22, typeColumn).Style.Font.Italic = True
+        sheet.Cell(startRow + 22, typeColumn).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center
+        sheet.Cell(startRow + 22, deductionAmountColumn).FormulaA1 = $"'PAYROLL SHEET'!AS{payrollRow}"
 
         Dim blockRange = sheet.Range(startRow, startColumn, endRow - 1, deductionAmountColumn)
         blockRange.Style.Border.TopBorder = XLBorderStyleValues.Thin
@@ -902,19 +1074,19 @@ Public Module PayrollReportService
         blockRange.Style.Border.RightBorder = XLBorderStyleValues.Thin
         blockRange.Style.Font.FontSize = 6.5
         blockRange.Style.Alignment.Vertical = XLAlignmentVerticalValues.Center
-        sheet.Range(startRow + 9, hoursColumn, startRow + 17, hoursColumn).Style.NumberFormat.Format = QuantityFormat
-        sheet.Range(startRow + 9, amountColumn, startRow + 19, amountColumn).Style.NumberFormat.Format = MoneyFormat
-        sheet.Range(startRow + 9, deductionAmountColumn, startRow + 19, deductionAmountColumn).Style.NumberFormat.Format = MoneyFormat
-        StyleTotalRow(sheet.Range(startRow + 18, startColumn, startRow + 19, deductionAmountColumn))
+        sheet.Range(startRow + 9, hoursColumn, startRow + 20, hoursColumn).Style.NumberFormat.Format = QuantityFormat
+        sheet.Range(startRow + 9, amountColumn, startRow + 22, amountColumn).Style.NumberFormat.Format = MoneyFormat
+        sheet.Range(startRow + 9, deductionAmountColumn, startRow + 22, deductionAmountColumn).Style.NumberFormat.Format = MoneyFormat
+        StyleTotalRow(sheet.Range(startRow + 21, startColumn, startRow + 22, deductionAmountColumn))
         sheet.Row(startRow).Height = 14
         sheet.Row(startRow + 1).Height = 9
-        For rowNumber As Integer = startRow + 2 To startRow + 19
+        For rowNumber As Integer = startRow + 2 To startRow + 20
             sheet.Row(rowNumber).Height = 10
         Next
-        sheet.Row(startRow + 18).Height = 12
-        sheet.Row(startRow + 19).Height = 12
-        sheet.Row(startRow + 20).Height = 5
-        sheet.Row(startRow + 21).Height = 5
+        sheet.Row(startRow + 21).Height = 12
+        sheet.Row(startRow + 22).Height = 12
+        sheet.Row(startRow + 23).Height = 5
+        sheet.Row(startRow + 24).Height = 5
     End Sub
 
     Private Sub WritePayslipDeduction(sheet As IXLWorksheet, row As Integer, startColumn As Integer, label As String, formula As String)

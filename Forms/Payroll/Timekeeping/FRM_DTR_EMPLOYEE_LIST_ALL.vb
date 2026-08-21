@@ -2,23 +2,29 @@ Imports System.Data
 Imports System.Data.OleDb
 
 Public Class FRM_DTR_EMPLOYEE_LIST_ALL
+    Private lockedSubClientId As String = String.Empty
+    Private lockedSubClientName As String = String.Empty
+    Private workspaceYear As String = String.Empty
+    Private workspaceMonth As String = String.Empty
+    Private workspaceCutoffIndex As Integer = -1
+    Private isPayrollWorkflowRunning As Boolean
+
     Private Sub FRM_DTR_EMPLOYEE_LIST_ALL_Load(sender As Object, e As EventArgs) Handles MyBase.Load
         ResetSearchControls()
     End Sub
 
     Private Sub FRM_DTR_EMPLOYEE_LIST_ALL_Shown(sender As Object, e As EventArgs) Handles MyBase.Shown
-        ResetSearchControls()
-        LoadPayrollEmployees(Cmb_Category.Text, TxtSearch.Text)
+        LoadPayrollEmployees(Cmb_Category.Text, TxtSearch.Text, lockedSubClientId)
     End Sub
 
     Private Sub Btn_Search_Click(sender As Object, e As EventArgs) Handles Btn_Search.Click
-        LoadPayrollEmployees(Cmb_Category.Text, TxtSearch.Text)
+        LoadPayrollEmployees(Cmb_Category.Text, TxtSearch.Text, lockedSubClientId)
     End Sub
 
     Private Sub TxtSearch_KeyDown(sender As Object, e As KeyEventArgs) Handles TxtSearch.KeyDown
         If e.KeyCode = Keys.Enter Then
             e.SuppressKeyPress = True
-            LoadPayrollEmployees(Cmb_Category.Text, TxtSearch.Text)
+            LoadPayrollEmployees(Cmb_Category.Text, TxtSearch.Text, lockedSubClientId)
         End If
     End Sub
 
@@ -37,16 +43,28 @@ Public Class FRM_DTR_EMPLOYEE_LIST_ALL
     Private Sub ResetSearchControls()
         TxtSearch.Clear()
         Cmb_Category.SelectedItem = "LAST_NAME"
+        lockedSubClientId = String.Empty
+        lockedSubClientName = String.Empty
+        workspaceYear = String.Empty
+        workspaceMonth = String.Empty
+        workspaceCutoffIndex = -1
+        Lbl_Title.Text = "DTR Employee Selection"
+        Text = "DTR Employee Selection"
+        Btn_Select.Text = "Open Payroll"
     End Sub
 
-    Private Sub LoadPayrollEmployees(category As String, searchText As String)
+    Private Sub LoadPayrollEmployees(category As String, searchText As String, Optional subClientId As String = "")
         Dim safeCategory As String = NormalizeSearchCategory(category)
         Dim sql As String =
             "SELECT R.EMPLOYEE_ID, A.LAST_NAME, A.FIRST_NAME, A.MIDDLE_NAME, R.SUB_CLIENT_ID, S.SUB_CLIENT_NAME, S.ADDRESS " &
             "FROM (HR_EMPLOYEE_RECORD_HDR AS R " &
             "INNER JOIN HR_APPLICATION_DTL AS A ON R.APPLICATION_ID = A.APPLICATION_ID) " &
             "LEFT JOIN TBL_CLIENT_SUB AS S ON R.SUB_CLIENT_ID = S.SUB_CLIENT_ID " &
-            "WHERE R.EMPLOYMENT_STATUS = 'Active' AND " & safeCategory & " LIKE ? " &
+            "WHERE R.EMPLOYMENT_STATUS = 'Active' AND " & safeCategory & " LIKE ? "
+        If Not String.IsNullOrWhiteSpace(subClientId) Then
+            sql &= "AND R.SUB_CLIENT_ID = ? "
+        End If
+        sql &=
             "ORDER BY SUB_CLIENT_NAME ASC, LAST_NAME ASC, FIRST_NAME ASC"
 
         LV_Employee_List.Items.Clear()
@@ -56,6 +74,13 @@ Public Class FRM_DTR_EMPLOYEE_LIST_ALL
 
             Using cmd As New OleDbCommand(sql, GlobalVariables.GlobalCon)
                 cmd.Parameters.AddWithValue("?", "%" & searchText.Trim() & "%")
+                If Not String.IsNullOrWhiteSpace(subClientId) Then
+                    Dim parsedSubClientId As Integer
+                    If Not Integer.TryParse(subClientId, parsedSubClientId) Then
+                        Throw New InvalidOperationException("The selected sub-client ID is invalid.")
+                    End If
+                    cmd.Parameters.AddWithValue("?", parsedSubClientId)
+                End If
 
                 Using reader As OleDbDataReader = cmd.ExecuteReader()
                     Dim rowNumber As Integer = 1
@@ -76,7 +101,11 @@ Public Class FRM_DTR_EMPLOYEE_LIST_ALL
                 End Using
             End Using
 
-            Lbl_ResultCount.Text = "Employees found: " & LV_Employee_List.Items.Count
+            If String.IsNullOrWhiteSpace(lockedSubClientId) Then
+                Lbl_ResultCount.Text = "Active employees found: " & LV_Employee_List.Items.Count
+            Else
+                Lbl_ResultCount.Text = lockedSubClientName & " - active employees: " & LV_Employee_List.Items.Count
+            End If
         Catch ex As Exception
             MsgBox("Unable to load DTR employee list: " & ex.Message, vbCritical, "DTR Employee List")
         Finally
@@ -110,10 +139,26 @@ Public Class FRM_DTR_EMPLOYEE_LIST_ALL
     End Function
 
     Private Sub SelectEmployee()
+        If isPayrollWorkflowRunning Then Return
         If LV_Employee_List.SelectedItems.Count = 0 Then
             MsgBox("Please select an employee.", vbExclamation, "DTR Employee List")
             Return
         End If
+
+        If Not ApplySelectedEmployeeContext() Then Return
+
+        If GlobalVariables.sDTR_or_Schedule_Process <> "DTR" Then
+            Close()
+            Return
+        End If
+
+        Dim startingEmployeeId As String = GlobalVariables.DTR_Selected_Employee_ID
+        LockWorklistToSelectedSubClient(startingEmployeeId)
+        RunPayrollWorkflow()
+    End Sub
+
+    Private Function ApplySelectedEmployeeContext() As Boolean
+        If LV_Employee_List.SelectedItems.Count = 0 Then Return False
 
         With LV_Employee_List.SelectedItems(0)
             GlobalVariables.DTR_Selected_Employee_ID = .SubItems(1).Text
@@ -124,12 +169,48 @@ Public Class FRM_DTR_EMPLOYEE_LIST_ALL
         End With
 
         GlobalVariables.DTR_Selected_Sched_Type = GetSelectedSubClientSchedType(GlobalVariables.DTR_Selected_SubClient_ID)
+        Return Not String.IsNullOrWhiteSpace(GlobalVariables.DTR_Selected_Employee_ID)
+    End Function
 
-        If GlobalVariables.sDTR_or_Schedule_Process = "DTR" Then
-            RouteSelectedEmployeeForDtr()
+    Private Sub LockWorklistToSelectedSubClient(selectedEmployeeId As String)
+        Dim reloadCompleteSubClientList As Boolean = Not String.IsNullOrWhiteSpace(TxtSearch.Text)
+        If String.IsNullOrWhiteSpace(lockedSubClientId) Then
+            lockedSubClientId = GlobalVariables.DTR_Selected_SubClient_ID
+            lockedSubClientName = GlobalVariables.DTR_Selected_SubClient_Name
+            reloadCompleteSubClientList = True
         End If
 
-        Close()
+        Lbl_Title.Text = "Payroll Worklist - " & lockedSubClientName
+        Text = "Payroll Worklist - " & lockedSubClientName
+        If reloadCompleteSubClientList Then
+            TxtSearch.Clear()
+            Cmb_Category.SelectedItem = "LAST_NAME"
+            LoadPayrollEmployees(Cmb_Category.Text, String.Empty, lockedSubClientId)
+        End If
+
+        SelectEmployeeById(selectedEmployeeId)
+    End Sub
+
+    Private Sub SelectEmployeeById(employeeId As String)
+        For Each item As ListViewItem In LV_Employee_List.Items
+            If String.Equals(item.SubItems(1).Text, employeeId, StringComparison.OrdinalIgnoreCase) Then
+                LV_Employee_List.SelectedItems.Clear()
+                item.Selected = True
+                item.Focused = True
+                item.EnsureVisible()
+                Return
+            End If
+        Next
+    End Sub
+
+    Private Sub RunPayrollWorkflow()
+        isPayrollWorkflowRunning = True
+        Try
+            If ApplySelectedEmployeeContext() Then RouteSelectedEmployeeForDtr()
+        Finally
+            isPayrollWorkflowRunning = False
+            LV_Employee_List.Focus()
+        End Try
     End Sub
 
     Private Function GetSelectedSubClientSchedType(subClientId As String) As String
@@ -160,11 +241,17 @@ Public Class FRM_DTR_EMPLOYEE_LIST_ALL
         Select Case GlobalVariables.DTR_Selected_Sched_Type
             Case "2SHIFTS", "TRI_SHIFT"
                 Using manualDtr As New FRM_DTR_SHIFT_MANUAL()
-                    manualDtr.ShowDialog()
+                    If workspaceCutoffIndex >= 0 Then
+                        manualDtr.SetInitialPayrollPeriod(workspaceYear, workspaceMonth, workspaceCutoffIndex)
+                    End If
+                    manualDtr.ShowDialog(Me)
+                    workspaceYear = manualDtr.SelectedPayrollYear
+                    workspaceMonth = manualDtr.SelectedPayrollMonth
+                    workspaceCutoffIndex = manualDtr.SelectedPayrollCutoffIndex
                 End Using
             Case "TIME_SPECIFIC"
                 FRM_DTR_BIOMETRIC.AutoStartForSelectedEmployee = True
-                FRM_DTR_BIOMETRIC.ShowDialog()
+                FRM_DTR_BIOMETRIC.ShowDialog(Me)
             Case Else
                 MsgBox("Unsupported or missing schedule type for the selected subclient: " & GlobalVariables.DTR_Selected_Sched_Type, vbExclamation, "DTR")
         End Select

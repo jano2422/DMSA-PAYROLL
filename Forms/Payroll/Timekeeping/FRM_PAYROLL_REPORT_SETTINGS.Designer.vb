@@ -641,7 +641,7 @@ Partial Class FRM_PAYROLL_REPORT_SETTINGS
         Me.calculationTab.Controls.Add(Me.calculationFields)
         Me.calculationTab.Name = "calculationTab"
         Me.calculationTab.Padding = New System.Windows.Forms.Padding(8)
-        Me.calculationTab.Text = "Calculation rules"
+        Me.calculationTab.Text = "Calculation premiums"
         '
         'calculationFields
         '
@@ -725,7 +725,7 @@ Partial Class FRM_PAYROLL_REPORT_SETTINGS
         Me.lblSundayMultiplier.Font = New System.Drawing.Font("Verdana", 9.0!, System.Drawing.FontStyle.Bold)
         Me.lblSundayMultiplier.Name = "lblSundayMultiplier"
         Me.lblSundayMultiplier.TabIndex = 3
-        Me.lblSundayMultiplier.Text = "Sunday multiplier"
+        Me.lblSundayMultiplier.Text = "Sunday additional premium"
         Me.lblSundayMultiplier.TextAlign = System.Drawing.ContentAlignment.MiddleLeft
         '
         'numSundayMultiplier
@@ -745,7 +745,7 @@ Partial Class FRM_PAYROLL_REPORT_SETTINGS
         Me.helpSundayMultiplier.ForeColor = System.Drawing.Color.DimGray
         Me.helpSundayMultiplier.Name = "helpSundayMultiplier"
         Me.helpSundayMultiplier.TabIndex = 5
-        Me.helpSundayMultiplier.Text = "Applied to Sunday hours (existing template: 1.30)."
+        Me.helpSundayMultiplier.Text = "Enter the addition only: 0.30 means base pay + 30%."
         Me.helpSundayMultiplier.TextAlign = System.Drawing.ContentAlignment.MiddleLeft
         '
         'lblSpecialHolidayMultiplier
@@ -754,7 +754,7 @@ Partial Class FRM_PAYROLL_REPORT_SETTINGS
         Me.lblSpecialHolidayMultiplier.Font = New System.Drawing.Font("Verdana", 9.0!, System.Drawing.FontStyle.Bold)
         Me.lblSpecialHolidayMultiplier.Name = "lblSpecialHolidayMultiplier"
         Me.lblSpecialHolidayMultiplier.TabIndex = 6
-        Me.lblSpecialHolidayMultiplier.Text = "Special holiday multiplier"
+        Me.lblSpecialHolidayMultiplier.Text = "Special holiday premium"
         Me.lblSpecialHolidayMultiplier.TextAlign = System.Drawing.ContentAlignment.MiddleLeft
         '
         'numSpecialHolidayMultiplier
@@ -774,7 +774,7 @@ Partial Class FRM_PAYROLL_REPORT_SETTINGS
         Me.helpSpecialHolidayMultiplier.ForeColor = System.Drawing.Color.DimGray
         Me.helpSpecialHolidayMultiplier.Name = "helpSpecialHolidayMultiplier"
         Me.helpSpecialHolidayMultiplier.TabIndex = 8
-        Me.helpSpecialHolidayMultiplier.Text = "Applied to special-holiday hours (existing template: 1.30)."
+        Me.helpSpecialHolidayMultiplier.Text = "Enter the addition only: 0.30 means an effective factor of 1.30."
         Me.helpSpecialHolidayMultiplier.TextAlign = System.Drawing.ContentAlignment.MiddleLeft
         '
         'lblLegalHolidayMultiplier
@@ -783,7 +783,7 @@ Partial Class FRM_PAYROLL_REPORT_SETTINGS
         Me.lblLegalHolidayMultiplier.Font = New System.Drawing.Font("Verdana", 9.0!, System.Drawing.FontStyle.Bold)
         Me.lblLegalHolidayMultiplier.Name = "lblLegalHolidayMultiplier"
         Me.lblLegalHolidayMultiplier.TabIndex = 9
-        Me.lblLegalHolidayMultiplier.Text = "Legal holiday multiplier"
+        Me.lblLegalHolidayMultiplier.Text = "Legal holiday premium"
         Me.lblLegalHolidayMultiplier.TextAlign = System.Drawing.ContentAlignment.MiddleLeft
         '
         'numLegalHolidayMultiplier
@@ -803,7 +803,7 @@ Partial Class FRM_PAYROLL_REPORT_SETTINGS
         Me.helpLegalHolidayMultiplier.ForeColor = System.Drawing.Color.DimGray
         Me.helpLegalHolidayMultiplier.Name = "helpLegalHolidayMultiplier"
         Me.helpLegalHolidayMultiplier.TabIndex = 11
-        Me.helpLegalHolidayMultiplier.Text = "Applied to legal-holiday hours (existing template: 2.00)."
+        Me.helpLegalHolidayMultiplier.Text = "Enter the addition only: 1.00 means an effective factor of 2.00."
         Me.helpLegalHolidayMultiplier.TextAlign = System.Drawing.ContentAlignment.MiddleLeft
         '
         'lblOvertimeHourlyRate
@@ -1090,4 +1090,3 @@ Partial Class FRM_PAYROLL_REPORT_SETTINGS
     Friend WithEvents numIncentiveDaysDivisor As System.Windows.Forms.NumericUpDown
     Friend WithEvents helpIncentiveDaysDivisor As System.Windows.Forms.Label
 End Class
-

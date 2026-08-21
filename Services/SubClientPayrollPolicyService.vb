@@ -23,12 +23,59 @@ Public Class PayrollPayRule
     End Function
 End Class
 
+Public Class PayrollEarningsBreakdown
+    Private ReadOnly _amounts As Dictionary(Of String, Decimal)
+
+    Public Sub New()
+        _amounts = New Dictionary(Of String, Decimal)(StringComparer.OrdinalIgnoreCase)
+    End Sub
+
+    Public Property IncentivePay As Decimal
+    Public Property OfficerAllowance As Decimal
+    Public Property UniformAllowance As Decimal
+    Public Property OtherEarnings As Decimal
+
+    Public Function AmountFor(code As String) As Decimal
+        Dim value As Decimal
+        If _amounts.TryGetValue(code, value) Then Return value
+        Return 0D
+    End Function
+
+    Public Sub SetAmount(code As String, value As Decimal)
+        _amounts(code) = value
+    End Sub
+
+    Public Sub AddAmount(code As String, value As Decimal)
+        _amounts(code) = AmountFor(code) + value
+    End Sub
+
+    Public ReadOnly Property WorkEarnings As Decimal
+        Get
+            Return _amounts.Values.Sum() + IncentivePay
+        End Get
+    End Property
+
+    Public ReadOnly Property TotalEarnings As Decimal
+        Get
+            Return WorkEarnings + OfficerAllowance + UniformAllowance + OtherEarnings
+        End Get
+    End Property
+End Class
+
+Public Class PayrollDayEarningInput
+    Public Property DayCodes As String() = Array.Empty(Of String)()
+    Public Property RegularHours As Decimal
+    Public Property NightHours As Decimal
+    Public Property OvertimeHours As Decimal
+End Class
+
 Public Class SubClientPayrollPolicy
     Public Const DutyEntryClientSchedule As String = "CLIENT_SCHEDULE"
     Public Const DutyEntrySingleShift As String = "SINGLE_SHIFT"
     Public Const NightDifferentialHourly As String = "HOURLY"
     Public Const NightDifferentialFixedCutoffPool As String = "FIXED_CUTOFF_POOL"
     Public Const NightDifferentialDisabled As String = "DISABLED"
+    Public Const PremiumRateSemantics As String = "ADDITIONAL_PREMIUM_V1"
 
     Public Property SubClientId As Integer
     Public Property HoursPerDay As Decimal
@@ -44,6 +91,7 @@ Public Class SubClientPayrollPolicy
     Public Property Notes As String
     Public Property UpdatedAt As Date?
     Public Property UpdatedBy As String
+    Public Property RateSemantics As String
     Public ReadOnly Property Rules As Dictionary(Of String, PayrollPayRule)
 
     Public Sub New()
@@ -64,21 +112,24 @@ Public Class SubClientPayrollPolicy
             .IncentiveMonthDivisor = 12D,
             .IncentiveCutoffDivisor = 2D,
             .Notes = String.Empty,
-            .UpdatedBy = String.Empty
+            .UpdatedBy = String.Empty,
+            .RateSemantics = PremiumRateSemantics
         }
 
-        policy.AddRule("REG", "Regular pay", True, 1D)
-        policy.AddRule("SUN", "Sunday pay", True, 1.3D)
-        policy.AddRule("LH", "Legal holiday pay", True, 2D)
-        policy.AddRule("SH", "Special holiday pay", True, 1.3D)
+        policy.AddRule("REG", "Regular day", True, 0D)
+        policy.AddRule("SUN", "Sunday", True, 0.3D)
+        policy.AddRule("LH", "Legal holiday", True, 1D)
+        policy.AddRule("SH", "Special holiday", True, 0.3D)
+        policy.AddRule("RD_SH", "Sunday + special holiday", True, 0.5D)
+        policy.AddRule("RD_LH", "Sunday + legal holiday", True, 1.6D)
         policy.AddRule("ND_REG", "Night differential - regular", True, 0.1D)
-        policy.AddRule("ND_SUN", "Night differential - Sunday", True, 0.13D)
-        policy.AddRule("ND_LH", "Night differential - legal holiday", True, 0.2D)
-        policy.AddRule("ND_SH", "Night differential - special holiday", True, 0.13D)
-        policy.AddRule("OT_REG", "Overtime - regular", True, 1.25D)
-        policy.AddRule("OT_SUN", "Overtime - Sunday", True, 1.69D)
-        policy.AddRule("OT_LH", "Overtime - legal holiday", True, 2.6D)
-        policy.AddRule("OT_SH", "Overtime - special holiday", True, 1.69D)
+        policy.AddRule("ND_SUN", "Night differential - Sunday", True, 0.1D)
+        policy.AddRule("ND_LH", "Night differential - legal holiday", True, 0.1D)
+        policy.AddRule("ND_SH", "Night differential - special holiday", True, 0.1D)
+        policy.AddRule("OT_REG", "Overtime - regular", True, 0.25D)
+        policy.AddRule("OT_SUN", "Overtime - Sunday", True, 0.3D)
+        policy.AddRule("OT_LH", "Overtime - legal holiday", True, 0.3D)
+        policy.AddRule("OT_SH", "Overtime - special holiday", True, 0.3D)
         Return policy
     End Function
 
@@ -120,7 +171,8 @@ Public Class SubClientPayrollPolicy
             .IncentiveCutoffDivisor = IncentiveCutoffDivisor,
             .Notes = Notes,
             .UpdatedAt = UpdatedAt,
-            .UpdatedBy = UpdatedBy
+            .UpdatedBy = UpdatedBy,
+            .RateSemantics = RateSemantics
         }
         For Each rule In Rules.Values
             copy.Rules(rule.Code) = rule.Clone()
@@ -152,10 +204,10 @@ Public Class SubClientPayrollPolicy
         If IncentiveMonthDivisor <= 0D Then Throw New InvalidDataException("The incentive month divisor must be greater than zero.")
         If IncentiveCutoffDivisor <= 0D Then Throw New InvalidDataException("The incentive cutoff divisor must be greater than zero.")
 
-        For Each code In SubClientPayrollPolicyService.PayCodeOrder
+        For Each code In SubClientPayrollPolicyService.PolicyRuleOrder
             Dim rule = GetRule(code)
             If rule.Multiplier < 0D Then
-                Throw New InvalidDataException(rule.DisplayName & " multiplier cannot be negative.")
+                Throw New InvalidDataException(rule.DisplayName & " additional premium cannot be negative.")
             End If
         Next
     End Sub
@@ -181,7 +233,8 @@ Public Class SubClientPayrollPolicy
         builder.Append(";NDFixed=").Append(NightDifferentialFixedCutoffAmount.ToString(CultureInfo.InvariantCulture))
         builder.Append(";Incentive=").Append(IncentiveEnabled)
         builder.Append(";IncentiveDays=").Append(IncentiveDays.ToString(CultureInfo.InvariantCulture))
-        For Each code In SubClientPayrollPolicyService.PayCodeOrder
+        builder.Append(";RateSemantics=").Append(RateSemantics)
+        For Each code In SubClientPayrollPolicyService.PolicyRuleOrder
             Dim rule = GetRule(code)
             builder.Append(";").Append(code).Append("=").Append(rule.Enabled)
             builder.Append("@").Append(rule.Multiplier.ToString(CultureInfo.InvariantCulture))
@@ -247,6 +300,12 @@ Public Module SubClientPayrollPolicyService
         "OT_REG", "OT_SUN", "OT_LH", "OT_SH"
     }
 
+    Public ReadOnly PolicyRuleOrder As String() = {
+        "REG", "SUN", "LH", "SH", "RD_SH", "RD_LH",
+        "ND_REG", "ND_SUN", "ND_LH", "ND_SH",
+        "OT_REG", "OT_SUN", "OT_LH", "OT_SH"
+    }
+
     Private Class PayrollPolicySourceRow
         Public Property ClientName As String
         Public Property ShiftText As String
@@ -269,13 +328,14 @@ Public Module SubClientPayrollPolicyService
                         "[SINGLE_SHIFT_HOURS] DOUBLE, [SINGLE_SHIFT_IS_NIGHT] YESNO, [ND_MODE] TEXT(24), " &
                         "[ND_FIXED_CUTOFF_AMOUNT] DOUBLE, [INCENTIVE_ENABLED] YESNO, [INCENTIVE_DAYS] DOUBLE, " &
                         "[INCENTIVE_MONTH_DIVISOR] DOUBLE, [INCENTIVE_CUTOFF_DIVISOR] DOUBLE, [NOTES] MEMO, " &
-                        "[UPDATED_AT] DATETIME, [UPDATED_BY] TEXT(100), " &
+                        "[RATE_SEMANTICS] TEXT(32), [UPDATED_AT] DATETIME, [UPDATED_BY] TEXT(100), " &
                         "CONSTRAINT [PK_PRL_SUB_CLIENT_PAY_POLICY] PRIMARY KEY ([SUB_CLIENT_ID]))")
                 End If
 
                 EnsureColumn(connection, PolicyTable, "DUTY_ENTRY_MODE", "TEXT(24)")
                 EnsureColumn(connection, PolicyTable, "SINGLE_SHIFT_HOURS", "DOUBLE")
                 EnsureColumn(connection, PolicyTable, "SINGLE_SHIFT_IS_NIGHT", "YESNO")
+                EnsureColumn(connection, PolicyTable, "RATE_SEMANTICS", "TEXT(32)")
 
                 If Not TableExists(connection, RateTable) Then
                     ExecuteDdl(connection,
@@ -304,12 +364,14 @@ Public Module SubClientPayrollPolicyService
         If subClientId <= 0 Then Return policy
 
         EnsureSchema()
+        Dim loadedSemantics As String = String.Empty
+        Dim loadedRateCodes As New HashSet(Of String)(StringComparer.OrdinalIgnoreCase)
         Using connection = CreateOpenConnection()
             Const headerSql As String =
                 "SELECT [HOURS_PER_DAY], [DUTY_ENTRY_MODE], [SINGLE_SHIFT_HOURS], [SINGLE_SHIFT_IS_NIGHT], " &
                 "[ND_MODE], [ND_FIXED_CUTOFF_AMOUNT], [INCENTIVE_ENABLED], " &
                 "[INCENTIVE_DAYS], [INCENTIVE_MONTH_DIVISOR], [INCENTIVE_CUTOFF_DIVISOR], [NOTES], " &
-                "[UPDATED_AT], [UPDATED_BY] FROM [PRL_SUB_CLIENT_PAY_POLICY] WHERE [SUB_CLIENT_ID] = ?"
+                "[RATE_SEMANTICS], [UPDATED_AT], [UPDATED_BY] FROM [PRL_SUB_CLIENT_PAY_POLICY] WHERE [SUB_CLIENT_ID] = ?"
             Using command As New OleDbCommand(headerSql, connection)
                 AddIntegerParameter(command, subClientId)
                 Using reader = command.ExecuteReader()
@@ -325,6 +387,7 @@ Public Module SubClientPayrollPolicyService
                         policy.IncentiveMonthDivisor = SafeDecimal(reader("INCENTIVE_MONTH_DIVISOR"), policy.IncentiveMonthDivisor)
                         policy.IncentiveCutoffDivisor = SafeDecimal(reader("INCENTIVE_CUTOFF_DIVISOR"), policy.IncentiveCutoffDivisor)
                         policy.Notes = SafeText(reader("NOTES"), String.Empty)
+                        loadedSemantics = SafeText(reader("RATE_SEMANTICS"), String.Empty)
                         If Not reader.IsDBNull(reader.GetOrdinal("UPDATED_AT")) Then policy.UpdatedAt = CDate(reader("UPDATED_AT"))
                         policy.UpdatedBy = SafeText(reader("UPDATED_BY"), String.Empty)
                     End If
@@ -339,6 +402,7 @@ Public Module SubClientPayrollPolicyService
                     While reader.Read()
                         Dim code = SafeText(reader("PAY_CODE"), String.Empty)
                         If String.IsNullOrWhiteSpace(code) OrElse Not policy.Rules.ContainsKey(code) Then Continue While
+                        loadedRateCodes.Add(code)
                         Dim rule = policy.GetRule(code)
                         rule.Enabled = SafeBoolean(reader("ENABLED"), rule.Enabled)
                         rule.Multiplier = SafeDecimal(reader("MULTIPLIER"), rule.Multiplier)
@@ -346,6 +410,12 @@ Public Module SubClientPayrollPolicyService
                 End Using
             End Using
         End Using
+
+        If loadedRateCodes.Count > 0 AndAlso
+           Not String.Equals(loadedSemantics, SubClientPayrollPolicy.PremiumRateSemantics, StringComparison.OrdinalIgnoreCase) Then
+            ConvertLegacyMultipliersToPremiums(policy, loadedRateCodes)
+        End If
+        policy.RateSemantics = SubClientPayrollPolicy.PremiumRateSemantics
 
         policy.Validate()
         Return policy
@@ -368,7 +438,7 @@ Public Module SubClientPayrollPolicyService
                         "[SINGLE_SHIFT_HOURS] = ?, [SINGLE_SHIFT_IS_NIGHT] = ?, [ND_MODE] = ?, " &
                         "[ND_FIXED_CUTOFF_AMOUNT] = ?, [INCENTIVE_ENABLED] = ?, [INCENTIVE_DAYS] = ?, " &
                         "[INCENTIVE_MONTH_DIVISOR] = ?, [INCENTIVE_CUTOFF_DIVISOR] = ?, [NOTES] = ?, " &
-                        "[UPDATED_AT] = ?, [UPDATED_BY] = ? WHERE [SUB_CLIENT_ID] = ?"
+                        "[RATE_SEMANTICS] = ?, [UPDATED_AT] = ?, [UPDATED_BY] = ? WHERE [SUB_CLIENT_ID] = ?"
                     Dim affected As Integer
                     Using command As New OleDbCommand(updateSql, connection, transaction)
                         AddPolicyHeaderParameters(command, policy, changedAt, actor)
@@ -382,7 +452,7 @@ Public Module SubClientPayrollPolicyService
                             "([HOURS_PER_DAY], [DUTY_ENTRY_MODE], [SINGLE_SHIFT_HOURS], [SINGLE_SHIFT_IS_NIGHT], " &
                             "[ND_MODE], [ND_FIXED_CUTOFF_AMOUNT], [INCENTIVE_ENABLED], " &
                             "[INCENTIVE_DAYS], [INCENTIVE_MONTH_DIVISOR], [INCENTIVE_CUTOFF_DIVISOR], [NOTES], " &
-                            "[UPDATED_AT], [UPDATED_BY], [SUB_CLIENT_ID]) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"
+                            "[RATE_SEMANTICS], [UPDATED_AT], [UPDATED_BY], [SUB_CLIENT_ID]) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"
                         Using command As New OleDbCommand(insertSql, connection, transaction)
                             AddPolicyHeaderParameters(command, policy, changedAt, actor)
                             AddIntegerParameter(command, policy.SubClientId)
@@ -399,7 +469,7 @@ Public Module SubClientPayrollPolicyService
                     Const rateInsertSql As String =
                         "INSERT INTO [PRL_SUB_CLIENT_PAY_RATE] ([SUB_CLIENT_ID], [PAY_CODE], [ENABLED], [MULTIPLIER]) " &
                         "VALUES (?, ?, ?, ?)"
-                    For Each code In PayCodeOrder
+                    For Each code In PolicyRuleOrder
                         Dim rule = policy.GetRule(code)
                         Using command As New OleDbCommand(rateInsertSql, connection, transaction)
                             AddIntegerParameter(command, policy.SubClientId)
@@ -615,7 +685,7 @@ Public Module SubClientPayrollPolicyService
             parts.Add("OT off")
         ElseIf enabledOvertimeCodes < 4 Then
             parts.Add("limited OT")
-        ElseIf policy.GetRule("OT_REG").Multiplier = 1D Then
+        ElseIf policy.GetRule("OT_REG").Multiplier = 0D Then
             parts.Add("OT at regular rate")
         End If
         If policy.IncentiveEnabled Then parts.Add("5-day incentive")
@@ -633,6 +703,80 @@ Public Module SubClientPayrollPolicyService
         If Not Integer.TryParse(parts(0), monthNumber) OrElse Not Integer.TryParse(parts(2), yearNumber) Then Return 15
         If monthNumber < 1 OrElse monthNumber > 12 Then Return 15
         Return If(parts(1).Equals("1st", StringComparison.OrdinalIgnoreCase), 15, Date.DaysInMonth(yearNumber, monthNumber) - 15)
+    End Function
+
+    Public Function ResolveEnabledPayCode(
+        policy As SubClientPayrollPolicy,
+        prefix As String,
+        ParamArray dayCodes As String()
+    ) As String
+        If policy Is Nothing Then policy = SubClientPayrollPolicy.CreateDefault(0)
+        prefix = If(prefix, String.Empty).Trim().ToUpperInvariant()
+        If prefix <> String.Empty AndAlso prefix <> "ND_" AndAlso prefix <> "OT_" Then
+            Throw New ArgumentException("Pay-code prefix must be blank, ND_, or OT_.", NameOf(prefix))
+        End If
+
+        Dim candidates = If(dayCodes, Array.Empty(Of String)()).
+            Select(Function(code) If(code, String.Empty).Trim().ToUpperInvariant()).
+            Where(Function(code) code = "REG" OrElse code = "SUN" OrElse code = "SH" OrElse code = "LH").
+            Distinct(StringComparer.OrdinalIgnoreCase).
+            ToList()
+        If candidates.Count = 0 Then candidates.Add("REG")
+
+        For Each dayCode In candidates
+            Dim payCode = prefix & dayCode
+            If policy.GetRule(payCode).Enabled Then Return payCode
+        Next
+
+        ' Preserve the requested bucket when no fallback is enabled. This keeps
+        ' the hours visible while the calculation deliberately produces no pay.
+        Return prefix & candidates(0)
+    End Function
+
+    Public Function ResolveEnabledDayPayCode(policy As SubClientPayrollPolicy, ParamArray dayCodes As String()) As String
+        If policy Is Nothing Then policy = SubClientPayrollPolicy.CreateDefault(0)
+        Return OutputDayCodeForRateCode(ResolveEffectiveDayRateCode(policy, dayCodes))
+    End Function
+
+    Public Function NormalizePayHours(
+        policy As SubClientPayrollPolicy,
+        regularHours As Decimal,
+        sundayHours As Decimal,
+        legalHolidayHours As Decimal,
+        specialHolidayHours As Decimal,
+        nightDifferentialRegularHours As Decimal,
+        nightDifferentialSundayHours As Decimal,
+        nightDifferentialLegalHolidayHours As Decimal,
+        nightDifferentialSpecialHolidayHours As Decimal,
+        overtimeRegularHours As Decimal,
+        overtimeSundayHours As Decimal,
+        overtimeLegalHolidayHours As Decimal,
+        overtimeSpecialHolidayHours As Decimal
+    ) As Dictionary(Of String, Decimal)
+        If policy Is Nothing Then policy = SubClientPayrollPolicy.CreateDefault(0)
+        policy.Validate()
+        Dim hoursByCode As New Dictionary(Of String, Decimal)(StringComparer.OrdinalIgnoreCase) From {
+            {"REG", regularHours}, {"SUN", sundayHours}, {"LH", legalHolidayHours}, {"SH", specialHolidayHours},
+            {"ND_REG", nightDifferentialRegularHours}, {"ND_SUN", nightDifferentialSundayHours},
+            {"ND_LH", nightDifferentialLegalHolidayHours}, {"ND_SH", nightDifferentialSpecialHolidayHours},
+            {"OT_REG", overtimeRegularHours}, {"OT_SUN", overtimeSundayHours},
+            {"OT_LH", overtimeLegalHolidayHours}, {"OT_SH", overtimeSpecialHolidayHours}
+        }
+
+        ' Legacy/imported summaries no longer have the date-level Sunday plus
+        ' holiday context, so their safe fallback is the equivalent regular
+        ' bucket. New Manual DTR records perform a richer holiday -> Sunday ->
+        ' regular resolution before reaching this shared safeguard.
+        MoveDisabledHoursToFallback(hoursByCode, policy, "SUN", "REG")
+        MoveDisabledHoursToFallback(hoursByCode, policy, "SH", "REG")
+        MoveDisabledHoursToFallback(hoursByCode, policy, "LH", "REG")
+        MoveDisabledHoursToFallback(hoursByCode, policy, "ND_SUN", "ND_REG")
+        MoveDisabledHoursToFallback(hoursByCode, policy, "ND_SH", "ND_REG")
+        MoveDisabledHoursToFallback(hoursByCode, policy, "ND_LH", "ND_REG")
+        MoveDisabledHoursToFallback(hoursByCode, policy, "OT_SUN", "OT_REG")
+        MoveDisabledHoursToFallback(hoursByCode, policy, "OT_SH", "OT_REG")
+        MoveDisabledHoursToFallback(hoursByCode, policy, "OT_LH", "OT_REG")
+        Return hoursByCode
     End Function
 
     Public Function CalculateTotalEarnings(
@@ -656,37 +800,200 @@ Public Module SubClientPayrollPolicyService
         uniformAllowance As Decimal,
         otherEarnings As Decimal
     ) As Decimal
+        Return CalculateEarningsBreakdown(
+            policy,
+            dailyWage,
+            cutoff,
+            numberOfDays,
+            regularHours,
+            sundayHours,
+            legalHolidayHours,
+            specialHolidayHours,
+            nightDifferentialRegularHours,
+            nightDifferentialSundayHours,
+            nightDifferentialLegalHolidayHours,
+            nightDifferentialSpecialHolidayHours,
+            overtimeRegularHours,
+            overtimeSundayHours,
+            overtimeLegalHolidayHours,
+            overtimeSpecialHolidayHours,
+            officerAllowance,
+            uniformAllowance,
+            otherEarnings).TotalEarnings
+    End Function
+
+    Public Function CalculateEarningsBreakdown(
+        policy As SubClientPayrollPolicy,
+        dailyWage As Decimal,
+        cutoff As String,
+        numberOfDays As Decimal,
+        regularHours As Decimal,
+        sundayHours As Decimal,
+        legalHolidayHours As Decimal,
+        specialHolidayHours As Decimal,
+        nightDifferentialRegularHours As Decimal,
+        nightDifferentialSundayHours As Decimal,
+        nightDifferentialLegalHolidayHours As Decimal,
+        nightDifferentialSpecialHolidayHours As Decimal,
+        overtimeRegularHours As Decimal,
+        overtimeSundayHours As Decimal,
+        overtimeLegalHolidayHours As Decimal,
+        overtimeSpecialHolidayHours As Decimal,
+        officerAllowance As Decimal,
+        uniformAllowance As Decimal,
+        otherEarnings As Decimal
+    ) As PayrollEarningsBreakdown
         If policy Is Nothing Then policy = SubClientPayrollPolicy.CreateDefault(0)
         policy.Validate()
         Dim hoursPerDay = policy.HoursPerDay
-        Dim hoursByCode As New Dictionary(Of String, Decimal)(StringComparer.OrdinalIgnoreCase) From {
-            {"REG", regularHours}, {"SUN", sundayHours}, {"LH", legalHolidayHours}, {"SH", specialHolidayHours},
-            {"ND_REG", nightDifferentialRegularHours}, {"ND_SUN", nightDifferentialSundayHours},
-            {"ND_LH", nightDifferentialLegalHolidayHours}, {"ND_SH", nightDifferentialSpecialHolidayHours},
-            {"OT_REG", overtimeRegularHours}, {"OT_SUN", overtimeSundayHours},
-            {"OT_LH", overtimeLegalHolidayHours}, {"OT_SH", overtimeSpecialHolidayHours}
-        }
+        Dim hoursByCode = NormalizePayHours(
+            policy,
+            regularHours, sundayHours, legalHolidayHours, specialHolidayHours,
+            nightDifferentialRegularHours, nightDifferentialSundayHours,
+            nightDifferentialLegalHolidayHours, nightDifferentialSpecialHolidayHours,
+            overtimeRegularHours, overtimeSundayHours,
+            overtimeLegalHolidayHours, overtimeSpecialHolidayHours)
 
-        Dim total As Decimal
+        Dim result As New PayrollEarningsBreakdown With {
+            .OfficerAllowance = officerAllowance,
+            .UniformAllowance = uniformAllowance,
+            .OtherEarnings = otherEarnings
+        }
         For Each code In PayCodeOrder
             Dim rule = policy.GetRule(code)
-            If Not rule.Enabled Then Continue For
+            If Not rule.Enabled Then
+                result.SetAmount(code, 0D)
+                Continue For
+            End If
             If code.StartsWith("ND_", StringComparison.OrdinalIgnoreCase) AndAlso
-               policy.NightDifferentialMode <> SubClientPayrollPolicy.NightDifferentialHourly Then Continue For
-            total += dailyWage / hoursPerDay * rule.Multiplier * hoursByCode(code)
+               policy.NightDifferentialMode <> SubClientPayrollPolicy.NightDifferentialHourly Then
+                result.SetAmount(code, 0D)
+                Continue For
+            End If
+            result.SetAmount(code, dailyWage / hoursPerDay * EarningsFactorForCode(policy, code) * hoursByCode(code))
         Next
 
         If policy.NightDifferentialMode = SubClientPayrollPolicy.NightDifferentialFixedCutoffPool AndAlso
            policy.GetRule("ND_REG").Enabled Then
-            total += policy.NightDifferentialFixedCutoffAmount / 2D / CutoffDayCount(cutoff) * numberOfDays
+            result.SetAmount("ND_REG", policy.NightDifferentialFixedCutoffAmount / 2D / CutoffDayCount(cutoff) * numberOfDays)
         End If
         If policy.IncentiveEnabled Then
-            total += dailyWage * policy.IncentiveDays / policy.IncentiveMonthDivisor /
+            result.IncentivePay = dailyWage * policy.IncentiveDays / policy.IncentiveMonthDivisor /
                 policy.IncentiveCutoffDivisor / CutoffDayCount(cutoff) * numberOfDays
         End If
 
-        Return total + officerAllowance + uniformAllowance + otherEarnings
+        Return result
     End Function
+
+    Public Function CalculateEarningsBreakdownForDays(
+        policy As SubClientPayrollPolicy,
+        dailyWage As Decimal,
+        cutoff As String,
+        numberOfDays As Decimal,
+        days As IEnumerable(Of PayrollDayEarningInput),
+        officerAllowance As Decimal,
+        uniformAllowance As Decimal,
+        otherEarnings As Decimal
+    ) As PayrollEarningsBreakdown
+        If policy Is Nothing Then Throw New ArgumentNullException(NameOf(policy))
+        policy.Validate()
+
+        Dim result As New PayrollEarningsBreakdown With {
+            .OfficerAllowance = officerAllowance,
+            .UniformAllowance = uniformAllowance,
+            .OtherEarnings = otherEarnings
+        }
+        Dim hourlyRate = dailyWage / policy.HoursPerDay
+
+        For Each day In If(days, Enumerable.Empty(Of PayrollDayEarningInput)())
+            If day Is Nothing Then Continue For
+            Dim dayCodes = If(day.DayCodes, Array.Empty(Of String)())
+            Dim rateCode = ResolveEffectiveDayRateCode(policy, dayCodes)
+            Dim dayFactor = 1D + policy.GetRule(rateCode).Multiplier
+
+            Dim baseCode = OutputDayCodeForRateCode(rateCode)
+            If policy.GetRule(rateCode).Enabled AndAlso day.RegularHours <> 0D Then
+                result.AddAmount(baseCode, hourlyRate * dayFactor * day.RegularHours)
+            End If
+
+            If policy.NightDifferentialMode = SubClientPayrollPolicy.NightDifferentialHourly AndAlso day.NightHours <> 0D Then
+                Dim ndCode = ResolveEnabledPayCode(policy, "ND_", dayCodes)
+                Dim ndRule = policy.GetRule(ndCode)
+                If ndRule.Enabled Then result.AddAmount(ndCode, hourlyRate * dayFactor * ndRule.Multiplier * day.NightHours)
+            End If
+
+            If day.OvertimeHours <> 0D Then
+                Dim otCode = ResolveEnabledPayCode(policy, "OT_", dayCodes)
+                Dim otRule = policy.GetRule(otCode)
+                If otRule.Enabled Then result.AddAmount(otCode, hourlyRate * dayFactor * (1D + otRule.Multiplier) * day.OvertimeHours)
+            End If
+        Next
+
+        If policy.NightDifferentialMode = SubClientPayrollPolicy.NightDifferentialFixedCutoffPool AndAlso
+           policy.GetRule("ND_REG").Enabled Then
+            result.SetAmount("ND_REG", policy.NightDifferentialFixedCutoffAmount / 2D / CutoffDayCount(cutoff) * numberOfDays)
+        End If
+        If policy.IncentiveEnabled Then
+            result.IncentivePay = dailyWage * policy.IncentiveDays / policy.IncentiveMonthDivisor /
+                policy.IncentiveCutoffDivisor / CutoffDayCount(cutoff) * numberOfDays
+        End If
+        Return result
+    End Function
+
+    Public Function EarningsFactorForCode(policy As SubClientPayrollPolicy, code As String) As Decimal
+        If policy Is Nothing Then Throw New ArgumentNullException(NameOf(policy))
+        Dim normalizedCode = If(code, String.Empty).Trim().ToUpperInvariant()
+        Dim rule = policy.GetRule(normalizedCode)
+        If normalizedCode.StartsWith("ND_", StringComparison.OrdinalIgnoreCase) Then
+            Return EffectiveDayFactor(policy, normalizedCode.Substring(3)) * rule.Multiplier
+        End If
+        If normalizedCode.StartsWith("OT_", StringComparison.OrdinalIgnoreCase) Then
+            Return EffectiveDayFactor(policy, normalizedCode.Substring(3)) * (1D + rule.Multiplier)
+        End If
+        Return EffectiveDayFactor(policy, normalizedCode)
+    End Function
+
+    Private Function EffectiveDayFactor(policy As SubClientPayrollPolicy, dayCode As String) As Decimal
+        Return 1D + policy.GetRule(dayCode).Multiplier
+    End Function
+
+    Private Function ResolveEffectiveDayRateCode(policy As SubClientPayrollPolicy, dayCodes As IEnumerable(Of String)) As String
+        Dim requested = New HashSet(Of String)(
+            If(dayCodes, Enumerable.Empty(Of String)()).
+                Select(Function(code) If(code, String.Empty).Trim().ToUpperInvariant()),
+            StringComparer.OrdinalIgnoreCase)
+        Dim candidates As New List(Of String)()
+        If requested.Contains("SUN") AndAlso requested.Contains("SH") Then candidates.Add("RD_SH")
+        If requested.Contains("SUN") AndAlso requested.Contains("LH") Then candidates.Add("RD_LH")
+        If requested.Contains("SH") Then candidates.Add("SH")
+        If requested.Contains("LH") Then candidates.Add("LH")
+        If requested.Contains("SUN") Then candidates.Add("SUN")
+        candidates.Add("REG")
+
+        For Each code In candidates.Distinct(StringComparer.OrdinalIgnoreCase)
+            If policy.GetRule(code).Enabled Then Return code
+        Next
+        Return candidates(0)
+    End Function
+
+    Private Function OutputDayCodeForRateCode(rateCode As String) As String
+        If String.Equals(rateCode, "RD_SH", StringComparison.OrdinalIgnoreCase) Then Return "SH"
+        If String.Equals(rateCode, "RD_LH", StringComparison.OrdinalIgnoreCase) Then Return "LH"
+        Return rateCode
+    End Function
+
+    Private Sub MoveDisabledHoursToFallback(
+        hoursByCode As Dictionary(Of String, Decimal),
+        policy As SubClientPayrollPolicy,
+        sourceCode As String,
+        fallbackCode As String
+    )
+        If policy.GetRule(sourceCode).Enabled OrElse Not policy.GetRule(fallbackCode).Enabled Then Return
+        Dim sourceHours = hoursByCode(sourceCode)
+        If sourceHours = 0D Then Return
+        hoursByCode(fallbackCode) += sourceHours
+        hoursByCode(sourceCode) = 0D
+    End Sub
 
     Private Function LoadWorkSiteLookup() As Dictionary(Of String, WorkSiteRecord)
         Dim lookup As New Dictionary(Of String, WorkSiteRecord)(StringComparer.OrdinalIgnoreCase)
@@ -744,9 +1051,40 @@ Public Module SubClientPayrollPolicyService
     Private Function ImportedMultiplier(code As String, formulaText As String, defaultValue As Decimal) As Decimal
         If String.IsNullOrWhiteSpace(formulaText) Then Return defaultValue
         If code.Equals("OT_REG", StringComparison.OrdinalIgnoreCase) AndAlso
-           formulaText.IndexOf("1.25", StringComparison.OrdinalIgnoreCase) < 0 Then Return 1D
+           formulaText.IndexOf("1.25", StringComparison.OrdinalIgnoreCase) < 0 Then Return 0D
         Return defaultValue
     End Function
+
+    Private Sub ConvertLegacyMultipliersToPremiums(
+        policy As SubClientPayrollPolicy,
+        loadedRateCodes As HashSet(Of String)
+    )
+        Dim legacyRates As New Dictionary(Of String, Decimal)(StringComparer.OrdinalIgnoreCase)
+        For Each code In PayCodeOrder
+            If loadedRateCodes.Contains(code) Then legacyRates(code) = policy.GetRule(code).Multiplier
+        Next
+
+        For Each dayCode In {"REG", "SUN", "LH", "SH"}
+            If legacyRates.ContainsKey(dayCode) Then
+                policy.GetRule(dayCode).Multiplier = Math.Max(0D, legacyRates(dayCode) - 1D)
+            End If
+        Next
+
+        For Each dayCode In {"REG", "SUN", "LH", "SH"}
+            Dim legacyDayRate = If(legacyRates.ContainsKey(dayCode), legacyRates(dayCode), 1D + policy.GetRule(dayCode).Multiplier)
+            If legacyDayRate <= 0D Then legacyDayRate = 1D
+
+            Dim ndCode = "ND_" & dayCode
+            If legacyRates.ContainsKey(ndCode) Then
+                policy.GetRule(ndCode).Multiplier = Math.Max(0D, legacyRates(ndCode) / legacyDayRate)
+            End If
+
+            Dim otCode = "OT_" & dayCode
+            If legacyRates.ContainsKey(otCode) Then
+                policy.GetRule(otCode).Multiplier = Math.Max(0D, legacyRates(otCode) / legacyDayRate - 1D)
+            End If
+        Next
+    End Sub
 
     Private Function NormalizeClientName(value As String) As String
         If String.IsNullOrWhiteSpace(value) Then Return String.Empty
@@ -781,6 +1119,7 @@ Public Module SubClientPayrollPolicyService
         AddDoubleParameter(command, policy.IncentiveMonthDivisor)
         AddDoubleParameter(command, policy.IncentiveCutoffDivisor)
         AddLongTextParameter(command, If(policy.Notes, String.Empty))
+        AddTextParameter(command, SubClientPayrollPolicy.PremiumRateSemantics, 32)
         AddDateParameter(command, changedAt)
         AddTextParameter(command, actor, 100)
     End Sub

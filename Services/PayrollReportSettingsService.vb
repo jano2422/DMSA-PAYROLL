@@ -18,9 +18,10 @@ Public Class PayrollReportSettings
     Public Property DtrNotedName As String
     Public Property DtrNotedTitle As String
     Public Property HoursPerDay As Decimal
-    Public Property SundayMultiplier As Decimal
-    Public Property SpecialHolidayMultiplier As Decimal
-    Public Property LegalHolidayMultiplier As Decimal
+    Public Property RateSemantics As String
+    Public Property SundayPremium As Decimal
+    Public Property SpecialHolidayPremium As Decimal
+    Public Property LegalHolidayPremium As Decimal
     Public Property OvertimeHourlyRate As Decimal
     Public Property ServiceIncentiveDays As Decimal
     Public Property IncentiveMonthsDivisor As Decimal
@@ -43,9 +44,10 @@ Public Class PayrollReportSettings
             .DtrNotedName = "Liza S. Castillo",
             .DtrNotedTitle = "Security Director",
             .HoursPerDay = 8D,
-            .SundayMultiplier = 1.3D,
-            .SpecialHolidayMultiplier = 1.3D,
-            .LegalHolidayMultiplier = 2D,
+            .RateSemantics = PayrollReportSettingsService.PremiumRateSemantics,
+            .SundayPremium = 0.3D,
+            .SpecialHolidayPremium = 0.3D,
+            .LegalHolidayPremium = 1D,
             .OvertimeHourlyRate = 2500D / 2D / 15D / 4D,
             .ServiceIncentiveDays = 5D,
             .IncentiveMonthsDivisor = 12D,
@@ -61,9 +63,9 @@ Public Class PayrollReportSettings
         If String.IsNullOrWhiteSpace(DtrCheckedName) Then Throw New InvalidDataException("DTR checked-by name is required.")
         If String.IsNullOrWhiteSpace(DtrNotedName) Then Throw New InvalidDataException("DTR noted-by name is required.")
         If HoursPerDay <= 0D Then Throw New InvalidDataException("Hours per day must be greater than zero.")
-        If SundayMultiplier < 0D Then Throw New InvalidDataException("Sunday multiplier cannot be negative.")
-        If SpecialHolidayMultiplier < 0D Then Throw New InvalidDataException("Special holiday multiplier cannot be negative.")
-        If LegalHolidayMultiplier < 0D Then Throw New InvalidDataException("Legal holiday multiplier cannot be negative.")
+        If SundayPremium < 0D Then Throw New InvalidDataException("Sunday additional premium cannot be negative.")
+        If SpecialHolidayPremium < 0D Then Throw New InvalidDataException("Special-holiday additional premium cannot be negative.")
+        If LegalHolidayPremium < 0D Then Throw New InvalidDataException("Legal-holiday additional premium cannot be negative.")
         If OvertimeHourlyRate < 0D Then Throw New InvalidDataException("Overtime hourly rate cannot be negative.")
         If ServiceIncentiveDays < 0D Then Throw New InvalidDataException("Service incentive days cannot be negative.")
         If IncentiveMonthsDivisor <= 0D Then Throw New InvalidDataException("Incentive month divisor must be greater than zero.")
@@ -73,6 +75,7 @@ End Class
 
 Public Module PayrollReportSettingsService
     Private Const SettingsFileName As String = "PayrollReportSettings.xml"
+    Public Const PremiumRateSemantics As String = "ADDITIONAL_PREMIUM_V1"
 
     Public ReadOnly Property SettingsPath As String
         Get
@@ -106,9 +109,17 @@ Public Module PayrollReportSettingsService
         settings.DtrNotedName = ReadText(root, "DtrNotedName", settings.DtrNotedName)
         settings.DtrNotedTitle = ReadText(root, "DtrNotedTitle", settings.DtrNotedTitle)
         settings.HoursPerDay = ReadDecimal(root, "HoursPerDay", settings.HoursPerDay)
-        settings.SundayMultiplier = ReadDecimal(root, "SundayMultiplier", settings.SundayMultiplier)
-        settings.SpecialHolidayMultiplier = ReadDecimal(root, "SpecialHolidayMultiplier", settings.SpecialHolidayMultiplier)
-        settings.LegalHolidayMultiplier = ReadDecimal(root, "LegalHolidayMultiplier", settings.LegalHolidayMultiplier)
+        Dim storedSemantics = ReadText(root, "RateSemantics", String.Empty)
+        If String.Equals(storedSemantics, PremiumRateSemantics, StringComparison.OrdinalIgnoreCase) Then
+            settings.SundayPremium = ReadDecimal(root, "SundayPremium", ReadDecimal(root, "SundayMultiplier", settings.SundayPremium))
+            settings.SpecialHolidayPremium = ReadDecimal(root, "SpecialHolidayPremium", ReadDecimal(root, "SpecialHolidayMultiplier", settings.SpecialHolidayPremium))
+            settings.LegalHolidayPremium = ReadDecimal(root, "LegalHolidayPremium", ReadDecimal(root, "LegalHolidayMultiplier", settings.LegalHolidayPremium))
+        Else
+            settings.SundayPremium = ConvertLegacyMultiplierToPremium(ReadDecimal(root, "SundayMultiplier", 1.3D))
+            settings.SpecialHolidayPremium = ConvertLegacyMultiplierToPremium(ReadDecimal(root, "SpecialHolidayMultiplier", 1.3D))
+            settings.LegalHolidayPremium = ConvertLegacyMultiplierToPremium(ReadDecimal(root, "LegalHolidayMultiplier", 2D))
+        End If
+        settings.RateSemantics = PremiumRateSemantics
         settings.OvertimeHourlyRate = ReadDecimal(root, "OvertimeHourlyRate", settings.OvertimeHourlyRate)
         settings.ServiceIncentiveDays = ReadDecimal(root, "ServiceIncentiveDays", settings.ServiceIncentiveDays)
         settings.IncentiveMonthsDivisor = ReadDecimal(root, "IncentiveMonthsDivisor", settings.IncentiveMonthsDivisor)
@@ -155,9 +166,10 @@ Public Module PayrollReportSettingsService
             writer.WriteElementString("DtrNotedName", settings.DtrNotedName.Trim())
             writer.WriteElementString("DtrNotedTitle", If(settings.DtrNotedTitle, String.Empty).Trim())
             WriteDecimal(writer, "HoursPerDay", settings.HoursPerDay)
-            WriteDecimal(writer, "SundayMultiplier", settings.SundayMultiplier)
-            WriteDecimal(writer, "SpecialHolidayMultiplier", settings.SpecialHolidayMultiplier)
-            WriteDecimal(writer, "LegalHolidayMultiplier", settings.LegalHolidayMultiplier)
+            writer.WriteElementString("RateSemantics", PremiumRateSemantics)
+            WriteDecimal(writer, "SundayPremium", settings.SundayPremium)
+            WriteDecimal(writer, "SpecialHolidayPremium", settings.SpecialHolidayPremium)
+            WriteDecimal(writer, "LegalHolidayPremium", settings.LegalHolidayPremium)
             WriteDecimal(writer, "OvertimeHourlyRate", settings.OvertimeHourlyRate)
             WriteDecimal(writer, "ServiceIncentiveDays", settings.ServiceIncentiveDays)
             WriteDecimal(writer, "IncentiveMonthsDivisor", settings.IncentiveMonthsDivisor)
@@ -184,15 +196,19 @@ Public Module PayrollReportSettingsService
 
         Dim hourlyRate = dailyWage / settings.HoursPerDay
         Dim basicPay = hourlyRate * regularHours
-        Dim sundayPay = hourlyRate * settings.SundayMultiplier * sundayHours
-        Dim specialHolidayPay = hourlyRate * settings.SpecialHolidayMultiplier * specialHolidayHours
-        Dim legalHolidayPay = hourlyRate * settings.LegalHolidayMultiplier * legalHolidayHours
+        Dim sundayPay = hourlyRate * (1D + settings.SundayPremium) * sundayHours
+        Dim specialHolidayPay = hourlyRate * (1D + settings.SpecialHolidayPremium) * specialHolidayHours
+        Dim legalHolidayPay = hourlyRate * (1D + settings.LegalHolidayPremium) * legalHolidayHours
         Dim overtimePay = settings.OvertimeHourlyRate * overtimeHours
         Dim incentivePay = dailyWage * settings.ServiceIncentiveDays /
             settings.IncentiveMonthsDivisor / settings.IncentiveDaysDivisor * totalHours
 
         Return basicPay + sundayPay + specialHolidayPay + legalHolidayPay + overtimePay +
             incentivePay + sgUniformAllowance + officerAllowance
+    End Function
+
+    Public Function ConvertLegacyMultiplierToPremium(multiplier As Decimal) As Decimal
+        Return Math.Max(0D, multiplier - 1D)
     End Function
 
     Private Function ReadDecimal(root As XmlNode, elementName As String, defaultValue As Decimal) As Decimal

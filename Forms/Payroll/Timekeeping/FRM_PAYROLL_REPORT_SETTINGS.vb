@@ -33,9 +33,9 @@ Public Class FRM_PAYROLL_REPORT_SETTINGS
         txtDtrNotedName.Text = settings.DtrNotedName
         txtDtrNotedTitle.Text = settings.DtrNotedTitle
         numHoursPerDay.Value = ClampValue(numHoursPerDay, settings.HoursPerDay)
-        numSundayMultiplier.Value = ClampValue(numSundayMultiplier, settings.SundayMultiplier)
-        numSpecialHolidayMultiplier.Value = ClampValue(numSpecialHolidayMultiplier, settings.SpecialHolidayMultiplier)
-        numLegalHolidayMultiplier.Value = ClampValue(numLegalHolidayMultiplier, settings.LegalHolidayMultiplier)
+        numSundayMultiplier.Value = ClampValue(numSundayMultiplier, settings.SundayPremium)
+        numSpecialHolidayMultiplier.Value = ClampValue(numSpecialHolidayMultiplier, settings.SpecialHolidayPremium)
+        numLegalHolidayMultiplier.Value = ClampValue(numLegalHolidayMultiplier, settings.LegalHolidayPremium)
         numOvertimeHourlyRate.Value = ClampValue(numOvertimeHourlyRate, settings.OvertimeHourlyRate)
         numServiceIncentiveDays.Value = ClampValue(numServiceIncentiveDays, settings.ServiceIncentiveDays)
         numIncentiveMonthsDivisor.Value = ClampValue(numIncentiveMonthsDivisor, settings.IncentiveMonthsDivisor)
@@ -67,9 +67,10 @@ Public Class FRM_PAYROLL_REPORT_SETTINGS
             .DtrNotedName = txtDtrNotedName.Text.Trim(),
             .DtrNotedTitle = txtDtrNotedTitle.Text.Trim(),
             .HoursPerDay = numHoursPerDay.Value,
-            .SundayMultiplier = numSundayMultiplier.Value,
-            .SpecialHolidayMultiplier = numSpecialHolidayMultiplier.Value,
-            .LegalHolidayMultiplier = numLegalHolidayMultiplier.Value,
+            .RateSemantics = PayrollReportSettingsService.PremiumRateSemantics,
+            .SundayPremium = numSundayMultiplier.Value,
+            .SpecialHolidayPremium = numSpecialHolidayMultiplier.Value,
+            .LegalHolidayPremium = numLegalHolidayMultiplier.Value,
             .OvertimeHourlyRate = numOvertimeHourlyRate.Value,
             .ServiceIncentiveDays = numServiceIncentiveDays.Value,
             .IncentiveMonthsDivisor = numIncentiveMonthsDivisor.Value,
@@ -100,4 +101,3 @@ Public Class FRM_PAYROLL_REPORT_SETTINGS
         End Try
     End Sub
 End Class
-

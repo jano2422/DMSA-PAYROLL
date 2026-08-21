@@ -139,8 +139,7 @@ Partial Class FRM_SUB_CLIENT_PAYROLL_SETTINGS
         Me.lblSubtitle.Name = "lblSubtitle"
         Me.lblSubtitle.Size = New System.Drawing.Size(1098, 16)
         Me.lblSubtitle.TabIndex = 1
-        Me.lblSubtitle.Text = "Configure which universal payroll earnings apply to each detachment. Client maste" &
-    "r wage remains the source of truth."
+        Me.lblSubtitle.Text = "Enter additions only (.30 means +30%). Client master wage remains the base-pay source of truth."
         Me.lblSubtitle.TextAlign = System.Drawing.ContentAlignment.MiddleLeft
         '
         'lblTitle
@@ -273,7 +272,7 @@ Partial Class FRM_SUB_CLIENT_PAYROLL_SETTINGS
         Me.tabEarningsMatrix.Padding = New System.Windows.Forms.Padding(8)
         Me.tabEarningsMatrix.Size = New System.Drawing.Size(1122, 416)
         Me.tabEarningsMatrix.TabIndex = 0
-        Me.tabEarningsMatrix.Text = "Earnings matrix"
+        Me.tabEarningsMatrix.Text = "Premium matrix"
         '
         'rulesGrid
         '
@@ -315,9 +314,9 @@ Partial Class FRM_SUB_CLIENT_PAYROLL_SETTINGS
         '
         'colMultiplier
         '
-        Me.colMultiplier.HeaderText = "Multiplier"
+        Me.colMultiplier.HeaderText = "Additional premium"
         Me.colMultiplier.Name = "colMultiplier"
-        Me.colMultiplier.Width = 120
+        Me.colMultiplier.Width = 145
         '
         'colFormula
         '

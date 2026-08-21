@@ -304,7 +304,7 @@ Partial Class FRM_DTR_EXPORTS
         Me.TabPage1.Padding = New System.Windows.Forms.Padding(3)
         Me.TabPage1.Size = New System.Drawing.Size(869, 605)
         Me.TabPage1.TabIndex = 0
-        Me.TabPage1.Text = "Per Client"
+        Me.TabPage1.Text = "Payroll Preview"
         '
         'DGV_DTR_Per_Client
         '
@@ -621,7 +621,7 @@ Partial Class FRM_DTR_EXPORTS
         Me.lblExportTitle.Name = "lblExportTitle"
         Me.lblExportTitle.Size = New System.Drawing.Size(305, 30)
         Me.lblExportTitle.TabIndex = 0
-        Me.lblExportTitle.Text = "Export"
+        Me.lblExportTitle.Text = "Generate Reports"
         Me.lblExportTitle.TextAlign = System.Drawing.ContentAlignment.MiddleLeft
         '
         'btnDtrHrsExport
@@ -664,7 +664,7 @@ Partial Class FRM_DTR_EXPORTS
         Me.Btn_Export_to_Excell.Padding = New System.Windows.Forms.Padding(12, 0, 12, 0)
         Me.Btn_Export_to_Excell.Size = New System.Drawing.Size(305, 48)
         Me.Btn_Export_to_Excell.TabIndex = 2
-        Me.Btn_Export_to_Excell.Text = "Export Payroll"
+        Me.Btn_Export_to_Excell.Text = "Generate Payroll & Payslips"
         Me.Btn_Export_to_Excell.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText
         Me.Btn_Export_to_Excell.UseVisualStyleBackColor = False
         '
@@ -679,7 +679,7 @@ Partial Class FRM_DTR_EXPORTS
         Me.MinimumSize = New System.Drawing.Size(1100, 650)
         Me.Name = "FRM_DTR_EXPORTS"
         Me.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen
-        Me.Text = "DTR Exports"
+        Me.Text = "Payroll Generation"
         Me.WindowState = System.Windows.Forms.FormWindowState.Maximized
         Me.rootPanel.ResumeLayout(False)
         Me.toolbarPanel.ResumeLayout(False)

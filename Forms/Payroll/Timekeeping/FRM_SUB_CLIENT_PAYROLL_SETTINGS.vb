@@ -130,7 +130,7 @@ Public Class FRM_SUB_CLIENT_PAYROLL_SETTINGS
             txtNotes.Text = policy.Notes
 
             rulesGrid.Rows.Clear()
-            For Each code In SubClientPayrollPolicyService.PayCodeOrder
+            For Each code In SubClientPayrollPolicyService.PolicyRuleOrder
                 Dim rule = policy.GetRule(code)
                 Dim rowIndex = rulesGrid.Rows.Add(
                     rule.DisplayName,
@@ -185,20 +185,20 @@ Public Class FRM_SUB_CLIENT_PAYROLL_SETTINGS
         For Each row As DataGridViewRow In rulesGrid.Rows
             Dim code = Convert.ToString(row.Tag)
             If String.IsNullOrWhiteSpace(code) Then Continue For
-            Dim multiplier As Decimal
+            Dim premium As Decimal
             If Not Decimal.TryParse(
                     Convert.ToString(row.Cells("colMultiplier").Value),
                     NumberStyles.Number,
                     CultureInfo.InvariantCulture,
-                    multiplier) AndAlso
-               Not Decimal.TryParse(Convert.ToString(row.Cells("colMultiplier").Value), multiplier) Then
+                    premium) AndAlso
+               Not Decimal.TryParse(Convert.ToString(row.Cells("colMultiplier").Value), premium) Then
                 Throw New InvalidDataException(
-                    "Enter a valid multiplier for " & Convert.ToString(row.Cells("colRuleName").Value) & ".")
+                    "Enter a valid additional premium for " & Convert.ToString(row.Cells("colRuleName").Value) & ".")
             End If
             Dim enabled = Convert.ToBoolean(If(row.Cells("colEnabled").Value, False))
             Dim rule = policy.GetRule(code)
             rule.Enabled = enabled
-            rule.Multiplier = multiplier
+            rule.Multiplier = premium
         Next
 
         If policy.NightDifferentialMode = SubClientPayrollPolicy.NightDifferentialDisabled Then
@@ -312,7 +312,7 @@ Public Class FRM_SUB_CLIENT_PAYROLL_SETTINGS
                 Dim fifteenDayRate = amount / 2D / 15D
                 Dim sixteenDayRate = amount / 2D / 16D
                 lblNightDifferentialModeHelp.Text =
-                    "Each selected shift is one reporting day. The ND REG hourly multiplier is not used."
+                    "Each selected shift is one reporting day. The hourly ND premium is not used."
                 lblFixedNightDifferentialHelp.Text = String.Format(
                     CultureInfo.CurrentCulture,
                     "{0:N2} / 2 / cutoff days x reporting days. Preview: 15 days = {1:N2}/day; 16 days = {2:N2}/day.",
@@ -324,7 +324,7 @@ Public Class FRM_SUB_CLIENT_PAYROLL_SETTINGS
                 lblFixedNightDifferentialHelp.Text = "Select 'Pay by reporting days from a monthly amount' to use this field."
             Case Else
                 lblNightDifferentialModeHelp.Text =
-                    "Uses recorded ND hours and the enabled ND multipliers in the Earnings matrix."
+                    "Uses recorded ND hours and the additional ND premiums in the Premium matrix."
                 lblFixedNightDifferentialHelp.Text = "Select 'Pay by reporting days from a monthly amount' to use this field."
         End Select
     End Sub
@@ -356,10 +356,13 @@ Public Class FRM_SUB_CLIENT_PAYROLL_SETTINGS
                 Case SubClientPayrollPolicy.NightDifferentialDisabled
                     Return "Not paid"
                 Case Else
-                    Return "Daily wage / base hours x multiplier x ND hours"
+                    Return "Effective day hourly rate x premium x ND hours"
             End Select
         End If
-        Return "Daily wage / base hours x multiplier x hours"
+        If code.StartsWith("OT_", StringComparison.OrdinalIgnoreCase) Then
+            Return "Effective day hourly rate x (1 + premium) x OT hours"
+        End If
+        Return "Base hourly rate x (1 + premium) x hours"
     End Function
 
     Private Function CurrentActor() As String

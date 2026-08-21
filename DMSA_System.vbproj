@@ -101,7 +101,9 @@
     <Compile Include="Services\ClientManagementService.vb" />
     <Compile Include="Services\PayrollReportSettingsService.vb" />
     <Compile Include="Services\SubClientPayrollPolicyService.vb" />
+    <Compile Include="Services\ManualPayrollRecordService.vb" />
     <Compile Include="Services\PayrollReportService.vb" />
+    <Compile Include="Services\OverallPayrollExportService.vb" />
     <Compile Include="Models\DtrCalculationTable.vb" />
     <Compile Include="Modules\AppNotification.vb" />
     <Compile Include="Forms\Common\AppNotificationDialog.Designer.vb">
@@ -168,12 +170,6 @@
       <DependentUpon>FRM_DTR_EXPORTS.vb</DependentUpon>
     </Compile>
     <Compile Include="Forms\Payroll\Timekeeping\FRM_DTR_EXPORTS.vb">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Forms\Payroll\Timekeeping\FRM_DTR_DEDUCTION_UPDATE.Designer.vb">
-      <DependentUpon>FRM_DTR_DEDUCTION_UPDATE.vb</DependentUpon>
-    </Compile>
-    <Compile Include="Forms\Payroll\Timekeeping\FRM_DTR_DEDUCTION_UPDATE.vb">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="Forms\Payroll\Timekeeping\FRM_PAYROLL_REPORT_SETTINGS.Designer.vb">
@@ -355,9 +351,6 @@
     <EmbeddedResource Include="Forms\Common\FrmProcessing.resx">
       <DependentUpon>FrmProcessing.vb</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Forms\Payroll\Timekeeping\FRM_DTR_DEDUCTION_UPDATE.resx">
-      <DependentUpon>FRM_DTR_DEDUCTION_UPDATE.vb</DependentUpon>
-    </EmbeddedResource>
     <EmbeddedResource Include="Forms\Payroll\Timekeeping\FRM_DTR_EMPLOYEE_LIST.resx">
       <DependentUpon>FRM_DTR_EMPLOYEE_LIST.vb</DependentUpon>
     </EmbeddedResource>
@@ -410,6 +403,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\Authentication\FRM_LOGIN.resx">
       <DependentUpon>FRM_LOGIN.vb</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\Payroll\Timekeeping\FRM_PAYROLL_REPORT_SETTINGS.resx">
+      <DependentUpon>FRM_PAYROLL_REPORT_SETTINGS.vb</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\Payroll\Timekeeping\FRM_SUB_CLIENT_PAYROLL_SETTINGS.resx">
       <DependentUpon>FRM_SUB_CLIENT_PAYROLL_SETTINGS.vb</DependentUpon>

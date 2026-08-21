@@ -11,6 +11,7 @@ Public Partial Class FRM_DTR_EXPORTS
     Private _displayedHasRecords As Boolean = False
     Private _reportSettingsLink As LinkLabel
     Private _payrollRuleSettingsLink As LinkLabel
+    Private _btnExportAllClients As Button
     Public Property SelectedMainClientName As String = ""
 
     Private Function TryBuildCutoff(ByRef cutoff As String) As Boolean
@@ -84,6 +85,9 @@ Public Partial Class FRM_DTR_EXPORTS
     Private Sub SetupRuntimeUi()
         ApplyGridStyle(DGV_DTR_Per_Client)
         ApplyGridStyle(DGV_DTR_MATRIX)
+        DGV_DTR_Per_Client.ReadOnly = True
+        DGV_DTR_MATRIX.ReadOnly = True
+        AddOverallPayrollExportButton()
         AddReportSettingsLinkForAdministrator()
 
         AddHandler Lbl_ClientID.TextChanged, Sub(sender, e)
@@ -110,6 +114,24 @@ Public Partial Class FRM_DTR_EXPORTS
         AddHandler Cmb_Year.SelectedIndexChanged, Sub(sender, e) UpdateLoadedPeriodStatus()
         AddHandler Cmb_Month.SelectedIndexChanged, Sub(sender, e) UpdateLoadedPeriodStatus()
         AddHandler Cmb_CutOff.SelectedIndexChanged, Sub(sender, e) UpdateLoadedPeriodStatus()
+    End Sub
+
+    Private Sub AddOverallPayrollExportButton()
+        If _btnExportAllClients IsNot Nothing Then Return
+        _btnExportAllClients = New Button With {
+            .Name = "btnExportAllClients",
+            .Text = "Export All Active Clients",
+            .Size = New Size(232, 32),
+            .Margin = New Padding(8, 2, 0, 0),
+            .BackColor = Color.Maroon,
+            .ForeColor = Color.White,
+            .FlatStyle = FlatStyle.Flat,
+            .Font = New Font("Verdana", 8.5!, FontStyle.Bold),
+            .AccessibleName = "Export payroll for all active clients in the selected period"
+        }
+        _btnExportAllClients.FlatAppearance.BorderSize = 0
+        AddHandler _btnExportAllClients.Click, AddressOf ExportAllActiveClients_Click
+        periodPanel.Controls.Add(_btnExportAllClients)
     End Sub
 
     Private Sub AddReportSettingsLinkForAdministrator()
@@ -225,6 +247,11 @@ Public Partial Class FRM_DTR_EXPORTS
         SetActionButtonState(Btn_Show, hasClient)
         SetActionButtonState(Btn_Export_to_Excell, hasClient AndAlso hasDisplayedPeriod AndAlso _displayedHasRecords AndAlso hasPerClientRows)
         SetActionButtonState(btnDtrHrsExport, hasClient AndAlso hasDisplayedPeriod AndAlso _displayedHasRecords AndAlso hasMatrixRows)
+        If _btnExportAllClients IsNot Nothing Then
+            SetActionButtonState(_btnExportAllClients,
+                Cmb_Year.SelectedIndex >= 0 AndAlso Cmb_Month.SelectedIndex >= 0 AndAlso Cmb_CutOff.SelectedIndex >= 0)
+            If _btnExportAllClients.Enabled Then _btnExportAllClients.BackColor = Color.Maroon
+        End If
         Label5.Text = If(hasClient, "Selected client", "Select a client")
         UpdateLoadedPeriodStatus()
     End Sub
@@ -381,6 +408,40 @@ Public Partial Class FRM_DTR_EXPORTS
         End Try
     End Sub
 
+    Private Sub ExportAllActiveClients_Click(sender As Object, e As EventArgs)
+        Dim cutoff As String = ""
+        If Not TryBuildCutoff(cutoff) Then Return
+
+        Dim periodLabel = Cmb_Month.Text & " " & Cmb_Year.Text & " / " & Cmb_CutOff.Text
+        If AppNotification.Show(
+            "Create one overall payroll workbook for every active client with finalized payroll in " & periodLabel & "?" & vbCrLf & vbCrLf &
+            "The workbook will also list active clients that have no finalized payroll for the period.",
+            "Export Overall Payroll",
+            MessageBoxButtons.YesNo,
+            MessageBoxIcon.Question) <> DialogResult.Yes Then Return
+
+        Try
+            Dim result As OverallPayrollExportResult = Nothing
+            RunWithProcessing("Exporting payroll for all active clients...", Sub()
+                result = Export_Overall_Payroll_to_Excel(cutoff)
+            End Sub)
+            If result Is Nothing Then Throw New InvalidOperationException("The overall payroll export did not return a result.")
+
+            Process.Start(result.OutputPath)
+            AppNotification.Show(
+                "Overall payroll exported successfully." & vbCrLf &
+                "Active clients: " & result.ActiveSubClientCount.ToString("N0") & vbCrLf &
+                "Employee payroll records: " & result.EmployeePayrollCount.ToString("N0") & vbCrLf &
+                "Saved snapshots: " & result.SnapshotCount.ToString("N0") & vbCrLf &
+                "Legacy recalculated: " & result.LegacyRecalculatedCount.ToString("N0"),
+                "Overall Payroll Export",
+                MessageBoxButtons.OK,
+                If(result.LegacyRecalculatedCount > 0, MessageBoxIcon.Warning, MessageBoxIcon.Information))
+        Catch ex As Exception
+            AppNotification.Show("Unable to export overall payroll: " & ex.Message, "Overall Payroll Export", MessageBoxButtons.OK, MessageBoxIcon.Error)
+        End Try
+    End Sub
+
 
     Private Sub FRM_DTR_EXPORTS_FormClosed(sender As Object, e As EventArgs) Handles MyBase.FormClosed
         Me.Dispose()
@@ -420,75 +481,6 @@ Public Partial Class FRM_DTR_EXPORTS
             processingForm.Close()
             processingForm.Dispose()
         End Try
-    End Sub
-
-    Private Sub DGV_DTR_Per_Client_CellDoubleClick(sender As Object, e As DataGridViewCellEventArgs) Handles DGV_DTR_Per_Client.CellDoubleClick
-        If e.RowIndex < 0 Then Return
-
-        If String.IsNullOrWhiteSpace(Lbl_ClientID.Text) Then
-            MsgBox("Please select a client first!", vbExclamation, "Client ID")
-            Return
-        End If
-
-        Dim cutoff As String = ""
-        If Not TryGetDisplayedCutoff(cutoff) Then Return
-
-        Dim row As DataGridViewRow = DGV_DTR_Per_Client.Rows(e.RowIndex)
-        Dim employeeId As String = Convert.ToString(row.Cells("colEmployeeId").Value).Trim()
-        Dim employeeName As String = Convert.ToString(row.Cells("colName").Value).Trim()
-
-        If employeeId = "" Then
-            MsgBox("Unable to identify the selected employee.", vbExclamation, "Employee")
-            Return
-        End If
-
-        Dim numDays As Decimal = ReadDecimal(row.Cells("colNumDays").Value)
-        Dim totalHours As Decimal = ReadDecimal(row.Cells("colTotalHours").Value)
-        Dim regHours As Decimal = ReadDecimal(row.Cells("colReg").Value)
-        Dim sunHours As Decimal = ReadDecimal(row.Cells("colSun").Value)
-        Dim shHours As Decimal = ReadDecimal(row.Cells("colSh").Value)
-        Dim lhHours As Decimal = ReadDecimal(row.Cells("colLh").Value)
-        Dim otRegHours As Decimal = ReadDecimal(row.Cells("colOtReg").Value)
-
-        Dim latestTotals As DataRow = GetLatestDtrTotals(employeeId, cutoff)
-        Dim cbDeduct As Decimal = ReadDecimal(If(latestTotals Is Nothing, 0D, latestTotals("CB_DEDUCT")))
-        Dim sssLoanDeduct As Decimal = ReadDecimal(If(latestTotals Is Nothing, 0D, latestTotals("SSS_LOAN_DEDUCT")))
-        Dim sssCalLoanDeduct As Decimal = ReadDecimal(If(latestTotals Is Nothing, 0D, latestTotals("SSS_CAL_LOAN_DEDUCT")))
-        Dim piLoanDeduct As Decimal = ReadDecimal(If(latestTotals Is Nothing, 0D, latestTotals("PI_LOAN_DEDUCT")))
-        Dim piCalLoanDeduct As Decimal = ReadDecimal(If(latestTotals Is Nothing, 0D, latestTotals("PI_CAL_LOAN_DEDUCT")))
-        Dim philhealthDeduct As Decimal = ReadDecimal(If(latestTotals Is Nothing, 0D, latestTotals("PH_DEDUCT")))
-        Dim sssDeduct As Decimal = ReadDecimal(If(latestTotals Is Nothing, 0D, latestTotals("SSS_DEDUCT")))
-        Dim pagibigDeduct As Decimal = ReadDecimal(If(latestTotals Is Nothing, 0D, latestTotals("PI_DEDUCT")))
-        Dim officerAllowance As Decimal = ReadDecimal(If(latestTotals Is Nothing, 0D, latestTotals("OFFICERS_ALLOWANCE")))
-        Dim sguniformallowance As Decimal = ReadDecimal(If(latestTotals Is Nothing, 0D, latestTotals("SGUNIFORMALLOWANCE")))
-
-        Using dialog As New FRM_DTR_DEDUCTION_UPDATE(
-            employeeId,
-            employeeName,
-            cutoff,
-            CInt(Lbl_ClientID.Text),
-            numDays,
-            totalHours,
-            regHours,
-            sunHours,
-            shHours,
-            lhHours,
-            otRegHours,
-            cbDeduct,
-            sssLoanDeduct,
-            sssCalLoanDeduct,
-            piLoanDeduct,
-            piCalLoanDeduct,
-            philhealthDeduct,
-            sssDeduct,
-            pagibigDeduct,
-            officerAllowance,
-            sguniformallowance
-        )
-            If dialog.ShowDialog(Me) = DialogResult.OK Then
-                Get_DTR_Per_Client(CInt(Lbl_ClientID.Text), cutoff)
-            End If
-        End Using
     End Sub
 
     Private Sub Label7_Click(sender As Object, e As EventArgs) Handles Label7.Click

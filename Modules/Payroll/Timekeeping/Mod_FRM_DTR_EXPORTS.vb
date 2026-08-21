@@ -63,18 +63,25 @@ Module Mod_FRM_DTR_EXPORTS
         AddPerClientColumn(dgv, "colSun", "SUN", 66)
         AddPerClientColumn(dgv, "colLh", "LH", 66)
         AddPerClientColumn(dgv, "colSh", "SH", 66)
+        AddPerClientColumn(dgv, "colSunLh", "SUN + LH", 88)
+        AddPerClientColumn(dgv, "colSunSh", "SUN + SH", 88)
         AddPerClientColumn(dgv, "colNdReg", "ND REG", 78)
         AddPerClientColumn(dgv, "colNdSun", "ND SUN", 78)
         AddPerClientColumn(dgv, "colNdLh", "ND LH", 78)
         AddPerClientColumn(dgv, "colNdSh", "ND SH", 78)
+        AddPerClientColumn(dgv, "colNdSunLh", "ND SUN + LH", 104)
+        AddPerClientColumn(dgv, "colNdSunSh", "ND SUN + SH", 104)
         AddPerClientColumn(dgv, "colOtReg", "OT REG", 78)
         AddPerClientColumn(dgv, "colOtSun", "OT SUN", 78)
         AddPerClientColumn(dgv, "colOtLh", "OT LH", 78)
         AddPerClientColumn(dgv, "colOtSh", "OT SH", 78)
+        AddPerClientColumn(dgv, "colOtSunLh", "OT SUN + LH", 104)
+        AddPerClientColumn(dgv, "colOtSunSh", "OT SUN + SH", 104)
         AddPerClientHiddenColumn(dgv, "colNumNdDays")
 
         If IsFirstCutoff(cutoff) Then
             AddPerClientColumn(dgv, "colSss", "SSS", 70)
+            AddPerClientColumn(dgv, "colSssProvident", "SSS Provident", 110)
             AddPerClientColumn(dgv, "colPhilHealth", "PhilHealth", 90)
             AddPerClientColumn(dgv, "colPagIbig", "Pag-IBIG", 90)
             AddPerClientColumn(dgv, "colOfficerAllo", "Officer Allo", 100)
@@ -88,6 +95,15 @@ Module Mod_FRM_DTR_EXPORTS
             AddPerClientColumn(dgv, "colOfficerAllo", "Officer Allo", 100)
             AddPerClientColumn(dgv, "colSgUniformAllowance", "SG Uniform Allowance", 120)
         End If
+        AddPerClientColumn(dgv, "colOtherEarnings", "Other Earnings", 105)
+        AddPerClientColumn(dgv, "colOtherDeductions", "Other Deductions", 115)
+        For Each columnName In {
+            "colSnapshotComplete", "colDailyWageSnapshot", "colRegEarnings", "colSunEarnings", "colLhEarnings", "colShEarnings",
+            "colNdRegEarnings", "colNdSunEarnings", "colNdLhEarnings", "colNdShEarnings",
+            "colOtRegEarnings", "colOtSunEarnings", "colOtLhEarnings", "colOtShEarnings",
+            "colIncentiveEarnings", "colTotalEarnings", "colTotalDeductions", "colNetPay", "colCalculationVersion"}
+            AddPerClientHiddenColumn(dgv, columnName)
+        Next
     End Sub
 
     Public Sub Export_DTR_Per_Client_to_Excell(iSubClientId As Integer, sMainClient As String, sDetachment As String, sAddress As String, sDailyWage As String, sCutOff As String)
@@ -207,14 +223,21 @@ Module Mod_FRM_DTR_EXPORTS
             'SQL = "select LAST_NAME, FIRST_NAME, MIDDLE_NAME, NUM_OF_DAYS, TOTAL_HOURS, REG, SUN,SH,LH, RD_SUN_SH, RD_SUN_LH, ND_REG, ND_SUN, ND_SH, ND_LH, ND_RD_SUN_SH, ND_RD_SUN_LH, OT_REG from VIEW_DTR_PER_SUB_CLIENT"
             'SQL = SQL & " where A.SUB_CLIENT_ID = " & iClient_ID & " and CUTOFF_PERIOD = '" & sCut_Off & "'"
 
-            SubClientPayrollPolicyService.EnsureSchema()
+            ManualPayrollRecordService.EnsureSchema()
             SQL = "SELECT A.A.EMPLOYEE_ID AS EMPLOYEE_ID, LAST_NAME, FIRST_NAME, MIDDLE_NAME, NUM_OF_DAYS, ND_DAYS, TOTAL_HOURS, " &
-                "REG, SUN, SH, LH, ND_REG, ND_SUN, ND_SH, ND_LH, OT_REG, OT_SUN, OT_SH, OT_LH, " &
+                "REG, SUN, SH, LH, RD_SUN_SH, RD_SUN_LH, ND_REG, ND_SUN, ND_SH, ND_LH, ND_RD_SUN_SH, ND_RD_SUN_LH, " &
+                "OT_REG, OT_SUN, OT_SH, OT_LH, OT_RD_SUN_SH, OT_RD_SUN_LH, " &
                 "CB_DEDUCT, SSS_LOAN_DEDUCT, SSS_CAL_LOAN_DEDUCT, PI_LOAN_DEDUCT, PI_CAL_LOAN_DEDUCT, " &
-                "SSS_DEDUCT, PH_DEDUCT, PI_DEDUCT, OFFICERS_ALLOWANCE, SGUNIFORMALLOWANCE "
+                "SSS_DEDUCT, SSS_PROVIDENT_DEDUCT, PH_DEDUCT, PI_DEDUCT, OFFICERS_ALLOWANCE, SGUNIFORMALLOWANCE, " &
+                "OTHER_EARNINGS, OTHER_DEDUCTIONS, SNAPSHOT_COMPLETE, DAILY_WAGE_SNAPSHOT, " &
+                "REG_EARNINGS, SUN_EARNINGS, LH_EARNINGS, SH_EARNINGS, ND_REG_EARNINGS, ND_SUN_EARNINGS, ND_LH_EARNINGS, ND_SH_EARNINGS, " &
+                "OT_REG_EARNINGS, OT_SUN_EARNINGS, OT_LH_EARNINGS, OT_SH_EARNINGS, INCENTIVE_EARNINGS, TOTAL_EARNINGS, TOTAL_DEDUCTIONS, NET_PAY, CALCULATION_VERSION "
             SQL = SQL & "FROM VIEW_DTR_PER_SUB_CLIENT A "
             SQL = SQL & "WHERE A.A.SUB_CLIENT_ID = " & iClient_ID & " AND A.CUTOFF_PERIOD = '" & sCut_Off & "' "
-            SQL = SQL & "AND A.D.ID = (SELECT MAX(D.ID) FROM PRL_DTR_TOTAL_HOURS D WHERE D.EMPLOYEE_ID = A.A.EMPLOYEE_ID AND D.CUTOFF_PERIOD = A.CUTOFF_PERIOD) "
+            SQL = SQL & "AND A.D.ID = (SELECT MAX(D.ID) FROM PRL_DTR_TOTAL_HOURS D " &
+                "WHERE D.EMPLOYEE_ID = A.A.EMPLOYEE_ID AND D.SUB_CLIENT_ID = A.A.SUB_CLIENT_ID " &
+                "AND D.CUTOFF_PERIOD = A.CUTOFF_PERIOD " &
+                "AND (D.RECORD_STATUS = 'FINAL' OR D.RECORD_STATUS IS NULL OR D.RECORD_STATUS = '')) "
             SQL = SQL & "ORDER BY A.LAST_NAME, A.FIRST_NAME, A.MIDDLE_NAME"
 
 
@@ -247,22 +270,50 @@ Module Mod_FRM_DTR_EXPORTS
                                 NzZero(myRow, "TOTAL_HOURS"),
                                 NzZero(myRow, "REG"),
                                 NzZero(myRow, "SUN"),
-                                NzZero(myRow, "LH"),
-                                NzZero(myRow, "SH"),
+                                StandaloneHours(myRow, "LH", "RD_SUN_LH"),
+                                StandaloneHours(myRow, "SH", "RD_SUN_SH"),
+                                NzZero(myRow, "RD_SUN_LH"),
+                                NzZero(myRow, "RD_SUN_SH"),
                                 NzZero(myRow, "ND_REG"),
                                 NzZero(myRow, "ND_SUN"),
-                                NzZero(myRow, "ND_LH"),
-                                NzZero(myRow, "ND_SH"),
+                                StandaloneHours(myRow, "ND_LH", "ND_RD_SUN_LH"),
+                                StandaloneHours(myRow, "ND_SH", "ND_RD_SUN_SH"),
+                                NzZero(myRow, "ND_RD_SUN_LH"),
+                                NzZero(myRow, "ND_RD_SUN_SH"),
                                 NzZero(myRow, "OT_REG"),
                                 NzZero(myRow, "OT_SUN"),
-                                NzZero(myRow, "OT_LH"),
-                                NzZero(myRow, "OT_SH"),
+                                StandaloneHours(myRow, "OT_LH", "OT_RD_SUN_LH"),
+                                StandaloneHours(myRow, "OT_SH", "OT_RD_SUN_SH"),
+                                NzZero(myRow, "OT_RD_SUN_LH"),
+                                NzZero(myRow, "OT_RD_SUN_SH"),
                                 NzZero(myRow, "ND_DAYS"),
                                 NzZero(myRow, "SSS_DEDUCT"),
+                                NzZero(myRow, "SSS_PROVIDENT_DEDUCT"),
                                 NzZero(myRow, "PH_DEDUCT"),
                                 NzZero(myRow, "PI_DEDUCT"),
                                 NzZero(myRow, "OFFICERS_ALLOWANCE"),
-                                NzZero(myRow, "SGUNIFORMALLOWANCE")
+                                NzZero(myRow, "SGUNIFORMALLOWANCE"),
+                                NzZero(myRow, "OTHER_EARNINGS"),
+                                NzZero(myRow, "OTHER_DEDUCTIONS"),
+                                NzBoolean(myRow, "SNAPSHOT_COMPLETE"),
+                                NzZero(myRow, "DAILY_WAGE_SNAPSHOT"),
+                                NzZero(myRow, "REG_EARNINGS"),
+                                NzZero(myRow, "SUN_EARNINGS"),
+                                NzZero(myRow, "LH_EARNINGS"),
+                                NzZero(myRow, "SH_EARNINGS"),
+                                NzZero(myRow, "ND_REG_EARNINGS"),
+                                NzZero(myRow, "ND_SUN_EARNINGS"),
+                                NzZero(myRow, "ND_LH_EARNINGS"),
+                                NzZero(myRow, "ND_SH_EARNINGS"),
+                                NzZero(myRow, "OT_REG_EARNINGS"),
+                                NzZero(myRow, "OT_SUN_EARNINGS"),
+                                NzZero(myRow, "OT_LH_EARNINGS"),
+                                NzZero(myRow, "OT_SH_EARNINGS"),
+                                NzZero(myRow, "INCENTIVE_EARNINGS"),
+                                NzZero(myRow, "TOTAL_EARNINGS"),
+                                NzZero(myRow, "TOTAL_DEDUCTIONS"),
+                                NzZero(myRow, "NET_PAY"),
+                                NzText(myRow, "CALCULATION_VERSION")
                             )
                         Else
                             .Rows.Add(
@@ -273,16 +324,22 @@ Module Mod_FRM_DTR_EXPORTS
                                 NzZero(myRow, "TOTAL_HOURS"),
                                 NzZero(myRow, "REG"),
                                 NzZero(myRow, "SUN"),
-                                NzZero(myRow, "LH"),
-                                NzZero(myRow, "SH"),
+                                StandaloneHours(myRow, "LH", "RD_SUN_LH"),
+                                StandaloneHours(myRow, "SH", "RD_SUN_SH"),
+                                NzZero(myRow, "RD_SUN_LH"),
+                                NzZero(myRow, "RD_SUN_SH"),
                                 NzZero(myRow, "ND_REG"),
                                 NzZero(myRow, "ND_SUN"),
-                                NzZero(myRow, "ND_LH"),
-                                NzZero(myRow, "ND_SH"),
+                                StandaloneHours(myRow, "ND_LH", "ND_RD_SUN_LH"),
+                                StandaloneHours(myRow, "ND_SH", "ND_RD_SUN_SH"),
+                                NzZero(myRow, "ND_RD_SUN_LH"),
+                                NzZero(myRow, "ND_RD_SUN_SH"),
                                 NzZero(myRow, "OT_REG"),
                                 NzZero(myRow, "OT_SUN"),
-                                NzZero(myRow, "OT_LH"),
-                                NzZero(myRow, "OT_SH"),
+                                StandaloneHours(myRow, "OT_LH", "OT_RD_SUN_LH"),
+                                StandaloneHours(myRow, "OT_SH", "OT_RD_SUN_SH"),
+                                NzZero(myRow, "OT_RD_SUN_LH"),
+                                NzZero(myRow, "OT_RD_SUN_SH"),
                                 NzZero(myRow, "ND_DAYS"),
                                 NzZero(myRow, "CB_DEDUCT"),
                                 NzZero(myRow, "SSS_LOAN_DEDUCT"),
@@ -290,7 +347,28 @@ Module Mod_FRM_DTR_EXPORTS
                                 NzZero(myRow, "PI_LOAN_DEDUCT"),
                                 NzZero(myRow, "PI_CAL_LOAN_DEDUCT"),
                                 NzZero(myRow, "OFFICERS_ALLOWANCE"),
-                                NzZero(myRow, "SGUNIFORMALLOWANCE")
+                                NzZero(myRow, "SGUNIFORMALLOWANCE"),
+                                NzZero(myRow, "OTHER_EARNINGS"),
+                                NzZero(myRow, "OTHER_DEDUCTIONS"),
+                                NzBoolean(myRow, "SNAPSHOT_COMPLETE"),
+                                NzZero(myRow, "DAILY_WAGE_SNAPSHOT"),
+                                NzZero(myRow, "REG_EARNINGS"),
+                                NzZero(myRow, "SUN_EARNINGS"),
+                                NzZero(myRow, "LH_EARNINGS"),
+                                NzZero(myRow, "SH_EARNINGS"),
+                                NzZero(myRow, "ND_REG_EARNINGS"),
+                                NzZero(myRow, "ND_SUN_EARNINGS"),
+                                NzZero(myRow, "ND_LH_EARNINGS"),
+                                NzZero(myRow, "ND_SH_EARNINGS"),
+                                NzZero(myRow, "OT_REG_EARNINGS"),
+                                NzZero(myRow, "OT_SUN_EARNINGS"),
+                                NzZero(myRow, "OT_LH_EARNINGS"),
+                                NzZero(myRow, "OT_SH_EARNINGS"),
+                                NzZero(myRow, "INCENTIVE_EARNINGS"),
+                                NzZero(myRow, "TOTAL_EARNINGS"),
+                                NzZero(myRow, "TOTAL_DEDUCTIONS"),
+                                NzZero(myRow, "NET_PAY"),
+                                NzText(myRow, "CALCULATION_VERSION")
                             )
                         End If
 
@@ -330,6 +408,23 @@ Module Mod_FRM_DTR_EXPORTS
 
         ' If not numeric but not empty, return it (or return "0" if you prefer)
         Return s
+    End Function
+
+    Private Function NzBoolean(row As DataRow, col As String) As String
+        If Not row.Table.Columns.Contains(col) OrElse row.IsNull(col) Then Return "0"
+        Try
+            Return If(Convert.ToBoolean(row(col)), "1", "0")
+        Catch
+            Return "0"
+        End Try
+    End Function
+
+    Private Function StandaloneHours(row As DataRow, inclusiveColumn As String, combinedColumn As String) As String
+        Dim inclusiveValue As Decimal
+        Dim combinedValue As Decimal
+        Decimal.TryParse(NzZero(row, inclusiveColumn), inclusiveValue)
+        Decimal.TryParse(NzZero(row, combinedColumn), combinedValue)
+        Return Math.Max(0D, inclusiveValue - combinedValue).ToString("0.##")
     End Function
 
     Public Function GetLatestDtrTotals(employeeId As String, cutoff As String) As DataRow
@@ -437,6 +532,18 @@ Module Mod_FRM_DTR_EXPORTS
             MsgBox(ex.Message, vbCritical, "Error Saving Deductions")
         End Try
     End Sub
+
+    Public Function Export_Overall_Payroll_to_Excel(sCutOff As String) As OverallPayrollExportResult
+        If Not IsFirstCutoff(sCutOff) AndAlso Not IsSecondCutoff(sCutOff) Then
+            Throw New ArgumentException("Invalid cutoff format: " & sCutOff, NameOf(sCutOff))
+        End If
+
+        Dim exportFolder = BuildExportFolder("Payroll EXPORTS", "ALL ACTIVE CLIENTS", sCutOff)
+        Dim safeCutoff = MakeSafeFileName(sCutOff)
+        Dim outputPath = Path.Combine(exportFolder,
+            $"Overall_Payroll_All_Active_Clients_{safeCutoff}_{DateTime.Now:yyyyMMdd_HHmmss}.xlsx")
+        Return OverallPayrollExportService.CreateOverallPayrollReport(outputPath, sCutOff)
+    End Function
 
     Private Function LatestDecimal(row As DataRow, columnName As String) As Decimal
         If row Is Nothing OrElse Not row.Table.Columns.Contains(columnName) OrElse row.IsNull(columnName) Then Return 0D

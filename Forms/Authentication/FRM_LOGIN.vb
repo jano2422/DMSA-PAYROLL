@@ -11,6 +11,30 @@ Public Class FRM_LOGIN
         'If Now.Year = 2024 Then
 
         MDB_Connection_Init()
+
+        If String.IsNullOrWhiteSpace(GlobalVariables.GlobalConStr) Then
+            Close()
+            Return
+        End If
+
+        Try
+            ' This is intentionally silent and idempotent. Missing payroll tables,
+            ' columns, and indexes are created; an up-to-date MDB is unchanged.
+            ManualPayrollRecordService.EnsureSchema()
+            WriteStartupSchemaLog("INFO", "Database schema check completed successfully.")
+        Catch ex As Exception
+            WriteStartupSchemaLog("ERROR", ex.GetType().FullName & ": " & ex.Message)
+            MessageBox.Show(
+                "The payroll database could not be updated for this application version. " &
+                "Startup was stopped to prevent payroll processing with an incomplete schema. " &
+                "Please contact the system administrator.",
+                "Database Update Required",
+                MessageBoxButtons.OK,
+                MessageBoxIcon.Error)
+            Close()
+            Return
+        End Try
+
         Connect_to_MDB()
 
         'Else
@@ -32,6 +56,33 @@ Public Class FRM_LOGIN
         Using changePasswordForm As New FRM_CHANGE_PASSWORD(TxtUsername.Text)
             changePasswordForm.ShowDialog(Me)
         End Using
+    End Sub
+
+    Private Shared Sub WriteStartupSchemaLog(level As String, message As String)
+        Try
+            Dim logFolder = System.IO.Path.Combine(
+                Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
+                "DMSA Payroll",
+                "Logs")
+            System.IO.Directory.CreateDirectory(logFolder)
+
+            Dim logPath = System.IO.Path.Combine(logFolder, "startup-schema.log")
+            If System.IO.File.Exists(logPath) AndAlso
+               New System.IO.FileInfo(logPath).Length > 1024L * 1024L Then
+                System.IO.File.Copy(logPath, logPath & ".previous", True)
+                System.IO.File.WriteAllText(logPath, String.Empty)
+            End If
+
+            Dim sanitizedMessage = If(message, String.Empty).
+                Replace(vbCr, " ").
+                Replace(vbLf, " ")
+            System.IO.File.AppendAllText(
+                logPath,
+                DateTimeOffset.Now.ToString("O") & " [" & level & "] DatabaseSchema " &
+                sanitizedMessage & Environment.NewLine)
+        Catch
+            ' Logging must never prevent application startup or hide the migration result.
+        End Try
     End Sub
     Private Sub TxtPassword_KeyPress(sender As Object, e As KeyPressEventArgs) Handles TxtPassword.KeyPress
 

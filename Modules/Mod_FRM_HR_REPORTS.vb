@@ -178,7 +178,13 @@ WHERE
         Dim SQL As String
 
         Try
-            SQL = "SELECT * from VIEW_SUB_CLIENT_EMPLOYEE_COUNT order by SUB_CLIENT_NAME "
+            SQL = "SELECT S.SUB_CLIENT_NAME, COUNT(E.EMPLOYEE_ID) AS EMPLOYEE_COUNT " &
+                  "FROM (TBL_CLIENT_MAIN AS M " &
+                  "INNER JOIN TBL_CLIENT_SUB AS S ON M.MAIN_CLIENT_ID = S.MAIN_CLIENT_ID) " &
+                  "LEFT JOIN HR_EMPLOYEE_RECORD_HDR AS E ON S.SUB_CLIENT_ID = E.SUB_CLIENT_ID " &
+                  "WHERE M.GLOBAL_STATUS = 'Active' AND S.SUB_CLIENT_STATUS = 'Active' " &
+                  "GROUP BY S.SUB_CLIENT_NAME " &
+                  "ORDER BY S.SUB_CLIENT_NAME"
 
 
             da = New OleDbDataAdapter(SQL, Mod_GlobalVariables.GlobalVariables.GlobalCon)

@@ -111,7 +111,9 @@ Partial Class FRM_HR_CLIENTS
         Me.CmbCompanyStatus = New System.Windows.Forms.ComboBox()
         Me.BtnRefresh = New System.Windows.Forms.Button()
         Me.LvCompanies = New System.Windows.Forms.ListView()
+        Me.ColCompanyCode = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
         Me.ColCompany = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
+        Me.ColCompanyType = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
         Me.ColSiteCount = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
         Me.ColCompanyStatus = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
         Me.LblCompanySearch = New System.Windows.Forms.Label()
@@ -128,6 +130,7 @@ Partial Class FRM_HR_CLIENTS
         Me.LblWorkSitesTitle = New System.Windows.Forms.Label()
         Me.LblWorkSitesCount = New System.Windows.Forms.Label()
         Me.LvWorkSites = New System.Windows.Forms.ListView()
+        Me.ColSiteCode = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
         Me.ColSiteName = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
         Me.ColSiteAddress = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
         Me.ColSiteStatus = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
@@ -1261,7 +1264,7 @@ Partial Class FRM_HR_CLIENTS
         Me.ContentSplit.Panel2.Controls.Add(Me.CompanyWorkspaceLayout)
         Me.ContentSplit.Panel2MinSize = 500
         Me.ContentSplit.Size = New System.Drawing.Size(1186, 725)
-        Me.ContentSplit.SplitterDistance = 350
+        Me.ContentSplit.SplitterDistance = 520
         Me.ContentSplit.SplitterWidth = 1
         Me.ContentSplit.TabIndex = 0
         '
@@ -1282,7 +1285,7 @@ Partial Class FRM_HR_CLIENTS
         Me.CompanyDirectoryPanel.Location = New System.Drawing.Point(0, 0)
         Me.CompanyDirectoryPanel.Name = "CompanyDirectoryPanel"
         Me.CompanyDirectoryPanel.Padding = New System.Windows.Forms.Padding(18)
-        Me.CompanyDirectoryPanel.Size = New System.Drawing.Size(350, 725)
+        Me.CompanyDirectoryPanel.Size = New System.Drawing.Size(520, 725)
         Me.CompanyDirectoryPanel.TabIndex = 0
         '
         'BtnAddCompany
@@ -1294,7 +1297,7 @@ Partial Class FRM_HR_CLIENTS
         Me.BtnAddCompany.FlatStyle = System.Windows.Forms.FlatStyle.Flat
         Me.BtnAddCompany.Font = New System.Drawing.Font("Segoe UI Semibold", 9.0!)
         Me.BtnAddCompany.ForeColor = System.Drawing.Color.White
-        Me.BtnAddCompany.Location = New System.Drawing.Point(220, 12)
+        Me.BtnAddCompany.Location = New System.Drawing.Point(390, 12)
         Me.BtnAddCompany.Name = "BtnAddCompany"
         Me.BtnAddCompany.Size = New System.Drawing.Size(112, 36)
         Me.BtnAddCompany.TabIndex = 3
@@ -1317,7 +1320,7 @@ Partial Class FRM_HR_CLIENTS
         Me.LblCompaniesCount.Anchor = CType((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
         Me.LblCompaniesCount.Font = New System.Drawing.Font("Segoe UI", 8.5!)
         Me.LblCompaniesCount.ForeColor = System.Drawing.Color.FromArgb(CType(CType(98, Byte), Integer), CType(CType(108, Byte), Integer), CType(CType(118, Byte), Integer))
-        Me.LblCompaniesCount.Location = New System.Drawing.Point(92, 19)
+        Me.LblCompaniesCount.Location = New System.Drawing.Point(262, 19)
         Me.LblCompaniesCount.Name = "LblCompaniesCount"
         Me.LblCompaniesCount.Size = New System.Drawing.Size(112, 19)
         Me.LblCompaniesCount.TabIndex = 1
@@ -1331,7 +1334,7 @@ Partial Class FRM_HR_CLIENTS
         Me.TxtCompanySearch.Font = New System.Drawing.Font("Segoe UI", 9.5!)
         Me.TxtCompanySearch.Location = New System.Drawing.Point(18, 68)
         Me.TxtCompanySearch.Name = "TxtCompanySearch"
-        Me.TxtCompanySearch.Size = New System.Drawing.Size(200, 24)
+        Me.TxtCompanySearch.Size = New System.Drawing.Size(370, 24)
         Me.TxtCompanySearch.TabIndex = 2
         '
         'CmbCompanyStatus
@@ -1340,7 +1343,7 @@ Partial Class FRM_HR_CLIENTS
         Me.CmbCompanyStatus.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
         Me.CmbCompanyStatus.Font = New System.Drawing.Font("Segoe UI", 9.0!)
         Me.CmbCompanyStatus.Items.AddRange(New Object() {"Active", "Inactive", "All"})
-        Me.CmbCompanyStatus.Location = New System.Drawing.Point(226, 68)
+        Me.CmbCompanyStatus.Location = New System.Drawing.Point(396, 68)
         Me.CmbCompanyStatus.Name = "CmbCompanyStatus"
         Me.CmbCompanyStatus.Size = New System.Drawing.Size(106, 23)
         Me.CmbCompanyStatus.TabIndex = 3
@@ -1355,7 +1358,7 @@ Partial Class FRM_HR_CLIENTS
         Me.BtnRefresh.Font = New System.Drawing.Font("Segoe UI Semibold", 8.5!)
         Me.BtnRefresh.Location = New System.Drawing.Point(18, 100)
         Me.BtnRefresh.Name = "BtnRefresh"
-        Me.BtnRefresh.Size = New System.Drawing.Size(314, 32)
+        Me.BtnRefresh.Size = New System.Drawing.Size(484, 32)
         Me.BtnRefresh.TabIndex = 4
         Me.BtnRefresh.Text = "Reload client directory"
         Me.BtnRefresh.UseVisualStyleBackColor = False
@@ -1367,7 +1370,7 @@ Partial Class FRM_HR_CLIENTS
             Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
         Me.LvCompanies.BackColor = System.Drawing.Color.FromArgb(CType(CType(255, Byte), Integer), CType(CType(238, Byte), Integer), CType(CType(214, Byte), Integer))
         Me.LvCompanies.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle
-        Me.LvCompanies.Columns.AddRange(New System.Windows.Forms.ColumnHeader() {Me.ColCompany, Me.ColSiteCount, Me.ColCompanyStatus})
+        Me.LvCompanies.Columns.AddRange(New System.Windows.Forms.ColumnHeader() {Me.ColCompanyCode, Me.ColCompany, Me.ColCompanyType, Me.ColSiteCount, Me.ColCompanyStatus})
         Me.LvCompanies.Font = New System.Drawing.Font("Segoe UI", 9.0!)
         Me.LvCompanies.FullRowSelect = True
         Me.LvCompanies.GridLines = True
@@ -1375,16 +1378,30 @@ Partial Class FRM_HR_CLIENTS
         Me.LvCompanies.Location = New System.Drawing.Point(18, 142)
         Me.LvCompanies.MultiSelect = False
         Me.LvCompanies.Name = "LvCompanies"
-        Me.LvCompanies.Size = New System.Drawing.Size(314, 459)
+        Me.LvCompanies.Size = New System.Drawing.Size(484, 565)
         Me.LvCompanies.TabIndex = 5
         Me.LvCompanies.UseCompatibleStateImageBehavior = False
         Me.LvCompanies.View = System.Windows.Forms.View.Details
+        '
+        'ColCompanyCode
+        '
+        Me.ColCompanyCode.Name = "ColCompanyCode"
+        Me.ColCompanyCode.Text = "Ref."
+        Me.ColCompanyCode.TextAlign = System.Windows.Forms.HorizontalAlignment.Center
+        Me.ColCompanyCode.Width = 52
         '
         'ColCompany
         '
         Me.ColCompany.Name = "ColCompany"
         Me.ColCompany.Text = "Client"
         Me.ColCompany.Width = 150
+        '
+        'ColCompanyType
+        '
+        Me.ColCompanyType.Name = "ColCompanyType"
+        Me.ColCompanyType.Text = "Type"
+        Me.ColCompanyType.TextAlign = System.Windows.Forms.HorizontalAlignment.Center
+        Me.ColCompanyType.Width = 88
         '
         'ColSiteCount
         '
@@ -1417,7 +1434,7 @@ Partial Class FRM_HR_CLIENTS
         Me.LblCompanyStatusFilter.AutoSize = True
         Me.LblCompanyStatusFilter.Font = New System.Drawing.Font("Segoe UI Semibold", 8.25!)
         Me.LblCompanyStatusFilter.ForeColor = System.Drawing.Color.FromArgb(CType(CType(72, Byte), Integer), CType(CType(84, Byte), Integer), CType(CType(96, Byte), Integer))
-        Me.LblCompanyStatusFilter.Location = New System.Drawing.Point(226, 48)
+        Me.LblCompanyStatusFilter.Location = New System.Drawing.Point(396, 48)
         Me.LblCompanyStatusFilter.Name = "LblCompanyStatusFilter"
         Me.LblCompanyStatusFilter.Size = New System.Drawing.Size(38, 13)
         Me.LblCompanyStatusFilter.TabIndex = 7
@@ -1432,7 +1449,7 @@ Partial Class FRM_HR_CLIENTS
         Me.LblCompaniesEmpty.ForeColor = System.Drawing.Color.FromArgb(CType(CType(98, Byte), Integer), CType(CType(108, Byte), Integer), CType(CType(118, Byte), Integer))
         Me.LblCompaniesEmpty.Location = New System.Drawing.Point(38, 214)
         Me.LblCompaniesEmpty.Name = "LblCompaniesEmpty"
-        Me.LblCompaniesEmpty.Size = New System.Drawing.Size(274, 72)
+        Me.LblCompaniesEmpty.Size = New System.Drawing.Size(444, 72)
         Me.LblCompaniesEmpty.TabIndex = 8
         Me.LblCompaniesEmpty.Text = "No clients match this search." & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "Clear the filters or add a client."
         Me.LblCompaniesEmpty.TextAlign = System.Drawing.ContentAlignment.MiddleCenter
@@ -1579,7 +1596,7 @@ Partial Class FRM_HR_CLIENTS
             Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
         Me.LvWorkSites.BackColor = System.Drawing.Color.FromArgb(CType(CType(255, Byte), Integer), CType(CType(238, Byte), Integer), CType(CType(214, Byte), Integer))
         Me.LvWorkSites.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle
-        Me.LvWorkSites.Columns.AddRange(New System.Windows.Forms.ColumnHeader() {Me.ColSiteName, Me.ColSiteAddress, Me.ColSiteStatus})
+        Me.LvWorkSites.Columns.AddRange(New System.Windows.Forms.ColumnHeader() {Me.ColSiteCode, Me.ColSiteName, Me.ColSiteAddress, Me.ColSiteStatus})
         Me.LvWorkSites.Font = New System.Drawing.Font("Segoe UI", 9.0!)
         Me.LvWorkSites.FullRowSelect = True
         Me.LvWorkSites.GridLines = True
@@ -1591,6 +1608,13 @@ Partial Class FRM_HR_CLIENTS
         Me.LvWorkSites.TabIndex = 2
         Me.LvWorkSites.UseCompatibleStateImageBehavior = False
         Me.LvWorkSites.View = System.Windows.Forms.View.Details
+        '
+        'ColSiteCode
+        '
+        Me.ColSiteCode.Name = "ColSiteCode"
+        Me.ColSiteCode.Text = "Ref."
+        Me.ColSiteCode.TextAlign = System.Windows.Forms.HorizontalAlignment.Center
+        Me.ColSiteCode.Width = 72
         '
         'ColSiteName
         '
@@ -2667,7 +2691,9 @@ Partial Class FRM_HR_CLIENTS
     Friend WithEvents CmbCompanyStatus As ComboBox
     Friend WithEvents BtnRefresh As Button
     Friend WithEvents LvCompanies As ListView
+    Friend WithEvents ColCompanyCode As ColumnHeader
     Friend WithEvents ColCompany As ColumnHeader
+    Friend WithEvents ColCompanyType As ColumnHeader
     Friend WithEvents ColSiteCount As ColumnHeader
     Friend WithEvents ColCompanyStatus As ColumnHeader
     Friend WithEvents CompanyWorkspaceLayout As TableLayoutPanel
@@ -2689,6 +2715,7 @@ Partial Class FRM_HR_CLIENTS
     Friend WithEvents LblWorkSitesHelp As Label
     Friend WithEvents LblWorkSitesEmpty As Label
     Friend WithEvents LvWorkSites As ListView
+    Friend WithEvents ColSiteCode As ColumnHeader
     Friend WithEvents ColSiteName As ColumnHeader
     Friend WithEvents ColSiteAddress As ColumnHeader
     Friend WithEvents ColSiteStatus As ColumnHeader

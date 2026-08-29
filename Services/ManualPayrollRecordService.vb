@@ -5,9 +5,48 @@ Imports System.Globalization
 Public Class ManualPayrollDayRecord
     Public Property ReportDate As Date
     Public Property SelectedShiftNames As New List(Of String)()
+    Public Property ShiftAssignments As New List(Of ManualPayrollShiftAssignment)()
     Public Property Classification As String = String.Empty
     Public Property HourAdjustment As Decimal
     Public Property TotalHours As Decimal
+End Class
+
+Public Class ManualPayrollShiftAssignment
+    Public Property ReportDate As Date
+    Public Property ShiftName As String = String.Empty
+    Public Property SubClientId As Integer
+    Public Property SubClientNameSnapshot As String = String.Empty
+    Public Property DailyWageSnapshot As Decimal
+    Public Property HoursPerDaySnapshot As Decimal
+    Public Property RegularHours As Decimal
+    Public Property NightHours As Decimal
+    Public Property OvertimeHours As Decimal
+    Public Property TotalHours As Decimal
+    Public Property BasePayCode As String = String.Empty
+    Public Property NightPayCode As String = String.Empty
+    Public Property OvertimePayCode As String = String.Empty
+    Public Property RegularEarnings As Decimal
+    Public Property NightEarnings As Decimal
+    Public Property OvertimeEarnings As Decimal
+    Public Property IncentiveEarnings As Decimal
+    Public Property PayPolicySnapshot As String = String.Empty
+End Class
+
+Public Class ManualPayrollClientAdjustment
+    Public Property SubClientId As Integer
+    Public Property OfficerAllowance As Decimal
+    Public Property UniformAllowance As Decimal
+    Public Property OtherEarnings As Decimal
+    Public Property CashBondDeduction As Decimal
+    Public Property SssLoanDeduction As Decimal
+    Public Property SssCalLoanDeduction As Decimal
+    Public Property PagIbigLoanDeduction As Decimal
+    Public Property PagIbigCalLoanDeduction As Decimal
+    Public Property PhilHealthDeduction As Decimal
+    Public Property SssDeduction As Decimal
+    Public Property SssProvidentDeduction As Decimal
+    Public Property PagIbigDeduction As Decimal
+    Public Property OtherDeductions As Decimal
 End Class
 
 Public Class ManualPayrollRecord
@@ -88,6 +127,7 @@ Public Class ManualPayrollRecord
     Public Property SnapshotComplete As Boolean
 
     Public Property Days As New List(Of ManualPayrollDayRecord)()
+    Public Property ClientAdjustments As New List(Of ManualPayrollClientAdjustment)()
 End Class
 
 Public Class ManualPayrollRecordStatus
@@ -102,7 +142,7 @@ Public Class ManualPayrollRecordStatus
 End Class
 
 Public Module ManualPayrollRecordService
-    Public Const CurrentCalculationVersion As String = "PAYROLL_SNAPSHOT_V3_COMBINED"
+    Public Const CurrentCalculationVersion As String = "PAYROLL_V5_CLIENT_ALLOCATION"
     Public Const StatusNotStarted As String = "NOT_STARTED"
     Public Const StatusDraft As String = "DRAFT"
     Public Const StatusAmendmentDraft As String = "AMENDMENT_DRAFT"
@@ -110,6 +150,8 @@ Public Module ManualPayrollRecordService
     Public Const StatusLegacyFinal As String = "LEGACY_FINAL"
 
     Private Const DetailTable As String = "PRL_DTR_SHIFT_DAY"
+    Private Const AssignmentTable As String = "PRL_DTR_SHIFT_ASSIGNMENT"
+    Private Const ClientAdjustmentTable As String = "PRL_DTR_CLIENT_ADJUSTMENT"
     Private Const AuditTable As String = "PRL_DTR_RECORD_AUDIT"
     Private ReadOnly SchemaLock As New Object()
     Private schemaReady As Boolean
@@ -176,6 +218,26 @@ Public Module ManualPayrollRecordService
                 EnsureColumn(connection, DetailTable, "PAYROLL_RECORD_ID", "LONG")
                 EnsureColumn(connection, DetailTable, "HOUR_ADJUSTMENT", "DOUBLE")
 
+                If Not TableExists(connection, AssignmentTable) Then
+                    ExecuteDdl(connection,
+                        "CREATE TABLE [" & AssignmentTable & "] (" &
+                        "[ID] AUTOINCREMENT CONSTRAINT [PK_PRL_DTR_SHIFT_ASSIGNMENT] PRIMARY KEY, " &
+                        "[PAYROLL_RECORD_ID] LONG NOT NULL, [REPORT_DATE] DATETIME NOT NULL, [SHIFT_NAME] TEXT(100) NOT NULL, " &
+                        "[SUB_CLIENT_ID] LONG NOT NULL, [SUB_CLIENT_NAME_SNAPSHOT] TEXT(200), " &
+                        "[DAILY_WAGE_SNAPSHOT] DOUBLE, [HOURS_PER_DAY_SNAPSHOT] DOUBLE, " &
+                        "[REGULAR_HOURS] DOUBLE, [NIGHT_HOURS] DOUBLE, [OVERTIME_HOURS] DOUBLE, [TOTAL_HOURS] DOUBLE, " &
+                        "[BASE_PAY_CODE] TEXT(20), [NIGHT_PAY_CODE] TEXT(20), [OVERTIME_PAY_CODE] TEXT(20), " &
+                        "[REGULAR_EARNINGS] DOUBLE, [NIGHT_EARNINGS] DOUBLE, [OVERTIME_EARNINGS] DOUBLE, [INCENTIVE_EARNINGS] DOUBLE, " &
+                        "[PAY_POLICY_SNAPSHOT] MEMO)")
+                End If
+                EnsureColumn(connection, AssignmentTable, "BASE_PAY_CODE", "TEXT(20)")
+                EnsureColumn(connection, AssignmentTable, "NIGHT_PAY_CODE", "TEXT(20)")
+                EnsureColumn(connection, AssignmentTable, "OVERTIME_PAY_CODE", "TEXT(20)")
+                EnsureColumn(connection, AssignmentTable, "REGULAR_EARNINGS", "DOUBLE")
+                EnsureColumn(connection, AssignmentTable, "NIGHT_EARNINGS", "DOUBLE")
+                EnsureColumn(connection, AssignmentTable, "OVERTIME_EARNINGS", "DOUBLE")
+                EnsureColumn(connection, AssignmentTable, "INCENTIVE_EARNINGS", "DOUBLE")
+
                 If Not TableExists(connection, AuditTable) Then
                     ExecuteDdl(connection,
                         "CREATE TABLE [" & AuditTable & "] (" &
@@ -186,13 +248,229 @@ Public Module ManualPayrollRecordService
                         "[REMARKS] MEMO, [ACTION_AT] DATETIME NOT NULL, [ACTION_BY] TEXT(100) NOT NULL)")
                 End If
 
+                If Not TableExists(connection, ClientAdjustmentTable) Then
+                    ExecuteDdl(connection,
+                        "CREATE TABLE [" & ClientAdjustmentTable & "] (" &
+                        "[ID] AUTOINCREMENT CONSTRAINT [PK_PRL_DTR_CLIENT_ADJUSTMENT] PRIMARY KEY, " &
+                        "[PAYROLL_RECORD_ID] LONG NOT NULL, [SUB_CLIENT_ID] LONG NOT NULL, " &
+                        "[OFFICERS_ALLOWANCE] DOUBLE, [SGUNIFORMALLOWANCE] DOUBLE, [OTHER_EARNINGS] DOUBLE, " &
+                        "[CB_DEDUCT] DOUBLE, [SSS_LOAN_DEDUCT] DOUBLE, [SSS_CAL_LOAN_DEDUCT] DOUBLE, " &
+                        "[PI_LOAN_DEDUCT] DOUBLE, [PI_CAL_LOAN_DEDUCT] DOUBLE, [PH_DEDUCT] DOUBLE, " &
+                        "[SSS_DEDUCT] DOUBLE, [SSS_PROVIDENT_DEDUCT] DOUBLE, [PI_DEDUCT] DOUBLE, [OTHER_DEDUCTIONS] DOUBLE)")
+                End If
+
                 EnsureIndex(connection, "PRL_DTR_TOTAL_HOURS", "IX_DTR_TOTAL_CUTOFF", "[EMPLOYEE_ID], [SUB_CLIENT_ID], [CUTOFF_PERIOD]")
                 EnsureIndex(connection, DetailTable, "IX_DTR_SHIFT_RECORD", "[PAYROLL_RECORD_ID]")
+                EnsureIndex(connection, AssignmentTable, "IX_DTR_ASSIGNMENT_RECORD", "[PAYROLL_RECORD_ID]")
+                EnsureIndex(connection, ClientAdjustmentTable, "IX_DTR_CLIENT_ADJUSTMENT_RECORD", "[PAYROLL_RECORD_ID], [SUB_CLIENT_ID]")
                 EnsureIndex(connection, AuditTable, "IX_DTR_AUDIT_RECORD", "[PAYROLL_RECORD_ID]")
             End Using
             schemaReady = True
         End SyncLock
     End Sub
+
+    Public Function LoadFinalClientAllocations(subClientId As Integer, cutoff As String) As DataTable
+        Dim result = CreateClientAllocationTable()
+        If subClientId <= 0 OrElse String.IsNullOrWhiteSpace(cutoff) Then Return result
+        EnsureSchema()
+
+        Const sql As String =
+            "SELECT P.[ID] AS [PAYROLL_RECORD_ID], P.[EMPLOYEE_ID], P.[SUB_CLIENT_ID] AS [HOME_SUB_CLIENT_ID], " &
+            "P.[EMPLOYEE_NAME_SNAPSHOT], P.[CB_DEDUCT], P.[SSS_LOAN_DEDUCT], P.[SSS_CAL_LOAN_DEDUCT], " &
+            "P.[PI_LOAN_DEDUCT], P.[PI_CAL_LOAN_DEDUCT], P.[SSS_DEDUCT], P.[SSS_PROVIDENT_DEDUCT], " &
+            "P.[PH_DEDUCT], P.[PI_DEDUCT], P.[OFFICERS_ALLOWANCE], P.[SGUNIFORMALLOWANCE], " &
+            "P.[OTHER_EARNINGS], P.[OTHER_DEDUCTIONS], P.[CALCULATION_VERSION], " &
+            "A.[REPORT_DATE], A.[DAILY_WAGE_SNAPSHOT], A.[HOURS_PER_DAY_SNAPSHOT], " &
+            "A.[REGULAR_HOURS], A.[NIGHT_HOURS], A.[OVERTIME_HOURS], A.[TOTAL_HOURS], " &
+            "A.[BASE_PAY_CODE], A.[NIGHT_PAY_CODE], A.[OVERTIME_PAY_CODE], " &
+            "A.[REGULAR_EARNINGS], A.[NIGHT_EARNINGS], A.[OVERTIME_EARNINGS], A.[INCENTIVE_EARNINGS] " &
+            "FROM [PRL_DTR_TOTAL_HOURS] AS P INNER JOIN [PRL_DTR_SHIFT_ASSIGNMENT] AS A " &
+            "ON P.[ID] = A.[PAYROLL_RECORD_ID] " &
+            "WHERE A.[SUB_CLIENT_ID] = ? AND P.[CUTOFF_PERIOD] = ? AND P.[RECORD_STATUS] = ? " &
+            "AND P.[CALCULATION_VERSION] = ? " &
+            "ORDER BY P.[EMPLOYEE_ID], P.[ID] DESC, A.[REPORT_DATE], A.[ID]"
+
+        Dim source As New DataTable()
+        Using connection = CreateOpenConnection()
+            Using command As New OleDbCommand(sql, connection)
+                AddInteger(command, subClientId)
+                AddText(command, cutoff, 30)
+                AddText(command, StatusFinal, 20)
+                AddText(command, CurrentCalculationVersion, 30)
+                Using adapter As New OleDbDataAdapter(command)
+                    adapter.Fill(source)
+                End Using
+            End Using
+        End Using
+
+        Dim latestRows As New List(Of DataRow)()
+        For Each recordGroup In source.AsEnumerable().GroupBy(
+            Function(row) Convert.ToString(row("EMPLOYEE_ID")) & "|" & Convert.ToString(row("HOME_SUB_CLIENT_ID")))
+            Dim latestRecordId = recordGroup.Max(Function(row) Convert.ToInt32(row("PAYROLL_RECORD_ID"), CultureInfo.InvariantCulture))
+            latestRows.AddRange(recordGroup.Where(
+                Function(row) Convert.ToInt32(row("PAYROLL_RECORD_ID"), CultureInfo.InvariantCulture) = latestRecordId))
+        Next
+
+        Dim adjustmentRows As New DataTable()
+        Using connection = CreateOpenConnection()
+            Using command As New OleDbCommand(
+                "SELECT * FROM [" & ClientAdjustmentTable & "] WHERE [SUB_CLIENT_ID] = ?", connection)
+                AddInteger(command, subClientId)
+                Using adapter As New OleDbDataAdapter(command)
+                    adapter.Fill(adjustmentRows)
+                End Using
+            End Using
+        End Using
+        Dim adjustmentLookup = adjustmentRows.AsEnumerable().GroupBy(
+            Function(row) Convert.ToInt32(row("PAYROLL_RECORD_ID"), CultureInfo.InvariantCulture)).
+            ToDictionary(Function(group) group.Key, Function(group) group.Last())
+
+        For Each employeeGroup In latestRows.GroupBy(Function(row) Convert.ToString(row("EMPLOYEE_ID")))
+            Dim first = employeeGroup.First()
+            Dim output = result.NewRow()
+            Dim employeeName = SafeRowText(first, "EMPLOYEE_NAME_SNAPSHOT")
+            output("EMPLOYEE_ID") = employeeGroup.Key
+            output("LAST_NAME") = employeeName
+            output("FIRST_NAME") = String.Empty
+            output("MIDDLE_NAME") = String.Empty
+            output("SNAPSHOT_COMPLETE") = True
+            output("CALCULATION_VERSION") = CurrentCalculationVersion
+            output("DAILY_WAGE_SNAPSHOT") = SafeRowDecimal(first, "DAILY_WAGE_SNAPSHOT")
+
+            For Each assignment In employeeGroup
+                AddRowDecimal(output, "NUM_OF_DAYS", 1D)
+                AddRowDecimal(output, "TOTAL_HOURS", SafeRowDecimal(assignment, "TOTAL_HOURS"))
+                Dim hoursPerDay = SafeRowDecimal(assignment, "HOURS_PER_DAY_SNAPSHOT")
+                If hoursPerDay <= 0D Then hoursPerDay = 8D
+                AddRowDecimal(output, "ND_DAYS", SafeRowDecimal(assignment, "NIGHT_HOURS") / hoursPerDay)
+                AddAllocationHours(output, SafeRowText(assignment, "BASE_PAY_CODE"), SafeRowDecimal(assignment, "REGULAR_HOURS"))
+                AddAllocationHours(output, SafeRowText(assignment, "NIGHT_PAY_CODE"), SafeRowDecimal(assignment, "NIGHT_HOURS"))
+                AddAllocationHours(output, SafeRowText(assignment, "OVERTIME_PAY_CODE"), SafeRowDecimal(assignment, "OVERTIME_HOURS"))
+                AddAllocationEarnings(output, SafeRowText(assignment, "BASE_PAY_CODE"), SafeRowDecimal(assignment, "REGULAR_EARNINGS"))
+                AddAllocationEarnings(output, SafeRowText(assignment, "NIGHT_PAY_CODE"), SafeRowDecimal(assignment, "NIGHT_EARNINGS"))
+                AddAllocationEarnings(output, SafeRowText(assignment, "OVERTIME_PAY_CODE"), SafeRowDecimal(assignment, "OVERTIME_EARNINGS"))
+                AddRowDecimal(output, "INCENTIVE_EARNINGS", SafeRowDecimal(assignment, "INCENTIVE_EARNINGS"))
+            Next
+
+            Dim recordId = Convert.ToInt32(first("PAYROLL_RECORD_ID"), CultureInfo.InvariantCulture)
+            Dim clientAdjustment As DataRow = Nothing
+            If adjustmentLookup.TryGetValue(recordId, clientAdjustment) Then
+                For Each name In {"CB_DEDUCT", "SSS_LOAN_DEDUCT", "SSS_CAL_LOAN_DEDUCT", "PI_LOAN_DEDUCT", "PI_CAL_LOAN_DEDUCT",
+                                  "SSS_DEDUCT", "SSS_PROVIDENT_DEDUCT", "PH_DEDUCT", "PI_DEDUCT", "OFFICERS_ALLOWANCE",
+                                  "SGUNIFORMALLOWANCE", "OTHER_EARNINGS", "OTHER_DEDUCTIONS"}
+                    output(name) = SafeRowDecimal(clientAdjustment, name)
+                Next
+            ElseIf CInt(SafeRowDecimal(first, "HOME_SUB_CLIENT_ID")) = subClientId Then
+                ' Compatibility for records finalized before client-specific
+                ' allowances and deductions were introduced.
+                For Each name In {"CB_DEDUCT", "SSS_LOAN_DEDUCT", "SSS_CAL_LOAN_DEDUCT", "PI_LOAN_DEDUCT", "PI_CAL_LOAN_DEDUCT",
+                                  "SSS_DEDUCT", "SSS_PROVIDENT_DEDUCT", "PH_DEDUCT", "PI_DEDUCT", "OFFICERS_ALLOWANCE",
+                                  "SGUNIFORMALLOWANCE", "OTHER_EARNINGS", "OTHER_DEDUCTIONS"}
+                    output(name) = SafeRowDecimal(first, name)
+                Next
+            End If
+
+            Dim workEarnings = ClientAllocationEarningColumns().Sum(Function(name) Convert.ToDecimal(output(name), CultureInfo.InvariantCulture))
+            Dim allowanceTotal = Convert.ToDecimal(output("OFFICERS_ALLOWANCE"), CultureInfo.InvariantCulture) +
+                Convert.ToDecimal(output("SGUNIFORMALLOWANCE"), CultureInfo.InvariantCulture) +
+                Convert.ToDecimal(output("OTHER_EARNINGS"), CultureInfo.InvariantCulture)
+            Dim deductionTotal = ClientAllocationDeductionColumns().Sum(Function(name) Convert.ToDecimal(output(name), CultureInfo.InvariantCulture))
+            output("TOTAL_EARNINGS") = workEarnings + allowanceTotal
+            output("TOTAL_DEDUCTIONS") = deductionTotal
+            output("NET_PAY") = workEarnings + allowanceTotal - deductionTotal
+            result.Rows.Add(output)
+        Next
+        Return result
+    End Function
+
+    Private Function CreateClientAllocationTable() As DataTable
+        Dim result As New DataTable("FINAL_CLIENT_ALLOCATIONS")
+        For Each name In {"EMPLOYEE_ID", "LAST_NAME", "FIRST_NAME", "MIDDLE_NAME", "CALCULATION_VERSION"}
+            result.Columns.Add(name, GetType(String))
+        Next
+        For Each name In {"NUM_OF_DAYS", "ND_DAYS", "TOTAL_HOURS", "REG", "SUN", "SH", "LH", "RD_SUN_SH", "RD_SUN_LH",
+                          "ND_REG", "ND_SUN", "ND_SH", "ND_LH", "ND_RD_SUN_SH", "ND_RD_SUN_LH",
+                          "OT_REG", "OT_SUN", "OT_SH", "OT_LH", "OT_RD_SUN_SH", "OT_RD_SUN_LH",
+                          "CB_DEDUCT", "SSS_LOAN_DEDUCT", "SSS_CAL_LOAN_DEDUCT", "PI_LOAN_DEDUCT", "PI_CAL_LOAN_DEDUCT",
+                          "SSS_DEDUCT", "SSS_PROVIDENT_DEDUCT", "PH_DEDUCT", "PI_DEDUCT", "OFFICERS_ALLOWANCE",
+                          "SGUNIFORMALLOWANCE", "OTHER_EARNINGS", "OTHER_DEDUCTIONS", "DAILY_WAGE_SNAPSHOT",
+                          "REG_EARNINGS", "SUN_EARNINGS", "LH_EARNINGS", "SH_EARNINGS", "ND_REG_EARNINGS",
+                          "ND_SUN_EARNINGS", "ND_LH_EARNINGS", "ND_SH_EARNINGS", "OT_REG_EARNINGS", "OT_SUN_EARNINGS",
+                          "OT_LH_EARNINGS", "OT_SH_EARNINGS", "INCENTIVE_EARNINGS", "TOTAL_EARNINGS", "TOTAL_DEDUCTIONS", "NET_PAY"}
+            result.Columns.Add(name, GetType(Decimal)).DefaultValue = 0D
+        Next
+        result.Columns.Add("SNAPSHOT_COMPLETE", GetType(Boolean)).DefaultValue = False
+        Return result
+    End Function
+
+    Private Sub AddAllocationHours(row As DataRow, payCode As String, value As Decimal)
+        Dim code = If(payCode, String.Empty).Trim().ToUpperInvariant()
+        If value = 0D OrElse code = String.Empty Then Return
+        Select Case code
+            Case "RD_SH"
+                AddRowDecimal(row, "SH", value)
+                AddRowDecimal(row, "RD_SUN_SH", value)
+            Case "RD_LH"
+                AddRowDecimal(row, "LH", value)
+                AddRowDecimal(row, "RD_SUN_LH", value)
+            Case "ND_RD_SH"
+                AddRowDecimal(row, "ND_SH", value)
+                AddRowDecimal(row, "ND_RD_SUN_SH", value)
+            Case "ND_RD_LH"
+                AddRowDecimal(row, "ND_LH", value)
+                AddRowDecimal(row, "ND_RD_SUN_LH", value)
+            Case "OT_RD_SH"
+                AddRowDecimal(row, "OT_SH", value)
+                AddRowDecimal(row, "OT_RD_SUN_SH", value)
+            Case "OT_RD_LH"
+                AddRowDecimal(row, "OT_LH", value)
+                AddRowDecimal(row, "OT_RD_SUN_LH", value)
+            Case Else
+                If row.Table.Columns.Contains(code) Then AddRowDecimal(row, code, value)
+        End Select
+    End Sub
+
+    Private Sub AddAllocationEarnings(row As DataRow, payCode As String, value As Decimal)
+        Dim code = If(payCode, String.Empty).Trim().ToUpperInvariant()
+        If value = 0D OrElse code = String.Empty Then Return
+        Select Case code
+            Case "RD_SH" : code = "SH"
+            Case "RD_LH" : code = "LH"
+            Case "ND_RD_SH" : code = "ND_SH"
+            Case "ND_RD_LH" : code = "ND_LH"
+            Case "OT_RD_SH" : code = "OT_SH"
+            Case "OT_RD_LH" : code = "OT_LH"
+        End Select
+        Dim columnName = code & "_EARNINGS"
+        If row.Table.Columns.Contains(columnName) Then AddRowDecimal(row, columnName, value)
+    End Sub
+
+    Private Sub AddRowDecimal(row As DataRow, columnName As String, value As Decimal)
+        row(columnName) = Convert.ToDecimal(row(columnName), CultureInfo.InvariantCulture) + value
+    End Sub
+
+    Private Function SafeRowText(row As DataRow, columnName As String) As String
+        If row Is Nothing OrElse Not row.Table.Columns.Contains(columnName) OrElse row.IsNull(columnName) Then Return String.Empty
+        Return Convert.ToString(row(columnName), CultureInfo.CurrentCulture).Trim()
+    End Function
+
+    Private Function SafeRowDecimal(row As DataRow, columnName As String) As Decimal
+        Dim value As Decimal
+        Decimal.TryParse(SafeRowText(row, columnName), NumberStyles.Any, CultureInfo.InvariantCulture, value)
+        If value = 0D Then Decimal.TryParse(SafeRowText(row, columnName), NumberStyles.Any, CultureInfo.CurrentCulture, value)
+        Return value
+    End Function
+
+    Private Function ClientAllocationEarningColumns() As String()
+        Return {"REG_EARNINGS", "SUN_EARNINGS", "LH_EARNINGS", "SH_EARNINGS", "ND_REG_EARNINGS", "ND_SUN_EARNINGS",
+                "ND_LH_EARNINGS", "ND_SH_EARNINGS", "OT_REG_EARNINGS", "OT_SUN_EARNINGS", "OT_LH_EARNINGS",
+                "OT_SH_EARNINGS", "INCENTIVE_EARNINGS"}
+    End Function
+
+    Private Function ClientAllocationDeductionColumns() As String()
+        Return {"CB_DEDUCT", "SSS_LOAN_DEDUCT", "SSS_CAL_LOAN_DEDUCT", "PI_LOAN_DEDUCT", "PI_CAL_LOAN_DEDUCT",
+                "SSS_DEDUCT", "SSS_PROVIDENT_DEDUCT", "PH_DEDUCT", "PI_DEDUCT", "OTHER_DEDUCTIONS"}
+    End Function
 
     Public Function LoadLatest(employeeId As String, subClientId As Integer, cutoff As String) As ManualPayrollRecord
         If String.IsNullOrWhiteSpace(employeeId) OrElse subClientId <= 0 OrElse String.IsNullOrWhiteSpace(cutoff) Then Return Nothing
@@ -213,6 +491,8 @@ Public Module ManualPayrollRecordService
 
             If record Is Nothing Then Return Nothing
             record.Days = LoadDays(connection, record.RecordId, employeeId, subClientId, cutoff)
+            LoadShiftAssignments(connection, record)
+            LoadClientAdjustments(connection, record)
             If (record.RecordStatus = StatusDraft OrElse record.RecordStatus = StatusAmendmentDraft) AndAlso record.Days.Count = 0 Then
                 record.RecordStatus = StatusLegacyFinal
             End If
@@ -290,6 +570,8 @@ Public Module ManualPayrollRecordService
 
                     ReplaceDayDetails(connection, transaction, record)
                     If submitFinal Then ReplaceDailyHours(connection, transaction, record)
+                    ReplaceShiftAssignments(connection, transaction, record)
+                    ReplaceClientAdjustments(connection, transaction, record)
                     Dim actionType = If(submitFinal,
                         If(isAmendment, "AMENDMENT_SUBMITTED", "FINAL_SUBMITTED"),
                         If(isAmendment, "AMENDMENT_SAVED", "DRAFT_SAVED"))
@@ -353,6 +635,8 @@ Public Module ManualPayrollRecordService
 
                     amendment.RecordId = InsertSummary(connection, transaction, amendment, StatusAmendmentDraft, savedAt, actor, False)
                     ReplaceDayDetails(connection, transaction, amendment)
+                    ReplaceShiftAssignments(connection, transaction, amendment)
+                    ReplaceClientAdjustments(connection, transaction, amendment)
                     InsertAudit(connection, transaction, amendment, "AMENDMENT_STARTED", remarks, savedAt, actor)
                     transaction.Commit()
                 Catch
@@ -516,11 +800,52 @@ Public Module ManualPayrollRecordService
             Function(day) New ManualPayrollDayRecord With {
                 .ReportDate = day.ReportDate,
                 .SelectedShiftNames = day.SelectedShiftNames.ToList(),
+                .ShiftAssignments = day.ShiftAssignments.Select(AddressOf CopyShiftAssignment).ToList(),
                 .Classification = day.Classification,
                 .HourAdjustment = day.HourAdjustment,
                 .TotalHours = day.TotalHours
             }).ToList()
+        copy.ClientAdjustments = source.ClientAdjustments.Select(
+            Function(item) New ManualPayrollClientAdjustment With {
+                .SubClientId = item.SubClientId,
+                .OfficerAllowance = item.OfficerAllowance,
+                .UniformAllowance = item.UniformAllowance,
+                .OtherEarnings = item.OtherEarnings,
+                .CashBondDeduction = item.CashBondDeduction,
+                .SssLoanDeduction = item.SssLoanDeduction,
+                .SssCalLoanDeduction = item.SssCalLoanDeduction,
+                .PagIbigLoanDeduction = item.PagIbigLoanDeduction,
+                .PagIbigCalLoanDeduction = item.PagIbigCalLoanDeduction,
+                .PhilHealthDeduction = item.PhilHealthDeduction,
+                .SssDeduction = item.SssDeduction,
+                .SssProvidentDeduction = item.SssProvidentDeduction,
+                .PagIbigDeduction = item.PagIbigDeduction,
+                .OtherDeductions = item.OtherDeductions
+            }).ToList()
         Return copy
+    End Function
+
+    Private Function CopyShiftAssignment(source As ManualPayrollShiftAssignment) As ManualPayrollShiftAssignment
+        Return New ManualPayrollShiftAssignment With {
+            .ReportDate = source.ReportDate,
+            .ShiftName = source.ShiftName,
+            .SubClientId = source.SubClientId,
+            .SubClientNameSnapshot = source.SubClientNameSnapshot,
+            .DailyWageSnapshot = source.DailyWageSnapshot,
+            .HoursPerDaySnapshot = source.HoursPerDaySnapshot,
+            .RegularHours = source.RegularHours,
+            .NightHours = source.NightHours,
+            .OvertimeHours = source.OvertimeHours,
+            .TotalHours = source.TotalHours,
+            .BasePayCode = source.BasePayCode,
+            .NightPayCode = source.NightPayCode,
+            .OvertimePayCode = source.OvertimePayCode,
+            .RegularEarnings = source.RegularEarnings,
+            .NightEarnings = source.NightEarnings,
+            .OvertimeEarnings = source.OvertimeEarnings,
+            .IncentiveEarnings = source.IncentiveEarnings,
+            .PayPolicySnapshot = source.PayPolicySnapshot
+        }
     End Function
 
     Private Function LoadDays(connection As OleDbConnection, recordId As Integer, employeeId As String, subClientId As Integer, cutoff As String) As List(Of ManualPayrollDayRecord)
@@ -564,6 +889,111 @@ Public Module ManualPayrollRecordService
                 result.Add(item)
             End While
         End Using
+    End Sub
+
+    Private Sub LoadShiftAssignments(connection As OleDbConnection, record As ManualPayrollRecord)
+        If record Is Nothing OrElse record.RecordId <= 0 OrElse record.Days Is Nothing Then Return
+        Const sql As String = "SELECT [REPORT_DATE], [SHIFT_NAME], [SUB_CLIENT_ID], [SUB_CLIENT_NAME_SNAPSHOT], " &
+            "[DAILY_WAGE_SNAPSHOT], [HOURS_PER_DAY_SNAPSHOT], [REGULAR_HOURS], [NIGHT_HOURS], " &
+            "[OVERTIME_HOURS], [TOTAL_HOURS], [BASE_PAY_CODE], [NIGHT_PAY_CODE], [OVERTIME_PAY_CODE], " &
+            "[REGULAR_EARNINGS], [NIGHT_EARNINGS], [OVERTIME_EARNINGS], [INCENTIVE_EARNINGS], " &
+            "[PAY_POLICY_SNAPSHOT] FROM [PRL_DTR_SHIFT_ASSIGNMENT] " &
+            "WHERE [PAYROLL_RECORD_ID] = ? ORDER BY [REPORT_DATE], [ID]"
+        Using command As New OleDbCommand(sql, connection)
+            AddInteger(command, record.RecordId)
+            Using reader = command.ExecuteReader()
+                While reader.Read()
+                    Dim reportDate = CDate(reader("REPORT_DATE")).Date
+                    Dim day = record.Days.FirstOrDefault(Function(item) item.ReportDate.Date = reportDate)
+                    If day Is Nothing Then Continue While
+                    day.ShiftAssignments.Add(New ManualPayrollShiftAssignment With {
+                        .ReportDate = reportDate,
+                        .ShiftName = SafeText(reader, "SHIFT_NAME"),
+                        .SubClientId = CInt(SafeDecimal(reader, "SUB_CLIENT_ID")),
+                        .SubClientNameSnapshot = SafeText(reader, "SUB_CLIENT_NAME_SNAPSHOT"),
+                        .DailyWageSnapshot = SafeDecimal(reader, "DAILY_WAGE_SNAPSHOT"),
+                        .HoursPerDaySnapshot = SafeDecimal(reader, "HOURS_PER_DAY_SNAPSHOT"),
+                        .RegularHours = SafeDecimal(reader, "REGULAR_HOURS"),
+                        .NightHours = SafeDecimal(reader, "NIGHT_HOURS"),
+                        .OvertimeHours = SafeDecimal(reader, "OVERTIME_HOURS"),
+                        .TotalHours = SafeDecimal(reader, "TOTAL_HOURS"),
+                        .BasePayCode = SafeText(reader, "BASE_PAY_CODE"),
+                        .NightPayCode = SafeText(reader, "NIGHT_PAY_CODE"),
+                        .OvertimePayCode = SafeText(reader, "OVERTIME_PAY_CODE"),
+                        .RegularEarnings = SafeDecimal(reader, "REGULAR_EARNINGS"),
+                        .NightEarnings = SafeDecimal(reader, "NIGHT_EARNINGS"),
+                        .OvertimeEarnings = SafeDecimal(reader, "OVERTIME_EARNINGS"),
+                        .IncentiveEarnings = SafeDecimal(reader, "INCENTIVE_EARNINGS"),
+                        .PayPolicySnapshot = SafeText(reader, "PAY_POLICY_SNAPSHOT")
+                    })
+                End While
+            End Using
+        End Using
+
+        ' Records created before reliever assignments were introduced inherit the
+        ' cutoff's home detachment, preserving their original behavior.
+        For Each day In record.Days
+            If day.ShiftAssignments.Count > 0 Then Continue For
+            For Each shiftName In day.SelectedShiftNames
+                day.ShiftAssignments.Add(New ManualPayrollShiftAssignment With {
+                    .ReportDate = day.ReportDate.Date,
+                    .ShiftName = shiftName,
+                    .SubClientId = record.SubClientId,
+                    .SubClientNameSnapshot = record.SubClientNameSnapshot,
+                    .DailyWageSnapshot = record.DailyWageSnapshot,
+                    .HoursPerDaySnapshot = record.HoursPerDaySnapshot,
+                    .TotalHours = If(day.SelectedShiftNames.Count = 0, 0D, day.TotalHours / day.SelectedShiftNames.Count),
+                    .PayPolicySnapshot = record.PayPolicySnapshot
+                })
+            Next
+        Next
+    End Sub
+
+    Private Sub LoadClientAdjustments(connection As OleDbConnection, record As ManualPayrollRecord)
+        record.ClientAdjustments.Clear()
+        Const sql As String = "SELECT * FROM [PRL_DTR_CLIENT_ADJUSTMENT] WHERE [PAYROLL_RECORD_ID] = ? ORDER BY [SUB_CLIENT_ID]"
+        Using command As New OleDbCommand(sql, connection)
+            AddInteger(command, record.RecordId)
+            Using reader = command.ExecuteReader()
+                While reader.Read()
+                    record.ClientAdjustments.Add(New ManualPayrollClientAdjustment With {
+                        .SubClientId = CInt(SafeDecimal(reader, "SUB_CLIENT_ID")),
+                        .OfficerAllowance = SafeDecimal(reader, "OFFICERS_ALLOWANCE"),
+                        .UniformAllowance = SafeDecimal(reader, "SGUNIFORMALLOWANCE"),
+                        .OtherEarnings = SafeDecimal(reader, "OTHER_EARNINGS"),
+                        .CashBondDeduction = SafeDecimal(reader, "CB_DEDUCT"),
+                        .SssLoanDeduction = SafeDecimal(reader, "SSS_LOAN_DEDUCT"),
+                        .SssCalLoanDeduction = SafeDecimal(reader, "SSS_CAL_LOAN_DEDUCT"),
+                        .PagIbigLoanDeduction = SafeDecimal(reader, "PI_LOAN_DEDUCT"),
+                        .PagIbigCalLoanDeduction = SafeDecimal(reader, "PI_CAL_LOAN_DEDUCT"),
+                        .PhilHealthDeduction = SafeDecimal(reader, "PH_DEDUCT"),
+                        .SssDeduction = SafeDecimal(reader, "SSS_DEDUCT"),
+                        .SssProvidentDeduction = SafeDecimal(reader, "SSS_PROVIDENT_DEDUCT"),
+                        .PagIbigDeduction = SafeDecimal(reader, "PI_DEDUCT"),
+                        .OtherDeductions = SafeDecimal(reader, "OTHER_DEDUCTIONS")
+                    })
+                End While
+            End Using
+        End Using
+
+        If record.ClientAdjustments.Count = 0 Then
+            record.ClientAdjustments.Add(New ManualPayrollClientAdjustment With {
+                .SubClientId = record.SubClientId,
+                .OfficerAllowance = record.OfficerAllowance,
+                .UniformAllowance = record.UniformAllowance,
+                .OtherEarnings = record.OtherEarnings,
+                .CashBondDeduction = record.CashBondDeduction,
+                .SssLoanDeduction = record.SssLoanDeduction,
+                .SssCalLoanDeduction = record.SssCalLoanDeduction,
+                .PagIbigLoanDeduction = record.PagIbigLoanDeduction,
+                .PagIbigCalLoanDeduction = record.PagIbigCalLoanDeduction,
+                .PhilHealthDeduction = record.PhilHealthDeduction,
+                .SssDeduction = record.SssDeduction,
+                .SssProvidentDeduction = record.SssProvidentDeduction,
+                .PagIbigDeduction = record.PagIbigDeduction,
+                .OtherDeductions = record.OtherDeductions
+            })
+        End If
     End Sub
 
     Private Sub ReadLatestIdentity(connection As OleDbConnection, transaction As OleDbTransaction, employeeId As String, subClientId As Integer, cutoff As String, ByRef recordId As Integer, ByRef status As String)
@@ -778,6 +1208,81 @@ Public Module ManualPayrollRecordService
         Next
     End Sub
 
+    Private Sub ReplaceShiftAssignments(connection As OleDbConnection, transaction As OleDbTransaction, record As ManualPayrollRecord)
+        Using deleteCommand As New OleDbCommand(
+            "DELETE FROM [" & AssignmentTable & "] WHERE [PAYROLL_RECORD_ID] = ?", connection, transaction)
+            AddInteger(deleteCommand, record.RecordId)
+            deleteCommand.ExecuteNonQuery()
+        End Using
+
+        Const sql As String = "INSERT INTO [PRL_DTR_SHIFT_ASSIGNMENT] " &
+            "([PAYROLL_RECORD_ID], [REPORT_DATE], [SHIFT_NAME], [SUB_CLIENT_ID], [SUB_CLIENT_NAME_SNAPSHOT], " &
+            "[DAILY_WAGE_SNAPSHOT], [HOURS_PER_DAY_SNAPSHOT], [REGULAR_HOURS], [NIGHT_HOURS], " &
+            "[OVERTIME_HOURS], [TOTAL_HOURS], [BASE_PAY_CODE], [NIGHT_PAY_CODE], [OVERTIME_PAY_CODE], " &
+            "[REGULAR_EARNINGS], [NIGHT_EARNINGS], [OVERTIME_EARNINGS], [INCENTIVE_EARNINGS], [PAY_POLICY_SNAPSHOT]) " &
+            "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"
+        For Each day In record.Days
+            For Each assignment In day.ShiftAssignments
+                Using command As New OleDbCommand(sql, connection, transaction)
+                    AddInteger(command, record.RecordId)
+                    AddDate(command, assignment.ReportDate.Date)
+                    AddText(command, assignment.ShiftName, 100)
+                    AddInteger(command, assignment.SubClientId)
+                    AddText(command, assignment.SubClientNameSnapshot, 200)
+                    AddDouble(command, assignment.DailyWageSnapshot)
+                    AddDouble(command, assignment.HoursPerDaySnapshot)
+                    AddDouble(command, assignment.RegularHours)
+                    AddDouble(command, assignment.NightHours)
+                    AddDouble(command, assignment.OvertimeHours)
+                    AddDouble(command, assignment.TotalHours)
+                    AddText(command, assignment.BasePayCode, 20)
+                    AddText(command, assignment.NightPayCode, 20)
+                    AddText(command, assignment.OvertimePayCode, 20)
+                    AddDouble(command, assignment.RegularEarnings)
+                    AddDouble(command, assignment.NightEarnings)
+                    AddDouble(command, assignment.OvertimeEarnings)
+                    AddDouble(command, assignment.IncentiveEarnings)
+                    AddLongText(command, assignment.PayPolicySnapshot)
+                    command.ExecuteNonQuery()
+                End Using
+            Next
+        Next
+    End Sub
+
+    Private Sub ReplaceClientAdjustments(connection As OleDbConnection, transaction As OleDbTransaction, record As ManualPayrollRecord)
+        Using deleteCommand As New OleDbCommand(
+            "DELETE FROM [" & ClientAdjustmentTable & "] WHERE [PAYROLL_RECORD_ID] = ?", connection, transaction)
+            AddInteger(deleteCommand, record.RecordId)
+            deleteCommand.ExecuteNonQuery()
+        End Using
+
+        Const sql As String = "INSERT INTO [PRL_DTR_CLIENT_ADJUSTMENT] " &
+            "([PAYROLL_RECORD_ID], [SUB_CLIENT_ID], [OFFICERS_ALLOWANCE], [SGUNIFORMALLOWANCE], [OTHER_EARNINGS], " &
+            "[CB_DEDUCT], [SSS_LOAN_DEDUCT], [SSS_CAL_LOAN_DEDUCT], [PI_LOAN_DEDUCT], [PI_CAL_LOAN_DEDUCT], " &
+            "[PH_DEDUCT], [SSS_DEDUCT], [SSS_PROVIDENT_DEDUCT], [PI_DEDUCT], [OTHER_DEDUCTIONS]) " &
+            "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"
+        For Each item In record.ClientAdjustments.GroupBy(Function(value) value.SubClientId).Select(Function(group) group.Last())
+            Using command As New OleDbCommand(sql, connection, transaction)
+                AddInteger(command, record.RecordId)
+                AddInteger(command, item.SubClientId)
+                AddDouble(command, item.OfficerAllowance)
+                AddDouble(command, item.UniformAllowance)
+                AddDouble(command, item.OtherEarnings)
+                AddDouble(command, item.CashBondDeduction)
+                AddDouble(command, item.SssLoanDeduction)
+                AddDouble(command, item.SssCalLoanDeduction)
+                AddDouble(command, item.PagIbigLoanDeduction)
+                AddDouble(command, item.PagIbigCalLoanDeduction)
+                AddDouble(command, item.PhilHealthDeduction)
+                AddDouble(command, item.SssDeduction)
+                AddDouble(command, item.SssProvidentDeduction)
+                AddDouble(command, item.PagIbigDeduction)
+                AddDouble(command, item.OtherDeductions)
+                command.ExecuteNonQuery()
+            End Using
+        Next
+    End Sub
+
     Private Sub InsertAudit(connection As OleDbConnection, transaction As OleDbTransaction, record As ManualPayrollRecord, actionType As String, remarks As String, actionAt As Date, actor As String)
         Const sql As String = "INSERT INTO [PRL_DTR_RECORD_AUDIT] " &
             "([PAYROLL_RECORD_ID], [EMPLOYEE_ID], [SUB_CLIENT_ID], [CUTOFF_PERIOD], [REVISION_NO], " &
@@ -799,27 +1304,54 @@ Public Module ManualPayrollRecordService
     Private Sub ReplaceDailyHours(connection As OleDbConnection, transaction As OleDbTransaction, record As ManualPayrollRecord)
         Dim firstDate = record.Days.Min(Function(item) item.ReportDate.Date)
         Dim lastDate = record.Days.Max(Function(item) item.ReportDate.Date)
-        Using deleteCommand As New OleDbCommand(
-            "DELETE FROM [PRL_DTR_HOURS_PER_DAY] WHERE [EMPLOYEE_ID] = ? AND [SUB_CLIENT_ID] = ? AND [REPORT_DATE] BETWEEN ? AND ?",
+        Dim clientIds As New HashSet(Of Integer)(record.Days.
+            SelectMany(Function(day) day.ShiftAssignments).
+            Select(Function(item) item.SubClientId).
+            Where(Function(value) value > 0))
+        clientIds.Add(record.SubClientId)
+        Using previousCommand As New OleDbCommand(
+            "SELECT DISTINCT [SUB_CLIENT_ID] FROM [" & AssignmentTable & "] WHERE [PAYROLL_RECORD_ID] = ?",
             connection, transaction)
-            AddText(deleteCommand, record.EmployeeId, 50)
-            AddInteger(deleteCommand, record.SubClientId)
-            AddDate(deleteCommand, firstDate)
-            AddDate(deleteCommand, lastDate)
-            deleteCommand.ExecuteNonQuery()
+            AddInteger(previousCommand, record.RecordId)
+            Using reader = previousCommand.ExecuteReader()
+                While reader.Read()
+                    If Not reader.IsDBNull(0) Then clientIds.Add(Convert.ToInt32(reader(0), CultureInfo.InvariantCulture))
+                End While
+            End Using
         End Using
+        For Each clientId In clientIds
+            Using deleteCommand As New OleDbCommand(
+                "DELETE FROM [PRL_DTR_HOURS_PER_DAY] WHERE [EMPLOYEE_ID] = ? AND [SUB_CLIENT_ID] = ? AND [REPORT_DATE] BETWEEN ? AND ?",
+                connection, transaction)
+                AddText(deleteCommand, record.EmployeeId, 50)
+                AddInteger(deleteCommand, clientId)
+                AddDate(deleteCommand, firstDate)
+                AddDate(deleteCommand, lastDate)
+                deleteCommand.ExecuteNonQuery()
+            End Using
+        Next
 
         Const sql As String = "INSERT INTO [PRL_DTR_HOURS_PER_DAY] " &
             "([EMPLOYEE_ID], [SUB_CLIENT_ID], [REPORT_DATE], [REPORT_DAY], [DAILY_TOTAL_HOURS]) VALUES (?, ?, ?, ?, ?)"
-        For Each day In record.Days.Where(Function(item) item.TotalHours > 0D).OrderBy(Function(item) item.ReportDate)
-            Using command As New OleDbCommand(sql, connection, transaction)
-                AddText(command, record.EmployeeId, 50)
-                AddInteger(command, record.SubClientId)
-                AddDate(command, day.ReportDate.Date)
-                AddText(command, day.ReportDate.DayOfWeek.ToString(), 20)
-                AddDouble(command, day.TotalHours)
-                command.ExecuteNonQuery()
-            End Using
+        For Each day In record.Days.OrderBy(Function(item) item.ReportDate)
+            Dim assignments = day.ShiftAssignments.Where(Function(item) item.TotalHours > 0D).ToList()
+            If assignments.Count = 0 AndAlso day.TotalHours > 0D Then
+                assignments.Add(New ManualPayrollShiftAssignment With {
+                    .ReportDate = day.ReportDate.Date,
+                    .SubClientId = record.SubClientId,
+                    .TotalHours = day.TotalHours
+                })
+            End If
+            For Each clientGroup In assignments.GroupBy(Function(item) item.SubClientId)
+                Using command As New OleDbCommand(sql, connection, transaction)
+                    AddText(command, record.EmployeeId, 50)
+                    AddInteger(command, clientGroup.Key)
+                    AddDate(command, day.ReportDate.Date)
+                    AddText(command, day.ReportDate.DayOfWeek.ToString(), 20)
+                    AddDouble(command, clientGroup.Sum(Function(item) item.TotalHours))
+                    command.ExecuteNonQuery()
+                End Using
+            Next
         Next
     End Sub
 

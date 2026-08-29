@@ -1,4 +1,5 @@
 Imports System.Diagnostics
+Imports System.Collections.Generic
 Imports System.Globalization
 Imports System.IO
 Imports System.Net.Mail
@@ -31,6 +32,8 @@ Public Class FRM_HR_CLIENTS
     Private _pendingStatus As String = String.Empty
     Private _workSiteWizardStep As Integer
     Private _normalizingClientName As Boolean
+    Private _companyDisplayCodes As New Dictionary(Of Integer, String)()
+    Private _workSiteDisplayCodes As New Dictionary(Of Integer, String)()
 
     Public Sub New()
         InitializeComponent()
@@ -60,8 +63,8 @@ Public Class FRM_HR_CLIENTS
     Private Sub ConfigureToolTips()
         ClientToolTip.SetToolTip(BtnAddCompany, "Create the top-level legal organization named on the service agreement.")
         ClientToolTip.SetToolTip(BtnAddWorkSite, "Create a subclient under the selected client.")
-        ClientToolTip.SetToolTip(LvCompanies, "Select the legal client first.")
-        ClientToolTip.SetToolTip(LvWorkSites, "Subclients always remain inside the selected client.")
+        ClientToolTip.SetToolTip(LvCompanies, "Active clients receive P or G references in alphabetical order. Inactive clients have no reference and appear in red.")
+        ClientToolTip.SetToolTip(LvWorkSites, "Active subclients inherit the selected active client's reference. Inactive subclients have no reference and appear in red.")
         ClientToolTip.SetToolTip(TxtCompanyName, "Names are automatically capitalized. Unsupported symbols are removed.")
         ClientToolTip.SetToolTip(TxtSiteName, "Names are automatically capitalized. Unsupported symbols are removed.")
     End Sub
@@ -70,6 +73,8 @@ Public Class FRM_HR_CLIENTS
         If preferredCompanyId = 0 AndAlso _selectedCompany IsNot Nothing Then preferredCompanyId = _selectedCompany.Id
         Dim records As List(Of CompanyRecord)
         Try
+            Dim allCompanies As List(Of CompanyRecord) = _service.GetCompanies(String.Empty, "All")
+            _companyDisplayCodes = BuildCompanyDisplayCodes(allCompanies)
             records = _service.GetCompanies(TxtCompanySearch.Text, CmbCompanyStatus.Text)
         Catch ex As Exception
             ShowMessage("The client directory could not be loaded. " & ex.Message)
@@ -81,9 +86,12 @@ Public Class FRM_HR_CLIENTS
         LvCompanies.Items.Clear()
         Dim preferredItem As ListViewItem = Nothing
         For Each company As CompanyRecord In records
-            Dim item As New ListViewItem(company.Name)
+            Dim item As New ListViewItem(GetCompanyDisplayCode(company.Id))
+            item.SubItems.Add(company.Name)
+            item.SubItems.Add(CompanyTypeForDisplay(company.ClientType))
             item.SubItems.Add(company.WorkSiteCount.ToString(CultureInfo.InvariantCulture))
             item.SubItems.Add(company.Status)
+            ApplyInactiveRowStyle(item, company.Status)
             item.Tag = company
             LvCompanies.Items.Add(item)
             If company.Id = preferredCompanyId Then preferredItem = item
@@ -111,8 +119,10 @@ Public Class FRM_HR_CLIENTS
             Return
         End If
         _selectedCompany = company
+        Dim companyCode As String = GetCompanyDisplayCode(company.Id)
         LblWorkspaceTitle.Text = company.Name
-        LblWorkspaceSubtitle.Text = company.ClientType & " organization  ·  " & company.Status & "  ·  " & company.WorkSiteCount.ToString() & If(company.WorkSiteCount = 1, " subclient", " subclients")
+        Dim referenceText As String = If(String.IsNullOrWhiteSpace(companyCode), String.Empty, "Reference " & companyCode & "  ·  ")
+        LblWorkspaceSubtitle.Text = referenceText & CompanyTypeForDisplay(company.ClientType) & " organization  ·  " & company.Status & "  ·  " & company.WorkSiteCount.ToString() & If(company.WorkSiteCount = 1, " subclient", " subclients")
         LblHierarchyCompany.Text = company.Name
         BtnAddWorkSite.Enabled = IsActive(company.Status)
         BtnEditCompany.Enabled = True
@@ -134,11 +144,23 @@ Public Class FRM_HR_CLIENTS
         _suppressSelectionEvents = True
         LvWorkSites.BeginUpdate()
         LvWorkSites.Items.Clear()
+        _workSiteDisplayCodes.Clear()
         Dim preferredItem As ListViewItem = Nothing
-        For Each site As WorkSiteRecord In records
-            Dim item As New ListViewItem(site.Name)
+        Dim companyCode As String = GetCompanyDisplayCode(companyId)
+        Dim activeSiteNumber As Integer = 0
+        For siteIndex As Integer = 0 To records.Count - 1
+            Dim site As WorkSiteRecord = records(siteIndex)
+            Dim siteCode As String = String.Empty
+            If Not String.IsNullOrWhiteSpace(companyCode) AndAlso IsActive(site.Status) Then
+                activeSiteNumber += 1
+                siteCode = companyCode & "." & activeSiteNumber.ToString(CultureInfo.InvariantCulture)
+            End If
+            _workSiteDisplayCodes(site.Id) = siteCode
+            Dim item As New ListViewItem(siteCode)
+            item.SubItems.Add(site.Name)
             item.SubItems.Add(site.Address)
             item.SubItems.Add(site.Status)
+            ApplyInactiveRowStyle(item, site.Status)
             item.Tag = site
             LvWorkSites.Items.Add(item)
             If site.Id = preferredSiteId Then preferredItem = item
@@ -168,9 +190,10 @@ Public Class FRM_HR_CLIENTS
             Return
         End If
         _selectedWorkSite = site
-        LblHierarchySite.Text = site.Name
-        LblProfileBreadcrumb.Text = "Clients  ›  " & site.CompanyName & "  ›  " & site.Name
-        LblProfileName.Text = site.Name
+        Dim siteCode As String = GetWorkSiteDisplayCode(site.Id)
+        LblHierarchySite.Text = NameWithDisplayCode(siteCode, site.Name)
+        LblProfileBreadcrumb.Text = "Clients  ›  " & NameWithDisplayCode(GetCompanyDisplayCode(site.CompanyId), site.CompanyName) & "  ›  " & NameWithDisplayCode(siteCode, site.Name)
+        LblProfileName.Text = NameWithDisplayCode(siteCode, site.Name)
         LblProfileStatus.Text = site.Status
         If IsActive(site.Status) Then
             LblProfileStatus.BackColor = Color.FromArgb(226, 243, 238)
@@ -370,6 +393,7 @@ Public Class FRM_HR_CLIENTS
 
     Private Sub ClearWorkSiteSelection()
         _selectedWorkSite = Nothing
+        _workSiteDisplayCodes.Clear()
         LblHierarchySite.Text = "No subclient selected"
         LblOverviewName.Text = "Select a subclient"
         LblOverviewParent.Text = "No parent client selected"
@@ -418,6 +442,58 @@ Public Class FRM_HR_CLIENTS
     Private Shared Function IsActive(status As String) As Boolean
         Return String.Equals(status, "Active", StringComparison.OrdinalIgnoreCase)
     End Function
+
+    Private Shared Function CompanyTypeForDisplay(clientType As String) As String
+        If String.Equals(clientType, "Government", StringComparison.OrdinalIgnoreCase) Then Return "Government"
+        If String.Equals(clientType, "Private", StringComparison.OrdinalIgnoreCase) Then Return "Private"
+        Return "Not set"
+    End Function
+
+    Private Shared Function BuildCompanyDisplayCodes(companies As IEnumerable(Of CompanyRecord)) As Dictionary(Of Integer, String)
+        Dim codes As New Dictionary(Of Integer, String)()
+        Dim privateNumber As Integer = 0
+        Dim governmentNumber As Integer = 0
+
+        For Each company As CompanyRecord In companies
+            If Not IsActive(company.Status) Then
+                codes(company.Id) = String.Empty
+            ElseIf String.Equals(company.ClientType, "Private", StringComparison.OrdinalIgnoreCase) Then
+                privateNumber += 1
+                codes(company.Id) = "P" & privateNumber.ToString(CultureInfo.InvariantCulture)
+            ElseIf String.Equals(company.ClientType, "Government", StringComparison.OrdinalIgnoreCase) Then
+                governmentNumber += 1
+                codes(company.Id) = "G" & governmentNumber.ToString(CultureInfo.InvariantCulture)
+            Else
+                codes(company.Id) = String.Empty
+            End If
+        Next
+
+        Return codes
+    End Function
+
+    Private Function GetCompanyDisplayCode(companyId As Integer) As String
+        Dim code As String = Nothing
+        If _companyDisplayCodes.TryGetValue(companyId, code) Then Return code
+        Return String.Empty
+    End Function
+
+    Private Function GetWorkSiteDisplayCode(workSiteId As Integer) As String
+        Dim code As String = Nothing
+        If _workSiteDisplayCodes.TryGetValue(workSiteId, code) Then Return code
+        Return String.Empty
+    End Function
+
+    Private Shared Function NameWithDisplayCode(code As String, name As String) As String
+        If String.IsNullOrWhiteSpace(code) Then Return name
+        Return code & "  " & name
+    End Function
+
+    Private Shared Sub ApplyInactiveRowStyle(item As ListViewItem, status As String)
+        If item Is Nothing OrElse IsActive(status) Then Return
+        item.UseItemStyleForSubItems = True
+        item.BackColor = Color.FromArgb(253, 236, 236)
+        item.ForeColor = Color.FromArgb(153, 42, 42)
+    End Sub
 
     Private Sub OpenCompanyEditor(createNew As Boolean)
         ResetEditor()
@@ -1042,16 +1118,19 @@ Public Class FRM_HR_CLIENTS
 
     Private Sub ResizeCompanyColumns()
         If LvCompanies.ClientSize.Width <= 40 Then Return
-        ColSiteCount.Width = 80
-        ColCompanyStatus.Width = 72
-        ColCompany.Width = Math.Max(120, LvCompanies.ClientSize.Width - ColSiteCount.Width - ColCompanyStatus.Width - 6)
+        ColCompanyCode.Width = 52
+        ColCompanyType.Width = 88
+        ColSiteCount.Width = 68
+        ColCompanyStatus.Width = 64
+        ColCompany.Width = Math.Max(100, LvCompanies.ClientSize.Width - ColCompanyCode.Width - ColCompanyType.Width - ColSiteCount.Width - ColCompanyStatus.Width - 6)
     End Sub
 
     Private Sub ResizeWorkSiteColumns()
         If LvWorkSites.ClientSize.Width <= 40 Then Return
+        ColSiteCode.Width = 72
         ColSiteStatus.Width = 64
-        ColSiteAddress.Width = Math.Max(80, CInt((LvWorkSites.ClientSize.Width - ColSiteStatus.Width - 6) * 0.38))
-        ColSiteName.Width = Math.Max(110, LvWorkSites.ClientSize.Width - ColSiteAddress.Width - ColSiteStatus.Width - 6)
+        ColSiteAddress.Width = Math.Max(80, CInt((LvWorkSites.ClientSize.Width - ColSiteCode.Width - ColSiteStatus.Width - 6) * 0.38))
+        ColSiteName.Width = Math.Max(110, LvWorkSites.ClientSize.Width - ColSiteCode.Width - ColSiteAddress.Width - ColSiteStatus.Width - 6)
     End Sub
 
     Private Sub ResizeContractColumns()

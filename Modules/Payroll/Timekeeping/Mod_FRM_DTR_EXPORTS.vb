@@ -243,6 +243,7 @@ Module Mod_FRM_DTR_EXPORTS
 
             da = New OleDbDataAdapter(SQL, Mod_GlobalVariables.GlobalVariables.GlobalCon)
             da.Fill(dt)
+            MergeFinalClientAllocations(dt, ManualPayrollRecordService.LoadFinalClientAllocations(iClient_ID, sCut_Off))
 
             With FRM_DTR_EXPORTS.DGV_DTR_Per_Client
                 .Rows.Clear()
@@ -258,7 +259,9 @@ Module Mod_FRM_DTR_EXPORTS
                     iRow = 1
 
                     For Each myRow In dt.Rows
-                        Dim fullName As String = $"{NzText(myRow, "LAST_NAME")}, {NzText(myRow, "FIRST_NAME")}"
+                        Dim lastName = NzText(myRow, "LAST_NAME")
+                        Dim firstName = NzText(myRow, "FIRST_NAME")
+                        Dim fullName As String = If(firstName = String.Empty, lastName, lastName & ", " & firstName)
                         Dim employeeId As String = NzText(myRow, "EMPLOYEE_ID")
 
                         If IsFirstCutoff(sCut_Off) Then
@@ -387,6 +390,34 @@ Module Mod_FRM_DTR_EXPORTS
 
         GlobalVariables.GlobalCon.Close()
 
+    End Sub
+
+    Private Sub MergeFinalClientAllocations(target As DataTable, allocations As DataTable)
+        If target Is Nothing OrElse allocations Is Nothing OrElse allocations.Rows.Count = 0 Then Return
+        Dim allocatedEmployeeIds = New HashSet(Of String)(
+            allocations.AsEnumerable().Select(Function(row) Convert.ToString(row("EMPLOYEE_ID"))),
+            StringComparer.OrdinalIgnoreCase)
+        For Each existing In target.AsEnumerable().
+            Where(Function(row) allocatedEmployeeIds.Contains(Convert.ToString(row("EMPLOYEE_ID")))).
+            ToList()
+            target.Rows.Remove(existing)
+        Next
+
+        For Each sourceRow As DataRow In allocations.Rows
+            Dim destination = target.NewRow()
+            For Each column As DataColumn In target.Columns
+                If allocations.Columns.Contains(column.ColumnName) AndAlso Not sourceRow.IsNull(column.ColumnName) Then
+                    destination(column.ColumnName) = sourceRow(column.ColumnName)
+                End If
+            Next
+            target.Rows.Add(destination)
+        Next
+        Dim view As New DataView(target) With {.Sort = "LAST_NAME, FIRST_NAME, MIDDLE_NAME"}
+        Dim sorted = view.ToTable()
+        target.Clear()
+        For Each row As DataRow In sorted.Rows
+            target.ImportRow(row)
+        Next
     End Sub
 
     Private Function NzText(row As DataRow, col As String) As String
@@ -584,14 +615,14 @@ Module Mod_FRM_DTR_EXPORTS
 
         ' SQL with TOTAL_HOURS from the view
         Dim SQL As String =
-    "SELECT A.REPORT_DATE, A.REPORT_DAY, A.DAILY_TOTAL_HOURS, " &
+    "SELECT A.EMPLOYEE_ID, A.REPORT_DATE, A.REPORT_DAY, A.DAILY_TOTAL_HOURS, " &
     "B.LAST_NAME, B.FIRST_NAME, B.TOTAL_HOURS " &
     "FROM PRL_DTR_HOURS_PER_DAY AS A " &
-    "INNER JOIN VIEW_DTR_PER_SUB_CLIENT AS B " &
+    "LEFT JOIN VIEW_DTR_PER_SUB_CLIENT AS B " &
     "ON A.EMPLOYEE_ID = B.A.EMPLOYEE_ID AND A.SUB_CLIENT_ID = B.A.SUB_CLIENT_ID " &
+    "AND B.CUTOFF_PERIOD = '" & sCut_Off & "' " &
     "WHERE A.SUB_CLIENT_ID = " & iClient_ID & " " &
     "AND A.REPORT_DATE BETWEEN #" & dFrom.ToString("MM/dd/yyyy") & "# AND #" & dTo.ToString("MM/dd/yyyy") & "# " &
-    "AND B.CUTOFF_PERIOD = '" & sCut_Off & "' " &
     "AND A.ID IN (" &
         "SELECT MAX(ID) FROM PRL_DTR_HOURS_PER_DAY " &
         "WHERE SUB_CLIENT_ID = " & iClient_ID & " " &
@@ -604,6 +635,19 @@ Module Mod_FRM_DTR_EXPORTS
         Try
             da = New OleDbDataAdapter(SQL, Mod_GlobalVariables.GlobalVariables.GlobalCon)
             da.Fill(dt)
+            Dim allocationRows = ManualPayrollRecordService.LoadFinalClientAllocations(iClient_ID, sCut_Off)
+            Dim allocationLookup = allocationRows.AsEnumerable().ToDictionary(
+                Function(row) Convert.ToString(row("EMPLOYEE_ID")),
+                Function(row) row,
+                StringComparer.OrdinalIgnoreCase)
+            For Each dailyRow As DataRow In dt.Rows
+                Dim allocation As DataRow = Nothing
+                If allocationLookup.TryGetValue(Convert.ToString(dailyRow("EMPLOYEE_ID")), allocation) Then
+                    dailyRow("LAST_NAME") = allocation("LAST_NAME")
+                    dailyRow("FIRST_NAME") = allocation("FIRST_NAME")
+                    dailyRow("TOTAL_HOURS") = allocation("TOTAL_HOURS")
+                End If
+            Next
 
             With FRM_DTR_EXPORTS.DGV_DTR_MATRIX
                 .DataSource = Nothing
@@ -635,7 +679,12 @@ Module Mod_FRM_DTR_EXPORTS
             headerTable.Rows.Add(rowDayNames)
 
             ' Group by employee name
-            Dim empGroups = dt.AsEnumerable().GroupBy(Function(r) r("LAST_NAME").ToString() & ", " & r("FIRST_NAME").ToString())
+            Dim empGroups = dt.AsEnumerable().GroupBy(
+                Function(r)
+                    Dim lastName = Convert.ToString(r("LAST_NAME")).Trim()
+                    Dim firstName = Convert.ToString(r("FIRST_NAME")).Trim()
+                    Return If(firstName = String.Empty, lastName, lastName & ", " & firstName)
+                End Function)
 
             For Each empGroup In empGroups
                 Dim empRow As DataRow = headerTable.NewRow()

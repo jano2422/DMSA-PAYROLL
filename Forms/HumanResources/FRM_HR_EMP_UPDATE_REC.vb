@@ -362,18 +362,22 @@
             Me.Lbl_ClientName.Text = Me.LV_Client_History.SelectedItems(0).SubItems(0).Text & "-" & Me.LV_Client_History.SelectedItems(0).SubItems(1).Text
             Me.LblClient_Address.Text = Me.LV_Client_History.SelectedItems(0).SubItems(2).Text
             Me.Txt_Client_Start_Date.Text = Me.LV_Client_History.SelectedItems(0).SubItems(3).Text
-            Me.Txt_Client_End_Date.Text = Me.LV_Client_History.SelectedItems(0).SubItems(4).Text
+            Dim selectedEndDate As String = Me.LV_Client_History.SelectedItems(0).SubItems(4).Text
+            Me.Txt_Client_End_Date.Text = selectedEndDate
             Me.Lbl_Client_Ref_ID.Text = Me.LV_Client_History.SelectedItems(0).SubItems(5).Text
 
             ' Get the Latest Ref_ID for the update - Selected Row should not be the base update for Up to Present
             'Me.Lbl_Latest_Client_ID.Text = Get_Latest_Client_Assignment(Me.Lbl_Employee_ID.Text)
 
 
-            If Me.Txt_Client_End_Date.Text = "Up to date" Then
+            If String.Equals(Me.Txt_Client_End_Date.Text, "Up to present", StringComparison.OrdinalIgnoreCase) Then
                 Me.Chk_UptoPresent.Checked = True
             Else
-                Me.Chk_UptoPresent.Checked = True
+                Me.Chk_UptoPresent.Checked = False
             End If
+
+            ' CheckedChanged updates the end-date textbox, so restore the value from the selected row.
+            Me.Txt_Client_End_Date.Text = selectedEndDate
 
             If Txt_ClientID.Text <> "" Then
                 Btn_Client_Change.Enabled = True
@@ -818,7 +822,8 @@
 
             Chk_UptoPresent.Enabled = False
             DP_Client_Start_Date.Enabled = True
-            DP_Client_End_Date.Enabled = True
+            Chk_UptoPresent.Checked = True
+            DP_Client_End_Date.Enabled = False
 
             Grp_Client_Info.Enabled = True
 
@@ -831,8 +836,14 @@
             '    Exit Sub
             'End If
 
-            Call Add_New_Client_Historical_Record(Me.Lbl_Employee_ID.Text, Me.Txt_ClientID.Text)
-            Call Update_Employee_Record_New_Client_Assignment(Me.Lbl_Employee_ID.Text, Me.Txt_ClientID.Text)
+            If String.IsNullOrWhiteSpace(Me.Txt_ClientID.Text) Then
+                MsgBox("Please select a client before saving the movement.", vbExclamation, "Client Required")
+                Exit Sub
+            End If
+
+            If Not Add_New_Client_Historical_Record(Me.Lbl_Employee_ID.Text, Me.Txt_ClientID.Text) Then
+                Exit Sub
+            End If
             Call Show_Employee_Client_History_at_Client_Change(Me.Lbl_Employee_ID.Text)
 
             Btn_Client_Add.Text = "Add"
@@ -865,8 +876,8 @@
 
 
         Else
-            If Me.Txt_Client_Start_Date.Text = Me.Txt_Client_End_Date.Text Then
-                MsgBox("Same date is set to END Date. This will have an status of Up-to-Present.", vbInformation, "Up to present is set")
+            If Me.Chk_UptoPresent.Checked Then
+                MsgBox("This movement will have an Up-to-Present status.", vbInformation, "Up to present is set")
             End If
 
             ' Since DB will not accept string, I change the "Up to present" string into Date same value as Date Start
@@ -874,7 +885,9 @@
                 Txt_Client_End_Date.Text = Txt_Client_Start_Date.Text
             End If
 
-            Call Update_Client_Record(Me.Lbl_Employee_ID.Text, Me.Lbl_Client_Ref_ID.Text)
+            If Not Update_Client_Record(Me.Lbl_Employee_ID.Text, Me.Lbl_Client_Ref_ID.Text) Then
+                Exit Sub
+            End If
             Call Show_Employee_Client_History_at_Client_Change(Me.Lbl_Employee_ID.Text)
 
             Btn_Client_Add.Text = "Add"

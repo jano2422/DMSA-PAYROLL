@@ -1,6 +1,13 @@
 ﻿Imports System.Data.OleDb
+Imports System.Globalization
 Imports System.IO
 Module Mod_FRM_HR_EMP_UPDATE_REC
+
+    Private Class ClientMovementPeriod
+        Public Property ID As Integer
+        Public Property DateStarted As Date
+        Public Property DateEnded As Date
+    End Class
 
 
 
@@ -636,7 +643,7 @@ Module Mod_FRM_HR_EMP_UPDATE_REC
         Try
 
             SQL = "Select * From HR_EMPLOYEE_CLIENT_TRANSFER_DTL A, TBL_CLIENT_SUB B"
-            SQL = SQL & " Where A.SUB_CLIENT_ID = B.SUB_CLIENT_ID And A.EMPLOYEE_ID = '" & sEmployee_ID & "' ORDER BY DATE_STARTED DESC"
+            SQL = SQL & " Where A.SUB_CLIENT_ID = B.SUB_CLIENT_ID And A.EMPLOYEE_ID = '" & sEmployee_ID & "' ORDER BY A.DATE_STARTED DESC, A.ID DESC"
 
             da = New OleDbDataAdapter(SQL, Mod_GlobalVariables.GlobalVariables.GlobalCon)
             da.Fill(dt)
@@ -646,6 +653,7 @@ Module Mod_FRM_HR_EMP_UPDATE_REC
                 With FRM_EMP_UPDATE_REC.LV_Client_History
 
                     Dim myRow As DataRow
+                    Dim latestMovementID As Integer = CInt(dt.Rows(0).Item("ID"))
 
                     .Items.Clear()
 
@@ -656,7 +664,10 @@ Module Mod_FRM_HR_EMP_UPDATE_REC
                         .Items(.Items.Count - 1).SubItems.Add(myRow.Item("ADDRESS"))
                         .Items(.Items.Count - 1).SubItems.Add(Format(CDate(myRow.Item("DATE_STARTED")), "dd-MMM-yyyy"))
 
-                        If myRow.Item("DATE_STARTED") = myRow.Item("DATE_ENDED") Then ' If equal then I should display "Up to Present"
+                        ' Equal dates can also mean a valid one-day assignment. Only the latest
+                        ' movement may use the legacy equal-date value as "Up to present".
+                        If CInt(myRow.Item("ID")) = latestMovementID AndAlso
+                           CDate(myRow.Item("DATE_STARTED")).Date = CDate(myRow.Item("DATE_ENDED")).Date Then
                             .Items(.Items.Count - 1).SubItems.Add("Up to present")
                         Else
                             .Items(.Items.Count - 1).SubItems.Add(Format(CDate(myRow.Item("DATE_ENDED")), "dd-MMM-yyyy"))
@@ -682,62 +693,351 @@ Module Mod_FRM_HR_EMP_UPDATE_REC
 
     End Sub
 
-    Public Sub Add_New_Client_Historical_Record(sEmployee_ID As String, sNew_Client_ID As Integer)
-        Dim SQL2 As String
+    Public Function Add_New_Client_Historical_Record(sEmployee_ID As String, sNew_Client_ID As Integer) As Boolean
         Connect_to_MDB()
 
         Try
             With FRM_EMP_UPDATE_REC
+                Dim startDate As Date
+                Dim endDate As Date
 
-                SQL2 = ""
-                SQL2 = "INSERT INTO HR_EMPLOYEE_CLIENT_TRANSFER_DTL (EMPLOYEE_ID, SUB_CLIENT_ID, DATE_STARTED, DATE_ENDED) VALUES ('" & sEmployee_ID & "', " & sNew_Client_ID & ", '" & .Txt_Client_Start_Date.Text & "','" & .Txt_Client_End_Date.Text & "')"
-
-                Dim SQLcmd2 As OleDbCommand = New OleDbCommand(SQL2, GlobalVariables.GlobalCon)
-                SQLcmd2.ExecuteNonQuery()
-                SQLcmd2.Dispose()
-
-
-                MsgBox("Successfully added a new client historical record", vbInformation, "Saved!")
-
-
-            End With
-        Catch ex As Exception
-            MsgBox(ex.Message, vbCritical, "Error in adding client")
-
-        End Try
-
-        GlobalVariables.GlobalCon.Close()
-    End Sub
-
-    Public Sub Update_Client_Record(sEmployee_ID As String, sRef_ID As Integer)
-        Dim SQL As String
-        Connect_to_MDB()
-
-        Try
-            With FRM_EMP_UPDATE_REC
-
-
-                If .Chk_UptoPresent.Checked = True Then ' If Up to Present, DATE_END will be change to same as START_DATE
-                    .Txt_Client_End_Date.Text = .Txt_Client_Start_Date.Text
+                If Not TryParseClientMovementDate(.Txt_Client_Start_Date.Text, startDate) Then
+                    MsgBox("Please enter a valid client movement start date.", vbExclamation, "Invalid Start Date")
+                    Return False
                 End If
 
-                SQL = "UPDATE HR_EMPLOYEE_CLIENT_TRANSFER_DTL SET DATE_STARTED = '" & .Txt_Client_Start_Date.Text & "', DATE_ENDED = '" & .Txt_Client_End_Date.Text & "' WHERE ID = " & sRef_ID & " AND EMPLOYEE_ID = '" & sEmployee_ID & "'"
+                If Not TryParseClientMovementDate(.Txt_Client_End_Date.Text, endDate) Then
+                    MsgBox("Please enter a valid client movement end date.", vbExclamation, "Invalid End Date")
+                    Return False
+                End If
 
-                Dim SQLcmd As OleDbCommand = New OleDbCommand(SQL, GlobalVariables.GlobalCon)
-                SQLcmd.ExecuteNonQuery()
-                SQLcmd.Dispose()
+                startDate = startDate.Date
+                endDate = endDate.Date
+
+                If endDate < startDate Then
+                    MsgBox("The client movement end date cannot be earlier than its start date.", vbExclamation, "Invalid Date Range")
+                    Return False
+                End If
+
+                Dim isCurrentMovement As Boolean = (startDate = endDate)
+                Dim existingMovements As List(Of ClientMovementPeriod)
+
+                Using transaction As OleDbTransaction = GlobalVariables.GlobalCon.BeginTransaction()
+                    Try
+                        existingMovements = LoadClientMovementPeriods(sEmployee_ID, transaction)
+
+                        Dim currentMovementID As Integer = GetCurrentClientMovementID(existingMovements)
+
+                        If isCurrentMovement AndAlso existingMovements.Count > 0 Then
+                            Dim latestStartDate As Date = existingMovements.Max(Function(movement) movement.DateStarted)
+
+                            If startDate <= latestStartDate Then
+                                transaction.Rollback()
+                                MsgBox(
+                                    "An up-to-present movement must start after the latest existing movement (" &
+                                    latestStartDate.ToString("dd-MMM-yyyy") & ").",
+                                    vbExclamation,
+                                    "Invalid Current Movement")
+                                Return False
+                            End If
+                        End If
+
+                        Dim conflictingMovement As ClientMovementPeriod = Nothing
+                        If TryFindOverlappingClientMovement(
+                            startDate,
+                            endDate,
+                            isCurrentMovement,
+                            existingMovements,
+                            0,
+                            currentMovementID,
+                            isCurrentMovement,
+                            conflictingMovement) Then
+
+                            transaction.Rollback()
+                            ShowClientMovementOverlapError(conflictingMovement, currentMovementID)
+                            Return False
+                        End If
+
+                        If isCurrentMovement Then
+                            CloseExistingCurrentClientMovements(
+                                sEmployee_ID,
+                                startDate,
+                                existingMovements,
+                                transaction)
+                        End If
+
+                        Const insertSql As String =
+                            "INSERT INTO HR_EMPLOYEE_CLIENT_TRANSFER_DTL " &
+                            "(EMPLOYEE_ID, SUB_CLIENT_ID, DATE_STARTED, DATE_ENDED) " &
+                            "VALUES (?, ?, ?, ?)"
+
+                        Using insertCommand As New OleDbCommand(insertSql, GlobalVariables.GlobalCon, transaction)
+                            insertCommand.Parameters.Add("?", OleDbType.VarWChar).Value = sEmployee_ID
+                            insertCommand.Parameters.Add("?", OleDbType.Integer).Value = sNew_Client_ID
+                            insertCommand.Parameters.Add("?", OleDbType.Date).Value = startDate
+                            insertCommand.Parameters.Add("?", OleDbType.Date).Value = endDate
+                            insertCommand.ExecuteNonQuery()
+                        End Using
+
+                        Const updateHeaderSql As String =
+                            "UPDATE HR_EMPLOYEE_RECORD_HDR SET SUB_CLIENT_ID = ? WHERE EMPLOYEE_ID = ?"
+
+                        Using updateHeaderCommand As New OleDbCommand(updateHeaderSql, GlobalVariables.GlobalCon, transaction)
+                            updateHeaderCommand.Parameters.Add("?", OleDbType.Integer).Value = sNew_Client_ID
+                            updateHeaderCommand.Parameters.Add("?", OleDbType.VarWChar).Value = sEmployee_ID
+                            updateHeaderCommand.ExecuteNonQuery()
+                        End Using
+
+                        transaction.Commit()
+                    Catch
+                        Try
+                            transaction.Rollback()
+                        Catch
+                            ' Preserve the original database error.
+                        End Try
+                        Throw
+                    End Try
+                End Using
+
+                MsgBox("Successfully added a new client historical record", vbInformation, "Saved!")
+            End With
+
+            Return True
+        Catch ex As Exception
+            MsgBox(ex.Message, vbCritical, "Error in adding client")
+            Return False
+        Finally
+            If GlobalVariables.GlobalCon IsNot Nothing AndAlso GlobalVariables.GlobalCon.State <> ConnectionState.Closed Then
+                GlobalVariables.GlobalCon.Close()
+            End If
+        End Try
+    End Function
+
+    Private Function TryParseClientMovementDate(value As String, ByRef parsedDate As Date) As Boolean
+        Dim acceptedFormats() As String = {"dd-MMM-yyyy", "d-MMM-yyyy", "M/d/yyyy", "MM/dd/yyyy"}
+
+        Return Date.TryParseExact(
+            value.Trim(),
+            acceptedFormats,
+            CultureInfo.InvariantCulture,
+            DateTimeStyles.AllowWhiteSpaces,
+            parsedDate) OrElse Date.TryParse(value, CultureInfo.CurrentCulture, DateTimeStyles.AllowWhiteSpaces, parsedDate)
+    End Function
+
+    Private Function LoadClientMovementPeriods(
+        employeeID As String,
+        transaction As OleDbTransaction) As List(Of ClientMovementPeriod)
+
+        Const selectSql As String =
+            "SELECT ID, DATE_STARTED, DATE_ENDED " &
+            "FROM HR_EMPLOYEE_CLIENT_TRANSFER_DTL " &
+            "WHERE EMPLOYEE_ID = ? ORDER BY DATE_STARTED, ID"
+
+        Dim movements As New List(Of ClientMovementPeriod)
+
+        Using selectCommand As New OleDbCommand(selectSql, GlobalVariables.GlobalCon)
+            If transaction IsNot Nothing Then
+                selectCommand.Transaction = transaction
+            End If
+
+            selectCommand.Parameters.Add("?", OleDbType.VarWChar).Value = employeeID
+
+            Using reader As OleDbDataReader = selectCommand.ExecuteReader()
+                While reader.Read()
+                    movements.Add(New ClientMovementPeriod With {
+                        .ID = CInt(reader("ID")),
+                        .DateStarted = CDate(reader("DATE_STARTED")).Date,
+                        .DateEnded = CDate(reader("DATE_ENDED")).Date
+                    })
+                End While
+            End Using
+        End Using
+
+        Return movements
+    End Function
+
+    Private Function GetCurrentClientMovementID(movements As List(Of ClientMovementPeriod)) As Integer
+        If movements.Count = 0 Then
+            Return 0
+        End If
+
+        Dim latestMovement As ClientMovementPeriod = movements.
+            OrderByDescending(Function(movement) movement.DateStarted).
+            ThenByDescending(Function(movement) movement.ID).
+            First()
+
+        If latestMovement.DateStarted = latestMovement.DateEnded Then
+            Return latestMovement.ID
+        End If
+
+        Return 0
+    End Function
+
+    Private Function TryFindOverlappingClientMovement(
+        candidateStart As Date,
+        candidateEnd As Date,
+        candidateIsCurrent As Boolean,
+        existingMovements As List(Of ClientMovementPeriod),
+        excludedMovementID As Integer,
+        currentMovementID As Integer,
+        currentMovementWillBeClosed As Boolean,
+        ByRef conflictingMovement As ClientMovementPeriod) As Boolean
+
+        Dim candidateEffectiveEnd As Date = If(candidateIsCurrent, Date.MaxValue.Date, candidateEnd.Date)
+
+        For Each movement In existingMovements
+            If movement.ID = excludedMovementID Then
+                Continue For
+            End If
+
+            If currentMovementWillBeClosed AndAlso movement.ID = currentMovementID Then
+                Continue For
+            End If
+
+            Dim movementEffectiveEnd As Date = movement.DateEnded
+            If movement.ID = currentMovementID Then
+                movementEffectiveEnd = Date.MaxValue.Date
+            End If
+
+            If candidateStart.Date <= movementEffectiveEnd AndAlso
+               movement.DateStarted <= candidateEffectiveEnd Then
+                conflictingMovement = movement
+                Return True
+            End If
+        Next
+
+        conflictingMovement = Nothing
+        Return False
+    End Function
+
+    Private Sub ShowClientMovementOverlapError(
+        conflictingMovement As ClientMovementPeriod,
+        currentMovementID As Integer)
+
+        Dim conflictingEnd As String
+        If conflictingMovement.ID = currentMovementID Then
+            conflictingEnd = "Up to present"
+        Else
+            conflictingEnd = conflictingMovement.DateEnded.ToString("dd-MMM-yyyy")
+        End If
+
+        MsgBox(
+            "The selected dates overlap movement record " & conflictingMovement.ID &
+            " (" & conflictingMovement.DateStarted.ToString("dd-MMM-yyyy") &
+            " to " & conflictingEnd & ")." & vbCrLf & vbCrLf &
+            "Client movement dates cannot overlap.",
+            vbExclamation,
+            "Overlapping Client Movement")
+    End Sub
+
+    Private Sub CloseExistingCurrentClientMovements(
+        employeeID As String,
+        newMovementStart As Date,
+        existingMovements As List(Of ClientMovementPeriod),
+        transaction As OleDbTransaction)
+
+        Const updateSql As String =
+            "UPDATE HR_EMPLOYEE_CLIENT_TRANSFER_DTL " &
+            "SET DATE_ENDED = ? WHERE ID = ? AND EMPLOYEE_ID = ?"
+
+        For Each currentMovement In existingMovements.Where(
+            Function(movement) movement.DateStarted = movement.DateEnded)
+
+            Dim nextMovementStart As Date = newMovementStart
+
+            For Each candidate In existingMovements
+                If candidate.DateStarted > currentMovement.DateStarted AndAlso
+                   candidate.DateStarted < nextMovementStart Then
+                    nextMovementStart = candidate.DateStarted
+                End If
+            Next
+
+            Dim correctedEndDate As Date = nextMovementStart.AddDays(-1)
+
+            Using updateCommand As New OleDbCommand(updateSql, GlobalVariables.GlobalCon, transaction)
+                updateCommand.Parameters.Add("?", OleDbType.Date).Value = correctedEndDate
+                updateCommand.Parameters.Add("?", OleDbType.Integer).Value = currentMovement.ID
+                updateCommand.Parameters.Add("?", OleDbType.VarWChar).Value = employeeID
+                updateCommand.ExecuteNonQuery()
+            End Using
+        Next
+    End Sub
+
+    Public Function Update_Client_Record(sEmployee_ID As String, sRef_ID As Integer) As Boolean
+        Connect_to_MDB()
+
+        Try
+            With FRM_EMP_UPDATE_REC
+                Dim startDate As Date
+                Dim endDate As Date
+                Dim isCurrentMovement As Boolean = .Chk_UptoPresent.Checked
+
+                If Not TryParseClientMovementDate(.Txt_Client_Start_Date.Text, startDate) Then
+                    MsgBox("Please enter a valid client movement start date.", vbExclamation, "Invalid Start Date")
+                    Return False
+                End If
+
+                If isCurrentMovement Then
+                    endDate = startDate
+                ElseIf Not TryParseClientMovementDate(.Txt_Client_End_Date.Text, endDate) Then
+                    MsgBox("Please enter a valid client movement end date.", vbExclamation, "Invalid End Date")
+                    Return False
+                End If
+
+                startDate = startDate.Date
+                endDate = endDate.Date
+
+                If Not isCurrentMovement AndAlso endDate < startDate Then
+                    MsgBox("The client movement end date cannot be earlier than its start date.", vbExclamation, "Invalid Date Range")
+                    Return False
+                End If
+
+                Dim existingMovements As List(Of ClientMovementPeriod) = LoadClientMovementPeriods(sEmployee_ID, Nothing)
+                Dim currentMovementID As Integer = GetCurrentClientMovementID(existingMovements)
+                Dim conflictingMovement As ClientMovementPeriod = Nothing
+
+                If TryFindOverlappingClientMovement(
+                    startDate,
+                    endDate,
+                    isCurrentMovement,
+                    existingMovements,
+                    sRef_ID,
+                    currentMovementID,
+                    False,
+                    conflictingMovement) Then
+
+                    ShowClientMovementOverlapError(conflictingMovement, currentMovementID)
+                    Return False
+                End If
+
+                Const updateSql As String =
+                    "UPDATE HR_EMPLOYEE_CLIENT_TRANSFER_DTL " &
+                    "SET DATE_STARTED = ?, DATE_ENDED = ? " &
+                    "WHERE ID = ? AND EMPLOYEE_ID = ?"
+
+                Using updateCommand As New OleDbCommand(updateSql, GlobalVariables.GlobalCon)
+                    updateCommand.Parameters.Add("?", OleDbType.Date).Value = startDate
+                    updateCommand.Parameters.Add("?", OleDbType.Date).Value = endDate
+                    updateCommand.Parameters.Add("?", OleDbType.Integer).Value = sRef_ID
+                    updateCommand.Parameters.Add("?", OleDbType.VarWChar).Value = sEmployee_ID
+                    updateCommand.ExecuteNonQuery()
+                End Using
 
                 Call Record_activity_log(Mod_GlobalVariables.GlobalVariables.sEmployee_ID_Logged_in, "Updated Client assigment Date of " & sEmployee_ID & "")
                 MsgBox("Client record was successfully updated!", vbInformation, "Saved")
 
             End With
+
+            Return True
         Catch ex As Exception
             MsgBox(ex.Message, vbCritical, "Error Updating Client Record")
-
+            Return False
+        Finally
+            If GlobalVariables.GlobalCon IsNot Nothing AndAlso GlobalVariables.GlobalCon.State <> ConnectionState.Closed Then
+                GlobalVariables.GlobalCon.Close()
+            End If
         End Try
-
-        GlobalVariables.GlobalCon.Close()
-    End Sub
+    End Function
     Public Sub Change_Employee_Client_Assignment(sEmployee_ID As String, sNew_Client_ID As Integer, iLatest_Client_ID As Integer)
 
         ' Update Employee_Record

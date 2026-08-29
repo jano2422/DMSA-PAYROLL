@@ -66,6 +66,40 @@ Public Partial Class FRM_DTR_SHIFT_MANUAL
         Public Property NightHours As Decimal
     End Class
 
+    Private Class ClientAssignmentOption
+        Public Property SubClientId As Integer
+        Public Property Name As String
+        Public Property DailyWage As Decimal
+
+        Public ReadOnly Property DisplayName As String
+            Get
+                Return Name & " · " & DailyWage.ToString("N2", CultureInfo.CurrentCulture)
+            End Get
+        End Property
+
+        Public Overrides Function ToString() As String
+            ' WinForms may fall back to ToString for a private nested binding
+            ' item. Return the user-facing label instead of the CLR type name.
+            Return DisplayName
+        End Function
+    End Class
+
+    Private Class ShiftWorkAllocation
+        Public Property ReportDate As Date
+        Public Property Shift As ShiftDefinition
+        Public Property Client As ClientAssignmentOption
+        Public Property Policy As SubClientPayrollPolicy
+        Public Property RegularHours As Decimal
+        Public Property NightHours As Decimal
+        Public Property OvertimeHours As Decimal
+
+        Public ReadOnly Property TotalHours As Decimal
+            Get
+                Return RegularHours + OvertimeHours
+            End Get
+        End Property
+    End Class
+
     Private ReadOnly shifts As New List(Of ShiftDefinition)
     Private ReadOnly coveredDates As New List(Of Date)
     Private isUpdatingGrid As Boolean
@@ -83,6 +117,15 @@ Public Partial Class FRM_DTR_SHIFT_MANUAL
     Private lastLoadedCutoffIndex As Integer = -1
     Private currentRecord As ManualPayrollRecord
     Private hourAdjustmentGrid As DataGridView
+    Private clientAssignmentGrid As DataGridView
+    Private ReadOnly clientAssignmentOptions As New List(Of ClientAssignmentOption)()
+    Private ReadOnly clientPolicyCache As New Dictionary(Of Integer, SubClientPayrollPolicy)()
+    Private ReadOnly workspaceClientIds As New HashSet(Of Integer)()
+    Private ReadOnly workspaceAdjustments As New Dictionary(Of Integer, PayrollAdjustments)()
+    Private currentWorkspaceClientId As Integer
+    Private cmbClientWorkspace As ComboBox
+    Private btnAddRelieverClient As Button
+    Private btnRemoveRelieverClient As Button
 
     Private txtOfficerAllowance As TextBox
     Private txtUniformAllowance As TextBox
@@ -166,6 +209,7 @@ Public Partial Class FRM_DTR_SHIFT_MANUAL
         SetupRuntimeHandlers()
         LoadPayrollPolicy()
         LoadSelectedEmployee()
+        LoadClientAssignmentOptions()
         SetupPayrollWorkspace()
         BuildPeriodDates()
     End Sub
@@ -188,6 +232,24 @@ Public Partial Class FRM_DTR_SHIFT_MANUAL
     End Sub
 
     Private Sub SetupHourAdjustmentWorkspace()
+        clientAssignmentGrid = New DataGridView With {
+            .Name = "clientAssignmentGrid",
+            .Dock = DockStyle.Fill,
+            .AllowUserToAddRows = False,
+            .AllowUserToDeleteRows = False,
+            .AllowUserToResizeRows = False,
+            .RowHeadersVisible = False,
+            .MultiSelect = False,
+            .EditMode = DataGridViewEditMode.EditOnEnter,
+            .TabIndex = shiftGrid.TabIndex + 1,
+            .AccessibleName = "Client or detachment assignment for each selected shift"
+        }
+        shiftSection.RowCount = 2
+        shiftSection.RowStyles.Clear()
+        shiftSection.RowStyles.Add(New RowStyle(SizeType.Percent, 100.0!))
+        shiftSection.RowStyles.Add(New RowStyle(SizeType.Absolute, 48.0!))
+        shiftSection.SetRow(fillPanel, 1)
+
         hourAdjustmentGrid = New DataGridView With {
             .Name = "hourAdjustmentGrid",
             .Dock = DockStyle.Fill,
@@ -425,6 +487,73 @@ Public Partial Class FRM_DTR_SHIFT_MANUAL
         End Try
     End Sub
 
+    Private Sub LoadClientAssignmentOptions()
+        clientAssignmentOptions.Clear()
+        clientPolicyCache.Clear()
+        If LicenseManager.UsageMode = LicenseUsageMode.Designtime Then
+            clientAssignmentOptions.Add(New ClientAssignmentOption With {.SubClientId = 1, .Name = "Sample Detachment", .DailyWage = 610D})
+            clientPolicyCache(1) = If(payrollPolicy, SubClientPayrollPolicy.CreateDefault(1))
+            Return
+        End If
+
+        Try
+            Connect_to_MDB()
+            Const sql As String = "SELECT [SUB_CLIENT_ID], [SUB_CLIENT_NAME], [DAILY_WAGE] FROM [TBL_CLIENT_SUB] ORDER BY [SUB_CLIENT_NAME]"
+            Using command As New OleDbCommand(sql, GlobalVariables.GlobalCon)
+                Using reader = command.ExecuteReader()
+                    While reader.Read()
+                        Dim optionItem As New ClientAssignmentOption With {
+                            .SubClientId = Convert.ToInt32(reader("SUB_CLIENT_ID"), CultureInfo.InvariantCulture),
+                            .Name = Convert.ToString(reader("SUB_CLIENT_NAME"), CultureInfo.CurrentCulture).Trim(),
+                            .DailyWage = If(reader("DAILY_WAGE") Is DBNull.Value, 0D, Convert.ToDecimal(reader("DAILY_WAGE"), CultureInfo.InvariantCulture))
+                        }
+                        clientAssignmentOptions.Add(optionItem)
+                    End While
+                End Using
+            End Using
+        Catch
+            clientAssignmentOptions.Clear()
+        Finally
+            If GlobalVariables.GlobalCon IsNot Nothing AndAlso GlobalVariables.GlobalCon.State = ConnectionState.Open Then
+                GlobalVariables.GlobalCon.Close()
+            End If
+        End Try
+
+        Dim homeId = HomeSubClientId()
+        If homeId > 0 AndAlso Not clientAssignmentOptions.Any(Function(item) item.SubClientId = homeId) Then
+            clientAssignmentOptions.Insert(0, New ClientAssignmentOption With {
+                .SubClientId = homeId,
+                .Name = If(GlobalVariables.DTR_Selected_SubClient_Name, "Home detachment"),
+                .DailyWage = LoadDailyWage(homeId)
+            })
+        End If
+        If homeId > 0 Then clientPolicyCache(homeId) = payrollPolicy
+    End Sub
+
+    Private Function HomeSubClientId() As Integer
+        Dim result As Integer
+        Integer.TryParse(GlobalVariables.DTR_Selected_SubClient_ID, result)
+        Return result
+    End Function
+
+    Private Function ClientOptionForId(subClientId As Integer) As ClientAssignmentOption
+        Dim result = clientAssignmentOptions.FirstOrDefault(Function(item) item.SubClientId = subClientId)
+        If result IsNot Nothing Then Return result
+        Return clientAssignmentOptions.FirstOrDefault(Function(item) item.SubClientId = HomeSubClientId())
+    End Function
+
+    Private Function PolicyForClient(subClientId As Integer) As SubClientPayrollPolicy
+        Dim result As SubClientPayrollPolicy = Nothing
+        If clientPolicyCache.TryGetValue(subClientId, result) Then Return result
+        Try
+            result = SubClientPayrollPolicyService.LoadPolicy(subClientId)
+        Catch
+            result = SubClientPayrollPolicy.CreateDefault(subClientId)
+        End Try
+        clientPolicyCache(subClientId) = result
+        Return result
+    End Function
+
     Private Sub SetupPayrollWorkspace()
         If headerPanel Is Nothing OrElse payrollPolicyStatusLabel IsNot Nothing Then Return
 
@@ -466,7 +595,7 @@ Public Partial Class FRM_DTR_SHIFT_MANUAL
         btnSave.TabIndex = 0
         btnSubmitFinal = New Button With {
             .Dock = DockStyle.Fill,
-            .Text = "Submit Final",
+            .Text = "Submit All Clients",
             .Font = New Font("Segoe UI Semibold", 9.0!, FontStyle.Bold),
             .BackColor = PrimaryColor,
             .ForeColor = Color.White,
@@ -893,6 +1022,10 @@ Public Partial Class FRM_DTR_SHIFT_MANUAL
 
     Private Sub PayrollInputChanged(sender As Object, e As EventArgs)
         If isLoadingPayrollInputs Then Return
+        Dim currentValues As PayrollAdjustments = Nothing
+        If currentWorkspaceClientId > 0 AndAlso TryReadPayrollAdjustments(currentValues, False) Then
+            workspaceAdjustments(currentWorkspaceClientId) = currentValues
+        End If
         RefreshPayrollPreview()
         MarkRecordDirty()
     End Sub
@@ -917,19 +1050,16 @@ Public Partial Class FRM_DTR_SHIFT_MANUAL
                 End If
             End If
 
-            SetMoneyInput(txtOfficerAllowance, If(record Is Nothing, 0D, record.OfficerAllowance))
-            SetMoneyInput(txtUniformAllowance, If(record Is Nothing, 0D, record.UniformAllowance))
-            SetMoneyInput(txtOtherEarnings, If(record Is Nothing, 0D, record.OtherEarnings))
-            SetMoneyInput(txtSssDeduction, If(record Is Nothing, 0D, record.SssDeduction))
-            SetMoneyInput(txtSssProvidentDeduction, If(record Is Nothing, 0D, record.SssProvidentDeduction))
-            SetMoneyInput(txtPhilHealthDeduction, If(record Is Nothing, 0D, record.PhilHealthDeduction))
-            SetMoneyInput(txtPagIbigDeduction, If(record Is Nothing, 0D, record.PagIbigDeduction))
-            SetMoneyInput(txtCashBondDeduction, If(record Is Nothing, 0D, record.CashBondDeduction))
-            SetMoneyInput(txtSssLoanDeduction, If(record Is Nothing, 0D, record.SssLoanDeduction))
-            SetMoneyInput(txtSssCalLoanDeduction, If(record Is Nothing, 0D, record.SssCalLoanDeduction))
-            SetMoneyInput(txtPagIbigLoanDeduction, If(record Is Nothing, 0D, record.PagIbigLoanDeduction))
-            SetMoneyInput(txtPagIbigCalLoanDeduction, If(record Is Nothing, 0D, record.PagIbigCalLoanDeduction))
-            SetMoneyInput(txtOtherDeductions, If(record Is Nothing, 0D, record.OtherDeductions))
+            workspaceAdjustments.Clear()
+            If record IsNot Nothing Then
+                For Each item In record.ClientAdjustments
+                    workspaceAdjustments(item.SubClientId) = PayrollAdjustmentsFromRecord(item)
+                Next
+            End If
+            If Not workspaceAdjustments.ContainsKey(HomeSubClientId()) Then
+                workspaceAdjustments(HomeSubClientId()) = New PayrollAdjustments()
+            End If
+            LoadWorkspaceAdjustmentInputs(HomeSubClientId())
 
             If lblDailyWageValue IsNot Nothing Then lblDailyWageValue.Text = FormatPeso(dailyWage)
             UpdateCutoffInputVisibility()
@@ -939,6 +1069,105 @@ Public Partial Class FRM_DTR_SHIFT_MANUAL
 
         RefreshPayrollPreview()
     End Sub
+
+    Private Function PayrollAdjustmentsFromRecord(item As ManualPayrollClientAdjustment) As PayrollAdjustments
+        Return New PayrollAdjustments With {
+            .OfficerAllowance = item.OfficerAllowance,
+            .UniformAllowance = item.UniformAllowance,
+            .OtherEarnings = item.OtherEarnings,
+            .CashBondDeduction = item.CashBondDeduction,
+            .SssLoanDeduction = item.SssLoanDeduction,
+            .SssCalLoanDeduction = item.SssCalLoanDeduction,
+            .PagIbigLoanDeduction = item.PagIbigLoanDeduction,
+            .PagIbigCalLoanDeduction = item.PagIbigCalLoanDeduction,
+            .PhilHealthDeduction = item.PhilHealthDeduction,
+            .SssDeduction = item.SssDeduction,
+            .SssProvidentDeduction = item.SssProvidentDeduction,
+            .PagIbigDeduction = item.PagIbigDeduction,
+            .OtherDeductions = item.OtherDeductions
+        }
+    End Function
+
+    Private Sub LoadWorkspaceAdjustmentInputs(clientId As Integer)
+        Dim values As PayrollAdjustments = Nothing
+        If Not workspaceAdjustments.TryGetValue(clientId, values) Then
+            values = New PayrollAdjustments()
+            workspaceAdjustments(clientId) = values
+        End If
+        isLoadingPayrollInputs = True
+        Try
+            SetMoneyInput(txtOfficerAllowance, values.OfficerAllowance)
+            SetMoneyInput(txtUniformAllowance, values.UniformAllowance)
+            SetMoneyInput(txtOtherEarnings, values.OtherEarnings)
+            SetMoneyInput(txtSssDeduction, values.SssDeduction)
+            SetMoneyInput(txtSssProvidentDeduction, values.SssProvidentDeduction)
+            SetMoneyInput(txtPhilHealthDeduction, values.PhilHealthDeduction)
+            SetMoneyInput(txtPagIbigDeduction, values.PagIbigDeduction)
+            SetMoneyInput(txtCashBondDeduction, values.CashBondDeduction)
+            SetMoneyInput(txtSssLoanDeduction, values.SssLoanDeduction)
+            SetMoneyInput(txtSssCalLoanDeduction, values.SssCalLoanDeduction)
+            SetMoneyInput(txtPagIbigLoanDeduction, values.PagIbigLoanDeduction)
+            SetMoneyInput(txtPagIbigCalLoanDeduction, values.PagIbigCalLoanDeduction)
+            SetMoneyInput(txtOtherDeductions, values.OtherDeductions)
+        Finally
+            isLoadingPayrollInputs = False
+        End Try
+    End Sub
+
+    Private Function TryStoreCurrentWorkspaceAdjustments(showValidation As Boolean) As Boolean
+        If currentWorkspaceClientId <= 0 Then Return True
+        Dim values As PayrollAdjustments = Nothing
+        If Not TryReadPayrollAdjustments(values, showValidation) Then Return False
+        workspaceAdjustments(currentWorkspaceClientId) = values
+        Return True
+    End Function
+
+    Private Function SumWorkspaceAdjustments() As PayrollAdjustments
+        Dim total As New PayrollAdjustments()
+        For Each clientId In workspaceClientIds
+            Dim item As PayrollAdjustments = Nothing
+            If Not workspaceAdjustments.TryGetValue(clientId, item) Then Continue For
+            total.OfficerAllowance += item.OfficerAllowance
+            total.UniformAllowance += item.UniformAllowance
+            total.OtherEarnings += item.OtherEarnings
+            total.CashBondDeduction += item.CashBondDeduction
+            total.SssLoanDeduction += item.SssLoanDeduction
+            total.SssCalLoanDeduction += item.SssCalLoanDeduction
+            total.PagIbigLoanDeduction += item.PagIbigLoanDeduction
+            total.PagIbigCalLoanDeduction += item.PagIbigCalLoanDeduction
+            total.PhilHealthDeduction += item.PhilHealthDeduction
+            total.SssDeduction += item.SssDeduction
+            total.SssProvidentDeduction += item.SssProvidentDeduction
+            total.PagIbigDeduction += item.PagIbigDeduction
+            total.OtherDeductions += item.OtherDeductions
+        Next
+        Return total
+    End Function
+
+    Private Function BuildClientAdjustmentRecords() As List(Of ManualPayrollClientAdjustment)
+        Dim result As New List(Of ManualPayrollClientAdjustment)()
+        For Each clientId In workspaceClientIds.OrderBy(Function(value) value)
+            Dim item As PayrollAdjustments = Nothing
+            If Not workspaceAdjustments.TryGetValue(clientId, item) Then item = New PayrollAdjustments()
+            result.Add(New ManualPayrollClientAdjustment With {
+                .SubClientId = clientId,
+                .OfficerAllowance = item.OfficerAllowance,
+                .UniformAllowance = item.UniformAllowance,
+                .OtherEarnings = item.OtherEarnings,
+                .CashBondDeduction = item.CashBondDeduction,
+                .SssLoanDeduction = item.SssLoanDeduction,
+                .SssCalLoanDeduction = item.SssCalLoanDeduction,
+                .PagIbigLoanDeduction = item.PagIbigLoanDeduction,
+                .PagIbigCalLoanDeduction = item.PagIbigCalLoanDeduction,
+                .PhilHealthDeduction = item.PhilHealthDeduction,
+                .SssDeduction = item.SssDeduction,
+                .SssProvidentDeduction = item.SssProvidentDeduction,
+                .PagIbigDeduction = item.PagIbigDeduction,
+                .OtherDeductions = item.OtherDeductions
+            })
+        Next
+        Return result
+    End Function
 
     Private Function LoadDailyWage(subClientId As Integer) As Decimal
         Dim result As Decimal = 0D
@@ -1063,15 +1292,7 @@ Public Partial Class FRM_DTR_SHIFT_MANUAL
         Dim totals = If(totalsOverride, CalculateTotals())
         Dim workEarnings As Decimal
         If totalsOverride Is Nothing Then
-            workEarnings = SubClientPayrollPolicyService.CalculateEarningsBreakdownForDays(
-                payrollPolicy,
-                dailyWage,
-                BuildCutoff(),
-                totals("NUM_DAYS"),
-                BuildPayrollDayEarningInputs(),
-                0D,
-                0D,
-                0D).WorkEarnings
+            workEarnings = CalculateAssignedEarningsBreakdown().WorkEarnings
         Else
             ' Historical summaries do not retain enough date-level context to
             ' distinguish an ordinary holiday from a holiday that falls on Sunday.
@@ -1097,8 +1318,9 @@ Public Partial Class FRM_DTR_SHIFT_MANUAL
         lblNetPayValue.Text = FormatPeso(netPay)
         lblNetPayValue.ForeColor = If(netPay < 0D, Color.Maroon, Color.Teal)
 
-        If dailyWage <= 0D Then
-            lblPreviewStatus.Text = "Daily wage is missing; payroll earnings cannot be calculated."
+        Dim selectedClients = SelectedAssignmentClients()
+        If selectedClients.Any(Function(item) item.DailyWage <= 0D) Then
+            lblPreviewStatus.Text = "One or more assigned detachments have no daily wage; payroll cannot be finalized."
             lblPreviewStatus.ForeColor = Color.Maroon
         ElseIf netPay < 0D Then
             lblPreviewStatus.Text = "Review the deductions because estimated net pay is negative."
@@ -1109,7 +1331,7 @@ Public Partial Class FRM_DTR_SHIFT_MANUAL
                 lblPreviewStatus.Text = fallbackNote
                 lblPreviewStatus.ForeColor = WarningColor
             Else
-                lblPreviewStatus.Text = "Live estimate; the generated payroll uses these saved values."
+                lblPreviewStatus.Text = "Current-client preview including this client's allowances and deductions."
                 lblPreviewStatus.ForeColor = Color.DimGray
             End If
         End If
@@ -1191,6 +1413,7 @@ Public Partial Class FRM_DTR_SHIFT_MANUAL
         lblCoverage.Text = "Period: " & coveredDates.First().ToString("M/d/yyyy", CultureInfo.InvariantCulture) & " - " & coveredDates.Last().ToString("M/d/yyyy", CultureInfo.InvariantCulture)
         GlobalVariables.sPayroll_Cutoff = BuildCutoff()
         BuildShiftGrid()
+        BuildClientAssignmentGrid()
         BuildDailyHoursGrid()
         BuildHolidayGrid()
         BuildHourAdjustmentGrid()
@@ -1257,14 +1480,24 @@ Public Partial Class FRM_DTR_SHIFT_MANUAL
         isUpdatingGrid = True
         Try
             ClearRecordGridSelections()
+            For Each item In record.ClientAdjustments
+                If clientAssignmentOptions.Any(Function(optionItem) optionItem.SubClientId = item.SubClientId) Then
+                    workspaceClientIds.Add(item.SubClientId)
+                End If
+            Next
             For Each day In record.Days
                 Dim columnName = DateColumnName(day.ReportDate.Date)
                 If Not shiftGrid.Columns.Contains(columnName) Then Continue For
 
                 For rowIndex As Integer = 0 To shifts.Count - 1
                     Dim shiftName = shifts(rowIndex).Name
-                    shiftGrid.Rows(rowIndex).Cells(columnName).Value =
-                        day.SelectedShiftNames.Any(Function(name) String.Equals(name, shiftName, StringComparison.OrdinalIgnoreCase))
+                    Dim savedAssignment = day.ShiftAssignments.FirstOrDefault(
+                        Function(item) String.Equals(item.ShiftName, shiftName, StringComparison.OrdinalIgnoreCase))
+                    If savedAssignment IsNot Nothing AndAlso
+                       clientAssignmentOptions.Any(Function(item) item.SubClientId = savedAssignment.SubClientId) Then
+                        clientAssignmentGrid.Rows(rowIndex).Cells(columnName).Value = savedAssignment.SubClientId
+                        workspaceClientIds.Add(savedAssignment.SubClientId)
+                    End If
                 Next
 
                 Dim columnIndex = holidayGrid.Columns(columnName).Index
@@ -1283,6 +1516,8 @@ Public Partial Class FRM_DTR_SHIFT_MANUAL
                 ApplyHolidayExclusionState(columnIndex)
             Next
             RefreshHourAdjustmentDisplay()
+            RefreshWorkspaceSelector(HomeSubClientId())
+            RenderClientWorkspace()
         Finally
             isUpdatingGrid = False
         End Try
@@ -1297,6 +1532,14 @@ Public Partial Class FRM_DTR_SHIFT_MANUAL
                     row.Cells(DateColumnName(d)).Value = False
                 Next
             Next
+            For Each row As DataGridViewRow In clientAssignmentGrid.Rows
+                For Each d In coveredDates
+                    row.Cells(DateColumnName(d)).Value = Nothing
+                Next
+            Next
+            workspaceClientIds.Clear()
+            If HomeSubClientId() > 0 Then workspaceClientIds.Add(HomeSubClientId())
+            currentWorkspaceClientId = HomeSubClientId()
             If holidayGrid.Rows.Count >= 3 Then
                 For Each d In coveredDates
                     Dim columnName = DateColumnName(d)
@@ -1454,14 +1697,12 @@ Public Partial Class FRM_DTR_SHIFT_MANUAL
 
     Private Sub SetRecordEditability(editable As Boolean)
         isRecordReadOnly = Not editable
-        fillPanel.Enabled = editable
-        If hourAdjustmentGrid IsNot Nothing AndAlso hourAdjustmentGrid.Rows.Count > 1 Then
-            For Each d As Date In coveredDates
-                Dim cell = hourAdjustmentGrid.Rows(1).Cells(DateColumnName(d))
-                cell.ReadOnly = Not editable
-                cell.Style.BackColor = If(editable, Color.FromArgb(255, 252, 240), Color.FromArgb(239, 242, 244))
-            Next
-        End If
+        fillPanel.Enabled = True
+        For Each button In fillPanel.Controls.OfType(Of Button)()
+            button.Enabled = editable
+        Next
+        If cmbClientWorkspace IsNot Nothing Then cmbClientWorkspace.Enabled = True
+        RenderClientWorkspace()
         For Each inputControl In payrollInputRows.Keys
             inputControl.ReadOnly = Not editable
             inputControl.BackColor = If(editable, Color.White, Color.FromArgb(239, 242, 244))
@@ -1479,8 +1720,8 @@ Public Partial Class FRM_DTR_SHIFT_MANUAL
         Dim status = If(currentRecord Is Nothing, ManualPayrollRecordService.StatusNotStarted, currentRecord.RecordStatus)
         Select Case status
             Case ManualPayrollRecordService.StatusFinal
-                btnSave.Text = "Amend Final"
-                btnSave.Enabled = True
+                btnSave.Text = If(CanAmendFinal(), "Amend Final", "Final Locked")
+                btnSave.Enabled = CanAmendFinal()
                 btnSave.BackColor = WarningColor
                 btnSave.ForeColor = Color.White
                 btnSubmitFinal.Text = "Final Submitted"
@@ -1490,7 +1731,7 @@ Public Partial Class FRM_DTR_SHIFT_MANUAL
                 btnSave.Enabled = editable
                 btnSave.BackColor = WarningColor
                 btnSave.ForeColor = Color.White
-                btnSubmitFinal.Text = "Submit Amended Final"
+                btnSubmitFinal.Text = "Submit All Amendments"
                 btnSubmitFinal.Enabled = editable
             Case ManualPayrollRecordService.StatusLegacyFinal
                 btnSave.Text = "Legacy Record"
@@ -1502,7 +1743,7 @@ Public Partial Class FRM_DTR_SHIFT_MANUAL
                 btnSave.Enabled = editable
                 btnSave.BackColor = WarningColor
                 btnSave.ForeColor = Color.White
-                btnSubmitFinal.Text = "Submit Final"
+                btnSubmitFinal.Text = "Submit All Clients"
                 btnSubmitFinal.Enabled = editable
         End Select
     End Sub
@@ -1529,7 +1770,7 @@ Public Partial Class FRM_DTR_SHIFT_MANUAL
         lblRecordStatus.ForeColor = Color.Maroon
         lblRecordMetadata.Text = If(isAmendment,
             "Changes exist only on this screen. Remarks are required before saving or submitting.",
-            "Changes exist only on this screen. Choose Save Draft or Submit Final.")
+            "Changes exist only on this screen. Choose Save Draft or Submit All Clients.")
     End Sub
 
     Private Sub ManualPayrollFormClosing(sender As Object, e As FormClosingEventArgs)
@@ -1577,6 +1818,43 @@ Public Partial Class FRM_DTR_SHIFT_MANUAL
 
         ApplyFullGridLayout(shiftGrid, ShiftNameColumnWidth, ShiftCoverageColumnWidth)
         isUpdatingGrid = False
+    End Sub
+
+    Private Sub BuildClientAssignmentGrid()
+        isUpdatingGrid = True
+        Try
+            clientAssignmentGrid.Columns.Clear()
+            clientAssignmentGrid.Rows.Clear()
+            clientAssignmentGrid.Columns.Add(New DataGridViewTextBoxColumn With {
+                .Name = "ShiftName", .HeaderText = "Assigned client", .ReadOnly = True,
+                .Frozen = True, .Width = ShiftNameColumnWidth
+            })
+            clientAssignmentGrid.Columns.Add(New DataGridViewTextBoxColumn With {
+                .Name = "Coverage", .HeaderText = "Coverage", .ReadOnly = True,
+                .Frozen = True, .Width = ShiftCoverageColumnWidth
+            })
+            For Each d As Date In coveredDates
+                Dim clientColumn As New DataGridViewTextBoxColumn With {
+                    .Name = DateColumnName(d),
+                    .HeaderText = TimelineHeaderText(d),
+                    .ReadOnly = True,
+                    .Width = 74
+                }
+                clientAssignmentGrid.Columns.Add(clientColumn)
+            Next
+
+            For Each shiftDef In shifts
+                Dim rowIndex = clientAssignmentGrid.Rows.Add()
+                clientAssignmentGrid.Rows(rowIndex).Cells("ShiftName").Value = shiftDef.Name
+                clientAssignmentGrid.Rows(rowIndex).Cells("Coverage").Value = shiftDef.Coverage
+                For Each d As Date In coveredDates
+                    clientAssignmentGrid.Rows(rowIndex).Cells(DateColumnName(d)).Value = Nothing
+                Next
+            Next
+            ApplyFullGridLayout(clientAssignmentGrid, ShiftNameColumnWidth, ShiftCoverageColumnWidth)
+        Finally
+            isUpdatingGrid = False
+        End Try
     End Sub
 
     Private Sub BuildHolidayGrid()
@@ -1860,13 +2138,54 @@ Public Partial Class FRM_DTR_SHIFT_MANUAL
 
     Private Sub BuildFillButtons()
         fillPanel.Controls.Clear()
-        fillPanel.Controls.Add(ToolbarGroupLabel("Shift tools", 86))
+        workspaceClientIds.Clear()
+        currentWorkspaceClientId = HomeSubClientId()
+        If currentWorkspaceClientId > 0 Then workspaceClientIds.Add(currentWorkspaceClientId)
+
+        fillPanel.Controls.Add(ToolbarGroupLabel("CLIENT", 52))
+        cmbClientWorkspace = New ComboBox With {
+            .Width = 210,
+            .Height = 32,
+            .DropDownStyle = ComboBoxStyle.DropDownList,
+            .FlatStyle = FlatStyle.Flat,
+            .Margin = New Padding(0, 2, 6, 0),
+            .AccessibleName = "Current client workspace"
+        }
+        AddHandler cmbClientWorkspace.SelectedIndexChanged, AddressOf ClientWorkspaceChanged
+        fillPanel.Controls.Add(cmbClientWorkspace)
+
+        btnAddRelieverClient = New Button With {
+            .Text = "+ Reliever",
+            .Width = 86,
+            .Height = 32,
+            .Margin = New Padding(0, 2, 6, 0),
+            .BackColor = PrimaryColor,
+            .ForeColor = Color.White,
+            .FlatStyle = FlatStyle.Flat
+        }
+        btnAddRelieverClient.FlatAppearance.BorderSize = 0
+        AddHandler btnAddRelieverClient.Click, AddressOf AddRelieverClient
+        fillPanel.Controls.Add(btnAddRelieverClient)
+
+        btnRemoveRelieverClient = New Button With {
+            .Text = "Remove",
+            .Width = 68,
+            .Height = 32,
+            .Margin = New Padding(0, 2, 10, 0),
+            .BackColor = Color.White,
+            .ForeColor = TextColor,
+            .FlatStyle = FlatStyle.Flat
+        }
+        btnRemoveRelieverClient.FlatAppearance.BorderColor = BorderColor
+        AddHandler btnRemoveRelieverClient.Click, AddressOf RemoveRelieverClient
+        fillPanel.Controls.Add(btnRemoveRelieverClient)
+        RefreshWorkspaceSelector(currentWorkspaceClientId)
 
         For i As Integer = 0 To shifts.Count - 1
             Dim shiftIndex As Integer = i
             Dim btn As New Button With {
                 .Text = "Fill " & shifts(i).Name,
-                .Width = 116,
+                .Width = 92,
                 .Height = 32,
                 .Margin = New Padding(0, 2, 8, 0),
                 .BackColor = PrimaryColor,
@@ -1879,8 +2198,8 @@ Public Partial Class FRM_DTR_SHIFT_MANUAL
         Next
 
         Dim clearButton As New Button With {
-            .Text = "Clear All",
-            .Width = 92,
+            .Text = "Clear Client",
+            .Width = 88,
             .Height = 32,
             .Margin = New Padding(0, 2, 8, 0),
             .BackColor = Color.FromArgb(245, 245, 245),
@@ -1907,42 +2226,309 @@ Public Partial Class FRM_DTR_SHIFT_MANUAL
         }
     End Function
 
+    Private Sub RefreshWorkspaceSelector(selectedClientId As Integer)
+        If cmbClientWorkspace Is Nothing Then Return
+        Dim previousUpdating = isUpdatingGrid
+        isUpdatingGrid = True
+        Try
+            Dim available = clientAssignmentOptions.
+                Where(Function(item) workspaceClientIds.Contains(item.SubClientId)).
+                OrderByDescending(Function(item) item.SubClientId = HomeSubClientId()).
+                ThenBy(Function(item) item.Name).
+                ToList()
+            cmbClientWorkspace.DataSource = Nothing
+            cmbClientWorkspace.Items.Clear()
+            cmbClientWorkspace.Items.AddRange(available.Cast(Of Object).ToArray())
+            Dim selectedIndex = available.FindIndex(Function(item) item.SubClientId = selectedClientId)
+            If selectedIndex >= 0 Then
+                cmbClientWorkspace.SelectedIndex = selectedIndex
+                currentWorkspaceClientId = selectedClientId
+            ElseIf available.Count > 0 Then
+                cmbClientWorkspace.SelectedIndex = 0
+                currentWorkspaceClientId = available(0).SubClientId
+            Else
+                currentWorkspaceClientId = 0
+            End If
+        Finally
+            isUpdatingGrid = previousUpdating
+        End Try
+        UpdateWorkspaceButtons()
+    End Sub
+
+    Private Sub ClientWorkspaceChanged(sender As Object, e As EventArgs)
+        If isUpdatingGrid OrElse cmbClientWorkspace Is Nothing OrElse cmbClientWorkspace.SelectedItem Is Nothing Then Return
+        Dim selected = TryCast(cmbClientWorkspace.SelectedItem, ClientAssignmentOption)
+        If selected Is Nothing OrElse selected.SubClientId = currentWorkspaceClientId Then Return
+        Dim previousClientId = currentWorkspaceClientId
+        If Not TryStoreCurrentWorkspaceAdjustments(True) Then
+            RefreshWorkspaceSelector(previousClientId)
+            Return
+        End If
+        currentWorkspaceClientId = selected.SubClientId
+        LoadWorkspaceAdjustmentInputs(currentWorkspaceClientId)
+        RenderClientWorkspace()
+    End Sub
+
+    Private Sub AddRelieverClient(sender As Object, e As EventArgs)
+        If isRecordReadOnly Then Return
+        If Not TryStoreCurrentWorkspaceAdjustments(True) Then Return
+        Dim candidates = clientAssignmentOptions.
+            Where(Function(item) Not workspaceClientIds.Contains(item.SubClientId)).
+            OrderBy(Function(item) item.Name).
+            ToList()
+        If candidates.Count = 0 Then
+            AppNotification.Show("All available clients are already included in this cutoff.", "Reliever Client", MessageBoxButtons.OK, MessageBoxIcon.Information)
+            Return
+        End If
+
+        Using dialog As New Form With {
+            .Text = "Add Reliever Client",
+            .StartPosition = FormStartPosition.CenterParent,
+            .FormBorderStyle = FormBorderStyle.FixedDialog,
+            .MinimizeBox = False,
+            .MaximizeBox = False,
+            .ShowInTaskbar = False,
+            .ClientSize = New Size(470, 360),
+            .BackColor = CanvasColor
+        }
+            Dim heading As New Label With {
+                .Text = "Select the client where this employee will relieve.",
+                .AutoSize = False,
+                .Location = New Point(20, 18),
+                .Size = New Size(430, 42),
+                .Font = New Font("Segoe UI Semibold", 11.0!, FontStyle.Bold),
+                .ForeColor = TextColor
+            }
+            Dim list As New ListBox With {
+                .Location = New Point(20, 66),
+                .Size = New Size(430, 226),
+                .Font = New Font("Segoe UI", 10.0!),
+                .BorderStyle = BorderStyle.FixedSingle
+            }
+            list.Items.AddRange(candidates.Cast(Of Object).ToArray())
+            If list.Items.Count > 0 Then list.SelectedIndex = 0
+            Dim addButton As New Button With {
+                .Text = "Add Client",
+                .DialogResult = DialogResult.OK,
+                .Location = New Point(248, 308),
+                .Size = New Size(98, 34),
+                .BackColor = PrimaryColor,
+                .ForeColor = Color.White,
+                .FlatStyle = FlatStyle.Flat
+            }
+            addButton.FlatAppearance.BorderSize = 0
+            Dim cancelButton As New Button With {
+                .Text = "Cancel",
+                .DialogResult = DialogResult.Cancel,
+                .Location = New Point(352, 308),
+                .Size = New Size(98, 34),
+                .BackColor = Color.White,
+                .ForeColor = TextColor,
+                .FlatStyle = FlatStyle.Flat
+            }
+            cancelButton.FlatAppearance.BorderColor = BorderColor
+            dialog.Controls.Add(heading)
+            dialog.Controls.Add(list)
+            dialog.Controls.Add(addButton)
+            dialog.Controls.Add(cancelButton)
+            dialog.AcceptButton = addButton
+            dialog.CancelButton = cancelButton
+            If dialog.ShowDialog(Me) <> DialogResult.OK Then Return
+            Dim selected = TryCast(list.SelectedItem, ClientAssignmentOption)
+            If selected Is Nothing Then Return
+            workspaceClientIds.Add(selected.SubClientId)
+            If Not workspaceAdjustments.ContainsKey(selected.SubClientId) Then
+                workspaceAdjustments(selected.SubClientId) = New PayrollAdjustments()
+            End If
+            RefreshWorkspaceSelector(selected.SubClientId)
+            LoadWorkspaceAdjustmentInputs(selected.SubClientId)
+            RenderClientWorkspace()
+            MarkRecordDirty()
+        End Using
+    End Sub
+
+    Private Sub RemoveRelieverClient(sender As Object, e As EventArgs)
+        If isRecordReadOnly OrElse currentWorkspaceClientId <= 0 Then Return
+        If currentWorkspaceClientId = HomeSubClientId() Then Return
+        If Not TryStoreCurrentWorkspaceAdjustments(True) Then Return
+        If HasAssignmentsForClient(currentWorkspaceClientId) OrElse HasWorkspaceAdjustmentValues(currentWorkspaceClientId) Then
+            AppNotification.Show("Use Clear Client first to remove this client's checked days, allowances, and deductions.", "Client Still Has Payroll Entries", MessageBoxButtons.OK, MessageBoxIcon.Warning)
+            Return
+        End If
+        workspaceClientIds.Remove(currentWorkspaceClientId)
+        workspaceAdjustments.Remove(currentWorkspaceClientId)
+        RefreshWorkspaceSelector(HomeSubClientId())
+        LoadWorkspaceAdjustmentInputs(HomeSubClientId())
+        RenderClientWorkspace()
+        MarkRecordDirty()
+    End Sub
+
+    Private Function AssignmentClientId(rowIndex As Integer, reportDate As Date) As Integer
+        If clientAssignmentGrid Is Nothing OrElse rowIndex < 0 OrElse rowIndex >= clientAssignmentGrid.Rows.Count Then Return 0
+        Dim columnName = DateColumnName(reportDate)
+        If Not clientAssignmentGrid.Columns.Contains(columnName) Then Return 0
+        Dim value As Integer
+        If Integer.TryParse(Convert.ToString(clientAssignmentGrid.Rows(rowIndex).Cells(columnName).Value), value) Then Return value
+        Return 0
+    End Function
+
+    Private Sub SetAssignmentClientId(rowIndex As Integer, reportDate As Date, clientId As Integer)
+        If clientAssignmentGrid Is Nothing OrElse rowIndex < 0 OrElse rowIndex >= clientAssignmentGrid.Rows.Count Then Return
+        Dim columnName = DateColumnName(reportDate)
+        If Not clientAssignmentGrid.Columns.Contains(columnName) Then Return
+        clientAssignmentGrid.Rows(rowIndex).Cells(columnName).Value = If(clientId > 0, CType(clientId, Object), Nothing)
+    End Sub
+
+    Private Function OwnerClientIdForDate(reportDate As Date) As Integer
+        For rowIndex As Integer = 0 To shifts.Count - 1
+            Dim clientId = AssignmentClientId(rowIndex, reportDate)
+            If clientId > 0 Then Return clientId
+        Next
+        Return 0
+    End Function
+
+    Private Function HasAssignmentsForClient(clientId As Integer) As Boolean
+        Return coveredDates.Any(Function(reportDate)
+                                    For rowIndex As Integer = 0 To shifts.Count - 1
+                                        If AssignmentClientId(rowIndex, reportDate) = clientId Then Return True
+                                    Next
+                                    Return False
+                                End Function)
+    End Function
+
+    Private Function HasWorkspaceAdjustmentValues(clientId As Integer) As Boolean
+        Dim item As PayrollAdjustments = Nothing
+        If Not workspaceAdjustments.TryGetValue(clientId, item) OrElse item Is Nothing Then Return False
+        Return item.OfficerAllowance <> 0D OrElse item.UniformAllowance <> 0D OrElse item.OtherEarnings <> 0D OrElse
+            item.CashBondDeduction <> 0D OrElse item.SssLoanDeduction <> 0D OrElse item.SssCalLoanDeduction <> 0D OrElse
+            item.PagIbigLoanDeduction <> 0D OrElse item.PagIbigCalLoanDeduction <> 0D OrElse
+            item.PhilHealthDeduction <> 0D OrElse item.SssDeduction <> 0D OrElse item.SssProvidentDeduction <> 0D OrElse
+            item.PagIbigDeduction <> 0D OrElse item.OtherDeductions <> 0D
+    End Function
+
+    Private Sub UpdateWorkspaceButtons()
+        If btnRemoveRelieverClient IsNot Nothing Then
+            btnRemoveRelieverClient.Enabled = Not isRecordReadOnly AndAlso currentWorkspaceClientId > 0 AndAlso
+                currentWorkspaceClientId <> HomeSubClientId()
+        End If
+        If btnAddRelieverClient IsNot Nothing Then
+            btnAddRelieverClient.Enabled = Not isRecordReadOnly AndAlso
+                clientAssignmentOptions.Any(Function(item) Not workspaceClientIds.Contains(item.SubClientId))
+        End If
+    End Sub
+
+    Private Sub RenderClientWorkspace()
+        If shiftGrid Is Nothing OrElse clientAssignmentGrid Is Nothing OrElse currentWorkspaceClientId <= 0 Then Return
+        Dim selectedClient = clientAssignmentOptions.FirstOrDefault(Function(item) item.SubClientId = currentWorkspaceClientId)
+        If selectedClient Is Nothing Then Return
+
+        payrollPolicy = PolicyForClient(selectedClient.SubClientId)
+        dailyWage = selectedClient.DailyWage
+        If lblDailyWageValue IsNot Nothing Then lblDailyWageValue.Text = FormatPeso(dailyWage)
+        UpdateCutoffInputVisibility()
+
+        Dim previousUpdating = isUpdatingGrid
+        isUpdatingGrid = True
+        Try
+            For Each reportDate In coveredDates
+                Dim columnName = DateColumnName(reportDate)
+                Dim ownerId = OwnerClientIdForDate(reportDate)
+                Dim occupiedByAnother = ownerId > 0 AndAlso ownerId <> currentWorkspaceClientId
+                Dim owner = clientAssignmentOptions.FirstOrDefault(Function(item) item.SubClientId = ownerId)
+                Dim occupiedMessage = If(owner Is Nothing,
+                    "This day is assigned to another client.",
+                    "Assigned to " & owner.Name & ". Switch clients to edit this day.")
+
+                For rowIndex As Integer = 0 To shifts.Count - 1
+                    Dim cell = shiftGrid.Rows(rowIndex).Cells(columnName)
+                    cell.Value = AssignmentClientId(rowIndex, reportDate) = currentWorkspaceClientId
+                    ' Shift cells are toggled by ShiftGridCellClick. Keeping the
+                    ' checkbox itself read-only prevents the grid from applying a
+                    ' second automatic toggle after the assignment map is updated.
+                    cell.ReadOnly = True
+                    cell.Style.BackColor = If(occupiedByAnother OrElse isRecordReadOnly, Color.FromArgb(232, 236, 239), Color.White)
+                    cell.Style.SelectionBackColor = If(occupiedByAnother, Color.FromArgb(232, 236, 239), shiftGrid.DefaultCellStyle.SelectionBackColor)
+                    cell.ToolTipText = If(occupiedByAnother, occupiedMessage,
+                        "Check this shift to assign " & reportDate.ToString("MMM d", CultureInfo.CurrentCulture) & " to " & selectedClient.Name & ".")
+                Next
+
+                If holidayGrid IsNot Nothing AndAlso holidayGrid.Rows.Count >= 3 Then
+                    ApplyHolidayExclusionState(holidayGrid.Columns(columnName).Index)
+                    For rowIndex As Integer = 0 To 2
+                        Dim cell = holidayGrid.Rows(rowIndex).Cells(columnName)
+                        Dim naturallyLocked = rowIndex = 0 AndAlso reportDate.DayOfWeek <> DayOfWeek.Sunday
+                        cell.ReadOnly = isRecordReadOnly OrElse occupiedByAnother OrElse naturallyLocked
+                        If occupiedByAnother OrElse isRecordReadOnly OrElse naturallyLocked Then
+                            cell.Style.BackColor = Color.FromArgb(232, 236, 239)
+                            cell.Style.SelectionBackColor = Color.FromArgb(232, 236, 239)
+                        End If
+                        If occupiedByAnother Then cell.ToolTipText = occupiedMessage
+                    Next
+                End If
+
+                If hourAdjustmentGrid IsNot Nothing AndAlso hourAdjustmentGrid.Rows.Count > 1 Then
+                    Dim adjustmentCell = hourAdjustmentGrid.Rows(1).Cells(columnName)
+                    adjustmentCell.ReadOnly = isRecordReadOnly OrElse occupiedByAnother
+                    adjustmentCell.Style.BackColor = If(adjustmentCell.ReadOnly, Color.FromArgb(232, 236, 239), Color.FromArgb(255, 252, 240))
+                    adjustmentCell.ToolTipText = If(occupiedByAnother, occupiedMessage, "Optional hours to add or subtract for this date.")
+                End If
+            Next
+        Finally
+            isUpdatingGrid = previousUpdating
+        End Try
+        UpdateWorkspaceButtons()
+        RecalculateTotals()
+    End Sub
+
     Private Sub FillAllShift(shiftIndex As Integer)
         If isRecordReadOnly Then Return
         isUpdatingGrid = True
-        For Each d As Date In coveredDates
-            Dim columnName = DateColumnName(d)
-            If AllowsMultipleShiftsPerDate() Then
-                shiftGrid.Rows(shiftIndex).Cells(columnName).Value = True
-            Else
-                For rowIndex As Integer = 0 To shiftGrid.Rows.Count - 1
-                    shiftGrid.Rows(rowIndex).Cells(columnName).Value = (rowIndex = shiftIndex)
-                Next
-            End If
-        Next
-        isUpdatingGrid = False
-        RecalculateTotals()
+        Try
+            For Each d As Date In coveredDates
+                Dim ownerId = OwnerClientIdForDate(d)
+                If ownerId > 0 AndAlso ownerId <> currentWorkspaceClientId Then Continue For
+                If Not AllowsMultipleShiftsPerDate() Then
+                    For rowIndex As Integer = 0 To shifts.Count - 1
+                        SetAssignmentClientId(rowIndex, d, If(rowIndex = shiftIndex, currentWorkspaceClientId, 0))
+                    Next
+                Else
+                    SetAssignmentClientId(shiftIndex, d, currentWorkspaceClientId)
+                End If
+            Next
+        Finally
+            isUpdatingGrid = False
+        End Try
+        RenderClientWorkspace()
         MarkRecordDirty()
     End Sub
 
     Private Sub ClearAllEntries()
         If isRecordReadOnly Then Return
         isUpdatingGrid = True
-        For Each row As DataGridViewRow In shiftGrid.Rows
+        Try
             For Each d As Date In coveredDates
-                row.Cells(DateColumnName(d)).Value = False
+                Dim clearedAny = False
+                For rowIndex As Integer = 0 To shifts.Count - 1
+                    If AssignmentClientId(rowIndex, d) = currentWorkspaceClientId Then
+                        SetAssignmentClientId(rowIndex, d, 0)
+                        clearedAny = True
+                    End If
+                Next
+                If clearedAny AndAlso OwnerClientIdForDate(d) = 0 Then
+                    Dim columnName = DateColumnName(d)
+                    holidayGrid.Rows(0).Cells(columnName).Value = False
+                    holidayGrid.Rows(1).Cells(columnName).Value = False
+                    holidayGrid.Rows(2).Cells(columnName).Value = False
+                    If hourAdjustmentGrid.Rows.Count > 1 Then hourAdjustmentGrid.Rows(1).Cells(columnName).Value = "0"
+                    ApplyHolidayExclusionState(holidayGrid.Columns(columnName).Index)
+                End If
             Next
-        Next
-        For Each d As Date In coveredDates
-            Dim columnName = DateColumnName(d)
-            holidayGrid.Rows(0).Cells(columnName).Value = False
-            holidayGrid.Rows(1).Cells(columnName).Value = False
-            holidayGrid.Rows(2).Cells(columnName).Value = False
-            If hourAdjustmentGrid.Rows.Count > 1 Then hourAdjustmentGrid.Rows(1).Cells(columnName).Value = "0"
-            ApplyHolidayExclusionState(holidayGrid.Columns(columnName).Index)
-        Next
-        isUpdatingGrid = False
-        RecalculateTotals()
+        Finally
+            isUpdatingGrid = False
+        End Try
+        workspaceAdjustments(currentWorkspaceClientId) = New PayrollAdjustments()
+        LoadWorkspaceAdjustmentInputs(currentWorkspaceClientId)
+        RenderClientWorkspace()
         MarkRecordDirty()
     End Sub
 
@@ -1953,38 +2539,38 @@ Public Partial Class FRM_DTR_SHIFT_MANUAL
         End If
     End Sub
 
-    Private Sub ShiftGridCellValueChanged(sender As Object, e As DataGridViewCellEventArgs)
-        If isUpdatingGrid OrElse e.RowIndex < 0 OrElse e.ColumnIndex < 2 Then Return
-        If isRecordReadOnly Then Return
-
-        If Not AllowsMultipleShiftsPerDate() AndAlso IsCellChecked(shiftGrid.Rows(e.RowIndex).Cells(e.ColumnIndex)) Then
-            isUpdatingGrid = True
-            For rowIndex As Integer = 0 To shiftGrid.Rows.Count - 1
-                If rowIndex <> e.RowIndex Then
-                    shiftGrid.Rows(rowIndex).Cells(e.ColumnIndex).Value = False
-                End If
-            Next
-            isUpdatingGrid = False
-        End If
-
+    Private Sub ClientAssignmentCellValueChanged(sender As Object, e As DataGridViewCellEventArgs)
+        If isUpdatingGrid OrElse isRecordReadOnly OrElse e.RowIndex < 0 OrElse e.ColumnIndex < 2 Then Return
         RecalculateTotals()
         MarkRecordDirty()
+    End Sub
+
+    Private Sub ClientAssignmentDataError(sender As Object, e As DataGridViewDataErrorEventArgs)
+        e.ThrowException = False
+        e.Cancel = False
+    End Sub
+
+    Private Sub ShiftGridCellValueChanged(sender As Object, e As DataGridViewCellEventArgs)
+        If isUpdatingGrid OrElse e.RowIndex < 0 OrElse e.ColumnIndex < 2 Then Return
     End Sub
 
     Private Sub ShiftGridCellClick(sender As Object, e As DataGridViewCellEventArgs)
         If e.RowIndex < 0 OrElse e.ColumnIndex < 2 Then Return
         If isRecordReadOnly Then Return
+        Dim reportDate = coveredDates(e.ColumnIndex - 2)
+        Dim ownerId = OwnerClientIdForDate(reportDate)
+        If ownerId > 0 AndAlso ownerId <> currentWorkspaceClientId Then Return
 
         isUpdatingGrid = True
         Try
             Dim cell = shiftGrid.Rows(e.RowIndex).Cells(e.ColumnIndex)
             Dim isSelected = Not IsCellChecked(cell)
-            cell.Value = isSelected
+            SetAssignmentClientId(e.RowIndex, reportDate, If(isSelected, currentWorkspaceClientId, 0))
 
             If isSelected AndAlso Not AllowsMultipleShiftsPerDate() Then
                 For rowIndex As Integer = 0 To shiftGrid.Rows.Count - 1
                     If rowIndex <> e.RowIndex Then
-                        shiftGrid.Rows(rowIndex).Cells(e.ColumnIndex).Value = False
+                        SetAssignmentClientId(rowIndex, reportDate, 0)
                     End If
                 Next
             End If
@@ -1992,7 +2578,7 @@ Public Partial Class FRM_DTR_SHIFT_MANUAL
             isUpdatingGrid = False
         End Try
 
-        RecalculateTotals()
+        RenderClientWorkspace()
         MarkRecordDirty()
     End Sub
 
@@ -2131,7 +2717,7 @@ Public Partial Class FRM_DTR_SHIFT_MANUAL
         If isRecordReadOnly Then Return
 
         Dim cell = holidayGrid.Rows(e.RowIndex).Cells(e.ColumnIndex)
-        If cell.ReadOnly AndAlso e.RowIndex = 0 AndAlso Not IsClassificationColumnSunday(e.ColumnIndex) Then Return
+        If cell.ReadOnly Then Return
 
         Dim currentValue As Boolean = IsCellChecked(cell)
 
@@ -2227,6 +2813,14 @@ Public Partial Class FRM_DTR_SHIFT_MANUAL
         Return selectedShifts
     End Function
 
+    Private Function AllAssignedShiftsForDate(d As Date) As List(Of ShiftDefinition)
+        Dim assigned As New List(Of ShiftDefinition)()
+        For rowIndex As Integer = 0 To shifts.Count - 1
+            If AssignmentClientId(rowIndex, d) > 0 Then assigned.Add(shifts(rowIndex))
+        Next
+        Return assigned
+    End Function
+
     Private Function AllocateHoursForDate(d As Date, selectedShifts As List(Of ShiftDefinition)) As DayHourAllocation
         Dim allocation As New DayHourAllocation()
         If selectedShifts Is Nothing OrElse selectedShifts.Count = 0 Then Return allocation
@@ -2259,6 +2853,66 @@ Public Partial Class FRM_DTR_SHIFT_MANUAL
 
         allocation.TotalHours = allocation.RegularHours + allocation.OvertimeHours
         Return allocation
+    End Function
+
+    Private Function AssignedClientForShift(d As Date, shift As ShiftDefinition) As ClientAssignmentOption
+        Dim rowIndex = shifts.IndexOf(shift)
+        If rowIndex >= 0 AndAlso clientAssignmentGrid IsNot Nothing AndAlso
+           clientAssignmentGrid.Columns.Contains(DateColumnName(d)) Then
+            Dim rawValue = clientAssignmentGrid.Rows(rowIndex).Cells(DateColumnName(d)).Value
+            Dim clientId As Integer
+            If rawValue IsNot Nothing AndAlso Integer.TryParse(Convert.ToString(rawValue), clientId) Then
+                Dim selectedOption = clientAssignmentOptions.FirstOrDefault(Function(item) item.SubClientId = clientId)
+                If selectedOption IsNot Nothing Then Return selectedOption
+            End If
+        End If
+        Return Nothing
+    End Function
+
+    Private Function BuildShiftAllocationsForDate(d As Date, Optional includeAllClients As Boolean = False) As List(Of ShiftWorkAllocation)
+        Dim result As New List(Of ShiftWorkAllocation)()
+        Dim selected = If(includeAllClients, AllAssignedShiftsForDate(d), SelectedShiftsForDate(d))
+        For Each shift In selected
+            Dim client = AssignedClientForShift(d, shift)
+            If client Is Nothing Then Continue For
+            Dim regularHours = If(IsTriShiftSchedule(), shift.TotalHours, shift.RegularHours)
+            result.Add(New ShiftWorkAllocation With {
+                .ReportDate = d.Date,
+                .Shift = shift,
+                .Client = client,
+                .Policy = PolicyForClient(client.SubClientId),
+                .RegularHours = regularHours,
+                .NightHours = If(shift.IsNightShift, regularHours, 0D),
+                .OvertimeHours = If(IsTriShiftSchedule(), 0D, shift.BaseOtHours)
+            })
+        Next
+
+        Dim adjustment = HourAdjustmentForDate(d)
+        If result.Count = 0 OrElse adjustment = 0D Then Return result
+        If adjustment > 0D Then
+            result(result.Count - 1).OvertimeHours += adjustment
+            Return result
+        End If
+
+        Dim reduction = -adjustment
+        For index As Integer = result.Count - 1 To 0 Step -1
+            Dim amount = Math.Min(result(index).OvertimeHours, reduction)
+            result(index).OvertimeHours -= amount
+            reduction -= amount
+            If reduction <= 0D Then Exit For
+        Next
+        If reduction <= 0D Then Return result
+
+        For index As Integer = result.Count - 1 To 0 Step -1
+            Dim amount = Math.Min(result(index).RegularHours, reduction)
+            result(index).RegularHours -= amount
+            If result(index).Shift.IsNightShift Then
+                result(index).NightHours = Math.Min(result(index).NightHours, result(index).RegularHours)
+            End If
+            reduction -= amount
+            If reduction <= 0D Then Exit For
+        Next
+        Return result
     End Function
 
     Private Function HolidayForDate(d As Date) As String
@@ -2300,17 +2954,114 @@ Public Partial Class FRM_DTR_SHIFT_MANUAL
         Return result
     End Function
 
-    Private Function ResolvedPayCode(d As Date, prefix As String) As String
-        If String.IsNullOrEmpty(prefix) Then
-            Return SubClientPayrollPolicyService.ResolveEnabledDayPayCode(payrollPolicy, RequestedDayCodes(d))
-        End If
-        Return SubClientPayrollPolicyService.ResolveEnabledPayCode(payrollPolicy, prefix, RequestedDayCodes(d))
+    Private Function CalculateAssignedEarningsBreakdown(
+        Optional officerAllowance As Decimal = 0D,
+        Optional uniformAllowance As Decimal = 0D,
+        Optional otherEarnings As Decimal = 0D,
+        Optional includeAllClients As Boolean = False
+    ) As PayrollEarningsBreakdown
+        Dim result As New PayrollEarningsBreakdown With {
+            .OfficerAllowance = officerAllowance,
+            .UniformAllowance = uniformAllowance,
+            .OtherEarnings = otherEarnings
+        }
+        Dim allocations = coveredDates.SelectMany(Function(d) BuildShiftAllocationsForDate(d, includeAllClients)).ToList()
+        For Each clientGroup In allocations.GroupBy(Function(item) item.Client.SubClientId)
+            Dim first = clientGroup.First()
+            Dim inputs = clientGroup.Select(
+                Function(item) New PayrollDayEarningInput With {
+                    .DayCodes = RequestedDayCodes(item.ReportDate),
+                    .RegularHours = item.RegularHours,
+                    .NightHours = item.NightHours,
+                    .OvertimeHours = item.OvertimeHours
+                }).ToList()
+            Dim clientBreakdown = SubClientPayrollPolicyService.CalculateEarningsBreakdownForDays(
+                first.Policy,
+                first.Client.DailyWage,
+                BuildCutoff(),
+                clientGroup.Count(),
+                inputs,
+                0D, 0D, 0D)
+            For Each code In PayCodeOrder
+                result.AddAmount(code, clientBreakdown.AmountFor(code))
+            Next
+            result.IncentivePay += clientBreakdown.IncentivePay
+        Next
+        Return result
     End Function
 
-    Private Function DisplayBreakdownPayCode(d As Date, prefix As String) As String
+    Private Function CalculateClientWorkspaceBreakdown(clientId As Integer, adjustments As PayrollAdjustments) As PayrollEarningsBreakdown
+        If adjustments Is Nothing Then adjustments = New PayrollAdjustments()
+        Dim result As New PayrollEarningsBreakdown With {
+            .OfficerAllowance = adjustments.OfficerAllowance,
+            .UniformAllowance = adjustments.UniformAllowance,
+            .OtherEarnings = adjustments.OtherEarnings
+        }
+        Dim allocations = coveredDates.SelectMany(Function(d) BuildShiftAllocationsForDate(d, True)).
+            Where(Function(item) item.Client.SubClientId = clientId).
+            ToList()
+        If allocations.Count = 0 Then Return result
+
+        Dim first = allocations.First()
+        Dim inputs = allocations.Select(
+            Function(item) New PayrollDayEarningInput With {
+                .DayCodes = RequestedDayCodes(item.ReportDate),
+                .RegularHours = item.RegularHours,
+                .NightHours = item.NightHours,
+                .OvertimeHours = item.OvertimeHours
+            }).ToList()
+        Dim clientBreakdown = SubClientPayrollPolicyService.CalculateEarningsBreakdownForDays(
+            first.Policy,
+            first.Client.DailyWage,
+            BuildCutoff(),
+            allocations.Count,
+            inputs,
+            0D, 0D, 0D)
+        For Each code In PayCodeOrder
+            result.AddAmount(code, clientBreakdown.AmountFor(code))
+        Next
+        result.IncentivePay = clientBreakdown.IncentivePay
+        Return result
+    End Function
+
+    Private Function BuildFinalClientWorkspaceSummary(assignedClients As IEnumerable(Of ClientAssignmentOption)) As String
+        Dim lines As New List(Of String)()
+        For Each client In assignedClients.
+            OrderByDescending(Function(item) item.SubClientId = HomeSubClientId()).
+            ThenBy(Function(item) item.Name)
+            Dim adjustments As PayrollAdjustments = Nothing
+            If Not workspaceAdjustments.TryGetValue(client.SubClientId, adjustments) Then adjustments = New PayrollAdjustments()
+            Dim breakdown = CalculateClientWorkspaceBreakdown(client.SubClientId, adjustments)
+            Dim netPay = breakdown.TotalEarnings - adjustments.TotalDeductions(IsFirstCutoffSelected())
+            Dim assignedDates = coveredDates.Where(
+                Function(reportDate) OwnerClientIdForDate(reportDate) = client.SubClientId).Count()
+            lines.Add("- " & client.Name & ": " & assignedDates.ToString(CultureInfo.CurrentCulture) &
+                " day(s), net " & FormatPeso(netPay))
+        Next
+        Return String.Join(vbCrLf, lines)
+    End Function
+
+    Private Function SelectedAssignmentClients(Optional includeAllClients As Boolean = False) As List(Of ClientAssignmentOption)
+        Return coveredDates.SelectMany(Function(d) BuildShiftAllocationsForDate(d, includeAllClients)).
+            Select(Function(item) item.Client).
+            GroupBy(Function(item) item.SubClientId).
+            Select(Function(group) group.First()).
+            ToList()
+    End Function
+
+    Private Function ResolvedPayCode(d As Date, prefix As String, Optional policyOverride As SubClientPayrollPolicy = Nothing) As String
+        Dim effectivePolicy = If(policyOverride, payrollPolicy)
+        If String.IsNullOrEmpty(prefix) Then
+            Return SubClientPayrollPolicyService.ResolveEnabledDayPayCode(effectivePolicy, RequestedDayCodes(d))
+        End If
+        Return SubClientPayrollPolicyService.ResolveEnabledPayCode(effectivePolicy, prefix, RequestedDayCodes(d))
+    End Function
+
+    Private Function DisplayBreakdownPayCode(d As Date, prefix As String, Optional policyOverride As SubClientPayrollPolicy = Nothing) As String
+        Dim effectivePolicy = If(policyOverride, payrollPolicy)
         Dim holidayCode = HolidayForDate(d)
-        Dim resolvedCode = ResolvedPayCode(d, prefix)
-        If payrollPolicy IsNot Nothing AndAlso IsSundaySelected(d) Then
+        Dim resolvedCode = ResolvedPayCode(d, prefix, effectivePolicy)
+        If effectivePolicy IsNot Nothing AndAlso IsSundaySelected(d) Then
             Dim combinedCode As String = Nothing
             If String.Equals(holidayCode, "SH", StringComparison.OrdinalIgnoreCase) Then
                 combinedCode = "RD_SH"
@@ -2318,7 +3069,7 @@ Public Partial Class FRM_DTR_SHIFT_MANUAL
                 combinedCode = "RD_LH"
             End If
 
-            If combinedCode IsNot Nothing AndAlso payrollPolicy.GetRule(combinedCode).Enabled Then
+            If combinedCode IsNot Nothing AndAlso effectivePolicy.GetRule(combinedCode).Enabled Then
                 If String.IsNullOrEmpty(prefix) Then Return combinedCode
                 If String.Equals(resolvedCode, prefix & holidayCode, StringComparison.OrdinalIgnoreCase) Then
                     Return prefix & combinedCode
@@ -2332,22 +3083,21 @@ Public Partial Class FRM_DTR_SHIFT_MANUAL
         Return If(code, String.Empty).IndexOf("RD_", StringComparison.OrdinalIgnoreCase) >= 0
     End Function
 
-    Private Function CalculateCombinedClassificationTotals() As Dictionary(Of String, Decimal)
+    Private Function CalculateCombinedClassificationTotals(Optional includeAllClients As Boolean = False) As Dictionary(Of String, Decimal)
         Dim result As New Dictionary(Of String, Decimal)(StringComparer.OrdinalIgnoreCase) From {
             {"RD_SH", 0D}, {"RD_LH", 0D},
             {"ND_RD_SH", 0D}, {"ND_RD_LH", 0D},
             {"OT_RD_SH", 0D}, {"OT_RD_LH", 0D}
         }
         For Each reportDate In coveredDates
-            Dim selectedShifts = SelectedShiftsForDate(reportDate)
-            If selectedShifts.Count = 0 Then Continue For
-            Dim allocation = AllocateHoursForDate(reportDate, selectedShifts)
-            Dim baseCode = DisplayBreakdownPayCode(reportDate, String.Empty)
-            Dim ndCode = DisplayBreakdownPayCode(reportDate, "ND_")
-            Dim otCode = DisplayBreakdownPayCode(reportDate, "OT_")
-            If result.ContainsKey(baseCode) Then result(baseCode) += allocation.RegularHours
-            If result.ContainsKey(ndCode) Then result(ndCode) += allocation.NightHours
-            If result.ContainsKey(otCode) Then result(otCode) += allocation.OvertimeHours
+            For Each allocation In BuildShiftAllocationsForDate(reportDate, includeAllClients)
+                Dim baseCode = DisplayBreakdownPayCode(reportDate, String.Empty, allocation.Policy)
+                Dim ndCode = DisplayBreakdownPayCode(reportDate, "ND_", allocation.Policy)
+                Dim otCode = DisplayBreakdownPayCode(reportDate, "OT_", allocation.Policy)
+                If result.ContainsKey(baseCode) Then result(baseCode) += allocation.RegularHours
+                If result.ContainsKey(ndCode) Then result(ndCode) += allocation.NightHours
+                If result.ContainsKey(otCode) Then result(otCode) += allocation.OvertimeHours
+            Next
         Next
         Return result
     End Function
@@ -2360,7 +3110,7 @@ Public Partial Class FRM_DTR_SHIFT_MANUAL
         Return String.Join("+", result)
     End Function
 
-    Private Function CalculateTotals() As Dictionary(Of String, Decimal)
+    Private Function CalculateTotals(Optional includeAllClients As Boolean = False) As Dictionary(Of String, Decimal)
         Dim totals As New Dictionary(Of String, Decimal) From {
             {"NUM_DAYS", 0D},
             {"TOTAL_HOURS", 0D},
@@ -2380,31 +3130,28 @@ Public Partial Class FRM_DTR_SHIFT_MANUAL
         }
 
         For Each d As Date In coveredDates
-            Dim selectedShifts = SelectedShiftsForDate(d)
-            If selectedShifts.Count = 0 Then Continue For
-
-            Dim allocation = AllocateHoursForDate(d, selectedShifts)
-            Dim baseHours = If(payrollPolicy Is Nothing OrElse payrollPolicy.HoursPerDay <= 0D, 8D, payrollPolicy.HoursPerDay)
-            ' Each selected shift is one reporting day. Multiple shifts selected
-            ' on the same calendar date remain separate reporting days.
-            totals("NUM_DAYS") += selectedShifts.Count
-            totals("TOTAL_HOURS") += allocation.TotalHours
-            totals("ND_DAYS") += allocation.NightHours / baseHours
-
-            totals(ResolvedPayCode(d, String.Empty)) += allocation.RegularHours
-            totals(ResolvedPayCode(d, "ND_")) += allocation.NightHours
-            totals(ResolvedPayCode(d, "OT_")) += allocation.OvertimeHours
+            For Each allocation In BuildShiftAllocationsForDate(d, includeAllClients)
+                Dim baseHours = If(allocation.Policy Is Nothing OrElse allocation.Policy.HoursPerDay <= 0D, 8D, allocation.Policy.HoursPerDay)
+                totals("NUM_DAYS") += 1D
+                totals("TOTAL_HOURS") += allocation.TotalHours
+                totals("ND_DAYS") += allocation.NightHours / baseHours
+                totals(ResolvedPayCode(d, String.Empty, allocation.Policy)) += allocation.RegularHours
+                totals(ResolvedPayCode(d, "ND_", allocation.Policy)) += allocation.NightHours
+                totals(ResolvedPayCode(d, "OT_", allocation.Policy)) += allocation.OvertimeHours
+            Next
         Next
 
         Return totals
     End Function
 
-    Private Function DailyTotals() As Dictionary(Of Date, Decimal)
+    Private Function DailyTotals(Optional includeAllClients As Boolean = False) As Dictionary(Of Date, Decimal)
         Dim daily As New Dictionary(Of Date, Decimal)
         For Each d As Date In coveredDates
-            Dim selectedShifts = SelectedShiftsForDate(d)
+            Dim selectedShifts = If(includeAllClients, AllAssignedShiftsForDate(d), SelectedShiftsForDate(d))
             If selectedShifts.Count = 0 Then Continue For
-            daily(d) = AllocateHoursForDate(d, selectedShifts).TotalHours
+            daily(d) = If(includeAllClients,
+                BuildShiftAllocationsForDate(d, True).Sum(Function(item) item.TotalHours),
+                AllocateHoursForDate(d, selectedShifts).TotalHours)
         Next
         Return daily
     End Function
@@ -2418,6 +3165,10 @@ Public Partial Class FRM_DTR_SHIFT_MANUAL
         RefreshPayrollPreview()
     End Sub
 
+    Private Sub RefreshClientAssignmentEditability()
+        RenderClientWorkspace()
+    End Sub
+
     Private Sub UpdateDailyHoursDisplay(totals As Dictionary(Of String, Decimal))
         If dailyHoursGrid.Rows.Count = 0 Then Return
 
@@ -2428,19 +3179,19 @@ Public Partial Class FRM_DTR_SHIFT_MANUAL
         displayTotals("TOTAL_HOURS") = totals("TOTAL_HOURS")
 
         For Each d As Date In coveredDates
-            Dim selectedShifts = SelectedShiftsForDate(d)
             Dim dailyValues As New Dictionary(Of String, Decimal)(StringComparer.OrdinalIgnoreCase)
             For Each key In DailyBreakdownKeys
                 dailyValues(key) = 0D
             Next
 
-            If selectedShifts.Count > 0 Then
-                Dim allocation = AllocateHoursForDate(d, selectedShifts)
-                dailyValues("TOTAL_HOURS") = allocation.TotalHours
-                dailyValues(DisplayBreakdownPayCode(d, String.Empty)) = allocation.RegularHours
-                dailyValues(DisplayBreakdownPayCode(d, "ND_")) = allocation.NightHours
-                dailyValues(DisplayBreakdownPayCode(d, "OT_")) = allocation.OvertimeHours
-
+            Dim allocations = BuildShiftAllocationsForDate(d)
+            If allocations.Count > 0 Then
+                For Each allocation In allocations
+                    dailyValues("TOTAL_HOURS") += allocation.TotalHours
+                    dailyValues(DisplayBreakdownPayCode(d, String.Empty, allocation.Policy)) += allocation.RegularHours
+                    dailyValues(DisplayBreakdownPayCode(d, "ND_", allocation.Policy)) += allocation.NightHours
+                    dailyValues(DisplayBreakdownPayCode(d, "OT_", allocation.Policy)) += allocation.OvertimeHours
+                Next
                 For Each key In DailyBreakdownKeys.Skip(1)
                     displayTotals(key) += dailyValues(key)
                 Next
@@ -2476,6 +3227,10 @@ Public Partial Class FRM_DTR_SHIFT_MANUAL
 
     Private Sub BeginFinalAmendment()
         If currentRecord Is Nothing OrElse currentRecord.RecordStatus <> ManualPayrollRecordService.StatusFinal Then Return
+        If Not CanAmendFinal() Then
+            AppNotification.Show("Only an Administrator can amend a finalized payroll.", "Final Payroll Locked", MessageBoxButtons.OK, MessageBoxIcon.Warning)
+            Return
+        End If
         Dim remarks As String = Nothing
         If Not TryRequestAmendmentRemarks(remarks) Then Return
 
@@ -2604,8 +3359,8 @@ Public Partial Class FRM_DTR_SHIFT_MANUAL
     Private Function SavePayrollRecord(submitFinal As Boolean, Optional showSuccessNotification As Boolean = True) As Boolean
         If isRecordReadOnly Then Return False
         If Not ValidateHourAdjustments(True) Then Return False
-        Dim totals = CalculateTotals()
-        Dim daily = DailyTotals()
+        Dim totals = CalculateTotals(True)
+        Dim daily = DailyTotals(True)
         Dim adjustments As PayrollAdjustments = Nothing
 
         If submitFinal AndAlso daily.Count = 0 Then
@@ -2613,12 +3368,20 @@ Public Partial Class FRM_DTR_SHIFT_MANUAL
             Return False
         End If
 
-        If submitFinal AndAlso dailyWage <= 0D Then
-            AppNotification.Show("The selected detachment has no valid daily wage. Set the daily wage before saving payroll input.", "Missing Daily Wage", MessageBoxButtons.OK, MessageBoxIcon.Warning)
+        Dim assignedClients = SelectedAssignmentClients(True)
+        If submitFinal AndAlso (assignedClients.Count = 0 OrElse assignedClients.Any(Function(item) item.DailyWage <= 0D)) Then
+            AppNotification.Show("Every assigned detachment must have a valid daily wage before final submission.", "Missing Daily Wage", MessageBoxButtons.OK, MessageBoxIcon.Warning)
             Return False
         End If
 
-        If Not TryReadPayrollAdjustments(adjustments, True) Then Return False
+        If Not TryStoreCurrentWorkspaceAdjustments(True) Then Return False
+        adjustments = SumWorkspaceAdjustments()
+        Dim overallBreakdown = CalculateAssignedEarningsBreakdown(
+            adjustments.OfficerAllowance,
+            adjustments.UniformAllowance,
+            adjustments.OtherEarnings,
+            True)
+        Dim overallNetPay = overallBreakdown.TotalEarnings - adjustments.TotalDeductions(IsFirstCutoffSelected())
 
         Dim isAmendment = currentRecord IsNot Nothing AndAlso
             currentRecord.RecordStatus = ManualPayrollRecordService.StatusAmendmentDraft
@@ -2639,14 +3402,16 @@ Public Partial Class FRM_DTR_SHIFT_MANUAL
         If submitFinal Then
             Dim emptyDates = coveredDates.Count - daily.Count
             Dim submitLabel = If(isAmendment, "AMENDED FINAL", "FINAL")
-            Dim prompt = "Submit this payroll as " & submitLabel & " for " & GlobalVariables.DTR_Selected_Employee_Name &
+            Dim clientSummary = BuildFinalClientWorkspaceSummary(assignedClients)
+            Dim prompt = "Submit ALL listed client workspaces as " & submitLabel & " for " & GlobalVariables.DTR_Selected_Employee_Name &
                 " / " & BuildCutoff() & "?" & vbCrLf & vbCrLf &
-                "Estimated net pay: " & lblNetPayValue.Text & vbCrLf &
+                clientSummary & vbCrLf & vbCrLf &
+                "Estimated total net pay: " & FormatPeso(overallNetPay) & vbCrLf &
                 "Dates without a selected shift: " & emptyDates.ToString(CultureInfo.CurrentCulture) & vbCrLf & vbCrLf &
                 If(isAmendment,
-                   "Revision " & currentRecord.RevisionNo.ToString(CultureInfo.CurrentCulture) & " will become the active final payroll.",
-                   "Final submission completes this cutoff. Future changes require a documented amendment.")
-            If AppNotification.Show(prompt, If(isAmendment, "Submit Amended Payroll", "Submit Final Payroll"), MessageBoxButtons.YesNo, MessageBoxIcon.Warning) <> DialogResult.Yes Then Return False
+                   "All listed workspaces will be replaced by revision " & currentRecord.RevisionNo.ToString(CultureInfo.CurrentCulture) & ".",
+                   "All listed workspaces become final together. Future changes require a documented amendment.")
+            If AppNotification.Show(prompt, If(isAmendment, "Submit All Amended Client Workspaces", "Submit All Client Workspaces"), MessageBoxButtons.YesNo, MessageBoxIcon.Warning) <> DialogResult.Yes Then Return False
         End If
 
         Try
@@ -2670,8 +3435,9 @@ Public Partial Class FRM_DTR_SHIFT_MANUAL
             If showSuccessNotification Then
                 AppNotification.Show(
                     If(submitFinal,
-                       If(isAmendment, "Amended payroll submitted as the active final.", "Final payroll submitted.") &
-                           vbCrLf & "Estimated net pay: " & lblNetPayValue.Text,
+                       If(isAmendment, "All amended client workspaces were submitted as the active final.", "All client workspaces were submitted as final.") &
+                           vbCrLf & "Clients submitted: " & assignedClients.Count.ToString(CultureInfo.CurrentCulture) &
+                           vbCrLf & "Estimated total net pay: " & FormatPeso(overallNetPay),
                        If(isAmendment, "Amendment draft saved with its audit remarks.", "Draft saved. You can return to this employee and cutoff to continue editing.")),
                     If(submitFinal, "Payroll Completed", If(isAmendment, "Amendment Saved", "Draft Saved")),
                     MessageBoxButtons.OK,
@@ -2685,17 +3451,15 @@ Public Partial Class FRM_DTR_SHIFT_MANUAL
     End Function
 
     Private Function BuildPayrollRecord(totals As Dictionary(Of String, Decimal), adjustments As PayrollAdjustments, subClientId As Integer) As ManualPayrollRecord
-        Dim breakdown = SubClientPayrollPolicyService.CalculateEarningsBreakdownForDays(
-            payrollPolicy,
-            dailyWage,
-            BuildCutoff(),
-            totals("NUM_DAYS"),
-            BuildPayrollDayEarningInputs(),
+        Dim breakdown = CalculateAssignedEarningsBreakdown(
             adjustments.OfficerAllowance,
             adjustments.UniformAllowance,
-            adjustments.OtherEarnings)
-        Dim combinedTotals = CalculateCombinedClassificationTotals()
+            adjustments.OtherEarnings,
+            True)
+        Dim combinedTotals = CalculateCombinedClassificationTotals(True)
         Dim totalDeductions = adjustments.TotalDeductions(IsFirstCutoffSelected())
+        Dim homeClient = clientAssignmentOptions.FirstOrDefault(Function(item) item.SubClientId = subClientId)
+        Dim homePolicy = PolicyForClient(subClientId)
 
         Dim record As New ManualPayrollRecord With {
             .ParentRecordId = If(currentRecord Is Nothing, 0, currentRecord.ParentRecordId),
@@ -2742,8 +3506,8 @@ Public Partial Class FRM_DTR_SHIFT_MANUAL
             .UniformAllowance = adjustments.UniformAllowance,
             .OtherEarnings = adjustments.OtherEarnings,
             .OtherDeductions = adjustments.OtherDeductions,
-            .DailyWageSnapshot = dailyWage,
-            .HoursPerDaySnapshot = payrollPolicy.HoursPerDay,
+            .DailyWageSnapshot = If(homeClient Is Nothing, dailyWage, homeClient.DailyWage),
+            .HoursPerDaySnapshot = homePolicy.HoursPerDay,
             .RegularEarnings = breakdown.AmountFor("REG"),
             .SundayEarnings = breakdown.AmountFor("SUN"),
             .SpecialHolidayEarnings = breakdown.AmountFor("SH"),
@@ -2761,22 +3525,88 @@ Public Partial Class FRM_DTR_SHIFT_MANUAL
             .TotalDeductions = totalDeductions,
             .NetPay = breakdown.TotalEarnings - totalDeductions,
             .CalculationVersion = ManualPayrollRecordService.CurrentCalculationVersion,
-            .PayPolicySnapshot = payrollPolicy.ToAuditText(),
+            .PayPolicySnapshot = BuildAssignedPolicySnapshot(),
             .SnapshotComplete = True
         }
 
         For Each reportDate In coveredDates
-            Dim selectedShifts = SelectedShiftsForDate(reportDate)
-            Dim allocation = AllocateHoursForDate(reportDate, selectedShifts)
-            record.Days.Add(New ManualPayrollDayRecord With {
+            Dim selectedShifts = AllAssignedShiftsForDate(reportDate)
+            Dim shiftAllocations = BuildShiftAllocationsForDate(reportDate, True)
+            Dim dayRecord As New ManualPayrollDayRecord With {
                 .ReportDate = reportDate.Date,
                 .SelectedShiftNames = selectedShifts.Select(Function(shift) shift.Name).ToList(),
                 .Classification = ClassificationForDate(reportDate),
                 .HourAdjustment = HourAdjustmentForDate(reportDate),
-                .TotalHours = allocation.TotalHours
-            })
+                .TotalHours = shiftAllocations.Sum(Function(item) item.TotalHours)
+            }
+            For Each shiftAllocation In shiftAllocations
+                Dim assignment As New ManualPayrollShiftAssignment With {
+                    .ReportDate = reportDate.Date,
+                    .ShiftName = shiftAllocation.Shift.Name,
+                    .SubClientId = shiftAllocation.Client.SubClientId,
+                    .SubClientNameSnapshot = shiftAllocation.Client.Name,
+                    .DailyWageSnapshot = shiftAllocation.Client.DailyWage,
+                    .HoursPerDaySnapshot = shiftAllocation.Policy.HoursPerDay,
+                    .RegularHours = shiftAllocation.RegularHours,
+                    .NightHours = shiftAllocation.NightHours,
+                    .OvertimeHours = shiftAllocation.OvertimeHours,
+                    .TotalHours = shiftAllocation.TotalHours,
+                    .PayPolicySnapshot = shiftAllocation.Policy.ToAuditText()
+                }
+                PopulateAssignmentEarnings(assignment, shiftAllocation)
+                dayRecord.ShiftAssignments.Add(assignment)
+            Next
+            record.Days.Add(dayRecord)
         Next
+        record.ClientAdjustments = BuildClientAdjustmentRecords()
         Return record
+    End Function
+
+    Private Sub PopulateAssignmentEarnings(assignment As ManualPayrollShiftAssignment, allocation As ShiftWorkAllocation)
+        assignment.BasePayCode = DisplayBreakdownPayCode(allocation.ReportDate, String.Empty, allocation.Policy)
+        assignment.NightPayCode = If(allocation.NightHours = 0D, String.Empty,
+            DisplayBreakdownPayCode(allocation.ReportDate, "ND_", allocation.Policy))
+        assignment.OvertimePayCode = If(allocation.OvertimeHours = 0D, String.Empty,
+            DisplayBreakdownPayCode(allocation.ReportDate, "OT_", allocation.Policy))
+
+        Dim earningInput As New PayrollDayEarningInput With {
+            .DayCodes = RequestedDayCodes(allocation.ReportDate),
+            .RegularHours = allocation.RegularHours,
+            .NightHours = allocation.NightHours,
+            .OvertimeHours = allocation.OvertimeHours
+        }
+        Dim breakdown = SubClientPayrollPolicyService.CalculateEarningsBreakdownForDays(
+            allocation.Policy,
+            allocation.Client.DailyWage,
+            BuildCutoff(),
+            1D,
+            New PayrollDayEarningInput() {earningInput},
+            0D, 0D, 0D)
+        assignment.RegularEarnings = breakdown.AmountFor(EarningsOutputCode(assignment.BasePayCode))
+        assignment.NightEarnings = breakdown.AmountFor(EarningsOutputCode(assignment.NightPayCode))
+        assignment.OvertimeEarnings = breakdown.AmountFor(EarningsOutputCode(assignment.OvertimePayCode))
+        assignment.IncentiveEarnings = breakdown.IncentivePay
+    End Sub
+
+    Private Shared Function EarningsOutputCode(code As String) As String
+        Dim value = If(code, String.Empty).Trim().ToUpperInvariant()
+        If value = "RD_SH" Then Return "SH"
+        If value = "RD_LH" Then Return "LH"
+        If value = "ND_RD_SH" Then Return "ND_SH"
+        If value = "ND_RD_LH" Then Return "ND_LH"
+        If value = "OT_RD_SH" Then Return "OT_SH"
+        If value = "OT_RD_LH" Then Return "OT_LH"
+        Return value
+    End Function
+
+    Private Function BuildAssignedPolicySnapshot() As String
+        Dim parts As New List(Of String)()
+        For Each client In SelectedAssignmentClients(True).OrderBy(Function(item) item.Name)
+            parts.Add("CLIENT[" & client.SubClientId.ToString(CultureInfo.InvariantCulture) & "]=" &
+                client.Name & ";WAGE=" & client.DailyWage.ToString(CultureInfo.InvariantCulture) & ";" &
+                PolicyForClient(client.SubClientId).ToAuditText())
+        Next
+        Return String.Join(" || ", parts)
     End Function
 
     Private Function CurrentActor() As String
@@ -2785,6 +3615,11 @@ Public Partial Class FRM_DTR_SHIFT_MANUAL
         Dim displayName = If(GlobalVariables.sLogged_in_Name, String.Empty).Trim()
         If displayName <> String.Empty Then Return displayName
         Return If(GlobalVariables.sUser_Level, "Payroll user").Trim()
+    End Function
+
+    Private Function CanAmendFinal() As Boolean
+        Return String.Equals(If(GlobalVariables.sUser_Level, String.Empty).Trim(),
+            "Administrator", StringComparison.OrdinalIgnoreCase)
     End Function
 
     Private Sub BtnClose_Click(sender As Object, e As EventArgs)

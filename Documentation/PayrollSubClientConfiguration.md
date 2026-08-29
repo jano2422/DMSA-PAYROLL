@@ -23,7 +23,7 @@ Hourly ND is stored as an additional percentage of the effective day rate (norma
 
 The source workbook and older database rows use full factors such as `1.30`, `2.00`, and `1.69`. Import and policy loading normalize those values to additional premiums in memory. A policy is written back with `RATE_SEMANTICS=ADDITIONAL_PREMIUM_V1` only when an administrator saves or imports it; existing finalized monetary snapshots are never recalculated by this migration.
 
-The workbook also contains client exceptions: disabled categories, overtime paid at 1.00, a fixed night-differential cutoff pool of 987.50, and a five-day incentive calculation. These are represented as policy settings instead of client-name conditions in code.
+The workbook also contains client exceptions: disabled categories, overtime paid at 1.00, a configurable fixed night-differential cutoff pool, and a five-day incentive calculation. These are represented as policy settings instead of client-name conditions in code.
 
 The workbook's second column also defines duty length: 71 rows use 12 hours, 13 use 8 hours, four use 10 hours, one uses 9 hours, and one uses the mixed value `8hrs/12hrs`. The 9-hour and 10-hour rows are treated as one configured shift: the first 8 hours are regular and the succeeding 1 or 2 hours are overtime.
 
@@ -47,7 +47,7 @@ The application runs the same idempotent schema check automatically when the log
 2. Select the main client and sub-client.
 3. Enable or disable each category and enter only its additional premium (`0.30` means add 30%; it does not replace the base wage).
 4. Choose whether Manual DTR follows the client schedule or uses one configured shift. For one shift, enter the total duty hours and whether it is a night shift.
-5. Select ND hours, monthly ND paid by reporting days, or disabled night differential.
+5. Select ND hours, monthly ND paid by recorded ND days, or disabled night differential.
 6. Configure the optional five-day incentive and add an explanation in Notes.
 7. Save. The change is timestamped and recorded with the current user.
 
@@ -62,6 +62,7 @@ The **Import Excel rules** action reads `Sheet3` from the supplied client-rule w
 - New Manual DTR snapshots also retain six combined-classification hour subsets (`SUN+SH`, `SUN+LH`, and their ND/OT variants). DTR Exports displays standalone SH/LH hours and combined hours in separate columns without changing total worked hours. The fixed 46-column `PAYROLL SHEET` recombines each standalone and combined pair into its established SH/LH input so existing formulas remain intact, while the visible `CLASSIFICATION DETAIL` sheet shows the standalone and combined hours separately for audit.
 - Disabling a premium category never discards the underlying worked hours. Disabled SUN/SH/LH hours fall back to an enabled base category; disabled ND and OT variants fall back to `ND_REG` and `OT_REG` when those rules are enabled. If neither the requested category nor its fallback is enabled, the hours remain visible but intentionally produce no amount, and Manual DTR shows a warning in the preview.
 - Each selected duty is one reporting day, even when several duties are selected on the same calendar date. For example, all three tri-shifts count as three reporting days; both 12-hour shifts count as two reporting days and total 24 hours.
+- Fixed-pool night differential uses the recorded `ND_DAYS`, not all reporting days. Day shifts therefore do not increase fixed ND pay.
 - A configured one-shift duty always produces one reporting day. A 9-hour shift produces 8 REG and 1 OT; a 10-hour shift produces 8 REG and 2 OT. Sunday/holiday classification moves both portions into the corresponding SUN/LH/SH and OT SUN/OT LH/OT SH buckets.
 - Payroll Exports shows all universal hour buckets with frozen employee columns and horizontal scrolling.
 - Manual DTR accepts Other Earnings and Other Deductions alongside the named allowances and deductions. Preview, final save, individual-client export, and payslips use the same values.

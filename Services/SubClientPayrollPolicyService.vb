@@ -553,9 +553,10 @@ Public Module SubClientPayrollPolicyService
                     Next
 
                     Dim ndRegularText = sourceRow.RuleTexts(4).Trim()
-                    If ndRegularText.IndexOf("987.5", StringComparison.OrdinalIgnoreCase) >= 0 Then
+                    Dim fixedNightDifferentialAmount As Decimal
+                    If TryParseFixedNightDifferentialAmount(ndRegularText, fixedNightDifferentialAmount) Then
                         policy.NightDifferentialMode = SubClientPayrollPolicy.NightDifferentialFixedCutoffPool
-                        policy.NightDifferentialFixedCutoffAmount = 987.5D
+                        policy.NightDifferentialFixedCutoffAmount = fixedNightDifferentialAmount
                         policy.GetRule("ND_REG").Enabled = True
                         policy.GetRule("ND_SUN").Enabled = False
                         policy.GetRule("ND_LH").Enabled = False
@@ -674,7 +675,7 @@ Public Module SubClientPayrollPolicyService
             Case SubClientPayrollPolicy.NightDifferentialDisabled
                 parts.Add("ND off")
             Case SubClientPayrollPolicy.NightDifferentialFixedCutoffPool
-                parts.Add("ND paid by reporting days")
+                parts.Add("ND paid by ND days")
             Case Else
                 Dim enabledNightCodes = {"ND_REG", "ND_SUN", "ND_LH", "ND_SH"}.Count(Function(code) policy.GetRule(code).Enabled)
                 If enabledNightCodes < 4 Then parts.Add("limited ND")
@@ -784,6 +785,7 @@ Public Module SubClientPayrollPolicyService
         dailyWage As Decimal,
         cutoff As String,
         numberOfDays As Decimal,
+        nightDifferentialDays As Decimal,
         regularHours As Decimal,
         sundayHours As Decimal,
         legalHolidayHours As Decimal,
@@ -805,6 +807,7 @@ Public Module SubClientPayrollPolicyService
             dailyWage,
             cutoff,
             numberOfDays,
+            nightDifferentialDays,
             regularHours,
             sundayHours,
             legalHolidayHours,
@@ -827,6 +830,7 @@ Public Module SubClientPayrollPolicyService
         dailyWage As Decimal,
         cutoff As String,
         numberOfDays As Decimal,
+        nightDifferentialDays As Decimal,
         regularHours As Decimal,
         sundayHours As Decimal,
         legalHolidayHours As Decimal,
@@ -875,7 +879,7 @@ Public Module SubClientPayrollPolicyService
 
         If policy.NightDifferentialMode = SubClientPayrollPolicy.NightDifferentialFixedCutoffPool AndAlso
            policy.GetRule("ND_REG").Enabled Then
-            result.SetAmount("ND_REG", policy.NightDifferentialFixedCutoffAmount / 2D / CutoffDayCount(cutoff) * numberOfDays)
+            result.SetAmount("ND_REG", policy.NightDifferentialFixedCutoffAmount / 2D / CutoffDayCount(cutoff) * nightDifferentialDays)
         End If
         If policy.IncentiveEnabled Then
             result.IncentivePay = dailyWage * policy.IncentiveDays / policy.IncentiveMonthDivisor /
@@ -890,6 +894,7 @@ Public Module SubClientPayrollPolicyService
         dailyWage As Decimal,
         cutoff As String,
         numberOfDays As Decimal,
+        nightDifferentialDays As Decimal,
         days As IEnumerable(Of PayrollDayEarningInput),
         officerAllowance As Decimal,
         uniformAllowance As Decimal,
@@ -931,7 +936,7 @@ Public Module SubClientPayrollPolicyService
 
         If policy.NightDifferentialMode = SubClientPayrollPolicy.NightDifferentialFixedCutoffPool AndAlso
            policy.GetRule("ND_REG").Enabled Then
-            result.SetAmount("ND_REG", policy.NightDifferentialFixedCutoffAmount / 2D / CutoffDayCount(cutoff) * numberOfDays)
+            result.SetAmount("ND_REG", policy.NightDifferentialFixedCutoffAmount / 2D / CutoffDayCount(cutoff) * nightDifferentialDays)
         End If
         If policy.IncentiveEnabled Then
             result.IncentivePay = dailyWage * policy.IncentiveDays / policy.IncentiveMonthDivisor /
@@ -1053,6 +1058,22 @@ Public Module SubClientPayrollPolicyService
         If code.Equals("OT_REG", StringComparison.OrdinalIgnoreCase) AndAlso
            formulaText.IndexOf("1.25", StringComparison.OrdinalIgnoreCase) < 0 Then Return 0D
         Return defaultValue
+    End Function
+
+    Private Function TryParseFixedNightDifferentialAmount(formulaText As String, ByRef amount As Decimal) As Boolean
+        amount = 0D
+        If String.IsNullOrWhiteSpace(formulaText) Then Return False
+
+        ' Fixed-pool source formulas use: monthly amount / 2 / cutoff days x ND days.
+        ' Read the configured monthly amount instead of recognizing one client-specific literal.
+        Dim match = Regex.Match(
+            formulaText,
+            "(?:^|[=+\-*/(,;\s])(?<amount>\d+(?:\.\d+)?)\s*/\s*2(?:\.0+)?\s*/\s*(?:15|16)(?:\.0+)?(?:\D|$)",
+            RegexOptions.IgnoreCase)
+        If Not match.Success Then Return False
+        If Not Decimal.TryParse(match.Groups("amount").Value, NumberStyles.Number,
+            CultureInfo.InvariantCulture, amount) Then Return False
+        Return amount > 0D
     End Function
 
     Private Sub ConvertLegacyMultipliersToPremiums(

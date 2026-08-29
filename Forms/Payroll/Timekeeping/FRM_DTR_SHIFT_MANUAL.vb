@@ -1301,6 +1301,7 @@ Public Partial Class FRM_DTR_SHIFT_MANUAL
                 dailyWage,
                 BuildCutoff(),
                 totals("NUM_DAYS"),
+                totals("ND_DAYS"),
                 totals("REG"), totals("SUN"), totals("LH"), totals("SH"),
                 totals("ND_REG"), totals("ND_SUN"), totals("ND_LH"), totals("ND_SH"),
                 totals("OT_REG"), totals("OT_SUN"), totals("OT_LH"), totals("OT_SH"),
@@ -2457,11 +2458,14 @@ Public Partial Class FRM_DTR_SHIFT_MANUAL
                     For rowIndex As Integer = 0 To 2
                         Dim cell = holidayGrid.Rows(rowIndex).Cells(columnName)
                         Dim naturallyLocked = rowIndex = 0 AndAlso reportDate.DayOfWeek <> DayOfWeek.Sunday
-                        cell.ReadOnly = isRecordReadOnly OrElse occupiedByAnother OrElse naturallyLocked
-                        If occupiedByAnother OrElse isRecordReadOnly OrElse naturallyLocked Then
-                            cell.Style.BackColor = Color.FromArgb(232, 236, 239)
-                            cell.Style.SelectionBackColor = Color.FromArgb(232, 236, 239)
-                        End If
+                        Dim logicallyLocked = isRecordReadOnly OrElse occupiedByAnother OrElse naturallyLocked
+                        ' Classification cells are toggled by HolidayGridCellClick.
+                        ' Keeping the checkbox read-only prevents WinForms from
+                        ' applying a second automatic toggle after our handler.
+                        cell.ReadOnly = True
+                        cell.Style.BackColor = If(logicallyLocked, Color.FromArgb(232, 236, 239), Color.White)
+                        cell.Style.SelectionBackColor = If(logicallyLocked,
+                            Color.FromArgb(232, 236, 239), holidayGrid.DefaultCellStyle.SelectionBackColor)
                         If occupiedByAnother Then cell.ToolTipText = occupiedMessage
                     Next
                 End If
@@ -2715,23 +2719,30 @@ Public Partial Class FRM_DTR_SHIFT_MANUAL
     Private Sub HolidayGridCellClick(sender As Object, e As DataGridViewCellEventArgs)
         If e.RowIndex < 0 OrElse e.ColumnIndex < 1 Then Return
         If isRecordReadOnly Then Return
+        If e.RowIndex > 2 OrElse e.ColumnIndex > coveredDates.Count Then Return
+
+        Dim reportDate = coveredDates(e.ColumnIndex - 1)
+        Dim ownerId = OwnerClientIdForDate(reportDate)
+        If ownerId > 0 AndAlso ownerId <> currentWorkspaceClientId Then Return
+        If e.RowIndex = 0 AndAlso reportDate.DayOfWeek <> DayOfWeek.Sunday Then Return
 
         Dim cell = holidayGrid.Rows(e.RowIndex).Cells(e.ColumnIndex)
-        If cell.ReadOnly Then Return
-
         Dim currentValue As Boolean = IsCellChecked(cell)
-
-        If e.RowIndex = 0 Then
-            If Not IsClassificationColumnSunday(e.ColumnIndex) Then Return
-            cell.Value = Not currentValue
-            ApplyHolidayExclusionState(e.ColumnIndex)
-        ElseIf e.RowIndex = 1 Then
-            cell.Value = Not currentValue
-            If CBool(cell.Value) Then holidayGrid.Rows(2).Cells(e.ColumnIndex).Value = False
-        ElseIf e.RowIndex = 2 Then
-            cell.Value = Not currentValue
-            If CBool(cell.Value) Then holidayGrid.Rows(1).Cells(e.ColumnIndex).Value = False
-        End If
+        isUpdatingGrid = True
+        Try
+            If e.RowIndex = 0 Then
+                cell.Value = Not currentValue
+                ApplyHolidayExclusionState(e.ColumnIndex)
+            ElseIf e.RowIndex = 1 Then
+                cell.Value = Not currentValue
+                If CBool(cell.Value) Then holidayGrid.Rows(2).Cells(e.ColumnIndex).Value = False
+            ElseIf e.RowIndex = 2 Then
+                cell.Value = Not currentValue
+                If CBool(cell.Value) Then holidayGrid.Rows(1).Cells(e.ColumnIndex).Value = False
+            End If
+        Finally
+            isUpdatingGrid = False
+        End Try
 
         RecalculateTotals()
         MarkRecordDirty()
@@ -2742,7 +2753,7 @@ Public Partial Class FRM_DTR_SHIFT_MANUAL
 
         For rowIndex As Integer = 1 To 2
             Dim cell = holidayGrid.Rows(rowIndex).Cells(columnIndex)
-            cell.ReadOnly = False
+            cell.ReadOnly = True
             cell.Style.BackColor = Color.White
             cell.Style.SelectionBackColor = holidayGrid.DefaultCellStyle.SelectionBackColor
             cell.Style.ForeColor = Color.Black
@@ -2975,11 +2986,14 @@ Public Partial Class FRM_DTR_SHIFT_MANUAL
                     .NightHours = item.NightHours,
                     .OvertimeHours = item.OvertimeHours
                 }).ToList()
+            Dim nightDifferentialDays = clientGroup.Sum(
+                Function(item) item.NightHours / item.Policy.HoursPerDay)
             Dim clientBreakdown = SubClientPayrollPolicyService.CalculateEarningsBreakdownForDays(
                 first.Policy,
                 first.Client.DailyWage,
                 BuildCutoff(),
                 clientGroup.Count(),
+                nightDifferentialDays,
                 inputs,
                 0D, 0D, 0D)
             For Each code In PayCodeOrder
@@ -3010,11 +3024,14 @@ Public Partial Class FRM_DTR_SHIFT_MANUAL
                 .NightHours = item.NightHours,
                 .OvertimeHours = item.OvertimeHours
             }).ToList()
+        Dim nightDifferentialDays = allocations.Sum(
+            Function(item) item.NightHours / item.Policy.HoursPerDay)
         Dim clientBreakdown = SubClientPayrollPolicyService.CalculateEarningsBreakdownForDays(
             first.Policy,
             first.Client.DailyWage,
             BuildCutoff(),
             allocations.Count,
+            nightDifferentialDays,
             inputs,
             0D, 0D, 0D)
         For Each code In PayCodeOrder
@@ -3580,6 +3597,7 @@ Public Partial Class FRM_DTR_SHIFT_MANUAL
             allocation.Client.DailyWage,
             BuildCutoff(),
             1D,
+            allocation.NightHours / allocation.Policy.HoursPerDay,
             New PayrollDayEarningInput() {earningInput},
             0D, 0D, 0D)
         assignment.RegularEarnings = breakdown.AmountFor(EarningsOutputCode(assignment.BasePayCode))

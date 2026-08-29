@@ -40,6 +40,7 @@ Friend Class OverallPayrollRow
     Public Property SubmittedBy As String
     Public Property DailyWage As Decimal
     Public Property NumberOfDays As Decimal
+    Public Property NightDifferentialDays As Decimal
     Public Property TotalHours As Decimal
     Public Property RegularHours As Decimal
     Public Property SundayHours As Decimal
@@ -193,6 +194,7 @@ Public Module OverallPayrollExportService
                 .SubmittedAt = RowNullableDate(sourceRow, "SUBMITTED_AT"),
                 .SubmittedBy = RowText(sourceRow, "SUBMITTED_BY"),
                 .NumberOfDays = RowDecimal(sourceRow, "NUM_OF_DAYS"),
+                .NightDifferentialDays = RowDecimal(sourceRow, "ND_DAYS"),
                 .TotalHours = RowDecimal(sourceRow, "TOTAL_HOURS"),
                 .RegularHours = RowDecimal(sourceRow, "REG"),
                 .SundayHours = RowDecimal(sourceRow, "SUN"),
@@ -295,7 +297,7 @@ Public Module OverallPayrollExportService
         item.OvertimeLegalHolidayHours = normalizedHours("OT_LH")
         item.OvertimeSpecialHolidayHours = normalizedHours("OT_SH")
         Dim breakdown = SubClientPayrollPolicyService.CalculateEarningsBreakdown(
-            policy, dailyWage, item.Cutoff, item.NumberOfDays,
+            policy, dailyWage, item.Cutoff, item.NumberOfDays, item.NightDifferentialDays,
             item.RegularHours, item.SundayHours, item.LegalHolidayHours, item.SpecialHolidayHours,
             item.NightDifferentialRegularHours, item.NightDifferentialSundayHours,
             item.NightDifferentialLegalHolidayHours, item.NightDifferentialSpecialHolidayHours,

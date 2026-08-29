@@ -312,20 +312,20 @@ Public Class FRM_SUB_CLIENT_PAYROLL_SETTINGS
                 Dim fifteenDayRate = amount / 2D / 15D
                 Dim sixteenDayRate = amount / 2D / 16D
                 lblNightDifferentialModeHelp.Text =
-                    "Each selected shift is one reporting day. The hourly ND premium is not used."
+                    "Uses the DTR's night-differential days. Day shifts do not increase fixed ND pay."
                 lblFixedNightDifferentialHelp.Text = String.Format(
                     CultureInfo.CurrentCulture,
-                    "{0:N2} / 2 / cutoff days x reporting days. Preview: 15 days = {1:N2}/day; 16 days = {2:N2}/day.",
+                    "{0:N2} / 2 / cutoff days x ND days. Preview: 15 days = {1:N2}/ND day; 16 days = {2:N2}/ND day.",
                     amount,
                     fifteenDayRate,
                     sixteenDayRate)
             Case SubClientPayrollPolicy.NightDifferentialDisabled
                 lblNightDifferentialModeHelp.Text = "No night-differential pay will be calculated."
-                lblFixedNightDifferentialHelp.Text = "Select 'Pay by reporting days from a monthly amount' to use this field."
+                lblFixedNightDifferentialHelp.Text = "Select 'Pay by ND days from a monthly amount' to use this field."
             Case Else
                 lblNightDifferentialModeHelp.Text =
                     "Uses recorded ND hours and the additional ND premiums in the Premium matrix."
-                lblFixedNightDifferentialHelp.Text = "Select 'Pay by reporting days from a monthly amount' to use this field."
+                lblFixedNightDifferentialHelp.Text = "Select 'Pay by ND days from a monthly amount' to use this field."
         End Select
     End Sub
 
@@ -350,9 +350,9 @@ Public Class FRM_SUB_CLIENT_PAYROLL_SETTINGS
             Select Case SelectedNightDifferentialMode()
                 Case SubClientPayrollPolicy.NightDifferentialFixedCutoffPool
                     If code.Equals("ND_REG", StringComparison.OrdinalIgnoreCase) Then
-                        Return "Monthly ND amount / 2 / cutoff days x reporting days"
+                        Return "Monthly ND amount / 2 / cutoff days x ND days"
                     End If
-                    Return "Not paid in reporting-days mode"
+                    Return "Not paid in fixed ND-days mode"
                 Case SubClientPayrollPolicy.NightDifferentialDisabled
                     Return "Not paid"
                 Case Else

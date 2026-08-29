@@ -127,7 +127,7 @@ Public Module PayrollReportService
                 incentivePay = item.IncentivePay
             Else
                 Dim breakdown = SubClientPayrollPolicyService.CalculateEarningsBreakdown(
-                    policy, dailyWage, cutoff, item.NumberOfDays,
+                    policy, dailyWage, cutoff, item.NumberOfDays, item.NightDifferentialDays,
                     hours(0), hours(1), hours(2), hours(3),
                     hours(4), hours(5), hours(6), hours(7),
                     hours(8), hours(9), hours(10), hours(11),
@@ -305,7 +305,7 @@ Public Module PayrollReportService
             policy.NightDifferentialMode = SubClientPayrollPolicy.NightDifferentialFixedCutoffPool,
             1,
             If(policy.NightDifferentialMode = SubClientPayrollPolicy.NightDifferentialDisabled, 2, 0))
-        sheet.Cell("A6").Value = "Monthly ND amount (paid by reporting days)"
+        sheet.Cell("A6").Value = "Monthly ND amount (paid by ND days)"
         sheet.Cell("B6").Value = policy.NightDifferentialFixedCutoffAmount
         sheet.Cell("A7").Value = "Incentive enabled"
         sheet.Cell("B7").Value = If(policy.IncentiveEnabled, 1, 0)
@@ -582,7 +582,8 @@ Public Module PayrollReportService
                 Dim payColumn = 17 + index
                 Dim formula As String
                 If code.Equals("ND_REG", StringComparison.OrdinalIgnoreCase) Then
-                    formula = $"IF('SETTINGS'!$E${settingsRow}=0,0,IF('SETTINGS'!$B$5=1,'SETTINGS'!$B$6/'SETTINGS'!$B$11/'SETTINGS'!$B$4*$C{rowNumber},$B{rowNumber}/'SETTINGS'!$B$3*'SETTINGS'!$G${settingsRow}*{inputColumn}{rowNumber}))"
+                    Dim ndDays = item.NightDifferentialDays.ToString(CultureInfo.InvariantCulture)
+                    formula = $"IF('SETTINGS'!$E${settingsRow}=0,0,IF('SETTINGS'!$B$5=1,'SETTINGS'!$B$6/'SETTINGS'!$B$11/'SETTINGS'!$B$4*{ndDays},$B{rowNumber}/'SETTINGS'!$B$3*'SETTINGS'!$G${settingsRow}*{inputColumn}{rowNumber}))"
                 Else
                     formula = $"IF('SETTINGS'!$E${settingsRow}=0,0,$B{rowNumber}/'SETTINGS'!$B$3*'SETTINGS'!$G${settingsRow}*{inputColumn}{rowNumber})"
                 End If

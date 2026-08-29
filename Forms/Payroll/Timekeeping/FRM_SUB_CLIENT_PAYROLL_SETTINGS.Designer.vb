@@ -561,7 +561,7 @@ Partial Class FRM_SUB_CLIENT_PAYROLL_SETTINGS
         Me.cmbNightDifferentialMode.Dock = System.Windows.Forms.DockStyle.Fill
         Me.cmbNightDifferentialMode.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
         Me.cmbNightDifferentialMode.FormattingEnabled = True
-        Me.cmbNightDifferentialMode.Items.AddRange(New Object() {"Pay by ND hours", "Pay by reporting days from a monthly amount", "Do not pay ND"})
+        Me.cmbNightDifferentialMode.Items.AddRange(New Object() {"Pay by ND hours", "Pay by ND days from a monthly amount", "Do not pay ND"})
         Me.cmbNightDifferentialMode.Location = New System.Drawing.Point(293, 195)
         Me.cmbNightDifferentialMode.Name = "cmbNightDifferentialMode"
         Me.cmbNightDifferentialMode.Size = New System.Drawing.Size(204, 22)
@@ -614,7 +614,7 @@ Partial Class FRM_SUB_CLIENT_PAYROLL_SETTINGS
         Me.lblFixedNightDifferentialHelp.Padding = New System.Windows.Forms.Padding(12, 0, 0, 0)
         Me.lblFixedNightDifferentialHelp.Size = New System.Drawing.Size(1, 48)
         Me.lblFixedNightDifferentialHelp.TabIndex = 17
-        Me.lblFixedNightDifferentialHelp.Text = "Available when ND is paid by reporting days. Enter the contracted monthly ND amount."
+        Me.lblFixedNightDifferentialHelp.Text = "Available when ND is paid by ND days. Enter the contracted monthly ND amount."
         Me.lblFixedNightDifferentialHelp.TextAlign = System.Drawing.ContentAlignment.MiddleLeft
         '
         'lblIncentiveCaption

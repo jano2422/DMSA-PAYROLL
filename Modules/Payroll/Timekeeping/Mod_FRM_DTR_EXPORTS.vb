@@ -613,14 +613,13 @@ Module Mod_FRM_DTR_EXPORTS
             Exit Sub
         End If
 
-        ' SQL with TOTAL_HOURS from the view
+        ' Query daily hours without joining the saved Access view. Jet rejects
+        ' the view's dotted aliases and cutoff predicate inside this LEFT JOIN.
+        ' Employee names and cutoff totals are overlaid from the already-loaded
+        ' finalized allocation summary below.
         Dim SQL As String =
-    "SELECT A.EMPLOYEE_ID, A.REPORT_DATE, A.REPORT_DAY, A.DAILY_TOTAL_HOURS, " &
-    "B.LAST_NAME, B.FIRST_NAME, B.TOTAL_HOURS " &
+    "SELECT A.EMPLOYEE_ID, A.REPORT_DATE, A.REPORT_DAY, A.DAILY_TOTAL_HOURS " &
     "FROM PRL_DTR_HOURS_PER_DAY AS A " &
-    "LEFT JOIN VIEW_DTR_PER_SUB_CLIENT AS B " &
-    "ON A.EMPLOYEE_ID = B.A.EMPLOYEE_ID AND A.SUB_CLIENT_ID = B.A.SUB_CLIENT_ID " &
-    "AND B.CUTOFF_PERIOD = '" & sCut_Off & "' " &
     "WHERE A.SUB_CLIENT_ID = " & iClient_ID & " " &
     "AND A.REPORT_DATE BETWEEN #" & dFrom.ToString("MM/dd/yyyy") & "# AND #" & dTo.ToString("MM/dd/yyyy") & "# " &
     "AND A.ID IN (" &
@@ -629,12 +628,15 @@ Module Mod_FRM_DTR_EXPORTS
         "AND REPORT_DATE BETWEEN #" & dFrom.ToString("MM/dd/yyyy") & "# AND #" & dTo.ToString("MM/dd/yyyy") & "# " &
         "GROUP BY EMPLOYEE_ID, REPORT_DATE" &
     ") " &
-    "ORDER BY B.LAST_NAME, B.FIRST_NAME, A.REPORT_DATE"
+    "ORDER BY A.EMPLOYEE_ID, A.REPORT_DATE"
 
 
         Try
             da = New OleDbDataAdapter(SQL, Mod_GlobalVariables.GlobalVariables.GlobalCon)
             da.Fill(dt)
+            dt.Columns.Add("LAST_NAME", GetType(String))
+            dt.Columns.Add("FIRST_NAME", GetType(String))
+            dt.Columns.Add("TOTAL_HOURS", GetType(Decimal))
             Dim allocationRows = ManualPayrollRecordService.LoadFinalClientAllocations(iClient_ID, sCut_Off)
             Dim allocationLookup = allocationRows.AsEnumerable().ToDictionary(
                 Function(row) Convert.ToString(row("EMPLOYEE_ID")),
@@ -646,6 +648,16 @@ Module Mod_FRM_DTR_EXPORTS
                     dailyRow("LAST_NAME") = allocation("LAST_NAME")
                     dailyRow("FIRST_NAME") = allocation("FIRST_NAME")
                     dailyRow("TOTAL_HOURS") = allocation("TOTAL_HOURS")
+                Else
+                    Dim employeeId = Convert.ToString(dailyRow("EMPLOYEE_ID"))
+                    Dim payrollRow = FRM_DTR_EXPORTS.DGV_DTR_Per_Client.Rows.Cast(Of DataGridViewRow)().
+                        FirstOrDefault(Function(row) Not row.IsNewRow AndAlso
+                            String.Equals(Convert.ToString(row.Cells("colEmployeeId").Value), employeeId, StringComparison.OrdinalIgnoreCase))
+                    If payrollRow IsNot Nothing Then
+                        dailyRow("LAST_NAME") = Convert.ToString(payrollRow.Cells("colName").Value)
+                        dailyRow("FIRST_NAME") = String.Empty
+                        dailyRow("TOTAL_HOURS") = CDec(TryGetNumericValue(Convert.ToString(payrollRow.Cells("colTotalHours").Value)))
+                    End If
                 End If
             Next
 

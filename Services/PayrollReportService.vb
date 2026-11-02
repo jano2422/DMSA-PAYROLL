@@ -96,7 +96,121 @@ Public Module PayrollReportService
                 ' Excel recalculates all formula cells when the generated workbook is opened.
             End Try
             HideUnusedUniversalPayrollColumns(workbook.Worksheet("PAYROLL SHEET"), rows, dailyWage, cutoff, policy)
+            ApplyReadableReportLayout(workbook)
+            AddCompanyLogos(workbook, settings)
             workbook.SaveAs(outputPath)
+        End Using
+    End Sub
+
+    Public Sub ApplyReadableReportLayout(workbook As XLWorkbook)
+        For Each sheet In workbook.Worksheets
+            If sheet.Visibility <> XLWorksheetVisibility.Visible OrElse sheet.Name = "PAYSLIP" Then Continue For
+            Select Case sheet.Name
+                Case "PAYROLL SHEET"
+                    sheet.Column(1).Width = 22
+                    sheet.Columns(5, 16).Width = 6.5
+                    sheet.Columns(17, 43).Width = 11
+                    sheet.Columns(44, 45).Width = 13
+                    sheet.Column(46).Width = 14
+                    sheet.Rows(6, 8).Height = 18
+                    sheet.Rows(10, 11).Height = 18
+                Case "CLASSIFICATION DETAIL"
+                    sheet.Column(1).Width = 22
+                    sheet.Column(2).Width = 8
+                    sheet.Columns(3, 20).Width = 7.5
+                    sheet.Row(10).Height = 18
+                Case "DTR_Hours"
+                    sheet.Column(1).Width = 22
+                    Dim lastColumn = sheet.LastColumnUsed().ColumnNumber()
+                    If lastColumn > 2 Then sheet.Columns(2, lastColumn - 1).Width = 6
+                    sheet.Column(lastColumn).Width = 11
+                Case "CLIENT COVERAGE"
+                    sheet.Columns(1, 13).Width = 13
+                    sheet.Column(2).Width = 22
+                    sheet.Column(4).Width = 22
+                    sheet.Column(5).Width = 26
+                    sheet.Column(13).Width = 20
+                Case "EMPLOYEE PAYROLL"
+                    sheet.Columns(1, 61).Width = 11
+                    sheet.Columns(1, 2).Width = 22
+                    sheet.Column(4).Width = 22
+                    sheet.Column(8).Width = 18
+                    sheet.Columns(54, 55).Width = 18
+                Case "SUMMARY"
+                    sheet.Column(1).Width = 28
+                    sheet.Column(2).Width = 12
+                    sheet.Column(4).Width = 22
+            End Select
+
+            Using bitmap As New Bitmap(1, 1)
+                bitmap.SetResolution(96, 96)
+                Using drawingGraphics = Graphics.FromImage(bitmap)
+                    Dim digitWidth = ReportDigitWidth(sheet, drawingGraphics)
+                    Dim cells = sheet.CellsUsed().ToList()
+                    For Each cell In cells
+                        cell.Style.Font.FontSize = If(cell.Style.Font.FontSize >= 14, Math.Max(18, cell.Style.Font.FontSize), 12)
+                        If sheet.Name = "PAYROLL SHEET" AndAlso cell.Address.RowNumber = 10 Then cell.Style.Font.FontSize = 10
+                        cell.Style.Alignment.Vertical = XLAlignmentVerticalValues.Center
+                        cell.Style.Alignment.ShrinkToFit = False
+                        cell.Style.Alignment.WrapText = Not cell.HasFormula AndAlso cell.DataType = XLDataType.Text
+                        If sheet.Column(cell.Address.ColumnNumber).IsHidden Then Continue For
+                        If cell.Style.Alignment.WrapText OrElse cell.IsMerged() Then Continue For
+                        ' Keep numbers and dates intact; widen only when their
+                        ' formatted value actually needs more space.
+                        Dim text As String
+                        Try
+                            text = cell.GetFormattedString()
+                        Catch
+                            Continue For ' Excel evaluates unsupported formulas on open.
+                        End Try
+                        Using font = ReportCellFont(cell)
+                            Dim needed = drawingGraphics.MeasureString(text, font, PointF.Empty, StringFormat.GenericTypographic).Width + 6
+                            Dim column = sheet.Column(cell.Address.ColumnNumber)
+                            If needed > VisibleColumnPixels(sheet, column.ColumnNumber(), digitWidth) Then
+                                column.Width = Math.Max(column.Width, Math.Ceiling((needed - 5) / digitWidth * 10) / 10)
+                            End If
+                        End Using
+                    Next
+                    For Each row In sheet.RowsUsed()
+                        row.Height = Math.Max(row.Height, 18)
+                    Next
+                    For Each cell In cells
+                        If cell.HasFormula OrElse cell.DataType <> XLDataType.Text Then Continue For
+                        FitWrappedReportCell(sheet, cell, cell.GetString(), drawingGraphics, digitWidth)
+                    Next
+                End Using
+            End Using
+        Next
+    End Sub
+
+    Private Function ReportDigitWidth(sheet As IXLWorksheet, drawingGraphics As Graphics) As Integer
+        Dim style = sheet.Workbook.Style.Font
+        Using font As New Font(style.FontName, CSng(style.FontSize))
+            Return Math.Max(1, CInt(Math.Round(drawingGraphics.MeasureString("0", font, PointF.Empty, StringFormat.GenericTypographic).Width)))
+        End Using
+    End Function
+
+    Private Function ReportCellFont(cell As IXLCell) As Font
+        Dim style = cell.Style.Font
+        Dim selectedStyle = If(style.Bold, FontStyle.Bold, FontStyle.Regular) Or If(style.Italic, FontStyle.Italic, FontStyle.Regular)
+        Return New Font(style.FontName, CSng(style.FontSize), selectedStyle)
+    End Function
+
+    Private Sub FitWrappedReportCell(sheet As IXLWorksheet, cell As IXLCell, text As String, drawingGraphics As Graphics, digitWidth As Integer)
+        If String.IsNullOrWhiteSpace(text) Then Return
+        Dim area = If(cell.IsMerged(), cell.MergedRange(), cell.AsRange())
+        Dim firstColumn = area.RangeAddress.FirstAddress.ColumnNumber
+        Dim lastColumn = area.RangeAddress.LastAddress.ColumnNumber
+        Dim width = Enumerable.Range(firstColumn, lastColumn - firstColumn + 1).
+            Sum(Function(column) VisibleColumnPixels(sheet, column, digitWidth)) - 4
+        If width <= 0 Then Return
+        Using font = ReportCellFont(cell)
+            Dim size = drawingGraphics.MeasureString(text, font, New SizeF(CSng(Math.Max(1, width)), 10000), StringFormat.GenericTypographic)
+            Dim height = Math.Ceiling((size.Height * 72.0 / 96.0 + 2) / area.RowCount())
+            For rowNumber = area.RangeAddress.FirstAddress.RowNumber To area.RangeAddress.LastAddress.RowNumber
+                Dim row = sheet.Row(rowNumber)
+                row.Height = Math.Max(row.Height, Math.Min(409.5, height))
+            Next
         End Using
     End Sub
 
@@ -665,68 +779,22 @@ Public Module PayrollReportService
 
         sheet.SheetView.FreezeRows(11)
         sheet.SheetView.FreezeColumns(1)
+        sheet.SheetView.View = XLSheetViewOptions.PageBreakPreview
         sheet.ShowGridLines = False
         sheet.PageSetup.PageOrientation = XLPageOrientation.Landscape
         sheet.PageSetup.PaperSize = XLPaperSize.LegalPaper
         sheet.PageSetup.FitToPages(1, 0)
         sheet.PageSetup.SetRowsToRepeatAtTop(1, 11)
+        ' Include every payroll column through Signature inside the page
+        ' boundary, with additional employee rows continuing down the page.
+        sheet.PageSetup.ColumnBreaks.Clear()
+        sheet.PageSetup.PrintAreas.Clear()
         sheet.PageSetup.PrintAreas.Add(1, 1, lastPrintRow, lastColumn)
         sheet.PageSetup.Margins.Left = 0.15
         sheet.PageSetup.Margins.Right = 0.15
         sheet.PageSetup.Margins.Top = 0.25
         sheet.PageSetup.Margins.Bottom = 0.25
         sheet.PageSetup.CenterHorizontally = True
-    End Sub
-
-    Private Sub BuildSettingsSheet(workbook As XLWorkbook, dailyWage As Decimal, settings As PayrollReportSettings)
-        Dim sheet = workbook.Worksheets.Add("SETTINGS")
-        sheet.Cell("A1").Value = "Setting"
-        sheet.Cell("B1").Value = "Value"
-        sheet.Cell("A2").Value = "Daily wage"
-        sheet.Cell("B2").Value = dailyWage
-        sheet.Cell("A3").Value = "Hours per day"
-        sheet.Cell("B3").Value = settings.HoursPerDay
-        sheet.Cell("A4").Value = "Sunday additional premium"
-        sheet.Cell("B4").Value = settings.SundayPremium
-        sheet.Cell("A5").Value = "Special holiday additional premium"
-        sheet.Cell("B5").Value = settings.SpecialHolidayPremium
-        sheet.Cell("A6").Value = "Legal holiday additional premium"
-        sheet.Cell("B6").Value = settings.LegalHolidayPremium
-        sheet.Cell("A7").Value = "Overtime hourly rate"
-        sheet.Cell("B7").Value = settings.OvertimeHourlyRate
-        sheet.Cell("A8").Value = "Service incentive days"
-        sheet.Cell("B8").Value = settings.ServiceIncentiveDays
-        sheet.Cell("A9").Value = "Incentive month divisor"
-        sheet.Cell("B9").Value = settings.IncentiveMonthsDivisor
-        sheet.Cell("A10").Value = "Incentive day divisor"
-        sheet.Cell("B10").Value = settings.IncentiveDaysDivisor
-        Dim reportSettings = New KeyValuePair(Of String, String)() {
-            New KeyValuePair(Of String, String)("Company name", settings.CompanyName),
-            New KeyValuePair(Of String, String)("Company address", settings.CompanyAddress),
-            New KeyValuePair(Of String, String)("Company phone", settings.CompanyPhone),
-            New KeyValuePair(Of String, String)("Company email", settings.CompanyEmail),
-            New KeyValuePair(Of String, String)("Payroll prepared by", settings.PayrollPreparedName),
-            New KeyValuePair(Of String, String)("Payroll prepared title", settings.PayrollPreparedTitle),
-            New KeyValuePair(Of String, String)("Payroll approved by", settings.PayrollApprovedName),
-            New KeyValuePair(Of String, String)("Payroll approved title", settings.PayrollApprovedTitle),
-            New KeyValuePair(Of String, String)("DTR prepared by", settings.DtrPreparedName),
-            New KeyValuePair(Of String, String)("DTR prepared title", settings.DtrPreparedTitle),
-            New KeyValuePair(Of String, String)("DTR checked by", settings.DtrCheckedName),
-            New KeyValuePair(Of String, String)("DTR checked title", settings.DtrCheckedTitle),
-            New KeyValuePair(Of String, String)("DTR noted by", settings.DtrNotedName),
-            New KeyValuePair(Of String, String)("DTR noted title", settings.DtrNotedTitle)
-        }
-        For index As Integer = 0 To reportSettings.Length - 1
-            sheet.Cell(12 + index, 1).Value = reportSettings(index).Key
-            sheet.Cell(12 + index, 2).Value = reportSettings(index).Value
-        Next
-        sheet.Range("A1:B1").Style.Font.Bold = True
-        sheet.Range("A1:B1").Style.Fill.BackgroundColor = Teal
-        sheet.Range("A1:B1").Style.Font.FontColor = XLColor.White
-        sheet.Column(1).Width = 31
-        sheet.Column(2).Width = 72
-        sheet.Range("B2:B10").Style.NumberFormat.Format = "0.######"
-        sheet.Visibility = XLWorksheetVisibility.VeryHidden
     End Sub
 
     Private Sub BuildPayrollSheet(
@@ -929,7 +997,7 @@ Public Module PayrollReportService
         Dim sheet = workbook.Worksheets.Add("PAYSLIP")
         Const blockHeight As Integer = 25
         Const slipsPerRow As Integer = 2
-        Const pairRowsPerPrintedPage As Integer = 3
+        Const pairRowsPerPage As Integer = 2
 
         For index As Integer = 0 To employeeCount - 1
             Dim pairRowIndex = index \ slipsPerRow
@@ -939,26 +1007,48 @@ Public Module PayrollReportService
             WritePayslipBlock(sheet, startRow, startColumn, payrollRow, clientName, clientAddress, cutoff, firstCutoff, settings)
         Next
 
-        Dim compactWidths = New Double() {12.5, 3.5, 5, 7.5, 11, 3.5, 7.5}
+        ' Reclaim the empty value/spacer columns; labels span them instead.
+        Dim compactWidths = New Double() {10.5, 1.5, 4.5, 8, 10, 1.5, 8}
         For offset As Integer = 0 To compactWidths.Length - 1
             sheet.Column(1 + offset).Width = compactWidths(offset)
             sheet.Column(9 + offset).Width = compactWidths(offset)
         Next
         sheet.Column(8).Width = 1.2
+        FitPayslipWrappedRows(sheet, employeeCount)
         sheet.ShowGridLines = False
         sheet.PageSetup.PageOrientation = XLPageOrientation.Portrait
         sheet.PageSetup.PaperSize = XLPaperSize.A4Paper
-        sheet.PageSetup.FitToPages(1, 0)
         Dim pairCount = CInt(Math.Ceiling(employeeCount / CDbl(slipsPerRow)))
         sheet.PageSetup.PrintAreas.Add(1, 1, pairCount * blockHeight, 15)
-        For pairRowIndex As Integer = pairRowsPerPrintedPage To pairCount - 1 Step pairRowsPerPrintedPage
-            sheet.PageSetup.AddHorizontalPageBreak(1 + pairRowIndex * blockHeight)
-        Next
         sheet.PageSetup.Margins.Left = 0.2
         sheet.PageSetup.Margins.Right = 0.2
         sheet.PageSetup.Margins.Top = 0.2
         sheet.PageSetup.Margins.Bottom = 0.2
         sheet.PageSetup.CenterHorizontally = True
+
+        ' Print two pairs (four employees) per page. Use explicit scaling
+        ' so Excel honors these manual breaks instead of fitting the whole
+        ' worksheet to an automatically chosen number of pages.
+        Dim largestPageHeight As Double = 0
+        For pairRowIndex As Integer = 0 To pairCount - 1 Step pairRowsPerPage
+            Dim startRow = 1 + pairRowIndex * blockHeight
+            Dim lastRow = Math.Min(pairCount, pairRowIndex + pairRowsPerPage) * blockHeight
+            largestPageHeight = Math.Max(largestPageHeight,
+                Enumerable.Range(startRow, lastRow - startRow + 1).Sum(Function(row) sheet.Row(row).Height))
+            If pairRowIndex > 0 Then sheet.PageSetup.AddHorizontalPageBreak(startRow - 1)
+        Next
+        Using bitmap As New Bitmap(1, 1)
+            bitmap.SetResolution(96, 96)
+            Using drawingGraphics = Graphics.FromImage(bitmap)
+                Dim digitWidth = ReportDigitWidth(sheet, drawingGraphics)
+                Dim contentWidth = Enumerable.Range(1, 15).Sum(Function(column) VisibleColumnPixels(sheet, column, digitWidth)) * 72.0 / 96.0
+                ' A4 dimensions in points, with a small printer-tolerance inset.
+                Dim printableWidth = 595.28 - (sheet.PageSetup.Margins.Left + sheet.PageSetup.Margins.Right) * 72 - 12
+                Dim printableHeight = 841.89 - (sheet.PageSetup.Margins.Top + sheet.PageSetup.Margins.Bottom) * 72 - 12
+                Dim printScale = Math.Floor(100 * Math.Min(1, Math.Min(printableWidth / contentWidth, printableHeight / Math.Max(1, largestPageHeight))))
+                sheet.PageSetup.Scale = CInt(Math.Max(10, printScale))
+            End Using
+        End Using
     End Sub
 
     Private Sub WritePayslipBlock(
@@ -981,17 +1071,16 @@ Public Module PayrollReportService
         Dim deductionValueStartColumn = startColumn + 5
         Dim deductionAmountColumn = startColumn + 6
 
-        sheet.Range(startRow, startColumn, startRow, deductionAmountColumn).Merge()
-        sheet.Cell(startRow, startColumn).Value = settings.CompanyName
-        sheet.Cell(startRow, startColumn).Style.Font.Bold = True
-        sheet.Cell(startRow, startColumn).Style.Font.FontSize = 8
-        sheet.Cell(startRow, startColumn).Style.Font.FontColor = Maroon
-        sheet.Cell(startRow, startColumn).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center
-        sheet.Range(startRow + 1, startColumn, startRow + 1, deductionAmountColumn).Merge()
-        sheet.Cell(startRow + 1, startColumn).Value = settings.CompanyAddress
-        sheet.Cell(startRow + 1, startColumn).Style.Font.FontSize = 5.5
-        sheet.Cell(startRow + 1, startColumn).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center
-        TryAddCompanyLogo(sheet, startRow, startColumn, 24, 24)
+        sheet.Range(startRow, startColumn, startRow + 1, startColumn).Merge()
+        sheet.Range(startRow, valueStartColumn, startRow, deductionAmountColumn).Merge()
+        sheet.Cell(startRow, valueStartColumn).Value = settings.CompanyName
+        sheet.Cell(startRow, valueStartColumn).Style.Font.Bold = True
+        sheet.Cell(startRow, valueStartColumn).Style.Font.FontColor = Maroon
+        sheet.Cell(startRow, valueStartColumn).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center
+        sheet.Range(startRow + 1, valueStartColumn, startRow + 1, deductionAmountColumn).Merge()
+        sheet.Cell(startRow + 1, valueStartColumn).Value = settings.CompanyAddress
+        sheet.Cell(startRow + 1, valueStartColumn).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center
+        sheet.Range(startRow, valueStartColumn, startRow + 1, deductionAmountColumn).Style.Alignment.WrapText = True
 
         sheet.Cell(startRow + 2, typeColumn).Value = "Detachment:"
         sheet.Range(startRow + 2, valueStartColumn, startRow + 2, deductionAmountColumn).Merge()
@@ -1006,8 +1095,10 @@ Public Module PayrollReportService
         sheet.Range(startRow + 5, valueStartColumn, startRow + 5, deductionAmountColumn).Merge()
         sheet.Cell(startRow + 5, valueStartColumn).Value = ConvertCutoffToReadable(cutoff)
         sheet.Cell(startRow + 6, typeColumn).Value = "Total Number of Days"
+        sheet.Range(startRow + 6, typeColumn, startRow + 6, valueStartColumn).Merge()
         sheet.Cell(startRow + 6, hoursColumn).FormulaA1 = $"'PAYROLL SHEET'!C{payrollRow}"
         sheet.Cell(startRow + 6, deductionTypeColumn).Value = "Total Number of Hrs."
+        sheet.Range(startRow + 6, deductionTypeColumn, startRow + 6, deductionValueStartColumn).Merge()
         sheet.Cell(startRow + 6, deductionAmountColumn).FormulaA1 = $"'PAYROLL SHEET'!D{payrollRow}"
 
         sheet.Range(startRow + 7, startColumn, startRow + 7, amountColumn).Merge()
@@ -1022,6 +1113,10 @@ Public Module PayrollReportService
         sheet.Cell(startRow + 8, amountColumn).Value = "AMOUNT (PHP)"
         sheet.Cell(startRow + 8, deductionTypeColumn).Value = "TYPE"
         sheet.Cell(startRow + 8, deductionAmountColumn).Value = "AMOUNT (PHP)"
+        For rowNumber = startRow + 8 To startRow + 20
+            sheet.Range(rowNumber, typeColumn, rowNumber, valueStartColumn).Merge()
+            sheet.Range(rowNumber, deductionTypeColumn, rowNumber, deductionValueStartColumn).Merge()
+        Next
 
         Dim earningLabels = New String() {
             "Daily Wage", "Basic Pay", "Sunday Pay", "Legal Holiday", "Special Holiday",
@@ -1086,21 +1181,54 @@ Public Module PayrollReportService
         blockRange.Style.Border.BottomBorder = XLBorderStyleValues.Thin
         blockRange.Style.Border.LeftBorder = XLBorderStyleValues.Thin
         blockRange.Style.Border.RightBorder = XLBorderStyleValues.Thin
-        blockRange.Style.Font.FontSize = 6.5
+        blockRange.Style.Font.FontSize = 9
+        sheet.Cell(startRow, valueStartColumn).Style.Font.FontSize = 10
+        sheet.Cell(startRow + 1, valueStartColumn).Style.Font.FontSize = 8
         blockRange.Style.Alignment.Vertical = XLAlignmentVerticalValues.Center
+        sheet.Range(startRow + 2, startColumn, startRow + 22, deductionAmountColumn).Style.Alignment.WrapText = True
         sheet.Range(startRow + 9, hoursColumn, startRow + 20, hoursColumn).Style.NumberFormat.Format = QuantityFormat
         sheet.Range(startRow + 9, amountColumn, startRow + 22, amountColumn).Style.NumberFormat.Format = MoneyFormat
         sheet.Range(startRow + 9, deductionAmountColumn, startRow + 22, deductionAmountColumn).Style.NumberFormat.Format = MoneyFormat
         StyleTotalRow(sheet.Range(startRow + 21, startColumn, startRow + 22, deductionAmountColumn))
-        sheet.Row(startRow).Height = 14
-        sheet.Row(startRow + 1).Height = 9
+        sheet.Row(startRow).Height = 22
+        sheet.Row(startRow + 1).Height = 18
+        ' Give each payslip more vertical space; wrapped rows may grow further.
         For rowNumber As Integer = startRow + 2 To startRow + 20
-            sheet.Row(rowNumber).Height = 10
+            sheet.Row(rowNumber).Height = 20
         Next
-        sheet.Row(startRow + 21).Height = 12
-        sheet.Row(startRow + 22).Height = 12
-        sheet.Row(startRow + 23).Height = 5
-        sheet.Row(startRow + 24).Height = 5
+        sheet.Row(startRow + 21).Height = 22
+        sheet.Row(startRow + 22).Height = 24
+        sheet.Row(startRow + 23).Height = 8
+        sheet.Row(startRow + 24).Height = 8
+    End Sub
+
+    Private Sub FitPayslipWrappedRows(sheet As IXLWorksheet, employeeCount As Integer)
+        Using bitmap As New Bitmap(1, 1)
+            bitmap.SetResolution(96, 96)
+            Using drawingGraphics = Graphics.FromImage(bitmap)
+                Dim normalFont = sheet.Workbook.Style.Font
+                Dim digitWidth As Integer
+                Using font As New Font(normalFont.FontName, CSng(normalFont.FontSize))
+                    digitWidth = CInt(Math.Round(drawingGraphics.MeasureString("0", font, PointF.Empty, StringFormat.GenericTypographic).Width))
+                End Using
+                For index = 0 To employeeCount - 1
+                    Dim startRow = 1 + (index \ 2) * 25
+                    Dim startColumn = If(index Mod 2 = 0, 1, 9)
+                    For Each cell In sheet.Range(startRow, startColumn, startRow + 22, startColumn + 6).CellsUsed()
+                        Dim text As String
+                        If cell.HasFormula Then
+                            ' Only the employee-name formula contains text;
+                            ' numeric payroll formulas retain their formatting.
+                            If cell.Address.RowNumber <> startRow + 4 OrElse cell.Address.ColumnNumber <> startColumn + 1 Then Continue For
+                            text = sheet.Workbook.Worksheet("PAYROLL SHEET").Cell(12 + index, 1).GetString()
+                        Else
+                            text = cell.GetString()
+                        End If
+                        FitWrappedReportCell(sheet, cell, text, drawingGraphics, digitWidth)
+                    Next
+                Next
+            End Using
+        End Using
     End Sub
 
     Private Sub WritePayslipDeduction(sheet As IXLWorksheet, row As Integer, startColumn As Integer, label As String, formula As String)
@@ -1290,6 +1418,11 @@ Public Module PayrollReportService
         sheet.Cell(8, 2).Value = clientAddress
         sheet.Cell(10, 1).Value = "Covered Period:"
         sheet.Cell(10, 2).Value = ConvertCutoffToReadable(cutoff)
+        If lastColumn > 2 Then
+            For Each contextRow In {6, 7, 8, 10}
+                sheet.Range(contextRow, 2, contextRow, lastColumn).Merge()
+            Next
+        End If
         sheet.Range(12, 1, 13, 1).Merge()
         sheet.Cell(12, 1).Value = "Internal Security Name"
         sheet.Range(12, lastColumn, 13, lastColumn).Merge()
@@ -1433,29 +1566,97 @@ Public Module PayrollReportService
         sheet.Cell(5, 1).Value = If(String.IsNullOrWhiteSpace(settings.CompanyEmail), "", "Email: " & settings.CompanyEmail)
         sheet.Range(3, 1, 5, lastColumn).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center
         sheet.Range(3, 1, 5, lastColumn).Style.Font.Italic = True
-        TryAddCompanyLogo(sheet, 2, 1, 56, 56)
+    End Sub
+
+    Private Sub AddCompanyLogos(workbook As XLWorkbook, settings As PayrollReportSettings)
+        ' Add images only after widths and optional hidden columns are final.
+        ' Each merged company-name heading identifies its own logo/text block,
+        ' including the right-hand payslip and every subsequent printed page.
+        For Each sheet In workbook.Worksheets
+            Dim isPayslip = sheet.Name = "PAYSLIP"
+            For Each header In sheet.MergedRanges.Where(
+                Function(range) String.Equals(range.FirstCell().GetString(), settings.CompanyName, StringComparison.Ordinal)).ToList()
+                Dim address = header.RangeAddress.FirstAddress
+                If isPayslip Then
+                    If (address.ColumnNumber <> 2 AndAlso address.ColumnNumber <> 10) OrElse (address.RowNumber - 1) Mod 25 <> 0 Then Continue For
+                ElseIf address.RowNumber <> 2 OrElse address.ColumnNumber <> 1 Then
+                    Continue For
+                End If
+                TryAddCompanyLogo(sheet, header, If(isPayslip, 2, 4), If(isPayslip, 24, 56))
+            Next
+        Next
     End Sub
 
     Private Sub TryAddCompanyLogo(
         sheet As IXLWorksheet,
-        anchorRow As Integer,
-        anchorColumn As Integer,
-        maximumWidth As Integer,
-        maximumHeight As Integer
+        companyHeading As IXLRange,
+        headerRowCount As Integer,
+        maximumSize As Integer
     )
         If sheet Is Nothing Then Return
         Dim logoPath = Path.Combine(Application.StartupPath, "Resources", "DeltaMaroon_NoBg.png")
         If String.IsNullOrWhiteSpace(logoPath) OrElse Not File.Exists(logoPath) Then Return
 
+        Dim picture As ClosedXML.Excel.Drawings.IXLPicture = Nothing
         Try
-            Dim picture = sheet.AddPicture(logoPath)
-            Dim scale = Math.Min(maximumWidth / CDbl(picture.OriginalWidth), maximumHeight / CDbl(picture.OriginalHeight))
-            picture.WithPlacement(ClosedXML.Excel.Drawings.XLPicturePlacement.FreeFloating)
-            picture.Scale(scale).MoveTo(sheet.Cell(anchorRow, anchorColumn))
+            Using bitmap As New Bitmap(1, 1)
+                ' Excel drawing offsets use 96-DPI pixels, regardless of the
+                ' workstation's display scaling or the printer selected.
+                bitmap.SetResolution(96, 96)
+                Using drawingGraphics = Graphics.FromImage(bitmap)
+                    Dim normalFont = sheet.Workbook.Style.Font
+                    Dim digitWidth As Integer
+                    Using font As New Font(normalFont.FontName, CSng(normalFont.FontSize))
+                        digitWidth = CInt(Math.Round(drawingGraphics.MeasureString("0", font, PointF.Empty, StringFormat.GenericTypographic).Width))
+                    End Using
+                    Dim firstRow = companyHeading.RangeAddress.FirstAddress.RowNumber
+                    Dim firstColumn = companyHeading.RangeAddress.FirstAddress.ColumnNumber
+                    Dim lastColumn = companyHeading.RangeAddress.LastAddress.ColumnNumber
+                    Dim headerWidth = Enumerable.Range(firstColumn, lastColumn - firstColumn + 1).
+                        Sum(Function(column) VisibleColumnPixels(sheet, column, digitWidth))
+                    Dim textWidth As Double = 0
+                    Dim headerHeight As Double = 0
+                    For rowNumber = firstRow To firstRow + headerRowCount - 1
+                        Dim cell = sheet.Cell(rowNumber, firstColumn)
+                        Dim style = cell.Style.Font
+                        Dim selectedFontStyle = If(style.Bold, FontStyle.Bold, FontStyle.Regular) Or If(style.Italic, FontStyle.Italic, FontStyle.Regular)
+                        Using font As New Font(style.FontName, CSng(style.FontSize), selectedFontStyle)
+                            Dim lineWidth = drawingGraphics.MeasureString(cell.GetString(), font, PointF.Empty, StringFormat.GenericTypographic).Width
+                            If cell.Style.Alignment.WrapText Then lineWidth = Math.Min(lineWidth, Math.Max(1, headerWidth - 4))
+                            textWidth = Math.Max(textWidth, lineWidth)
+                        End Using
+                        headerHeight += sheet.Row(rowNumber).Height * 96.0 / 72.0
+                    Next
+
+                    picture = sheet.AddPicture(logoPath)
+                    Dim scale = Math.Min(maximumSize / CDbl(picture.OriginalWidth), maximumSize / CDbl(picture.OriginalHeight))
+                    picture.WithPlacement(ClosedXML.Excel.Drawings.XLPicturePlacement.Move)
+                    picture.Scale(scale)
+                    Dim gap = If(headerRowCount = 2, 4, 8)
+                    Dim anchorColumn = If(headerRowCount = 2, firstColumn - 1, firstColumn)
+                    Dim reservedWidth = If(headerRowCount = 2, VisibleColumnPixels(sheet, anchorColumn, digitWidth), 0)
+                    Dim offsetX = Math.Max(4, reservedWidth + CInt(Math.Floor((headerWidth - textWidth) / 2)) - picture.Width - gap)
+                    Dim offsetY = Math.Max(0, CInt(Math.Round((headerHeight - picture.Height) / 2)))
+                    While anchorColumn < lastColumn
+                        Dim columnWidth = VisibleColumnPixels(sheet, anchorColumn, digitWidth)
+                        If columnWidth > offsetX Then Exit While
+                        offsetX -= columnWidth
+                        anchorColumn += 1
+                    End While
+                    picture.MoveTo(sheet.Cell(firstRow, anchorColumn), offsetX, offsetY)
+                End Using
+            End Using
         Catch
+            If picture IsNot Nothing Then picture.Delete()
             ' A missing or invalid optional logo must not prevent payroll export.
         End Try
     End Sub
+
+    Private Function VisibleColumnPixels(sheet As IXLWorksheet, columnNumber As Integer, digitWidth As Integer) As Integer
+        Dim column = sheet.Column(columnNumber)
+        If column.IsHidden Then Return 0
+        Return CInt(Math.Floor(column.Width * digitWidth + 0.5)) + 5
+    End Function
 
     Private Sub StyleTotalRow(range As IXLRange)
         range.Style.Font.Bold = True

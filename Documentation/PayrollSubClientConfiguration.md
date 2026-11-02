@@ -29,6 +29,8 @@ The workbook's second column also defines duty length: 71 rows use 12 hours, 13 
 
 ## Configuration model
 
+Payroll and Report Settings contains only company identity and report signatories. Calculation rules are configured per sub-client in Payroll Settings; the obsolete global Calculation premiums tab has been removed. Existing `PayrollReportSettings.xml` files still load their company and signatory values. Legacy calculation elements are ignored and omitted on the next save.
+
 Three Access tables are created idempotently when the feature is first used:
 
 - `PRL_SUB_CLIENT_PAY_POLICY`: one policy header per sub-client, including base hours, manual-DTR duty mode, configured single-shift hours/night flag, ND mode, incentive parameters, rate-semantics version, notes, and audit fields.
@@ -115,7 +117,6 @@ The wage differences require an administrator or payroll owner to decide whether
 - Sunday/holiday interaction verification: `SUN+SH` and `SUN+LH` selections remained valid, SH/LH stayed mutually exclusive, and a saved `SUN+SH` classification reloaded with both selections intact.
 - Premium calculation verification on 2026-08-21 at an 800.00 daily wage: Sunday and standalone SH produced 1,040.00 for eight hours; LH produced 1,600.00; SH+rest produced 1,200.00 plus 120.00 ND and 390.00 for two OT hours; LH+rest produced 2,080.00 plus 208.00 ND and 676.00 for two OT hours.
 - Legacy-policy migration verification on a copied MDB: a saved Sunday `1.30` full multiplier loaded as a `0.30` additional premium, saving wrote `ADDITIONAL_PREMIUM_V1`, and all 14 premium rules persisted.
-- The older Payroll and Report Settings screen follows the same convention. Existing XML values such as `1.30` and `2.00` are converted to `0.30` and `1.00` when the file has no premium-semantics marker; the next save writes the marker and premium-named XML fields.
 - Production MDB migration on 2026-08-15: added the 27 missing context/monetary snapshot columns to `Data\Database\DMSA.mdb`. The database reopened successfully, the migration passed an idempotent second run, and row counts across ten payroll/client/employee tables matched the verified pre-migration backup.
 
 ## UAT checklist

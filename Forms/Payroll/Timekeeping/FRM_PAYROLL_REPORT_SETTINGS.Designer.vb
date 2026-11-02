@@ -22,8 +22,6 @@ Partial Class FRM_PAYROLL_REPORT_SETTINGS
         Me.settingsTabs = New System.Windows.Forms.TabControl()
         Me.companyTab = New System.Windows.Forms.TabPage()
         Me.companyFields = New System.Windows.Forms.TableLayoutPanel()
-        Me.calculationTab = New System.Windows.Forms.TabPage()
-        Me.calculationFields = New System.Windows.Forms.TableLayoutPanel()
         Me.settingsPathLabel = New System.Windows.Forms.Label()
         Me.buttonsPanel = New System.Windows.Forms.FlowLayoutPanel()
         Me.btnSave = New System.Windows.Forms.Button()
@@ -74,45 +72,11 @@ Partial Class FRM_PAYROLL_REPORT_SETTINGS
         Me.lblDtrNotedTitle = New System.Windows.Forms.Label()
         Me.txtDtrNotedTitle = New System.Windows.Forms.TextBox()
         Me.helpDtrNotedTitle = New System.Windows.Forms.Label()
-        Me.lblHoursPerDay = New System.Windows.Forms.Label()
-        Me.numHoursPerDay = New System.Windows.Forms.NumericUpDown()
-        Me.helpHoursPerDay = New System.Windows.Forms.Label()
-        Me.lblSundayMultiplier = New System.Windows.Forms.Label()
-        Me.numSundayMultiplier = New System.Windows.Forms.NumericUpDown()
-        Me.helpSundayMultiplier = New System.Windows.Forms.Label()
-        Me.lblSpecialHolidayMultiplier = New System.Windows.Forms.Label()
-        Me.numSpecialHolidayMultiplier = New System.Windows.Forms.NumericUpDown()
-        Me.helpSpecialHolidayMultiplier = New System.Windows.Forms.Label()
-        Me.lblLegalHolidayMultiplier = New System.Windows.Forms.Label()
-        Me.numLegalHolidayMultiplier = New System.Windows.Forms.NumericUpDown()
-        Me.helpLegalHolidayMultiplier = New System.Windows.Forms.Label()
-        Me.lblOvertimeHourlyRate = New System.Windows.Forms.Label()
-        Me.numOvertimeHourlyRate = New System.Windows.Forms.NumericUpDown()
-        Me.helpOvertimeHourlyRate = New System.Windows.Forms.Label()
-        Me.lblServiceIncentiveDays = New System.Windows.Forms.Label()
-        Me.numServiceIncentiveDays = New System.Windows.Forms.NumericUpDown()
-        Me.helpServiceIncentiveDays = New System.Windows.Forms.Label()
-        Me.lblIncentiveMonthsDivisor = New System.Windows.Forms.Label()
-        Me.numIncentiveMonthsDivisor = New System.Windows.Forms.NumericUpDown()
-        Me.helpIncentiveMonthsDivisor = New System.Windows.Forms.Label()
-        Me.lblIncentiveDaysDivisor = New System.Windows.Forms.Label()
-        Me.numIncentiveDaysDivisor = New System.Windows.Forms.NumericUpDown()
-        Me.helpIncentiveDaysDivisor = New System.Windows.Forms.Label()
         Me.rootPanel.SuspendLayout()
         Me.settingsTabs.SuspendLayout()
         Me.companyTab.SuspendLayout()
         Me.companyFields.SuspendLayout()
-        Me.calculationTab.SuspendLayout()
-        Me.calculationFields.SuspendLayout()
         Me.buttonsPanel.SuspendLayout()
-        CType(Me.numHoursPerDay, System.ComponentModel.ISupportInitialize).BeginInit()
-        CType(Me.numSundayMultiplier, System.ComponentModel.ISupportInitialize).BeginInit()
-        CType(Me.numSpecialHolidayMultiplier, System.ComponentModel.ISupportInitialize).BeginInit()
-        CType(Me.numLegalHolidayMultiplier, System.ComponentModel.ISupportInitialize).BeginInit()
-        CType(Me.numOvertimeHourlyRate, System.ComponentModel.ISupportInitialize).BeginInit()
-        CType(Me.numServiceIncentiveDays, System.ComponentModel.ISupportInitialize).BeginInit()
-        CType(Me.numIncentiveMonthsDivisor, System.ComponentModel.ISupportInitialize).BeginInit()
-        CType(Me.numIncentiveDaysDivisor, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.SuspendLayout()
         '
         'rootPanel
@@ -142,14 +106,13 @@ Partial Class FRM_PAYROLL_REPORT_SETTINGS
         Me.headerLabel.Name = "headerLabel"
         Me.headerLabel.Padding = New System.Windows.Forms.Padding(16, 0, 0, 0)
         Me.headerLabel.TabIndex = 0
-        Me.headerLabel.Text = "PAYROLL & REPORT SETTINGS" & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "Company identity, signatories, and calculation rules used in generated workbooks."
+        Me.headerLabel.Text = "PAYROLL & REPORT SETTINGS" & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "Company identity and signatories used in generated workbooks."
         Me.headerLabel.TextAlign = System.Drawing.ContentAlignment.MiddleLeft
         Me.headerLabel.UseMnemonic = False
         '
         'settingsTabs
         '
         Me.settingsTabs.Controls.Add(Me.companyTab)
-        Me.settingsTabs.Controls.Add(Me.calculationTab)
         Me.settingsTabs.Dock = System.Windows.Forms.DockStyle.Fill
         Me.settingsTabs.Font = New System.Drawing.Font("Verdana", 9.0!, System.Drawing.FontStyle.Bold)
         Me.settingsTabs.Name = "settingsTabs"
@@ -634,294 +597,6 @@ Partial Class FRM_PAYROLL_REPORT_SETTINGS
         Me.helpDtrNotedTitle.Text = "Example: Security Director."
         Me.helpDtrNotedTitle.TextAlign = System.Drawing.ContentAlignment.MiddleLeft
         '
-        'calculationTab
-        '
-        Me.calculationTab.AutoScroll = True
-        Me.calculationTab.BackColor = System.Drawing.Color.FromArgb(255, 224, 192)
-        Me.calculationTab.Controls.Add(Me.calculationFields)
-        Me.calculationTab.Name = "calculationTab"
-        Me.calculationTab.Padding = New System.Windows.Forms.Padding(8)
-        Me.calculationTab.Text = "Calculation premiums"
-        '
-        'calculationFields
-        '
-        Me.calculationFields.AutoScroll = True
-        Me.calculationFields.ColumnCount = 3
-        Me.calculationFields.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 235.0!))
-        Me.calculationFields.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 145.0!))
-        Me.calculationFields.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100.0!))
-        Me.calculationFields.Controls.Add(Me.lblHoursPerDay, 0, 0)
-        Me.calculationFields.Controls.Add(Me.numHoursPerDay, 1, 0)
-        Me.calculationFields.Controls.Add(Me.helpHoursPerDay, 2, 0)
-        Me.calculationFields.Controls.Add(Me.lblSundayMultiplier, 0, 1)
-        Me.calculationFields.Controls.Add(Me.numSundayMultiplier, 1, 1)
-        Me.calculationFields.Controls.Add(Me.helpSundayMultiplier, 2, 1)
-        Me.calculationFields.Controls.Add(Me.lblSpecialHolidayMultiplier, 0, 2)
-        Me.calculationFields.Controls.Add(Me.numSpecialHolidayMultiplier, 1, 2)
-        Me.calculationFields.Controls.Add(Me.helpSpecialHolidayMultiplier, 2, 2)
-        Me.calculationFields.Controls.Add(Me.lblLegalHolidayMultiplier, 0, 3)
-        Me.calculationFields.Controls.Add(Me.numLegalHolidayMultiplier, 1, 3)
-        Me.calculationFields.Controls.Add(Me.helpLegalHolidayMultiplier, 2, 3)
-        Me.calculationFields.Controls.Add(Me.lblOvertimeHourlyRate, 0, 4)
-        Me.calculationFields.Controls.Add(Me.numOvertimeHourlyRate, 1, 4)
-        Me.calculationFields.Controls.Add(Me.helpOvertimeHourlyRate, 2, 4)
-        Me.calculationFields.Controls.Add(Me.lblServiceIncentiveDays, 0, 5)
-        Me.calculationFields.Controls.Add(Me.numServiceIncentiveDays, 1, 5)
-        Me.calculationFields.Controls.Add(Me.helpServiceIncentiveDays, 2, 5)
-        Me.calculationFields.Controls.Add(Me.lblIncentiveMonthsDivisor, 0, 6)
-        Me.calculationFields.Controls.Add(Me.numIncentiveMonthsDivisor, 1, 6)
-        Me.calculationFields.Controls.Add(Me.helpIncentiveMonthsDivisor, 2, 6)
-        Me.calculationFields.Controls.Add(Me.lblIncentiveDaysDivisor, 0, 7)
-        Me.calculationFields.Controls.Add(Me.numIncentiveDaysDivisor, 1, 7)
-        Me.calculationFields.Controls.Add(Me.helpIncentiveDaysDivisor, 2, 7)
-        Me.calculationFields.Dock = System.Windows.Forms.DockStyle.Fill
-        Me.calculationFields.GrowStyle = System.Windows.Forms.TableLayoutPanelGrowStyle.FixedSize
-        Me.calculationFields.Name = "calculationFields"
-        Me.calculationFields.Padding = New System.Windows.Forms.Padding(4, 12, 4, 4)
-        Me.calculationFields.RowCount = 9
-        Me.calculationFields.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 48.0!))
-        Me.calculationFields.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 48.0!))
-        Me.calculationFields.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 48.0!))
-        Me.calculationFields.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 48.0!))
-        Me.calculationFields.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 48.0!))
-        Me.calculationFields.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 48.0!))
-        Me.calculationFields.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 48.0!))
-        Me.calculationFields.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 48.0!))
-        Me.calculationFields.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100.0!))
-        Me.calculationFields.TabIndex = 0
-        '
-        'lblHoursPerDay
-        '
-        Me.lblHoursPerDay.Dock = System.Windows.Forms.DockStyle.Fill
-        Me.lblHoursPerDay.Font = New System.Drawing.Font("Verdana", 9.0!, System.Drawing.FontStyle.Bold)
-        Me.lblHoursPerDay.Name = "lblHoursPerDay"
-        Me.lblHoursPerDay.TabIndex = 0
-        Me.lblHoursPerDay.Text = "Hours per day"
-        Me.lblHoursPerDay.TextAlign = System.Drawing.ContentAlignment.MiddleLeft
-        '
-        'numHoursPerDay
-        '
-        Me.numHoursPerDay.Anchor = CType((System.Windows.Forms.AnchorStyles.Left Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
-        Me.numHoursPerDay.DecimalPlaces = 2
-        Me.numHoursPerDay.Margin = New System.Windows.Forms.Padding(4, 0, 12, 0)
-        Me.numHoursPerDay.Maximum = 1000000D
-        Me.numHoursPerDay.Name = "numHoursPerDay"
-        Me.numHoursPerDay.TabIndex = 1
-        Me.numHoursPerDay.TextAlign = System.Windows.Forms.HorizontalAlignment.Right
-        Me.numHoursPerDay.ThousandsSeparator = True
-        '
-        'helpHoursPerDay
-        '
-        Me.helpHoursPerDay.Dock = System.Windows.Forms.DockStyle.Fill
-        Me.helpHoursPerDay.ForeColor = System.Drawing.Color.DimGray
-        Me.helpHoursPerDay.Name = "helpHoursPerDay"
-        Me.helpHoursPerDay.TabIndex = 2
-        Me.helpHoursPerDay.Text = "Regular hourly rate = daily wage / hours per day."
-        Me.helpHoursPerDay.TextAlign = System.Drawing.ContentAlignment.MiddleLeft
-        '
-        'lblSundayMultiplier
-        '
-        Me.lblSundayMultiplier.Dock = System.Windows.Forms.DockStyle.Fill
-        Me.lblSundayMultiplier.Font = New System.Drawing.Font("Verdana", 9.0!, System.Drawing.FontStyle.Bold)
-        Me.lblSundayMultiplier.Name = "lblSundayMultiplier"
-        Me.lblSundayMultiplier.TabIndex = 3
-        Me.lblSundayMultiplier.Text = "Sunday additional premium"
-        Me.lblSundayMultiplier.TextAlign = System.Drawing.ContentAlignment.MiddleLeft
-        '
-        'numSundayMultiplier
-        '
-        Me.numSundayMultiplier.Anchor = CType((System.Windows.Forms.AnchorStyles.Left Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
-        Me.numSundayMultiplier.DecimalPlaces = 4
-        Me.numSundayMultiplier.Margin = New System.Windows.Forms.Padding(4, 0, 12, 0)
-        Me.numSundayMultiplier.Maximum = 1000000D
-        Me.numSundayMultiplier.Name = "numSundayMultiplier"
-        Me.numSundayMultiplier.TabIndex = 4
-        Me.numSundayMultiplier.TextAlign = System.Windows.Forms.HorizontalAlignment.Right
-        Me.numSundayMultiplier.ThousandsSeparator = True
-        '
-        'helpSundayMultiplier
-        '
-        Me.helpSundayMultiplier.Dock = System.Windows.Forms.DockStyle.Fill
-        Me.helpSundayMultiplier.ForeColor = System.Drawing.Color.DimGray
-        Me.helpSundayMultiplier.Name = "helpSundayMultiplier"
-        Me.helpSundayMultiplier.TabIndex = 5
-        Me.helpSundayMultiplier.Text = "Enter the addition only: 0.30 means base pay + 30%."
-        Me.helpSundayMultiplier.TextAlign = System.Drawing.ContentAlignment.MiddleLeft
-        '
-        'lblSpecialHolidayMultiplier
-        '
-        Me.lblSpecialHolidayMultiplier.Dock = System.Windows.Forms.DockStyle.Fill
-        Me.lblSpecialHolidayMultiplier.Font = New System.Drawing.Font("Verdana", 9.0!, System.Drawing.FontStyle.Bold)
-        Me.lblSpecialHolidayMultiplier.Name = "lblSpecialHolidayMultiplier"
-        Me.lblSpecialHolidayMultiplier.TabIndex = 6
-        Me.lblSpecialHolidayMultiplier.Text = "Special holiday premium"
-        Me.lblSpecialHolidayMultiplier.TextAlign = System.Drawing.ContentAlignment.MiddleLeft
-        '
-        'numSpecialHolidayMultiplier
-        '
-        Me.numSpecialHolidayMultiplier.Anchor = CType((System.Windows.Forms.AnchorStyles.Left Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
-        Me.numSpecialHolidayMultiplier.DecimalPlaces = 4
-        Me.numSpecialHolidayMultiplier.Margin = New System.Windows.Forms.Padding(4, 0, 12, 0)
-        Me.numSpecialHolidayMultiplier.Maximum = 1000000D
-        Me.numSpecialHolidayMultiplier.Name = "numSpecialHolidayMultiplier"
-        Me.numSpecialHolidayMultiplier.TabIndex = 7
-        Me.numSpecialHolidayMultiplier.TextAlign = System.Windows.Forms.HorizontalAlignment.Right
-        Me.numSpecialHolidayMultiplier.ThousandsSeparator = True
-        '
-        'helpSpecialHolidayMultiplier
-        '
-        Me.helpSpecialHolidayMultiplier.Dock = System.Windows.Forms.DockStyle.Fill
-        Me.helpSpecialHolidayMultiplier.ForeColor = System.Drawing.Color.DimGray
-        Me.helpSpecialHolidayMultiplier.Name = "helpSpecialHolidayMultiplier"
-        Me.helpSpecialHolidayMultiplier.TabIndex = 8
-        Me.helpSpecialHolidayMultiplier.Text = "Enter the addition only: 0.30 means an effective factor of 1.30."
-        Me.helpSpecialHolidayMultiplier.TextAlign = System.Drawing.ContentAlignment.MiddleLeft
-        '
-        'lblLegalHolidayMultiplier
-        '
-        Me.lblLegalHolidayMultiplier.Dock = System.Windows.Forms.DockStyle.Fill
-        Me.lblLegalHolidayMultiplier.Font = New System.Drawing.Font("Verdana", 9.0!, System.Drawing.FontStyle.Bold)
-        Me.lblLegalHolidayMultiplier.Name = "lblLegalHolidayMultiplier"
-        Me.lblLegalHolidayMultiplier.TabIndex = 9
-        Me.lblLegalHolidayMultiplier.Text = "Legal holiday premium"
-        Me.lblLegalHolidayMultiplier.TextAlign = System.Drawing.ContentAlignment.MiddleLeft
-        '
-        'numLegalHolidayMultiplier
-        '
-        Me.numLegalHolidayMultiplier.Anchor = CType((System.Windows.Forms.AnchorStyles.Left Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
-        Me.numLegalHolidayMultiplier.DecimalPlaces = 4
-        Me.numLegalHolidayMultiplier.Margin = New System.Windows.Forms.Padding(4, 0, 12, 0)
-        Me.numLegalHolidayMultiplier.Maximum = 1000000D
-        Me.numLegalHolidayMultiplier.Name = "numLegalHolidayMultiplier"
-        Me.numLegalHolidayMultiplier.TabIndex = 10
-        Me.numLegalHolidayMultiplier.TextAlign = System.Windows.Forms.HorizontalAlignment.Right
-        Me.numLegalHolidayMultiplier.ThousandsSeparator = True
-        '
-        'helpLegalHolidayMultiplier
-        '
-        Me.helpLegalHolidayMultiplier.Dock = System.Windows.Forms.DockStyle.Fill
-        Me.helpLegalHolidayMultiplier.ForeColor = System.Drawing.Color.DimGray
-        Me.helpLegalHolidayMultiplier.Name = "helpLegalHolidayMultiplier"
-        Me.helpLegalHolidayMultiplier.TabIndex = 11
-        Me.helpLegalHolidayMultiplier.Text = "Enter the addition only: 1.00 means an effective factor of 2.00."
-        Me.helpLegalHolidayMultiplier.TextAlign = System.Drawing.ContentAlignment.MiddleLeft
-        '
-        'lblOvertimeHourlyRate
-        '
-        Me.lblOvertimeHourlyRate.Dock = System.Windows.Forms.DockStyle.Fill
-        Me.lblOvertimeHourlyRate.Font = New System.Drawing.Font("Verdana", 9.0!, System.Drawing.FontStyle.Bold)
-        Me.lblOvertimeHourlyRate.Name = "lblOvertimeHourlyRate"
-        Me.lblOvertimeHourlyRate.TabIndex = 12
-        Me.lblOvertimeHourlyRate.Text = "Overtime hourly rate"
-        Me.lblOvertimeHourlyRate.TextAlign = System.Drawing.ContentAlignment.MiddleLeft
-        '
-        'numOvertimeHourlyRate
-        '
-        Me.numOvertimeHourlyRate.Anchor = CType((System.Windows.Forms.AnchorStyles.Left Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
-        Me.numOvertimeHourlyRate.DecimalPlaces = 6
-        Me.numOvertimeHourlyRate.Margin = New System.Windows.Forms.Padding(4, 0, 12, 0)
-        Me.numOvertimeHourlyRate.Maximum = 1000000D
-        Me.numOvertimeHourlyRate.Name = "numOvertimeHourlyRate"
-        Me.numOvertimeHourlyRate.TabIndex = 13
-        Me.numOvertimeHourlyRate.TextAlign = System.Windows.Forms.HorizontalAlignment.Right
-        Me.numOvertimeHourlyRate.ThousandsSeparator = True
-        '
-        'helpOvertimeHourlyRate
-        '
-        Me.helpOvertimeHourlyRate.Dock = System.Windows.Forms.DockStyle.Fill
-        Me.helpOvertimeHourlyRate.ForeColor = System.Drawing.Color.DimGray
-        Me.helpOvertimeHourlyRate.Name = "helpOvertimeHourlyRate"
-        Me.helpOvertimeHourlyRate.TabIndex = 14
-        Me.helpOvertimeHourlyRate.Text = "Peso amount per OT hour (existing template: 20.833333)."
-        Me.helpOvertimeHourlyRate.TextAlign = System.Drawing.ContentAlignment.MiddleLeft
-        '
-        'lblServiceIncentiveDays
-        '
-        Me.lblServiceIncentiveDays.Dock = System.Windows.Forms.DockStyle.Fill
-        Me.lblServiceIncentiveDays.Font = New System.Drawing.Font("Verdana", 9.0!, System.Drawing.FontStyle.Bold)
-        Me.lblServiceIncentiveDays.Name = "lblServiceIncentiveDays"
-        Me.lblServiceIncentiveDays.TabIndex = 15
-        Me.lblServiceIncentiveDays.Text = "Service incentive days"
-        Me.lblServiceIncentiveDays.TextAlign = System.Drawing.ContentAlignment.MiddleLeft
-        '
-        'numServiceIncentiveDays
-        '
-        Me.numServiceIncentiveDays.Anchor = CType((System.Windows.Forms.AnchorStyles.Left Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
-        Me.numServiceIncentiveDays.DecimalPlaces = 4
-        Me.numServiceIncentiveDays.Margin = New System.Windows.Forms.Padding(4, 0, 12, 0)
-        Me.numServiceIncentiveDays.Maximum = 1000000D
-        Me.numServiceIncentiveDays.Name = "numServiceIncentiveDays"
-        Me.numServiceIncentiveDays.TabIndex = 16
-        Me.numServiceIncentiveDays.TextAlign = System.Windows.Forms.HorizontalAlignment.Right
-        Me.numServiceIncentiveDays.ThousandsSeparator = True
-        '
-        'helpServiceIncentiveDays
-        '
-        Me.helpServiceIncentiveDays.Dock = System.Windows.Forms.DockStyle.Fill
-        Me.helpServiceIncentiveDays.ForeColor = System.Drawing.Color.DimGray
-        Me.helpServiceIncentiveDays.Name = "helpServiceIncentiveDays"
-        Me.helpServiceIncentiveDays.TabIndex = 17
-        Me.helpServiceIncentiveDays.Text = "Numerator used in the incentive-pay calculation."
-        Me.helpServiceIncentiveDays.TextAlign = System.Drawing.ContentAlignment.MiddleLeft
-        '
-        'lblIncentiveMonthsDivisor
-        '
-        Me.lblIncentiveMonthsDivisor.Dock = System.Windows.Forms.DockStyle.Fill
-        Me.lblIncentiveMonthsDivisor.Font = New System.Drawing.Font("Verdana", 9.0!, System.Drawing.FontStyle.Bold)
-        Me.lblIncentiveMonthsDivisor.Name = "lblIncentiveMonthsDivisor"
-        Me.lblIncentiveMonthsDivisor.TabIndex = 18
-        Me.lblIncentiveMonthsDivisor.Text = "Incentive month divisor"
-        Me.lblIncentiveMonthsDivisor.TextAlign = System.Drawing.ContentAlignment.MiddleLeft
-        '
-        'numIncentiveMonthsDivisor
-        '
-        Me.numIncentiveMonthsDivisor.Anchor = CType((System.Windows.Forms.AnchorStyles.Left Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
-        Me.numIncentiveMonthsDivisor.DecimalPlaces = 4
-        Me.numIncentiveMonthsDivisor.Margin = New System.Windows.Forms.Padding(4, 0, 12, 0)
-        Me.numIncentiveMonthsDivisor.Maximum = 1000000D
-        Me.numIncentiveMonthsDivisor.Name = "numIncentiveMonthsDivisor"
-        Me.numIncentiveMonthsDivisor.TabIndex = 19
-        Me.numIncentiveMonthsDivisor.TextAlign = System.Windows.Forms.HorizontalAlignment.Right
-        Me.numIncentiveMonthsDivisor.ThousandsSeparator = True
-        '
-        'helpIncentiveMonthsDivisor
-        '
-        Me.helpIncentiveMonthsDivisor.Dock = System.Windows.Forms.DockStyle.Fill
-        Me.helpIncentiveMonthsDivisor.ForeColor = System.Drawing.Color.DimGray
-        Me.helpIncentiveMonthsDivisor.Name = "helpIncentiveMonthsDivisor"
-        Me.helpIncentiveMonthsDivisor.TabIndex = 20
-        Me.helpIncentiveMonthsDivisor.Text = "Month divisor used in the incentive-pay calculation."
-        Me.helpIncentiveMonthsDivisor.TextAlign = System.Drawing.ContentAlignment.MiddleLeft
-        '
-        'lblIncentiveDaysDivisor
-        '
-        Me.lblIncentiveDaysDivisor.Dock = System.Windows.Forms.DockStyle.Fill
-        Me.lblIncentiveDaysDivisor.Font = New System.Drawing.Font("Verdana", 9.0!, System.Drawing.FontStyle.Bold)
-        Me.lblIncentiveDaysDivisor.Name = "lblIncentiveDaysDivisor"
-        Me.lblIncentiveDaysDivisor.TabIndex = 21
-        Me.lblIncentiveDaysDivisor.Text = "Incentive day divisor"
-        Me.lblIncentiveDaysDivisor.TextAlign = System.Drawing.ContentAlignment.MiddleLeft
-        '
-        'numIncentiveDaysDivisor
-        '
-        Me.numIncentiveDaysDivisor.Anchor = CType((System.Windows.Forms.AnchorStyles.Left Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
-        Me.numIncentiveDaysDivisor.DecimalPlaces = 4
-        Me.numIncentiveDaysDivisor.Margin = New System.Windows.Forms.Padding(4, 0, 12, 0)
-        Me.numIncentiveDaysDivisor.Maximum = 1000000D
-        Me.numIncentiveDaysDivisor.Name = "numIncentiveDaysDivisor"
-        Me.numIncentiveDaysDivisor.TabIndex = 22
-        Me.numIncentiveDaysDivisor.TextAlign = System.Windows.Forms.HorizontalAlignment.Right
-        Me.numIncentiveDaysDivisor.ThousandsSeparator = True
-        '
-        'helpIncentiveDaysDivisor
-        '
-        Me.helpIncentiveDaysDivisor.Dock = System.Windows.Forms.DockStyle.Fill
-        Me.helpIncentiveDaysDivisor.ForeColor = System.Drawing.Color.DimGray
-        Me.helpIncentiveDaysDivisor.Name = "helpIncentiveDaysDivisor"
-        Me.helpIncentiveDaysDivisor.TabIndex = 23
-        Me.helpIncentiveDaysDivisor.Text = "Day divisor used in the incentive-pay calculation."
-        Me.helpIncentiveDaysDivisor.TextAlign = System.Drawing.ContentAlignment.MiddleLeft
-        '
         'settingsPathLabel
         '
         Me.settingsPathLabel.AutoEllipsis = True
@@ -989,17 +664,7 @@ Partial Class FRM_PAYROLL_REPORT_SETTINGS
         Me.Name = "FRM_PAYROLL_REPORT_SETTINGS"
         Me.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent
         Me.Text = "Payroll and Report Settings"
-        CType(Me.numHoursPerDay, System.ComponentModel.ISupportInitialize).EndInit()
-        CType(Me.numSundayMultiplier, System.ComponentModel.ISupportInitialize).EndInit()
-        CType(Me.numSpecialHolidayMultiplier, System.ComponentModel.ISupportInitialize).EndInit()
-        CType(Me.numLegalHolidayMultiplier, System.ComponentModel.ISupportInitialize).EndInit()
-        CType(Me.numOvertimeHourlyRate, System.ComponentModel.ISupportInitialize).EndInit()
-        CType(Me.numServiceIncentiveDays, System.ComponentModel.ISupportInitialize).EndInit()
-        CType(Me.numIncentiveMonthsDivisor, System.ComponentModel.ISupportInitialize).EndInit()
-        CType(Me.numIncentiveDaysDivisor, System.ComponentModel.ISupportInitialize).EndInit()
         Me.buttonsPanel.ResumeLayout(False)
-        Me.calculationFields.ResumeLayout(False)
-        Me.calculationTab.ResumeLayout(False)
         Me.companyFields.ResumeLayout(False)
         Me.companyFields.PerformLayout()
         Me.companyTab.ResumeLayout(False)
@@ -1013,8 +678,6 @@ Partial Class FRM_PAYROLL_REPORT_SETTINGS
     Friend WithEvents settingsTabs As System.Windows.Forms.TabControl
     Friend WithEvents companyTab As System.Windows.Forms.TabPage
     Friend WithEvents companyFields As System.Windows.Forms.TableLayoutPanel
-    Friend WithEvents calculationTab As System.Windows.Forms.TabPage
-    Friend WithEvents calculationFields As System.Windows.Forms.TableLayoutPanel
     Friend WithEvents settingsPathLabel As System.Windows.Forms.Label
     Friend WithEvents buttonsPanel As System.Windows.Forms.FlowLayoutPanel
     Friend WithEvents btnSave As System.Windows.Forms.Button
@@ -1065,28 +728,4 @@ Partial Class FRM_PAYROLL_REPORT_SETTINGS
     Friend WithEvents lblDtrNotedTitle As System.Windows.Forms.Label
     Friend WithEvents txtDtrNotedTitle As System.Windows.Forms.TextBox
     Friend WithEvents helpDtrNotedTitle As System.Windows.Forms.Label
-    Friend WithEvents lblHoursPerDay As System.Windows.Forms.Label
-    Friend WithEvents numHoursPerDay As System.Windows.Forms.NumericUpDown
-    Friend WithEvents helpHoursPerDay As System.Windows.Forms.Label
-    Friend WithEvents lblSundayMultiplier As System.Windows.Forms.Label
-    Friend WithEvents numSundayMultiplier As System.Windows.Forms.NumericUpDown
-    Friend WithEvents helpSundayMultiplier As System.Windows.Forms.Label
-    Friend WithEvents lblSpecialHolidayMultiplier As System.Windows.Forms.Label
-    Friend WithEvents numSpecialHolidayMultiplier As System.Windows.Forms.NumericUpDown
-    Friend WithEvents helpSpecialHolidayMultiplier As System.Windows.Forms.Label
-    Friend WithEvents lblLegalHolidayMultiplier As System.Windows.Forms.Label
-    Friend WithEvents numLegalHolidayMultiplier As System.Windows.Forms.NumericUpDown
-    Friend WithEvents helpLegalHolidayMultiplier As System.Windows.Forms.Label
-    Friend WithEvents lblOvertimeHourlyRate As System.Windows.Forms.Label
-    Friend WithEvents numOvertimeHourlyRate As System.Windows.Forms.NumericUpDown
-    Friend WithEvents helpOvertimeHourlyRate As System.Windows.Forms.Label
-    Friend WithEvents lblServiceIncentiveDays As System.Windows.Forms.Label
-    Friend WithEvents numServiceIncentiveDays As System.Windows.Forms.NumericUpDown
-    Friend WithEvents helpServiceIncentiveDays As System.Windows.Forms.Label
-    Friend WithEvents lblIncentiveMonthsDivisor As System.Windows.Forms.Label
-    Friend WithEvents numIncentiveMonthsDivisor As System.Windows.Forms.NumericUpDown
-    Friend WithEvents helpIncentiveMonthsDivisor As System.Windows.Forms.Label
-    Friend WithEvents lblIncentiveDaysDivisor As System.Windows.Forms.Label
-    Friend WithEvents numIncentiveDaysDivisor As System.Windows.Forms.NumericUpDown
-    Friend WithEvents helpIncentiveDaysDivisor As System.Windows.Forms.Label
 End Class

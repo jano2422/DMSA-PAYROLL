@@ -355,6 +355,7 @@ Public Module OverallPayrollExportService
             Catch
             End Try
             HideUnusedEmployeePayrollColumns(workbook.Worksheet("EMPLOYEE PAYROLL"), rows.Count)
+            PayrollReportService.ApplyReadableReportLayout(workbook)
             workbook.SaveAs(outputPath)
         End Using
     End Sub

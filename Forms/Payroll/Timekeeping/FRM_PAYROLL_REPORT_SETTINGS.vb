@@ -32,19 +32,7 @@ Public Class FRM_PAYROLL_REPORT_SETTINGS
         txtDtrCheckedTitle.Text = settings.DtrCheckedTitle
         txtDtrNotedName.Text = settings.DtrNotedName
         txtDtrNotedTitle.Text = settings.DtrNotedTitle
-        numHoursPerDay.Value = ClampValue(numHoursPerDay, settings.HoursPerDay)
-        numSundayMultiplier.Value = ClampValue(numSundayMultiplier, settings.SundayPremium)
-        numSpecialHolidayMultiplier.Value = ClampValue(numSpecialHolidayMultiplier, settings.SpecialHolidayPremium)
-        numLegalHolidayMultiplier.Value = ClampValue(numLegalHolidayMultiplier, settings.LegalHolidayPremium)
-        numOvertimeHourlyRate.Value = ClampValue(numOvertimeHourlyRate, settings.OvertimeHourlyRate)
-        numServiceIncentiveDays.Value = ClampValue(numServiceIncentiveDays, settings.ServiceIncentiveDays)
-        numIncentiveMonthsDivisor.Value = ClampValue(numIncentiveMonthsDivisor, settings.IncentiveMonthsDivisor)
-        numIncentiveDaysDivisor.Value = ClampValue(numIncentiveDaysDivisor, settings.IncentiveDaysDivisor)
     End Sub
-
-    Private Shared Function ClampValue(input As NumericUpDown, value As Decimal) As Decimal
-        Return Math.Min(input.Maximum, Math.Max(input.Minimum, value))
-    End Function
 
     Private Sub btnRestoreDefaults_Click(sender As Object, e As EventArgs) Handles btnRestoreDefaults.Click
         DisplaySettings(PayrollReportSettings.CreateDefault())
@@ -65,16 +53,7 @@ Public Class FRM_PAYROLL_REPORT_SETTINGS
             .DtrCheckedName = txtDtrCheckedName.Text.Trim(),
             .DtrCheckedTitle = txtDtrCheckedTitle.Text.Trim(),
             .DtrNotedName = txtDtrNotedName.Text.Trim(),
-            .DtrNotedTitle = txtDtrNotedTitle.Text.Trim(),
-            .HoursPerDay = numHoursPerDay.Value,
-            .RateSemantics = PayrollReportSettingsService.PremiumRateSemantics,
-            .SundayPremium = numSundayMultiplier.Value,
-            .SpecialHolidayPremium = numSpecialHolidayMultiplier.Value,
-            .LegalHolidayPremium = numLegalHolidayMultiplier.Value,
-            .OvertimeHourlyRate = numOvertimeHourlyRate.Value,
-            .ServiceIncentiveDays = numServiceIncentiveDays.Value,
-            .IncentiveMonthsDivisor = numIncentiveMonthsDivisor.Value,
-            .IncentiveDaysDivisor = numIncentiveDaysDivisor.Value
+            .DtrNotedTitle = txtDtrNotedTitle.Text.Trim()
         }
 
         Try

@@ -157,6 +157,7 @@ Public Partial Class FRM_DTR_SHIFT_MANUAL
     Private btnFirstCutoffFile As Button
     Private btnSecondCutoffFile As Button
     Private cutoffStatusToolTip As ToolTip
+    Private btnPreviousMonthBenefits As Button
 
     Public ReadOnly Property SelectedPayrollYear As String
         Get
@@ -790,6 +791,7 @@ Public Partial Class FRM_DTR_SHIFT_MANUAL
             .Padding = New Padding(2)
         }
 
+        inputHost.Controls.Add(BuildBenefitCopyPanel())
         txtOfficerAllowance = AddMoneyInputRow(inputHost, "Officer's allowance")
         txtUniformAllowance = AddMoneyInputRow(inputHost, "SG uniform allowance")
         txtOtherEarnings = AddMoneyInputRow(inputHost, "Other earnings")
@@ -832,6 +834,103 @@ Public Partial Class FRM_DTR_SHIFT_MANUAL
 
         Return outer
     End Function
+
+    Private Function BuildBenefitCopyPanel() As Control
+        Dim panel As New TableLayoutPanel With {
+            .Width = 340,
+            .Height = 62,
+            .ColumnCount = 1,
+            .RowCount = 2,
+            .Margin = New Padding(0, 0, 0, 6)
+        }
+        panel.ColumnStyles.Add(New ColumnStyle(SizeType.Percent, 100.0!))
+        panel.RowStyles.Add(New RowStyle(SizeType.Absolute, 24.0!))
+        panel.RowStyles.Add(New RowStyle(SizeType.Percent, 100.0!))
+        Dim caption As New Label With {
+            .Dock = DockStyle.Fill,
+            .Text = "COPY BENEFITS · THIS CLIENT · 1ST CUTOFF ONLY",
+            .Font = New Font("Segoe UI", 7.25!, FontStyle.Bold),
+            .ForeColor = MutedTextColor,
+            .TextAlign = ContentAlignment.MiddleLeft
+        }
+        panel.Controls.Add(caption, 0, 0)
+        btnPreviousMonthBenefits = CreateBenefitCopyButton("Previous month")
+        AddHandler btnPreviousMonthBenefits.Click, Sub(sender, e) CopyPreviousMonthBenefits()
+        panel.Controls.Add(btnPreviousMonthBenefits, 0, 1)
+        Return panel
+    End Function
+
+    Private Function CreateBenefitCopyButton(caption As String) As Button
+        Dim button As New Button With {
+            .Dock = DockStyle.Fill,
+            .Text = caption,
+            .AccessibleName = "Copy SSS, PhilHealth and Pag-IBIG from " & caption.ToLowerInvariant(),
+            .Font = New Font("Segoe UI", 8.5!, FontStyle.Regular),
+            .FlatStyle = FlatStyle.Flat,
+            .BackColor = SurfaceColor,
+            .ForeColor = PrimaryDarkColor,
+            .Margin = New Padding(1, 2, 4, 2)
+        }
+        button.FlatAppearance.BorderColor = BorderColor
+        Return button
+    End Function
+
+    Private Function CanCopyBenefits() As Boolean
+        Dim status = If(currentRecord Is Nothing, ManualPayrollRecordService.StatusNotStarted, currentRecord.RecordStatus)
+        Return Not isRecordReadOnly AndAlso IsFirstCutoffSelected() AndAlso currentWorkspaceClientId > 0 AndAlso
+            (status = ManualPayrollRecordService.StatusNotStarted OrElse status = ManualPayrollRecordService.StatusDraft OrElse
+             status = ManualPayrollRecordService.StatusAmendmentDraft)
+    End Function
+
+    Private Function BuildBenefitSourceCutoff() As String
+        Dim sourceMonth As New Date(Integer.Parse(cmbYear.Text, CultureInfo.InvariantCulture), cmbMonth.SelectedIndex + 1, 1)
+        Dim sourceIndex = cmbCutoff.SelectedIndex
+        sourceMonth = sourceMonth.AddMonths(-1)
+        Return sourceMonth.Month.ToString(CultureInfo.InvariantCulture) & "_" & If(sourceIndex = 0, "1st", "2nd") & "_" &
+            sourceMonth.Year.ToString(CultureInfo.InvariantCulture)
+    End Function
+
+    Private Sub CopyPreviousMonthBenefits()
+        If Not CanCopyBenefits() Then Return
+        Try
+            Dim sourceCutoff = BuildBenefitSourceCutoff()
+            Dim source = ManualPayrollRecordService.LoadLatest(GlobalVariables.DTR_Selected_Employee_ID, HomeSubClientId(), sourceCutoff)
+            Dim benefits = If(source Is Nothing, Nothing,
+                source.ClientAdjustments.FirstOrDefault(Function(item) item.SubClientId = currentWorkspaceClientId))
+            If benefits Is Nothing Then
+                AppNotification.Show("No saved benefits were found for this employee and client in " & sourceCutoff & ".",
+                    "Copy Benefits", MessageBoxButtons.OK, MessageBoxIcon.Information)
+                Return
+            End If
+
+            Dim selectedClient = clientAssignmentOptions.First(Function(item) item.SubClientId = currentWorkspaceClientId)
+            Dim prompt = "Copy benefits for " & GlobalVariables.DTR_Selected_Employee_Name & " / " & selectedClient.Name & "?" &
+                vbCrLf & "From: " & sourceCutoff & " (" & source.RecordStatus & ")" & vbCrLf & "To: " & BuildCutoff() &
+                vbCrLf & vbCrLf & "SSS: " & FormatPeso(benefits.SssDeduction) &
+                vbCrLf & "SSS Provident: " & FormatPeso(benefits.SssProvidentDeduction) &
+                vbCrLf & "PhilHealth: " & FormatPeso(benefits.PhilHealthDeduction) &
+                vbCrLf & "Pag-IBIG: " & FormatPeso(benefits.PagIbigDeduction) & vbCrLf & vbCrLf &
+                "These amounts will replace this client's current contributions, including any zero amounts shown above. " &
+                "Review them, then Save Draft or Submit All Clients to keep the changes."
+            If AppNotification.Show(prompt, "Apply Previous Benefits", MessageBoxButtons.YesNo, MessageBoxIcon.Question) <> DialogResult.Yes Then Return
+            ApplyCopiedBenefits(benefits)
+        Catch ex As Exception
+            AppNotification.Show("Unable to copy benefits: " & ex.Message, "Copy Benefits", MessageBoxButtons.OK, MessageBoxIcon.Error)
+        End Try
+    End Sub
+
+    Private Sub ApplyCopiedBenefits(benefits As ManualPayrollClientAdjustment)
+        If benefits Is Nothing OrElse Not CanCopyBenefits() OrElse benefits.SubClientId <> currentWorkspaceClientId Then Return
+        If Not TryStoreCurrentWorkspaceAdjustments(True) Then Return
+        Dim values = workspaceAdjustments(currentWorkspaceClientId)
+        values.SssDeduction = benefits.SssDeduction
+        values.SssProvidentDeduction = benefits.SssProvidentDeduction
+        values.PhilHealthDeduction = benefits.PhilHealthDeduction
+        values.PagIbigDeduction = benefits.PagIbigDeduction
+        LoadWorkspaceAdjustmentInputs(currentWorkspaceClientId)
+        RefreshPayrollPreview()
+        MarkRecordDirty()
+    End Sub
 
     Private Function AddMoneyInputRow(host As FlowLayoutPanel, caption As String) As TextBox
         Dim row As New Panel With {
@@ -1718,6 +1817,7 @@ Public Partial Class FRM_DTR_SHIFT_MANUAL
     End Sub
 
     Private Sub UpdateActionButtons(editable As Boolean)
+        If btnPreviousMonthBenefits IsNot Nothing Then btnPreviousMonthBenefits.Enabled = CanCopyBenefits()
         Dim status = If(currentRecord Is Nothing, ManualPayrollRecordService.StatusNotStarted, currentRecord.RecordStatus)
         Select Case status
             Case ManualPayrollRecordService.StatusFinal
@@ -2408,6 +2508,7 @@ Public Partial Class FRM_DTR_SHIFT_MANUAL
     End Function
 
     Private Sub UpdateWorkspaceButtons()
+        If btnPreviousMonthBenefits IsNot Nothing Then btnPreviousMonthBenefits.Enabled = CanCopyBenefits()
         If btnRemoveRelieverClient IsNot Nothing Then
             btnRemoveRelieverClient.Enabled = Not isRecordReadOnly AndAlso currentWorkspaceClientId > 0 AndAlso
                 currentWorkspaceClientId <> HomeSubClientId()

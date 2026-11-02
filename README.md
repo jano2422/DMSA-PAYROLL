@@ -35,6 +35,8 @@ Payroll settings use **additional premiums**. For example, enter `0.30` to add 3
 
 Sunday can be combined with either Special Holiday or Legal Holiday. Special Holiday and Legal Holiday remain mutually exclusive. The Manual DTR breakdown and export detail show `SUN + SH` and `SUN + LH` separately, including their night-differential and overtime variants, without duplicating total worked hours.
 
+Manual DTR can copy SSS (including Provident), PhilHealth, and Pag-IBIG contributions from the previous month into an editable 1st-cutoff client workspace. See [Copying benefits](Documentation/ManualDtrBenefitCopy.md) for source selection, confirmation, and verification details.
+
 ## Excel exports
 
 An individual-client payroll workbook contains:
@@ -46,6 +48,8 @@ An individual-client payroll workbook contains:
 - `SETTINGS` — a very-hidden worksheet used by workbook formulas
 
 Payslips separate overtime into Regular, Sunday, Legal Holiday, and Special Holiday hours and amounts. The all-active-client export also separates standalone holiday hours from the `SUN + SH` and `SUN + LH` classifications while preserving historical payroll totals.
+
+Exports wrap long names, labels, and addresses and use larger report text. Company logos sit beside the company details. Payslips print four employees per A4 page (two across and two down), with the taller worksheet layout scaled for printing. The payroll sheet opens in Page Break Preview with all columns through Signature inside the print area, fitted to one landscape page wide; additional employee rows continue on pages below.
 
 ## Requirements
 

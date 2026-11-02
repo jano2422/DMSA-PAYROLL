@@ -1,4 +1,3 @@
-Imports System.Globalization
 Imports System.IO
 Imports System.Xml
 
@@ -17,15 +16,6 @@ Public Class PayrollReportSettings
     Public Property DtrCheckedTitle As String
     Public Property DtrNotedName As String
     Public Property DtrNotedTitle As String
-    Public Property HoursPerDay As Decimal
-    Public Property RateSemantics As String
-    Public Property SundayPremium As Decimal
-    Public Property SpecialHolidayPremium As Decimal
-    Public Property LegalHolidayPremium As Decimal
-    Public Property OvertimeHourlyRate As Decimal
-    Public Property ServiceIncentiveDays As Decimal
-    Public Property IncentiveMonthsDivisor As Decimal
-    Public Property IncentiveDaysDivisor As Decimal
 
     Public Shared Function CreateDefault() As PayrollReportSettings
         Return New PayrollReportSettings With {
@@ -42,16 +32,7 @@ Public Class PayrollReportSettings
             .DtrCheckedName = "Melanie M. Ros",
             .DtrCheckedTitle = "Finance Officer",
             .DtrNotedName = "Liza S. Castillo",
-            .DtrNotedTitle = "Security Director",
-            .HoursPerDay = 8D,
-            .RateSemantics = PayrollReportSettingsService.PremiumRateSemantics,
-            .SundayPremium = 0.3D,
-            .SpecialHolidayPremium = 0.3D,
-            .LegalHolidayPremium = 1D,
-            .OvertimeHourlyRate = 2500D / 2D / 15D / 4D,
-            .ServiceIncentiveDays = 5D,
-            .IncentiveMonthsDivisor = 12D,
-            .IncentiveDaysDivisor = 365D
+            .DtrNotedTitle = "Security Director"
         }
     End Function
 
@@ -62,20 +43,11 @@ Public Class PayrollReportSettings
         If String.IsNullOrWhiteSpace(DtrPreparedName) Then Throw New InvalidDataException("DTR prepared-by name is required.")
         If String.IsNullOrWhiteSpace(DtrCheckedName) Then Throw New InvalidDataException("DTR checked-by name is required.")
         If String.IsNullOrWhiteSpace(DtrNotedName) Then Throw New InvalidDataException("DTR noted-by name is required.")
-        If HoursPerDay <= 0D Then Throw New InvalidDataException("Hours per day must be greater than zero.")
-        If SundayPremium < 0D Then Throw New InvalidDataException("Sunday additional premium cannot be negative.")
-        If SpecialHolidayPremium < 0D Then Throw New InvalidDataException("Special-holiday additional premium cannot be negative.")
-        If LegalHolidayPremium < 0D Then Throw New InvalidDataException("Legal-holiday additional premium cannot be negative.")
-        If OvertimeHourlyRate < 0D Then Throw New InvalidDataException("Overtime hourly rate cannot be negative.")
-        If ServiceIncentiveDays < 0D Then Throw New InvalidDataException("Service incentive days cannot be negative.")
-        If IncentiveMonthsDivisor <= 0D Then Throw New InvalidDataException("Incentive month divisor must be greater than zero.")
-        If IncentiveDaysDivisor <= 0D Then Throw New InvalidDataException("Incentive day divisor must be greater than zero.")
     End Sub
 End Class
 
 Public Module PayrollReportSettingsService
     Private Const SettingsFileName As String = "PayrollReportSettings.xml"
-    Public Const PremiumRateSemantics As String = "ADDITIONAL_PREMIUM_V1"
 
     Public ReadOnly Property SettingsPath As String
         Get
@@ -108,22 +80,7 @@ Public Module PayrollReportSettingsService
         settings.DtrCheckedTitle = ReadText(root, "DtrCheckedTitle", settings.DtrCheckedTitle)
         settings.DtrNotedName = ReadText(root, "DtrNotedName", settings.DtrNotedName)
         settings.DtrNotedTitle = ReadText(root, "DtrNotedTitle", settings.DtrNotedTitle)
-        settings.HoursPerDay = ReadDecimal(root, "HoursPerDay", settings.HoursPerDay)
-        Dim storedSemantics = ReadText(root, "RateSemantics", String.Empty)
-        If String.Equals(storedSemantics, PremiumRateSemantics, StringComparison.OrdinalIgnoreCase) Then
-            settings.SundayPremium = ReadDecimal(root, "SundayPremium", ReadDecimal(root, "SundayMultiplier", settings.SundayPremium))
-            settings.SpecialHolidayPremium = ReadDecimal(root, "SpecialHolidayPremium", ReadDecimal(root, "SpecialHolidayMultiplier", settings.SpecialHolidayPremium))
-            settings.LegalHolidayPremium = ReadDecimal(root, "LegalHolidayPremium", ReadDecimal(root, "LegalHolidayMultiplier", settings.LegalHolidayPremium))
-        Else
-            settings.SundayPremium = ConvertLegacyMultiplierToPremium(ReadDecimal(root, "SundayMultiplier", 1.3D))
-            settings.SpecialHolidayPremium = ConvertLegacyMultiplierToPremium(ReadDecimal(root, "SpecialHolidayMultiplier", 1.3D))
-            settings.LegalHolidayPremium = ConvertLegacyMultiplierToPremium(ReadDecimal(root, "LegalHolidayMultiplier", 2D))
-        End If
-        settings.RateSemantics = PremiumRateSemantics
-        settings.OvertimeHourlyRate = ReadDecimal(root, "OvertimeHourlyRate", settings.OvertimeHourlyRate)
-        settings.ServiceIncentiveDays = ReadDecimal(root, "ServiceIncentiveDays", settings.ServiceIncentiveDays)
-        settings.IncentiveMonthsDivisor = ReadDecimal(root, "IncentiveMonthsDivisor", settings.IncentiveMonthsDivisor)
-        settings.IncentiveDaysDivisor = ReadDecimal(root, "IncentiveDaysDivisor", settings.IncentiveDaysDivisor)
+        ' Legacy global calculation elements are ignored; payroll uses sub-client policies.
         settings.Validate()
         Return settings
     End Function
@@ -165,62 +122,10 @@ Public Module PayrollReportSettingsService
             writer.WriteElementString("DtrCheckedTitle", If(settings.DtrCheckedTitle, String.Empty).Trim())
             writer.WriteElementString("DtrNotedName", settings.DtrNotedName.Trim())
             writer.WriteElementString("DtrNotedTitle", If(settings.DtrNotedTitle, String.Empty).Trim())
-            WriteDecimal(writer, "HoursPerDay", settings.HoursPerDay)
-            writer.WriteElementString("RateSemantics", PremiumRateSemantics)
-            WriteDecimal(writer, "SundayPremium", settings.SundayPremium)
-            WriteDecimal(writer, "SpecialHolidayPremium", settings.SpecialHolidayPremium)
-            WriteDecimal(writer, "LegalHolidayPremium", settings.LegalHolidayPremium)
-            WriteDecimal(writer, "OvertimeHourlyRate", settings.OvertimeHourlyRate)
-            WriteDecimal(writer, "ServiceIncentiveDays", settings.ServiceIncentiveDays)
-            WriteDecimal(writer, "IncentiveMonthsDivisor", settings.IncentiveMonthsDivisor)
-            WriteDecimal(writer, "IncentiveDaysDivisor", settings.IncentiveDaysDivisor)
             writer.WriteEndElement()
             writer.WriteEndDocument()
         End Using
     End Sub
-
-    Public Function CalculateTotalEarnings(
-        settings As PayrollReportSettings,
-        dailyWage As Decimal,
-        totalHours As Decimal,
-        regularHours As Decimal,
-        sundayHours As Decimal,
-        specialHolidayHours As Decimal,
-        legalHolidayHours As Decimal,
-        overtimeHours As Decimal,
-        sgUniformAllowance As Decimal,
-        officerAllowance As Decimal
-    ) As Decimal
-        If settings Is Nothing Then Throw New ArgumentNullException(NameOf(settings))
-        settings.Validate()
-
-        Dim hourlyRate = dailyWage / settings.HoursPerDay
-        Dim basicPay = hourlyRate * regularHours
-        Dim sundayPay = hourlyRate * (1D + settings.SundayPremium) * sundayHours
-        Dim specialHolidayPay = hourlyRate * (1D + settings.SpecialHolidayPremium) * specialHolidayHours
-        Dim legalHolidayPay = hourlyRate * (1D + settings.LegalHolidayPremium) * legalHolidayHours
-        Dim overtimePay = settings.OvertimeHourlyRate * overtimeHours
-        Dim incentivePay = dailyWage * settings.ServiceIncentiveDays /
-            settings.IncentiveMonthsDivisor / settings.IncentiveDaysDivisor * totalHours
-
-        Return basicPay + sundayPay + specialHolidayPay + legalHolidayPay + overtimePay +
-            incentivePay + sgUniformAllowance + officerAllowance
-    End Function
-
-    Public Function ConvertLegacyMultiplierToPremium(multiplier As Decimal) As Decimal
-        Return Math.Max(0D, multiplier - 1D)
-    End Function
-
-    Private Function ReadDecimal(root As XmlNode, elementName As String, defaultValue As Decimal) As Decimal
-        Dim node = root.SelectSingleNode(elementName)
-        If node Is Nothing OrElse String.IsNullOrWhiteSpace(node.InnerText) Then Return defaultValue
-
-        Dim value As Decimal
-        If Not Decimal.TryParse(node.InnerText.Trim(), NumberStyles.Number, CultureInfo.InvariantCulture, value) Then
-            Throw New InvalidDataException("Invalid value for " & elementName & ".")
-        End If
-        Return value
-    End Function
 
     Private Function ReadText(root As XmlNode, elementName As String, defaultValue As String) As String
         Dim node = root.SelectSingleNode(elementName)
@@ -228,7 +133,4 @@ Public Module PayrollReportSettingsService
         Return node.InnerText.Trim()
     End Function
 
-    Private Sub WriteDecimal(writer As XmlWriter, elementName As String, value As Decimal)
-        writer.WriteElementString(elementName, value.ToString("0.########", CultureInfo.InvariantCulture))
-    End Sub
 End Module

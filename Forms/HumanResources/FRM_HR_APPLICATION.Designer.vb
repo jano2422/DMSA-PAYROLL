@@ -24,7 +24,6 @@ Partial Class FRM_HRIS_APPLICATION
     Private Sub InitializeComponent()
         Me.Tab_Recruitment = New System.Windows.Forms.TabControl()
         Me.Tab_AppList = New System.Windows.Forms.TabPage()
-        Me.Btn_Refresh = New FontAwesome.Sharp.IconButton()
         Me.Btn_SearchApplicant = New FontAwesome.Sharp.IconButton()
         Me.Btn_Abort_Application = New FontAwesome.Sharp.IconButton()
         Me.Btn_CancelApplication = New FontAwesome.Sharp.IconButton()
@@ -193,15 +192,13 @@ Partial Class FRM_HRIS_APPLICATION
         Me.Label81 = New System.Windows.Forms.Label()
         Me.Btn_Complete = New System.Windows.Forms.Button()
         Me.Btn_SemiComplete_Save = New System.Windows.Forms.Button()
-        Me.Label1 = New System.Windows.Forms.Label()
         Me.Label2 = New System.Windows.Forms.Label()
-        Me.Label3 = New System.Windows.Forms.Label()
-        Me.Label4 = New System.Windows.Forms.Label()
-        Me.Label8 = New System.Windows.Forms.Label()
         Me.Bar_AppProgress = New System.Windows.Forms.ProgressBar()
-        Me.Label33 = New System.Windows.Forms.Label()
-        Me.PictureBox1 = New System.Windows.Forms.PictureBox()
-        Me.PictureBox2 = New System.Windows.Forms.PictureBox()
+        Me.Panel1 = New System.Windows.Forms.Panel()
+        Me.Label42 = New System.Windows.Forms.Label()
+        Me.Label43 = New System.Windows.Forms.Label()
+        Me.Label57 = New System.Windows.Forms.Label()
+        Me.PictureBox3 = New System.Windows.Forms.PictureBox()
         Me.Tab_Recruitment.SuspendLayout()
         Me.Tab_AppList.SuspendLayout()
         Me.Tab_Application.SuspendLayout()
@@ -215,8 +212,8 @@ Partial Class FRM_HRIS_APPLICATION
         Me.Tab_Completion.SuspendLayout()
         Me.Grp_Complete_GovNum.SuspendLayout()
         Me.Grp_Complete_JobInfo.SuspendLayout()
-        CType(Me.PictureBox1, System.ComponentModel.ISupportInitialize).BeginInit()
-        CType(Me.PictureBox2, System.ComponentModel.ISupportInitialize).BeginInit()
+        Me.Panel1.SuspendLayout()
+        CType(Me.PictureBox3, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.SuspendLayout()
         '
         'Tab_Recruitment
@@ -229,22 +226,17 @@ Partial Class FRM_HRIS_APPLICATION
         Me.Tab_Recruitment.Cursor = System.Windows.Forms.Cursors.Hand
         Me.Tab_Recruitment.Font = New System.Drawing.Font("Microsoft Sans Serif", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.Tab_Recruitment.HotTrack = True
-        Me.Tab_Recruitment.Location = New System.Drawing.Point(34, 132)
+        Me.Tab_Recruitment.Location = New System.Drawing.Point(227, 113)
         Me.Tab_Recruitment.Name = "Tab_Recruitment"
         Me.Tab_Recruitment.SelectedIndex = 0
-        Me.Tab_Recruitment.Size = New System.Drawing.Size(1258, 714)
+        Me.Tab_Recruitment.Size = New System.Drawing.Size(1258, 869)
         Me.Tab_Recruitment.TabIndex = 2
         '
         'Tab_AppList
         '
         Me.Tab_AppList.BackColor = System.Drawing.Color.FromArgb(CType(CType(255, Byte), Integer), CType(CType(224, Byte), Integer), CType(CType(192, Byte), Integer))
         Me.Tab_AppList.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle
-        Me.Tab_AppList.Controls.Add(Me.Btn_Refresh)
         Me.Tab_AppList.Controls.Add(Me.Btn_SearchApplicant)
-        Me.Tab_AppList.Controls.Add(Me.Btn_Abort_Application)
-        Me.Tab_AppList.Controls.Add(Me.Btn_CancelApplication)
-        Me.Tab_AppList.Controls.Add(Me.Btn_EditApplication)
-        Me.Tab_AppList.Controls.Add(Me.Btn_NewApplication)
         Me.Tab_AppList.Controls.Add(Me.TxtSearch)
         Me.Tab_AppList.Controls.Add(Me.Cmb_Category)
         Me.Tab_AppList.Controls.Add(Me.Label63)
@@ -252,23 +244,9 @@ Partial Class FRM_HRIS_APPLICATION
         Me.Tab_AppList.Location = New System.Drawing.Point(4, 29)
         Me.Tab_AppList.Name = "Tab_AppList"
         Me.Tab_AppList.Padding = New System.Windows.Forms.Padding(3)
-        Me.Tab_AppList.Size = New System.Drawing.Size(1250, 681)
+        Me.Tab_AppList.Size = New System.Drawing.Size(1250, 836)
         Me.Tab_AppList.TabIndex = 7
         Me.Tab_AppList.Text = "   Application List   "
-        '
-        'Btn_Refresh
-        '
-        Me.Btn_Refresh.IconChar = FontAwesome.Sharp.IconChar.Repeat
-        Me.Btn_Refresh.IconColor = System.Drawing.Color.Green
-        Me.Btn_Refresh.IconFont = FontAwesome.Sharp.IconFont.[Auto]
-        Me.Btn_Refresh.IconSize = 40
-        Me.Btn_Refresh.Location = New System.Drawing.Point(13, 455)
-        Me.Btn_Refresh.Name = "Btn_Refresh"
-        Me.Btn_Refresh.Size = New System.Drawing.Size(119, 94)
-        Me.Btn_Refresh.TabIndex = 148
-        Me.Btn_Refresh.Text = "Refresh"
-        Me.Btn_Refresh.TextAlign = System.Drawing.ContentAlignment.BottomCenter
-        Me.Btn_Refresh.UseVisualStyleBackColor = True
         '
         'Btn_SearchApplicant
         '
@@ -288,13 +266,14 @@ Partial Class FRM_HRIS_APPLICATION
         'Btn_Abort_Application
         '
         Me.Btn_Abort_Application.Enabled = False
+        Me.Btn_Abort_Application.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.Btn_Abort_Application.IconChar = FontAwesome.Sharp.IconChar.Xmark
         Me.Btn_Abort_Application.IconColor = System.Drawing.Color.Red
         Me.Btn_Abort_Application.IconFont = FontAwesome.Sharp.IconFont.[Auto]
         Me.Btn_Abort_Application.IconSize = 40
-        Me.Btn_Abort_Application.Location = New System.Drawing.Point(13, 362)
+        Me.Btn_Abort_Application.Location = New System.Drawing.Point(25, 509)
         Me.Btn_Abort_Application.Name = "Btn_Abort_Application"
-        Me.Btn_Abort_Application.Size = New System.Drawing.Size(119, 94)
+        Me.Btn_Abort_Application.Size = New System.Drawing.Size(180, 77)
         Me.Btn_Abort_Application.TabIndex = 146
         Me.Btn_Abort_Application.Text = "Abort"
         Me.Btn_Abort_Application.TextAlign = System.Drawing.ContentAlignment.BottomCenter
@@ -303,13 +282,14 @@ Partial Class FRM_HRIS_APPLICATION
         'Btn_CancelApplication
         '
         Me.Btn_CancelApplication.Enabled = False
+        Me.Btn_CancelApplication.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.Btn_CancelApplication.IconChar = FontAwesome.Sharp.IconChar.Cancel
         Me.Btn_CancelApplication.IconColor = System.Drawing.Color.Red
         Me.Btn_CancelApplication.IconFont = FontAwesome.Sharp.IconFont.[Auto]
         Me.Btn_CancelApplication.IconSize = 40
-        Me.Btn_CancelApplication.Location = New System.Drawing.Point(13, 269)
+        Me.Btn_CancelApplication.Location = New System.Drawing.Point(25, 428)
         Me.Btn_CancelApplication.Name = "Btn_CancelApplication"
-        Me.Btn_CancelApplication.Size = New System.Drawing.Size(119, 94)
+        Me.Btn_CancelApplication.Size = New System.Drawing.Size(180, 75)
         Me.Btn_CancelApplication.TabIndex = 145
         Me.Btn_CancelApplication.Text = "Cancel"
         Me.Btn_CancelApplication.TextAlign = System.Drawing.ContentAlignment.BottomCenter
@@ -318,13 +298,14 @@ Partial Class FRM_HRIS_APPLICATION
         'Btn_EditApplication
         '
         Me.Btn_EditApplication.Enabled = False
+        Me.Btn_EditApplication.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.Btn_EditApplication.IconChar = FontAwesome.Sharp.IconChar.Pen
         Me.Btn_EditApplication.IconColor = System.Drawing.Color.Blue
         Me.Btn_EditApplication.IconFont = FontAwesome.Sharp.IconFont.[Auto]
         Me.Btn_EditApplication.IconSize = 40
-        Me.Btn_EditApplication.Location = New System.Drawing.Point(13, 176)
+        Me.Btn_EditApplication.Location = New System.Drawing.Point(25, 348)
         Me.Btn_EditApplication.Name = "Btn_EditApplication"
-        Me.Btn_EditApplication.Size = New System.Drawing.Size(119, 94)
+        Me.Btn_EditApplication.Size = New System.Drawing.Size(180, 75)
         Me.Btn_EditApplication.TabIndex = 144
         Me.Btn_EditApplication.Text = "Edit"
         Me.Btn_EditApplication.TextAlign = System.Drawing.ContentAlignment.BottomCenter
@@ -332,12 +313,13 @@ Partial Class FRM_HRIS_APPLICATION
         '
         'Btn_NewApplication
         '
+        Me.Btn_NewApplication.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.Btn_NewApplication.IconChar = FontAwesome.Sharp.IconChar.PlusCircle
         Me.Btn_NewApplication.IconColor = System.Drawing.Color.Green
         Me.Btn_NewApplication.IconFont = FontAwesome.Sharp.IconFont.[Auto]
-        Me.Btn_NewApplication.Location = New System.Drawing.Point(13, 83)
+        Me.Btn_NewApplication.Location = New System.Drawing.Point(25, 267)
         Me.Btn_NewApplication.Name = "Btn_NewApplication"
-        Me.Btn_NewApplication.Size = New System.Drawing.Size(119, 94)
+        Me.Btn_NewApplication.Size = New System.Drawing.Size(180, 75)
         Me.Btn_NewApplication.TabIndex = 143
         Me.Btn_NewApplication.Text = "New"
         Me.Btn_NewApplication.TextAlign = System.Drawing.ContentAlignment.BottomCenter
@@ -382,9 +364,9 @@ Partial Class FRM_HRIS_APPLICATION
         Me.LV_Applicant_List.FullRowSelect = True
         Me.LV_Applicant_List.GridLines = True
         Me.LV_Applicant_List.HideSelection = False
-        Me.LV_Applicant_List.Location = New System.Drawing.Point(138, 83)
+        Me.LV_Applicant_List.Location = New System.Drawing.Point(23, 76)
         Me.LV_Applicant_List.Name = "LV_Applicant_List"
-        Me.LV_Applicant_List.Size = New System.Drawing.Size(807, 549)
+        Me.LV_Applicant_List.Size = New System.Drawing.Size(1080, 723)
         Me.LV_Applicant_List.TabIndex = 60
         Me.LV_Applicant_List.UseCompatibleStateImageBehavior = False
         Me.LV_Applicant_List.View = System.Windows.Forms.View.Details
@@ -429,7 +411,7 @@ Partial Class FRM_HRIS_APPLICATION
         Me.Tab_Application.Location = New System.Drawing.Point(4, 29)
         Me.Tab_Application.Name = "Tab_Application"
         Me.Tab_Application.Padding = New System.Windows.Forms.Padding(3)
-        Me.Tab_Application.Size = New System.Drawing.Size(1250, 681)
+        Me.Tab_Application.Size = New System.Drawing.Size(1250, 836)
         Me.Tab_Application.TabIndex = 0
         Me.Tab_Application.Text = "   Application   "
         '
@@ -526,7 +508,7 @@ Partial Class FRM_HRIS_APPLICATION
         Me.Btn_Move_to_Interview.BackColor = System.Drawing.Color.FromArgb(CType(CType(224, Byte), Integer), CType(CType(224, Byte), Integer), CType(CType(224, Byte), Integer))
         Me.Btn_Move_to_Interview.Font = New System.Drawing.Font("Verdana", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.Btn_Move_to_Interview.ForeColor = System.Drawing.Color.Red
-        Me.Btn_Move_to_Interview.Location = New System.Drawing.Point(974, 544)
+        Me.Btn_Move_to_Interview.Location = New System.Drawing.Point(974, 619)
         Me.Btn_Move_to_Interview.Name = "Btn_Move_to_Interview"
         Me.Btn_Move_to_Interview.Size = New System.Drawing.Size(234, 40)
         Me.Btn_Move_to_Interview.TabIndex = 143
@@ -560,9 +542,9 @@ Partial Class FRM_HRIS_APPLICATION
         Me.Grp_Contact_Info.Controls.Add(Me.Label47)
         Me.Grp_Contact_Info.Font = New System.Drawing.Font("Tahoma", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.Grp_Contact_Info.ForeColor = System.Drawing.Color.Blue
-        Me.Grp_Contact_Info.Location = New System.Drawing.Point(19, 553)
+        Me.Grp_Contact_Info.Location = New System.Drawing.Point(19, 619)
         Me.Grp_Contact_Info.Name = "Grp_Contact_Info"
-        Me.Grp_Contact_Info.Size = New System.Drawing.Size(927, 117)
+        Me.Grp_Contact_Info.Size = New System.Drawing.Size(949, 117)
         Me.Grp_Contact_Info.TabIndex = 142
         Me.Grp_Contact_Info.TabStop = False
         Me.Grp_Contact_Info.Text = "Contact Information"
@@ -572,7 +554,7 @@ Partial Class FRM_HRIS_APPLICATION
         Me.Txt_Contact_Address.Font = New System.Drawing.Font("Microsoft Sans Serif", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.Txt_Contact_Address.Location = New System.Drawing.Point(569, 72)
         Me.Txt_Contact_Address.Name = "Txt_Contact_Address"
-        Me.Txt_Contact_Address.Size = New System.Drawing.Size(304, 26)
+        Me.Txt_Contact_Address.Size = New System.Drawing.Size(340, 26)
         Me.Txt_Contact_Address.TabIndex = 137
         Me.Txt_Contact_Address.TextAlign = System.Windows.Forms.HorizontalAlignment.Center
         '
@@ -626,7 +608,7 @@ Partial Class FRM_HRIS_APPLICATION
         Me.Cmb_Relationship.Items.AddRange(New Object() {"Spouse", "Mother", "Father", "Son", "Daughter", "Brother", "Sister", "Guardian"})
         Me.Cmb_Relationship.Location = New System.Drawing.Point(704, 40)
         Me.Cmb_Relationship.Name = "Cmb_Relationship"
-        Me.Cmb_Relationship.Size = New System.Drawing.Size(169, 28)
+        Me.Cmb_Relationship.Size = New System.Drawing.Size(205, 28)
         Me.Cmb_Relationship.TabIndex = 130
         '
         'Label52
@@ -681,7 +663,7 @@ Partial Class FRM_HRIS_APPLICATION
         Me.Grp_Application_Educ.Controls.Add(Me.Label84)
         Me.Grp_Application_Educ.Font = New System.Drawing.Font("Tahoma", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.Grp_Application_Educ.ForeColor = System.Drawing.Color.Blue
-        Me.Grp_Application_Educ.Location = New System.Drawing.Point(19, 394)
+        Me.Grp_Application_Educ.Location = New System.Drawing.Point(19, 448)
         Me.Grp_Application_Educ.Name = "Grp_Application_Educ"
         Me.Grp_Application_Educ.Size = New System.Drawing.Size(1189, 153)
         Me.Grp_Application_Educ.TabIndex = 122
@@ -894,7 +876,7 @@ Partial Class FRM_HRIS_APPLICATION
         Me.Grp_Application_BasicInfo.FlatStyle = System.Windows.Forms.FlatStyle.Flat
         Me.Grp_Application_BasicInfo.Font = New System.Drawing.Font("Tahoma", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.Grp_Application_BasicInfo.ForeColor = System.Drawing.Color.Blue
-        Me.Grp_Application_BasicInfo.Location = New System.Drawing.Point(19, 148)
+        Me.Grp_Application_BasicInfo.Location = New System.Drawing.Point(19, 181)
         Me.Grp_Application_BasicInfo.Name = "Grp_Application_BasicInfo"
         Me.Grp_Application_BasicInfo.Size = New System.Drawing.Size(1189, 240)
         Me.Grp_Application_BasicInfo.TabIndex = 120
@@ -1243,9 +1225,9 @@ Partial Class FRM_HRIS_APPLICATION
         Me.BtnSave.BackColor = System.Drawing.Color.FromArgb(CType(CType(224, Byte), Integer), CType(CType(224, Byte), Integer), CType(CType(224, Byte), Integer))
         Me.BtnSave.FlatStyle = System.Windows.Forms.FlatStyle.System
         Me.BtnSave.Font = New System.Drawing.Font("Verdana", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.BtnSave.Location = New System.Drawing.Point(1047, 611)
+        Me.BtnSave.Location = New System.Drawing.Point(1034, 684)
         Me.BtnSave.Name = "BtnSave"
-        Me.BtnSave.Size = New System.Drawing.Size(161, 40)
+        Me.BtnSave.Size = New System.Drawing.Size(174, 40)
         Me.BtnSave.TabIndex = 91
         Me.BtnSave.Text = "&Save"
         Me.BtnSave.UseVisualStyleBackColor = False
@@ -1284,7 +1266,7 @@ Partial Class FRM_HRIS_APPLICATION
         Me.Tab_Interview.Location = New System.Drawing.Point(4, 29)
         Me.Tab_Interview.Name = "Tab_Interview"
         Me.Tab_Interview.Padding = New System.Windows.Forms.Padding(3)
-        Me.Tab_Interview.Size = New System.Drawing.Size(1250, 681)
+        Me.Tab_Interview.Size = New System.Drawing.Size(1250, 836)
         Me.Tab_Interview.TabIndex = 1
         Me.Tab_Interview.Text = "   Interview   "
         '
@@ -1293,7 +1275,7 @@ Partial Class FRM_HRIS_APPLICATION
         Me.Btn_Interview_Cancel.BackColor = System.Drawing.Color.FromArgb(CType(CType(224, Byte), Integer), CType(CType(224, Byte), Integer), CType(CType(224, Byte), Integer))
         Me.Btn_Interview_Cancel.Font = New System.Drawing.Font("Verdana", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.Btn_Interview_Cancel.ForeColor = System.Drawing.Color.Red
-        Me.Btn_Interview_Cancel.Location = New System.Drawing.Point(28, 588)
+        Me.Btn_Interview_Cancel.Location = New System.Drawing.Point(33, 773)
         Me.Btn_Interview_Cancel.Name = "Btn_Interview_Cancel"
         Me.Btn_Interview_Cancel.Size = New System.Drawing.Size(220, 40)
         Me.Btn_Interview_Cancel.TabIndex = 122
@@ -1685,7 +1667,7 @@ Partial Class FRM_HRIS_APPLICATION
         '
         Me.Btn_Move_to_REQ.BackColor = System.Drawing.Color.FromArgb(CType(CType(224, Byte), Integer), CType(CType(224, Byte), Integer), CType(CType(224, Byte), Integer))
         Me.Btn_Move_to_REQ.Font = New System.Drawing.Font("Verdana", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.Btn_Move_to_REQ.Location = New System.Drawing.Point(983, 588)
+        Me.Btn_Move_to_REQ.Location = New System.Drawing.Point(988, 773)
         Me.Btn_Move_to_REQ.Name = "Btn_Move_to_REQ"
         Me.Btn_Move_to_REQ.Size = New System.Drawing.Size(245, 40)
         Me.Btn_Move_to_REQ.TabIndex = 90
@@ -1697,7 +1679,7 @@ Partial Class FRM_HRIS_APPLICATION
         Me.Btn_Interview_SAVE.BackColor = System.Drawing.Color.FromArgb(CType(CType(224, Byte), Integer), CType(CType(224, Byte), Integer), CType(CType(224, Byte), Integer))
         Me.Btn_Interview_SAVE.FlatStyle = System.Windows.Forms.FlatStyle.System
         Me.Btn_Interview_SAVE.Font = New System.Drawing.Font("Verdana", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.Btn_Interview_SAVE.Location = New System.Drawing.Point(814, 588)
+        Me.Btn_Interview_SAVE.Location = New System.Drawing.Point(819, 773)
         Me.Btn_Interview_SAVE.Name = "Btn_Interview_SAVE"
         Me.Btn_Interview_SAVE.Size = New System.Drawing.Size(163, 40)
         Me.Btn_Interview_SAVE.TabIndex = 89
@@ -1718,7 +1700,7 @@ Partial Class FRM_HRIS_APPLICATION
         Me.Tab_Processing.Location = New System.Drawing.Point(4, 29)
         Me.Tab_Processing.Name = "Tab_Processing"
         Me.Tab_Processing.Padding = New System.Windows.Forms.Padding(3)
-        Me.Tab_Processing.Size = New System.Drawing.Size(1250, 681)
+        Me.Tab_Processing.Size = New System.Drawing.Size(1250, 836)
         Me.Tab_Processing.TabIndex = 3
         Me.Tab_Processing.Text = "   Requirements   "
         '
@@ -1727,7 +1709,7 @@ Partial Class FRM_HRIS_APPLICATION
         Me.Btn_Requirement_Cancel.BackColor = System.Drawing.Color.FromArgb(CType(CType(224, Byte), Integer), CType(CType(224, Byte), Integer), CType(CType(224, Byte), Integer))
         Me.Btn_Requirement_Cancel.Font = New System.Drawing.Font("Verdana", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.Btn_Requirement_Cancel.ForeColor = System.Drawing.Color.Red
-        Me.Btn_Requirement_Cancel.Location = New System.Drawing.Point(17, 592)
+        Me.Btn_Requirement_Cancel.Location = New System.Drawing.Point(27, 775)
         Me.Btn_Requirement_Cancel.Name = "Btn_Requirement_Cancel"
         Me.Btn_Requirement_Cancel.Size = New System.Drawing.Size(220, 40)
         Me.Btn_Requirement_Cancel.TabIndex = 123
@@ -1738,7 +1720,7 @@ Partial Class FRM_HRIS_APPLICATION
         '
         Me.Prog_REQ.Location = New System.Drawing.Point(17, 54)
         Me.Prog_REQ.Name = "Prog_REQ"
-        Me.Prog_REQ.Size = New System.Drawing.Size(655, 23)
+        Me.Prog_REQ.Size = New System.Drawing.Size(667, 23)
         Me.Prog_REQ.TabIndex = 108
         '
         'Lbl_Req_App_ID
@@ -1768,7 +1750,7 @@ Partial Class FRM_HRIS_APPLICATION
         Me.Btn_Req_MoveNext.BackColor = System.Drawing.Color.FromArgb(CType(CType(224, Byte), Integer), CType(CType(224, Byte), Integer), CType(CType(224, Byte), Integer))
         Me.Btn_Req_MoveNext.FlatStyle = System.Windows.Forms.FlatStyle.System
         Me.Btn_Req_MoveNext.Font = New System.Drawing.Font("Verdana", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.Btn_Req_MoveNext.Location = New System.Drawing.Point(994, 592)
+        Me.Btn_Req_MoveNext.Location = New System.Drawing.Point(1004, 775)
         Me.Btn_Req_MoveNext.Name = "Btn_Req_MoveNext"
         Me.Btn_Req_MoveNext.Size = New System.Drawing.Size(220, 40)
         Me.Btn_Req_MoveNext.TabIndex = 92
@@ -1780,7 +1762,7 @@ Partial Class FRM_HRIS_APPLICATION
         Me.Btn_Req_Save.BackColor = System.Drawing.Color.FromArgb(CType(CType(224, Byte), Integer), CType(CType(224, Byte), Integer), CType(CType(224, Byte), Integer))
         Me.Btn_Req_Save.FlatStyle = System.Windows.Forms.FlatStyle.System
         Me.Btn_Req_Save.Font = New System.Drawing.Font("Verdana", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.Btn_Req_Save.Location = New System.Drawing.Point(832, 592)
+        Me.Btn_Req_Save.Location = New System.Drawing.Point(842, 775)
         Me.Btn_Req_Save.Name = "Btn_Req_Save"
         Me.Btn_Req_Save.Size = New System.Drawing.Size(156, 40)
         Me.Btn_Req_Save.TabIndex = 91
@@ -1798,7 +1780,7 @@ Partial Class FRM_HRIS_APPLICATION
         Me.LV_Requirement_List.HideSelection = False
         Me.LV_Requirement_List.Location = New System.Drawing.Point(17, 88)
         Me.LV_Requirement_List.Name = "LV_Requirement_List"
-        Me.LV_Requirement_List.Size = New System.Drawing.Size(655, 473)
+        Me.LV_Requirement_List.Size = New System.Drawing.Size(667, 681)
         Me.LV_Requirement_List.TabIndex = 48
         Me.LV_Requirement_List.UseCompatibleStateImageBehavior = False
         Me.LV_Requirement_List.View = System.Windows.Forms.View.Details
@@ -1837,9 +1819,9 @@ Partial Class FRM_HRIS_APPLICATION
         Me.Tab_Completion.Location = New System.Drawing.Point(4, 29)
         Me.Tab_Completion.Name = "Tab_Completion"
         Me.Tab_Completion.Padding = New System.Windows.Forms.Padding(3)
-        Me.Tab_Completion.Size = New System.Drawing.Size(1250, 681)
+        Me.Tab_Completion.Size = New System.Drawing.Size(1250, 836)
         Me.Tab_Completion.TabIndex = 6
-        Me.Tab_Completion.Text = "   Completed   "
+        Me.Tab_Completion.Text = "   Completion   "
         '
         'Grp_Complete_GovNum
         '
@@ -1861,7 +1843,7 @@ Partial Class FRM_HRIS_APPLICATION
         Me.Grp_Complete_GovNum.ForeColor = System.Drawing.Color.Blue
         Me.Grp_Complete_GovNum.Location = New System.Drawing.Point(35, 57)
         Me.Grp_Complete_GovNum.Name = "Grp_Complete_GovNum"
-        Me.Grp_Complete_GovNum.Size = New System.Drawing.Size(1189, 142)
+        Me.Grp_Complete_GovNum.Size = New System.Drawing.Size(1189, 257)
         Me.Grp_Complete_GovNum.TabIndex = 145
         Me.Grp_Complete_GovNum.TabStop = False
         Me.Grp_Complete_GovNum.Text = "Government Identification Numbers"
@@ -1869,7 +1851,7 @@ Partial Class FRM_HRIS_APPLICATION
         'Txt_National_ID
         '
         Me.Txt_National_ID.Font = New System.Drawing.Font("Microsoft Sans Serif", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.Txt_National_ID.Location = New System.Drawing.Point(808, 39)
+        Me.Txt_National_ID.Location = New System.Drawing.Point(155, 192)
         Me.Txt_National_ID.Name = "Txt_National_ID"
         Me.Txt_National_ID.Size = New System.Drawing.Size(192, 26)
         Me.Txt_National_ID.TabIndex = 146
@@ -1880,7 +1862,7 @@ Partial Class FRM_HRIS_APPLICATION
         Me.Label9.AutoSize = True
         Me.Label9.Font = New System.Drawing.Font("Microsoft Sans Serif", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.Label9.ForeColor = System.Drawing.Color.Black
-        Me.Label9.Location = New System.Drawing.Point(710, 42)
+        Me.Label9.Location = New System.Drawing.Point(20, 195)
         Me.Label9.Name = "Label9"
         Me.Label9.Size = New System.Drawing.Size(92, 20)
         Me.Label9.TabIndex = 151
@@ -1890,7 +1872,7 @@ Partial Class FRM_HRIS_APPLICATION
         '
         Me.Chk_GovIDs_NotAvailable.AutoSize = True
         Me.Chk_GovIDs_NotAvailable.Font = New System.Drawing.Font("Tahoma", 12.0!, System.Drawing.FontStyle.Italic, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.Chk_GovIDs_NotAvailable.Location = New System.Drawing.Point(544, 0)
+        Me.Chk_GovIDs_NotAvailable.Location = New System.Drawing.Point(298, 0)
         Me.Chk_GovIDs_NotAvailable.Name = "Chk_GovIDs_NotAvailable"
         Me.Chk_GovIDs_NotAvailable.Size = New System.Drawing.Size(145, 23)
         Me.Chk_GovIDs_NotAvailable.TabIndex = 146
@@ -1900,7 +1882,7 @@ Partial Class FRM_HRIS_APPLICATION
         'Txt_TIN
         '
         Me.Txt_TIN.Font = New System.Drawing.Font("Microsoft Sans Serif", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.Txt_TIN.Location = New System.Drawing.Point(470, 73)
+        Me.Txt_TIN.Location = New System.Drawing.Point(155, 148)
         Me.Txt_TIN.Name = "Txt_TIN"
         Me.Txt_TIN.Size = New System.Drawing.Size(192, 26)
         Me.Txt_TIN.TabIndex = 148
@@ -1911,7 +1893,7 @@ Partial Class FRM_HRIS_APPLICATION
         Me.Label7.AutoSize = True
         Me.Label7.Font = New System.Drawing.Font("Microsoft Sans Serif", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.Label7.ForeColor = System.Drawing.Color.Black
-        Me.Label7.Location = New System.Drawing.Point(383, 76)
+        Me.Label7.Location = New System.Drawing.Point(46, 151)
         Me.Label7.Name = "Label7"
         Me.Label7.Size = New System.Drawing.Size(66, 20)
         Me.Label7.TabIndex = 149
@@ -1920,7 +1902,7 @@ Partial Class FRM_HRIS_APPLICATION
         'Txt_PhilHealth
         '
         Me.Txt_PhilHealth.Font = New System.Drawing.Font("Microsoft Sans Serif", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.Txt_PhilHealth.Location = New System.Drawing.Point(470, 39)
+        Me.Txt_PhilHealth.Location = New System.Drawing.Point(155, 114)
         Me.Txt_PhilHealth.Name = "Txt_PhilHealth"
         Me.Txt_PhilHealth.Size = New System.Drawing.Size(192, 26)
         Me.Txt_PhilHealth.TabIndex = 145
@@ -1931,7 +1913,7 @@ Partial Class FRM_HRIS_APPLICATION
         Me.Label31.AutoSize = True
         Me.Label31.Font = New System.Drawing.Font("Microsoft Sans Serif", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.Label31.ForeColor = System.Drawing.Color.Black
-        Me.Label31.Location = New System.Drawing.Point(383, 42)
+        Me.Label31.Location = New System.Drawing.Point(42, 114)
         Me.Label31.Name = "Label31"
         Me.Label31.Size = New System.Drawing.Size(78, 20)
         Me.Label31.TabIndex = 147
@@ -1979,15 +1961,14 @@ Partial Class FRM_HRIS_APPLICATION
         '
         'Label26
         '
-        Me.Label26.AutoSize = True
-        Me.Label26.Font = New System.Drawing.Font("Microsoft Sans Serif", 12.0!, System.Drawing.FontStyle.Italic, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.Label26.Font = New System.Drawing.Font("Microsoft Sans Serif", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.Label26.ForeColor = System.Drawing.Color.Black
-        Me.Label26.Location = New System.Drawing.Point(12, 599)
+        Me.Label26.Location = New System.Drawing.Point(839, 694)
         Me.Label26.Name = "Label26"
-        Me.Label26.Size = New System.Drawing.Size(824, 20)
+        Me.Label26.Size = New System.Drawing.Size(386, 71)
         Me.Label26.TabIndex = 131
-        Me.Label26.Text = "Note: Records of the applicant will be automaticaly added to the Employee Master " &
-    "List after application completeion "
+        Me.Label26.Text = "Note: Upon completion of the application, the applicant’s records will be automat" &
+    "ically added to the Employee Master List."
         '
         'Grp_Complete_JobInfo
         '
@@ -2010,7 +1991,7 @@ Partial Class FRM_HRIS_APPLICATION
         Me.Grp_Complete_JobInfo.FlatStyle = System.Windows.Forms.FlatStyle.Flat
         Me.Grp_Complete_JobInfo.Font = New System.Drawing.Font("Tahoma", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.Grp_Complete_JobInfo.ForeColor = System.Drawing.Color.Blue
-        Me.Grp_Complete_JobInfo.Location = New System.Drawing.Point(35, 218)
+        Me.Grp_Complete_JobInfo.Location = New System.Drawing.Point(35, 339)
         Me.Grp_Complete_JobInfo.Name = "Grp_Complete_JobInfo"
         Me.Grp_Complete_JobInfo.Size = New System.Drawing.Size(1189, 182)
         Me.Grp_Complete_JobInfo.TabIndex = 122
@@ -2207,7 +2188,7 @@ Partial Class FRM_HRIS_APPLICATION
         Me.Btn_Complete.BackColor = System.Drawing.Color.FromArgb(CType(CType(0, Byte), Integer), CType(CType(192, Byte), Integer), CType(CType(0, Byte), Integer))
         Me.Btn_Complete.Font = New System.Drawing.Font("Verdana", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.Btn_Complete.ForeColor = System.Drawing.Color.White
-        Me.Btn_Complete.Location = New System.Drawing.Point(1004, 589)
+        Me.Btn_Complete.Location = New System.Drawing.Point(1004, 768)
         Me.Btn_Complete.Name = "Btn_Complete"
         Me.Btn_Complete.Size = New System.Drawing.Size(220, 40)
         Me.Btn_Complete.TabIndex = 103
@@ -2219,124 +2200,110 @@ Partial Class FRM_HRIS_APPLICATION
         Me.Btn_SemiComplete_Save.BackColor = System.Drawing.Color.FromArgb(CType(CType(224, Byte), Integer), CType(CType(224, Byte), Integer), CType(CType(224, Byte), Integer))
         Me.Btn_SemiComplete_Save.FlatStyle = System.Windows.Forms.FlatStyle.System
         Me.Btn_SemiComplete_Save.Font = New System.Drawing.Font("Verdana", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.Btn_SemiComplete_Save.Location = New System.Drawing.Point(842, 589)
+        Me.Btn_SemiComplete_Save.Location = New System.Drawing.Point(842, 768)
         Me.Btn_SemiComplete_Save.Name = "Btn_SemiComplete_Save"
         Me.Btn_SemiComplete_Save.Size = New System.Drawing.Size(156, 40)
         Me.Btn_SemiComplete_Save.TabIndex = 102
         Me.Btn_SemiComplete_Save.Text = "Save"
         Me.Btn_SemiComplete_Save.UseVisualStyleBackColor = False
         '
-        'Label1
-        '
-        Me.Label1.AutoSize = True
-        Me.Label1.Font = New System.Drawing.Font("Tahoma", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.Label1.ForeColor = System.Drawing.Color.White
-        Me.Label1.Location = New System.Drawing.Point(173, 55)
-        Me.Label1.Name = "Label1"
-        Me.Label1.Size = New System.Drawing.Size(88, 19)
-        Me.Label1.TabIndex = 3
-        Me.Label1.Text = "Application"
-        '
         'Label2
         '
         Me.Label2.AutoSize = True
         Me.Label2.Font = New System.Drawing.Font("Tahoma", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.Label2.ForeColor = System.Drawing.Color.Yellow
-        Me.Label2.Location = New System.Drawing.Point(26, 55)
+        Me.Label2.ForeColor = System.Drawing.Color.Black
+        Me.Label2.Location = New System.Drawing.Point(223, 84)
         Me.Label2.Name = "Label2"
         Me.Label2.Size = New System.Drawing.Size(76, 19)
         Me.Label2.TabIndex = 4
         Me.Label2.Text = "Progress:"
         '
-        'Label3
-        '
-        Me.Label3.AutoSize = True
-        Me.Label3.Font = New System.Drawing.Font("Tahoma", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.Label3.ForeColor = System.Drawing.Color.White
-        Me.Label3.Location = New System.Drawing.Point(401, 55)
-        Me.Label3.Name = "Label3"
-        Me.Label3.Size = New System.Drawing.Size(103, 19)
-        Me.Label3.TabIndex = 5
-        Me.Label3.Text = "For Interview"
-        '
-        'Label4
-        '
-        Me.Label4.AutoSize = True
-        Me.Label4.Font = New System.Drawing.Font("Tahoma", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.Label4.ForeColor = System.Drawing.Color.White
-        Me.Label4.Location = New System.Drawing.Point(660, 55)
-        Me.Label4.Name = "Label4"
-        Me.Label4.Size = New System.Drawing.Size(134, 19)
-        Me.Label4.TabIndex = 6
-        Me.Label4.Text = "For Requirements"
-        '
-        'Label8
-        '
-        Me.Label8.AutoSize = True
-        Me.Label8.Font = New System.Drawing.Font("Tahoma", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.Label8.ForeColor = System.Drawing.Color.White
-        Me.Label8.Location = New System.Drawing.Point(947, 55)
-        Me.Label8.Name = "Label8"
-        Me.Label8.Size = New System.Drawing.Size(118, 19)
-        Me.Label8.TabIndex = 10
-        Me.Label8.Text = "For Completion"
-        '
         'Bar_AppProgress
         '
-        Me.Bar_AppProgress.Location = New System.Drawing.Point(34, 86)
+        Me.Bar_AppProgress.Location = New System.Drawing.Point(303, 84)
         Me.Bar_AppProgress.Name = "Bar_AppProgress"
-        Me.Bar_AppProgress.Size = New System.Drawing.Size(1258, 23)
+        Me.Bar_AppProgress.Size = New System.Drawing.Size(1182, 23)
         Me.Bar_AppProgress.TabIndex = 11
         '
-        'Label33
+        'Panel1
         '
-        Me.Label33.AutoSize = True
-        Me.Label33.Font = New System.Drawing.Font("Tahoma", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.Label33.ForeColor = System.Drawing.Color.White
-        Me.Label33.Location = New System.Drawing.Point(1237, 55)
-        Me.Label33.Name = "Label33"
-        Me.Label33.Size = New System.Drawing.Size(47, 19)
-        Me.Label33.TabIndex = 13
-        Me.Label33.Text = "Hired"
+        Me.Panel1.BackColor = System.Drawing.Color.Maroon
+        Me.Panel1.Controls.Add(Me.Label42)
+        Me.Panel1.Controls.Add(Me.Label43)
+        Me.Panel1.Dock = System.Windows.Forms.DockStyle.Top
+        Me.Panel1.Location = New System.Drawing.Point(0, 0)
+        Me.Panel1.Name = "Panel1"
+        Me.Panel1.Size = New System.Drawing.Size(1838, 75)
+        Me.Panel1.TabIndex = 166
         '
-        'PictureBox1
+        'Label42
         '
-        Me.PictureBox1.BackColor = System.Drawing.Color.Maroon
-        Me.PictureBox1.Location = New System.Drawing.Point(-8, -2)
-        Me.PictureBox1.Name = "PictureBox1"
-        Me.PictureBox1.Size = New System.Drawing.Size(1353, 33)
-        Me.PictureBox1.TabIndex = 12
-        Me.PictureBox1.TabStop = False
+        Me.Label42.AutoSize = True
+        Me.Label42.BackColor = System.Drawing.Color.Maroon
+        Me.Label42.Font = New System.Drawing.Font("Verdana", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.Label42.ForeColor = System.Drawing.Color.White
+        Me.Label42.Location = New System.Drawing.Point(32, 41)
+        Me.Label42.Name = "Label42"
+        Me.Label42.Size = New System.Drawing.Size(350, 16)
+        Me.Label42.TabIndex = 164
+        Me.Label42.Text = "Application, Interview and Hiring of Security Guards"
         '
-        'PictureBox2
+        'Label43
         '
-        Me.PictureBox2.BackColor = System.Drawing.Color.Yellow
-        Me.PictureBox2.Location = New System.Drawing.Point(34, 852)
-        Me.PictureBox2.Name = "PictureBox2"
-        Me.PictureBox2.Size = New System.Drawing.Size(1262, 70)
-        Me.PictureBox2.TabIndex = 121
-        Me.PictureBox2.TabStop = False
+        Me.Label43.AutoSize = True
+        Me.Label43.BackColor = System.Drawing.Color.Maroon
+        Me.Label43.Font = New System.Drawing.Font("Verdana", 18.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.Label43.ForeColor = System.Drawing.Color.White
+        Me.Label43.Location = New System.Drawing.Point(30, 12)
+        Me.Label43.Name = "Label43"
+        Me.Label43.Size = New System.Drawing.Size(312, 29)
+        Me.Label43.TabIndex = 163
+        Me.Label43.Text = "RECRUITMENT PROCESS"
+        '
+        'Label57
+        '
+        Me.Label57.BackColor = System.Drawing.Color.FromArgb(CType(CType(64, Byte), Integer), CType(CType(64, Byte), Integer), CType(CType(64, Byte), Integer))
+        Me.Label57.Font = New System.Drawing.Font("Verdana", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.Label57.ForeColor = System.Drawing.Color.Gray
+        Me.Label57.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft
+        Me.Label57.Location = New System.Drawing.Point(22, 102)
+        Me.Label57.Name = "Label57"
+        Me.Label57.Size = New System.Drawing.Size(183, 271)
+        Me.Label57.TabIndex = 169
+        Me.Label57.Text = "Manage applicant records, track recruitment status, assign employee IDs, and coll" &
+    "ect government-issued ID information from applicants."
+        '
+        'PictureBox3
+        '
+        Me.PictureBox3.BackColor = System.Drawing.Color.FromArgb(CType(CType(64, Byte), Integer), CType(CType(64, Byte), Integer), CType(CType(64, Byte), Integer))
+        Me.PictureBox3.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle
+        Me.PictureBox3.Location = New System.Drawing.Point(8, 84)
+        Me.PictureBox3.Name = "PictureBox3"
+        Me.PictureBox3.Size = New System.Drawing.Size(209, 898)
+        Me.PictureBox3.TabIndex = 168
+        Me.PictureBox3.TabStop = False
         '
         'FRM_HRIS_APPLICATION
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
         Me.AutoValidate = System.Windows.Forms.AutoValidate.EnablePreventFocusChange
-        Me.BackColor = System.Drawing.Color.Black
-        Me.ClientSize = New System.Drawing.Size(1352, 942)
-        Me.Controls.Add(Me.PictureBox2)
-        Me.Controls.Add(Me.Label33)
-        Me.Controls.Add(Me.PictureBox1)
+        Me.BackColor = System.Drawing.Color.FromArgb(CType(CType(255, Byte), Integer), CType(CType(192, Byte), Integer), CType(CType(128, Byte), Integer))
+        Me.ClientSize = New System.Drawing.Size(1838, 1017)
+        Me.Controls.Add(Me.Panel1)
+        Me.Controls.Add(Me.Btn_Abort_Application)
         Me.Controls.Add(Me.Bar_AppProgress)
-        Me.Controls.Add(Me.Label8)
-        Me.Controls.Add(Me.Label4)
-        Me.Controls.Add(Me.Label3)
+        Me.Controls.Add(Me.Btn_CancelApplication)
+        Me.Controls.Add(Me.Btn_NewApplication)
+        Me.Controls.Add(Me.Btn_EditApplication)
         Me.Controls.Add(Me.Label2)
-        Me.Controls.Add(Me.Label1)
         Me.Controls.Add(Me.Tab_Recruitment)
+        Me.Controls.Add(Me.Label57)
+        Me.Controls.Add(Me.PictureBox3)
         Me.Name = "FRM_HRIS_APPLICATION"
         Me.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen
         Me.Text = "HR Application Process "
+        Me.WindowState = System.Windows.Forms.FormWindowState.Maximized
         Me.Tab_Recruitment.ResumeLayout(False)
         Me.Tab_AppList.ResumeLayout(False)
         Me.Tab_AppList.PerformLayout()
@@ -2362,8 +2329,9 @@ Partial Class FRM_HRIS_APPLICATION
         Me.Grp_Complete_GovNum.PerformLayout()
         Me.Grp_Complete_JobInfo.ResumeLayout(False)
         Me.Grp_Complete_JobInfo.PerformLayout()
-        CType(Me.PictureBox1, System.ComponentModel.ISupportInitialize).EndInit()
-        CType(Me.PictureBox2, System.ComponentModel.ISupportInitialize).EndInit()
+        Me.Panel1.ResumeLayout(False)
+        Me.Panel1.PerformLayout()
+        CType(Me.PictureBox3, System.ComponentModel.ISupportInitialize).EndInit()
         Me.ResumeLayout(False)
         Me.PerformLayout()
 
@@ -2373,11 +2341,7 @@ Partial Class FRM_HRIS_APPLICATION
     Friend WithEvents Tab_Interview As TabPage
     Friend WithEvents Tab_Processing As TabPage
     Friend WithEvents Tab_Completion As TabPage
-    Friend WithEvents Label1 As Label
     Friend WithEvents Label2 As Label
-    Friend WithEvents Label3 As Label
-    Friend WithEvents Label4 As Label
-    Friend WithEvents Label8 As Label
     Friend WithEvents Label28 As Label
     Friend WithEvents LV_Requirement_List As ListView
     Friend WithEvents Lbl_App_ID As Label
@@ -2405,7 +2369,6 @@ Partial Class FRM_HRIS_APPLICATION
     Friend WithEvents Lbl_Complete_App_ID As Label
     Friend WithEvents Label81 As Label
     Friend WithEvents Bar_AppProgress As ProgressBar
-    Friend WithEvents PictureBox1 As PictureBox
     Friend WithEvents Grp_Application_Educ As GroupBox
     Friend WithEvents Txt_Pos_Held As TextBox
     Friend WithEvents Label94 As Label
@@ -2493,7 +2456,6 @@ Partial Class FRM_HRIS_APPLICATION
     Friend WithEvents Label27 As Label
     Friend WithEvents Txt_TIN As TextBox
     Friend WithEvents Label7 As Label
-    Friend WithEvents Label33 As Label
     Friend WithEvents Btn_Requirement_Cancel As Button
     Friend WithEvents Label34 As Label
     Friend WithEvents Cmb_Civil_Status As ComboBox
@@ -2533,13 +2495,11 @@ Partial Class FRM_HRIS_APPLICATION
     Friend WithEvents Txt_National_ID As TextBox
     Friend WithEvents Label9 As Label
     Friend WithEvents Btn_Manual_ID As Button
-    Friend WithEvents PictureBox2 As PictureBox
     Friend WithEvents Btn_NewApplication As IconButton
     Friend WithEvents Btn_Abort_Application As IconButton
     Friend WithEvents Btn_CancelApplication As IconButton
     Friend WithEvents Btn_EditApplication As IconButton
     Friend WithEvents Btn_SearchApplicant As IconButton
-    Friend WithEvents Btn_Refresh As IconButton
     Friend WithEvents Btn_Move_to_Interview As Button
     Friend WithEvents Grp_Application_Position As GroupBox
     Friend WithEvents Opt_Non_SecurityPersonnel As RadioButton
@@ -2548,4 +2508,9 @@ Partial Class FRM_HRIS_APPLICATION
     Friend WithEvents Label16 As Label
     Friend WithEvents Cmb_Department As ComboBox
     Friend WithEvents Label6 As Label
+    Friend WithEvents Panel1 As Panel
+    Friend WithEvents Label42 As Label
+    Friend WithEvents Label43 As Label
+    Friend WithEvents Label57 As Label
+    Friend WithEvents PictureBox3 As PictureBox
 End Class

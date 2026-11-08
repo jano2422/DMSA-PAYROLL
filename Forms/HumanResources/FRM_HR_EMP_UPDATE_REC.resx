@@ -117,6 +117,11 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="Label32.Text" xml:space="preserve">
+    <value>Do not change a Security Guard’s Client Assignment when processing a reliever transaction in the Payroll System. Reliever schedules should be managed using the system’s existing reliever scheduling functionality.
+
+Update the Client Assignment only when an actual physical transfer of the Security Guard to another client has occurred.</value>
+  </data>
   <metadata name="OpenFileDialog1.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
     <value>17, 17</value>
   </metadata>

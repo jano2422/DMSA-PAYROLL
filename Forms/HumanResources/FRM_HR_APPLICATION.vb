@@ -84,9 +84,18 @@ Public Class FRM_HRIS_APPLICATION
             Call Update_Application_Record("Application")
         End If
 
+        'reset buttons and progress bar
+        Btn_CancelApplication.Enabled = False
+        Btn_NewApplication.Enabled = True
+        Btn_Abort_Application.Enabled = False
+        Btn_EditApplication.Enabled = False
+        Bar_AppProgress.Value = 0
+        Tab_Recruitment.SelectedTab = Tab_AppList
+
 
     End Sub
     Private Sub LV_Applicant_List_DoubleClick(sender As Object, e As EventArgs) Handles LV_Applicant_List.DoubleClick
+
         Dim sApplication_Status As String
         Dim iApplication_ID As Integer
 
@@ -168,7 +177,11 @@ Public Class FRM_HRIS_APPLICATION
     Private Sub LV_Applicant_List_SelectedIndexChanged(sender As Object, e As EventArgs) Handles LV_Applicant_List.SelectedIndexChanged
 
         ' See also Double CLick event
+
+        Btn_EditApplication.Enabled = True
+
         Try
+            Btn_CancelApplication.Enabled = True
 
             GlobalVariables.sApplication_Global_Status = Me.LV_Applicant_List.SelectedItems(0).SubItems(3).Text
 
@@ -782,6 +795,11 @@ Public Class FRM_HRIS_APPLICATION
         Else
             Btn_Move_to_Interview.Enabled = True
         End If
+
+        Btn_CancelApplication.Enabled = True
+        Btn_NewApplication.Enabled = False
+
+
     End Sub
 
     Private Sub Btn_SearchApplicant_Click(sender As Object, e As EventArgs) Handles Btn_SearchApplicant.Click
@@ -803,7 +821,7 @@ Public Class FRM_HRIS_APPLICATION
 
     End Sub
 
-    Private Sub Btn_Refresh_Click(sender As Object, e As EventArgs) Handles Btn_Refresh.Click
+    Private Sub Btn_Refresh_Click(sender As Object, e As EventArgs)
         Call Show_List_of_Applicants()
     End Sub
 
@@ -870,6 +888,25 @@ Public Class FRM_HRIS_APPLICATION
     End Sub
 
     Private Sub Cmb_Department_SelectedIndexChanged(sender As Object, e As EventArgs) Handles Cmb_Department.SelectedIndexChanged
+
+    End Sub
+
+    Private Sub Btn_CancelApplication_Click(sender As Object, e As EventArgs) Handles Btn_CancelApplication.Click
+
+        Btn_CancelApplication.Enabled = False
+        Btn_NewApplication.Enabled = True
+        Btn_Abort_Application.Enabled = False
+        Btn_EditApplication.Enabled = False
+
+        Bar_AppProgress.Value = 0
+        Tab_Recruitment.SelectedTab = Tab_AppList
+    End Sub
+
+    Private Sub Btn_EditApplication_Click(sender As Object, e As EventArgs) Handles Btn_EditApplication.Click
+        LV_Applicant_List_DoubleClick(LV_Applicant_List, EventArgs.Empty)
+        Tab_Recruitment.SelectedTab = Tab_Application
+        Btn_EditApplication.Enabled = False
+        Btn_CancelApplication.Enabled = True
 
     End Sub
 End Class

@@ -6,9 +6,12 @@ Public Class FRM_EMP_REG
     Private Sub FRM_EMP_REG_Load(sender As Object, e As EventArgs) Handles MyBase.Load
         'Lbl_Attachment_Path.Text = ""
         Call Clear_all_Boxes_from_EMP_RECORD()
-        Call Show_Employee_List()
+
+        'Call Show_Employee_List() ' Deactivated and let the user click the Show / Search button first ( 08-Nov-2026 )
 
         'Lbl_Count.Text = Count_Employee_Record()
+        Cmb_Category.SelectedIndex = 3
+        TxtSearch.Text = "Active"
 
         Pic_Employee_Photo.Image = My.Resources.DMSA_Logo
 
@@ -199,6 +202,7 @@ Public Class FRM_EMP_REG
     End Sub
 
     Private Sub AllEmployeeRecordsToolStripMenuItem_Click(sender As Object, e As EventArgs) Handles AllEmployeeRecordsToolStripMenuItem.Click
+
         Dim dt As DataTable = GetEmployeeList()
 
         If dt.Rows.Count = 0 Then
@@ -349,7 +353,9 @@ Public Class FRM_EMP_REG
         Show_Search(sCategory, keyword, activeOnly)
     End Sub
 
+    Private Sub LV_Employee_List_SelectedIndexChanged(sender As Object, e As EventArgs) Handles LV_Employee_List.SelectedIndexChanged
 
+    End Sub
     Private Sub LV_Employee_List_MouseClick(sender As Object, e As MouseEventArgs) Handles LV_Employee_List.MouseClick
         Try
             GlobalVariables.Selected_Employee_ID = LV_Employee_List.SelectedItems(0).SubItems(1).Text
@@ -365,45 +371,52 @@ Public Class FRM_EMP_REG
             Call Show_Employee_Client_History(GlobalVariables.Selected_Employee_ID)
             Call Show_ATM_Info(GlobalVariables.Selected_Employee_ID)
             ' Expirations
-            Call Show_Security_License_Expiration_To_Employee_Record(GlobalVariables.Selected_Employee_ID)
-            Call Show_Medical_Expiration_To_Employee_Record(GlobalVariables.Selected_Employee_ID)
-            Call Show_Insurance_Expiration_to_Employee_Record(GlobalVariables.Selected_Employee_ID)
+            'Call Show_Security_License_Expiration_To_Employee_Record(GlobalVariables.Selected_Employee_ID)
+            'Call Show_Medical_Expiration_To_Employee_Record(GlobalVariables.Selected_Employee_ID)
+            'Call Show_Insurance_Expiration_to_Employee_Record(GlobalVariables.Selected_Employee_ID)
         Catch EX As Exception
             MsgBox(EX.Message, vbCritical, "Loading information Error")
         End Try
 
-        Try
-            GlobalVariables.Photo_Path_from_DB = Show_Photo_in_Employee_Rec(GlobalVariables.Selected_Employee_ID)
-            If GlobalVariables.Photo_Path_from_DB = "0" Then
-                'Me.Pic_Employee_Photo.Image = My.Resources.DMSA_Logo
-                Me.Pic_Employee_Photo.Image = My.Resources.DMSA_Logo
-            Else ' with Path from DB
-                Me.Pic_Employee_Photo.Image = Image.FromFile(GlobalVariables.Photo_Path_from_DB)
-            End If
 
+        Try
+            GlobalVariables.Photo_Path_from_DB =
+        Show_Photo_in_Employee_Rec(
+            GlobalVariables.Selected_Employee_ID)
+
+            If String.IsNullOrWhiteSpace(GlobalVariables.Photo_Path_from_DB) OrElse
+       GlobalVariables.Photo_Path_from_DB = "0" OrElse
+       Not System.IO.File.Exists(GlobalVariables.Photo_Path_from_DB) Then ' So it will not take time if the photo is not available
+
+                Me.Pic_Employee_Photo.Image = My.Resources.DMSA_Logo
+
+            Else
+                Using fs As New System.IO.FileStream(
+            GlobalVariables.Photo_Path_from_DB,
+            System.IO.FileMode.Open,
+            System.IO.FileAccess.Read,
+            System.IO.FileShare.ReadWrite)
+
+                    Using tempImage As Image = Image.FromStream(fs)
+                        Me.Pic_Employee_Photo.Image = New Bitmap(tempImage)
+                    End Using
+
+                End Using
+            End If
 
             If GlobalVariables.Selected_Employee_ID <> "" Then
                 Btn_Pic_Upload.Enabled = True
-
             Else
                 Btn_Pic_Upload.Enabled = False
-
             End If
+
         Catch ex As Exception
             Me.Pic_Employee_Photo.Image = My.Resources.DMSA_Logo
-            'MsgBox(ex.Message, vbCritical, "Loading Photo Error")
         End Try
 
 
 
-
     End Sub
 
-    Private Sub LV_Employee_List_SelectedIndexChanged(sender As Object, e As EventArgs) Handles LV_Employee_List.SelectedIndexChanged
 
-    End Sub
-
-    Private Sub Txt_MothersMaiden_TextChanged(sender As Object, e As EventArgs) Handles Txt_MothersMaiden.TextChanged
-
-    End Sub
 End Class

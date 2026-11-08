@@ -22,6 +22,7 @@ Partial Class FRM_EMP_UPDATE_REC
     'Do not modify it using the code editor.
     <System.Diagnostics.DebuggerStepThrough()>
     Private Sub InitializeComponent()
+        Dim resources As System.ComponentModel.ComponentResourceManager = New System.ComponentModel.ComponentResourceManager(GetType(FRM_EMP_UPDATE_REC))
         Me.Tab_Employee_Transactions = New System.Windows.Forms.TabControl()
         Me.Tab_Leave_Filing = New System.Windows.Forms.TabPage()
         Me.Grp_Leave_Info = New System.Windows.Forms.GroupBox()
@@ -103,8 +104,8 @@ Partial Class FRM_EMP_UPDATE_REC
         Me.Label11 = New System.Windows.Forms.Label()
         Me.DP_Insurance_DateStart = New System.Windows.Forms.DateTimePicker()
         Me.TabPage4 = New System.Windows.Forms.TabPage()
-        Me.Lbl_License_View_Attachment = New System.Windows.Forms.Label()
         Me.Grp_License = New System.Windows.Forms.GroupBox()
+        Me.Lbl_License_View_Attachment = New System.Windows.Forms.Label()
         Me.Btn_License_AttachFile = New System.Windows.Forms.Button()
         Me.Txt_License_Attachment = New System.Windows.Forms.TextBox()
         Me.Label16 = New System.Windows.Forms.Label()
@@ -126,6 +127,8 @@ Partial Class FRM_EMP_UPDATE_REC
         Me.Col_Exp = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
         Me.Col_SEC_Ref_ID = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
         Me.Tab_Client = New System.Windows.Forms.TabPage()
+        Me.Label33 = New System.Windows.Forms.Label()
+        Me.Label32 = New System.Windows.Forms.Label()
         Me.Btn_Client_Add = New System.Windows.Forms.Button()
         Me.Btn_Client_Edit = New System.Windows.Forms.Button()
         Me.Grp_Client_Info = New System.Windows.Forms.GroupBox()
@@ -157,6 +160,8 @@ Partial Class FRM_EMP_UPDATE_REC
         Me.Col_Client_Ref_ID = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
         Me.PictureBox9 = New System.Windows.Forms.PictureBox()
         Me.TabPage6 = New System.Windows.Forms.TabPage()
+        Me.Label36 = New System.Windows.Forms.Label()
+        Me.Label34 = New System.Windows.Forms.Label()
         Me.Btn_UpRemarks = New System.Windows.Forms.Button()
         Me.LV_Status_History = New System.Windows.Forms.ListView()
         Me.ColumnHeader2 = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
@@ -173,12 +178,15 @@ Partial Class FRM_EMP_UPDATE_REC
         Me.Txt_ChangeStatus_Remark = New System.Windows.Forms.TextBox()
         Me.Cmb_Separation = New System.Windows.Forms.ComboBox()
         Me.Label19 = New System.Windows.Forms.Label()
+        Me.PictureBox1 = New System.Windows.Forms.PictureBox()
         Me.Lbl_Employee_ID = New System.Windows.Forms.Label()
         Me.Label21 = New System.Windows.Forms.Label()
         Me.Lbl_Employee_Name = New System.Windows.Forms.Label()
         Me.Label23 = New System.Windows.Forms.Label()
         Me.OpenFileDialog1 = New System.Windows.Forms.OpenFileDialog()
         Me.Panel1 = New System.Windows.Forms.Panel()
+        Me.Label28 = New System.Windows.Forms.Label()
+        Me.Label31 = New System.Windows.Forms.Label()
         Me.Panel2 = New System.Windows.Forms.Panel()
         Me.Btn_Selected_Button = New FontAwesome.Sharp.IconButton()
         Me.Btn_Employment_Status = New FontAwesome.Sharp.IconButton()
@@ -207,6 +215,8 @@ Partial Class FRM_EMP_UPDATE_REC
         CType(Me.PictureBox9, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.TabPage6.SuspendLayout()
         CType(Me.PictureBox7, System.ComponentModel.ISupportInitialize).BeginInit()
+        CType(Me.PictureBox1, System.ComponentModel.ISupportInitialize).BeginInit()
+        Me.Panel1.SuspendLayout()
         Me.Panel2.SuspendLayout()
         Me.Panel3.SuspendLayout()
         CType(Me.Pic_Employee_Photo, System.ComponentModel.ISupportInitialize).BeginInit()
@@ -225,10 +235,10 @@ Partial Class FRM_EMP_UPDATE_REC
         Me.Tab_Employee_Transactions.Controls.Add(Me.Tab_Client)
         Me.Tab_Employee_Transactions.Controls.Add(Me.TabPage6)
         Me.Tab_Employee_Transactions.Font = New System.Drawing.Font("Microsoft Sans Serif", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.Tab_Employee_Transactions.Location = New System.Drawing.Point(248, 146)
+        Me.Tab_Employee_Transactions.Location = New System.Drawing.Point(236, 227)
         Me.Tab_Employee_Transactions.Name = "Tab_Employee_Transactions"
         Me.Tab_Employee_Transactions.SelectedIndex = 0
-        Me.Tab_Employee_Transactions.Size = New System.Drawing.Size(797, 683)
+        Me.Tab_Employee_Transactions.Size = New System.Drawing.Size(1298, 779)
         Me.Tab_Employee_Transactions.TabIndex = 69
         '
         'Tab_Leave_Filing
@@ -245,7 +255,7 @@ Partial Class FRM_EMP_UPDATE_REC
         Me.Tab_Leave_Filing.Location = New System.Drawing.Point(4, 32)
         Me.Tab_Leave_Filing.Name = "Tab_Leave_Filing"
         Me.Tab_Leave_Filing.Padding = New System.Windows.Forms.Padding(3)
-        Me.Tab_Leave_Filing.Size = New System.Drawing.Size(789, 647)
+        Me.Tab_Leave_Filing.Size = New System.Drawing.Size(1290, 743)
         Me.Tab_Leave_Filing.TabIndex = 0
         Me.Tab_Leave_Filing.Text = "  Leave Filing  "
         '
@@ -268,9 +278,9 @@ Partial Class FRM_EMP_UPDATE_REC
         Me.Grp_Leave_Info.Controls.Add(Me.Txt_Leave_DateFrom)
         Me.Grp_Leave_Info.Enabled = False
         Me.Grp_Leave_Info.ForeColor = System.Drawing.Color.Blue
-        Me.Grp_Leave_Info.Location = New System.Drawing.Point(51, 292)
+        Me.Grp_Leave_Info.Location = New System.Drawing.Point(217, 359)
         Me.Grp_Leave_Info.Name = "Grp_Leave_Info"
-        Me.Grp_Leave_Info.Size = New System.Drawing.Size(675, 245)
+        Me.Grp_Leave_Info.Size = New System.Drawing.Size(702, 245)
         Me.Grp_Leave_Info.TabIndex = 229
         Me.Grp_Leave_Info.TabStop = False
         Me.Grp_Leave_Info.Text = "Leave Information"
@@ -366,7 +376,7 @@ Partial Class FRM_EMP_UPDATE_REC
         'Label4
         '
         Me.Label4.AutoSize = True
-        Me.Label4.BackColor = System.Drawing.Color.FromArgb(CType(CType(255, Byte), Integer), CType(CType(192, Byte), Integer), CType(CType(192, Byte), Integer))
+        Me.Label4.BackColor = System.Drawing.Color.FromArgb(CType(CType(255, Byte), Integer), CType(CType(224, Byte), Integer), CType(CType(192, Byte), Integer))
         Me.Label4.Font = New System.Drawing.Font("Verdana", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.Label4.ForeColor = System.Drawing.Color.Black
         Me.Label4.Location = New System.Drawing.Point(30, 80)
@@ -438,9 +448,9 @@ Partial Class FRM_EMP_UPDATE_REC
         Me.Btn_Leave_Delete.Enabled = False
         Me.Btn_Leave_Delete.Font = New System.Drawing.Font("Microsoft Sans Serif", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.Btn_Leave_Delete.ForeColor = System.Drawing.Color.Black
-        Me.Btn_Leave_Delete.Location = New System.Drawing.Point(369, 566)
+        Me.Btn_Leave_Delete.Location = New System.Drawing.Point(28, 113)
         Me.Btn_Leave_Delete.Name = "Btn_Leave_Delete"
-        Me.Btn_Leave_Delete.Size = New System.Drawing.Size(134, 34)
+        Me.Btn_Leave_Delete.Size = New System.Drawing.Size(161, 34)
         Me.Btn_Leave_Delete.TabIndex = 224
         Me.Btn_Leave_Delete.Text = "Delete"
         Me.Btn_Leave_Delete.UseVisualStyleBackColor = True
@@ -450,9 +460,9 @@ Partial Class FRM_EMP_UPDATE_REC
         Me.Btn_Leave_Edit.Enabled = False
         Me.Btn_Leave_Edit.Font = New System.Drawing.Font("Microsoft Sans Serif", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.Btn_Leave_Edit.ForeColor = System.Drawing.Color.Black
-        Me.Btn_Leave_Edit.Location = New System.Drawing.Point(220, 566)
+        Me.Btn_Leave_Edit.Location = New System.Drawing.Point(28, 72)
         Me.Btn_Leave_Edit.Name = "Btn_Leave_Edit"
-        Me.Btn_Leave_Edit.Size = New System.Drawing.Size(134, 34)
+        Me.Btn_Leave_Edit.Size = New System.Drawing.Size(161, 34)
         Me.Btn_Leave_Edit.TabIndex = 223
         Me.Btn_Leave_Edit.Text = "Edit"
         Me.Btn_Leave_Edit.UseVisualStyleBackColor = True
@@ -461,20 +471,20 @@ Partial Class FRM_EMP_UPDATE_REC
         '
         Me.Btn_Leave_New.Font = New System.Drawing.Font("Microsoft Sans Serif", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.Btn_Leave_New.ForeColor = System.Drawing.Color.Black
-        Me.Btn_Leave_New.Location = New System.Drawing.Point(71, 566)
+        Me.Btn_Leave_New.Location = New System.Drawing.Point(28, 30)
         Me.Btn_Leave_New.Name = "Btn_Leave_New"
-        Me.Btn_Leave_New.Size = New System.Drawing.Size(134, 34)
+        Me.Btn_Leave_New.Size = New System.Drawing.Size(161, 34)
         Me.Btn_Leave_New.TabIndex = 221
         Me.Btn_Leave_New.Text = "New"
         Me.Btn_Leave_New.UseVisualStyleBackColor = True
         '
         'PictureBox3
         '
-        Me.PictureBox3.BackColor = System.Drawing.Color.Teal
+        Me.PictureBox3.BackColor = System.Drawing.Color.FromArgb(CType(CType(255, Byte), Integer), CType(CType(192, Byte), Integer), CType(CType(128, Byte), Integer))
         Me.PictureBox3.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle
-        Me.PictureBox3.Location = New System.Drawing.Point(20, 548)
+        Me.PictureBox3.Location = New System.Drawing.Point(6, 6)
         Me.PictureBox3.Name = "PictureBox3"
-        Me.PictureBox3.Size = New System.Drawing.Size(736, 69)
+        Me.PictureBox3.Size = New System.Drawing.Size(205, 598)
         Me.PictureBox3.TabIndex = 222
         Me.PictureBox3.TabStop = False
         '
@@ -486,9 +496,9 @@ Partial Class FRM_EMP_UPDATE_REC
         Me.LV_Leave.FullRowSelect = True
         Me.LV_Leave.GridLines = True
         Me.LV_Leave.HideSelection = False
-        Me.LV_Leave.Location = New System.Drawing.Point(51, 28)
+        Me.LV_Leave.Location = New System.Drawing.Point(217, 6)
         Me.LV_Leave.Name = "LV_Leave"
-        Me.LV_Leave.Size = New System.Drawing.Size(675, 258)
+        Me.LV_Leave.Size = New System.Drawing.Size(702, 347)
         Me.LV_Leave.Sorting = System.Windows.Forms.SortOrder.Ascending
         Me.LV_Leave.TabIndex = 209
         Me.LV_Leave.UseCompatibleStateImageBehavior = False
@@ -537,7 +547,7 @@ Partial Class FRM_EMP_UPDATE_REC
         Me.TabPage2.Location = New System.Drawing.Point(4, 32)
         Me.TabPage2.Name = "TabPage2"
         Me.TabPage2.Padding = New System.Windows.Forms.Padding(3)
-        Me.TabPage2.Size = New System.Drawing.Size(793, 647)
+        Me.TabPage2.Size = New System.Drawing.Size(1290, 743)
         Me.TabPage2.TabIndex = 1
         Me.TabPage2.Text = "  Medical Records  "
         '
@@ -546,7 +556,7 @@ Partial Class FRM_EMP_UPDATE_REC
         Me.Lbl_Medical_Ref_ID.AutoSize = True
         Me.Lbl_Medical_Ref_ID.Font = New System.Drawing.Font("Microsoft Sans Serif", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.Lbl_Medical_Ref_ID.ForeColor = System.Drawing.Color.Red
-        Me.Lbl_Medical_Ref_ID.Location = New System.Drawing.Point(335, 265)
+        Me.Lbl_Medical_Ref_ID.Location = New System.Drawing.Point(6, 600)
         Me.Lbl_Medical_Ref_ID.Name = "Lbl_Medical_Ref_ID"
         Me.Lbl_Medical_Ref_ID.Size = New System.Drawing.Size(61, 20)
         Me.Lbl_Medical_Ref_ID.TabIndex = 182
@@ -557,9 +567,9 @@ Partial Class FRM_EMP_UPDATE_REC
         '
         Me.Btn_Medical_Delete.Enabled = False
         Me.Btn_Medical_Delete.Font = New System.Drawing.Font("Microsoft Sans Serif", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.Btn_Medical_Delete.Location = New System.Drawing.Point(428, 563)
+        Me.Btn_Medical_Delete.Location = New System.Drawing.Point(30, 113)
         Me.Btn_Medical_Delete.Name = "Btn_Medical_Delete"
-        Me.Btn_Medical_Delete.Size = New System.Drawing.Size(173, 34)
+        Me.Btn_Medical_Delete.Size = New System.Drawing.Size(161, 34)
         Me.Btn_Medical_Delete.TabIndex = 180
         Me.Btn_Medical_Delete.Text = "Delete"
         Me.Btn_Medical_Delete.UseVisualStyleBackColor = True
@@ -568,9 +578,9 @@ Partial Class FRM_EMP_UPDATE_REC
         '
         Me.Btn_Medical_Edit.Enabled = False
         Me.Btn_Medical_Edit.Font = New System.Drawing.Font("Microsoft Sans Serif", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.Btn_Medical_Edit.Location = New System.Drawing.Point(237, 563)
+        Me.Btn_Medical_Edit.Location = New System.Drawing.Point(30, 73)
         Me.Btn_Medical_Edit.Name = "Btn_Medical_Edit"
-        Me.Btn_Medical_Edit.Size = New System.Drawing.Size(173, 34)
+        Me.Btn_Medical_Edit.Size = New System.Drawing.Size(161, 34)
         Me.Btn_Medical_Edit.TabIndex = 179
         Me.Btn_Medical_Edit.Text = "Edit"
         Me.Btn_Medical_Edit.UseVisualStyleBackColor = True
@@ -578,20 +588,20 @@ Partial Class FRM_EMP_UPDATE_REC
         'Btn_Medical_New
         '
         Me.Btn_Medical_New.Font = New System.Drawing.Font("Microsoft Sans Serif", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.Btn_Medical_New.Location = New System.Drawing.Point(47, 563)
+        Me.Btn_Medical_New.Location = New System.Drawing.Point(30, 33)
         Me.Btn_Medical_New.Name = "Btn_Medical_New"
-        Me.Btn_Medical_New.Size = New System.Drawing.Size(173, 34)
+        Me.Btn_Medical_New.Size = New System.Drawing.Size(161, 34)
         Me.Btn_Medical_New.TabIndex = 171
         Me.Btn_Medical_New.Text = "New"
         Me.Btn_Medical_New.UseVisualStyleBackColor = True
         '
         'PictureBox4
         '
-        Me.PictureBox4.BackColor = System.Drawing.Color.Teal
+        Me.PictureBox4.BackColor = System.Drawing.Color.FromArgb(CType(CType(255, Byte), Integer), CType(CType(192, Byte), Integer), CType(CType(128, Byte), Integer))
         Me.PictureBox4.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle
-        Me.PictureBox4.Location = New System.Drawing.Point(25, 545)
+        Me.PictureBox4.Location = New System.Drawing.Point(8, 12)
         Me.PictureBox4.Name = "PictureBox4"
-        Me.PictureBox4.Size = New System.Drawing.Size(718, 69)
+        Me.PictureBox4.Size = New System.Drawing.Size(205, 598)
         Me.PictureBox4.TabIndex = 172
         Me.PictureBox4.TabStop = False
         '
@@ -603,9 +613,9 @@ Partial Class FRM_EMP_UPDATE_REC
         Me.LV_Medical_List.FullRowSelect = True
         Me.LV_Medical_List.GridLines = True
         Me.LV_Medical_List.HideSelection = False
-        Me.LV_Medical_List.Location = New System.Drawing.Point(28, 30)
+        Me.LV_Medical_List.Location = New System.Drawing.Point(219, 12)
         Me.LV_Medical_List.Name = "LV_Medical_List"
-        Me.LV_Medical_List.Size = New System.Drawing.Size(715, 222)
+        Me.LV_Medical_List.Size = New System.Drawing.Size(718, 341)
         Me.LV_Medical_List.TabIndex = 166
         Me.LV_Medical_List.UseCompatibleStateImageBehavior = False
         Me.LV_Medical_List.View = System.Windows.Forms.View.Details
@@ -654,7 +664,7 @@ Partial Class FRM_EMP_UPDATE_REC
         Me.Grp_Medical_Info.Controls.Add(Me.Label15)
         Me.Grp_Medical_Info.Enabled = False
         Me.Grp_Medical_Info.ForeColor = System.Drawing.Color.Blue
-        Me.Grp_Medical_Info.Location = New System.Drawing.Point(25, 288)
+        Me.Grp_Medical_Info.Location = New System.Drawing.Point(219, 359)
         Me.Grp_Medical_Info.Name = "Grp_Medical_Info"
         Me.Grp_Medical_Info.Size = New System.Drawing.Size(718, 251)
         Me.Grp_Medical_Info.TabIndex = 181
@@ -829,17 +839,17 @@ Partial Class FRM_EMP_UPDATE_REC
         Me.TabPage3.Location = New System.Drawing.Point(4, 32)
         Me.TabPage3.Name = "TabPage3"
         Me.TabPage3.Padding = New System.Windows.Forms.Padding(3)
-        Me.TabPage3.Size = New System.Drawing.Size(793, 647)
+        Me.TabPage3.Size = New System.Drawing.Size(1290, 743)
         Me.TabPage3.TabIndex = 2
-        Me.TabPage3.Text = "Insurance"
+        Me.TabPage3.Text = "  Insurance  "
         '
         'Btn_Insurance_Delete
         '
         Me.Btn_Insurance_Delete.Enabled = False
         Me.Btn_Insurance_Delete.Font = New System.Drawing.Font("Microsoft Sans Serif", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.Btn_Insurance_Delete.Location = New System.Drawing.Point(351, 564)
+        Me.Btn_Insurance_Delete.Location = New System.Drawing.Point(23, 121)
         Me.Btn_Insurance_Delete.Name = "Btn_Insurance_Delete"
-        Me.Btn_Insurance_Delete.Size = New System.Drawing.Size(134, 34)
+        Me.Btn_Insurance_Delete.Size = New System.Drawing.Size(163, 34)
         Me.Btn_Insurance_Delete.TabIndex = 197
         Me.Btn_Insurance_Delete.Text = "Delete"
         Me.Btn_Insurance_Delete.UseVisualStyleBackColor = True
@@ -848,9 +858,9 @@ Partial Class FRM_EMP_UPDATE_REC
         '
         Me.Btn_Insurance_Edit.Enabled = False
         Me.Btn_Insurance_Edit.Font = New System.Drawing.Font("Microsoft Sans Serif", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.Btn_Insurance_Edit.Location = New System.Drawing.Point(202, 564)
+        Me.Btn_Insurance_Edit.Location = New System.Drawing.Point(23, 81)
         Me.Btn_Insurance_Edit.Name = "Btn_Insurance_Edit"
-        Me.Btn_Insurance_Edit.Size = New System.Drawing.Size(134, 34)
+        Me.Btn_Insurance_Edit.Size = New System.Drawing.Size(163, 34)
         Me.Btn_Insurance_Edit.TabIndex = 196
         Me.Btn_Insurance_Edit.Text = "Edit"
         Me.Btn_Insurance_Edit.UseVisualStyleBackColor = True
@@ -858,20 +868,20 @@ Partial Class FRM_EMP_UPDATE_REC
         'Btn_Insurance_New
         '
         Me.Btn_Insurance_New.Font = New System.Drawing.Font("Microsoft Sans Serif", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.Btn_Insurance_New.Location = New System.Drawing.Point(53, 564)
+        Me.Btn_Insurance_New.Location = New System.Drawing.Point(23, 41)
         Me.Btn_Insurance_New.Name = "Btn_Insurance_New"
-        Me.Btn_Insurance_New.Size = New System.Drawing.Size(134, 34)
+        Me.Btn_Insurance_New.Size = New System.Drawing.Size(163, 34)
         Me.Btn_Insurance_New.TabIndex = 193
         Me.Btn_Insurance_New.Text = "New"
         Me.Btn_Insurance_New.UseVisualStyleBackColor = True
         '
         'PictureBox5
         '
-        Me.PictureBox5.BackColor = System.Drawing.Color.Teal
+        Me.PictureBox5.BackColor = System.Drawing.Color.FromArgb(CType(CType(255, Byte), Integer), CType(CType(192, Byte), Integer), CType(CType(128, Byte), Integer))
         Me.PictureBox5.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle
-        Me.PictureBox5.Location = New System.Drawing.Point(24, 546)
+        Me.PictureBox5.Location = New System.Drawing.Point(6, 6)
         Me.PictureBox5.Name = "PictureBox5"
-        Me.PictureBox5.Size = New System.Drawing.Size(732, 69)
+        Me.PictureBox5.Size = New System.Drawing.Size(205, 598)
         Me.PictureBox5.TabIndex = 194
         Me.PictureBox5.TabStop = False
         '
@@ -883,9 +893,9 @@ Partial Class FRM_EMP_UPDATE_REC
         Me.LV_Insurance_List.FullRowSelect = True
         Me.LV_Insurance_List.GridLines = True
         Me.LV_Insurance_List.HideSelection = False
-        Me.LV_Insurance_List.Location = New System.Drawing.Point(24, 25)
+        Me.LV_Insurance_List.Location = New System.Drawing.Point(217, 6)
         Me.LV_Insurance_List.Name = "LV_Insurance_List"
-        Me.LV_Insurance_List.Size = New System.Drawing.Size(732, 314)
+        Me.LV_Insurance_List.Size = New System.Drawing.Size(741, 397)
         Me.LV_Insurance_List.Sorting = System.Windows.Forms.SortOrder.Ascending
         Me.LV_Insurance_List.TabIndex = 190
         Me.LV_Insurance_List.UseCompatibleStateImageBehavior = False
@@ -936,9 +946,9 @@ Partial Class FRM_EMP_UPDATE_REC
         Me.Grp_Insurance_Info.Controls.Add(Me.DP_Insurance_DateStart)
         Me.Grp_Insurance_Info.Enabled = False
         Me.Grp_Insurance_Info.ForeColor = System.Drawing.Color.Blue
-        Me.Grp_Insurance_Info.Location = New System.Drawing.Point(24, 345)
+        Me.Grp_Insurance_Info.Location = New System.Drawing.Point(217, 409)
         Me.Grp_Insurance_Info.Name = "Grp_Insurance_Info"
-        Me.Grp_Insurance_Info.Size = New System.Drawing.Size(732, 195)
+        Me.Grp_Insurance_Info.Size = New System.Drawing.Size(741, 195)
         Me.Grp_Insurance_Info.TabIndex = 202
         Me.Grp_Insurance_Info.TabStop = False
         Me.Grp_Insurance_Info.Text = "Insurance Info"
@@ -1042,7 +1052,6 @@ Partial Class FRM_EMP_UPDATE_REC
         'TabPage4
         '
         Me.TabPage4.BackColor = System.Drawing.Color.FromArgb(CType(CType(255, Byte), Integer), CType(CType(192, Byte), Integer), CType(CType(128, Byte), Integer))
-        Me.TabPage4.Controls.Add(Me.Lbl_License_View_Attachment)
         Me.TabPage4.Controls.Add(Me.Grp_License)
         Me.TabPage4.Controls.Add(Me.Btn_License_Delete)
         Me.TabPage4.Controls.Add(Me.Btn_License_Edit)
@@ -1052,24 +1061,13 @@ Partial Class FRM_EMP_UPDATE_REC
         Me.TabPage4.Location = New System.Drawing.Point(4, 32)
         Me.TabPage4.Name = "TabPage4"
         Me.TabPage4.Padding = New System.Windows.Forms.Padding(3)
-        Me.TabPage4.Size = New System.Drawing.Size(793, 647)
+        Me.TabPage4.Size = New System.Drawing.Size(1290, 743)
         Me.TabPage4.TabIndex = 3
         Me.TabPage4.Text = "Security License"
         '
-        'Lbl_License_View_Attachment
-        '
-        Me.Lbl_License_View_Attachment.AutoSize = True
-        Me.Lbl_License_View_Attachment.Cursor = System.Windows.Forms.Cursors.Hand
-        Me.Lbl_License_View_Attachment.Font = New System.Drawing.Font("Microsoft Sans Serif", 12.0!, CType((System.Drawing.FontStyle.Italic Or System.Drawing.FontStyle.Underline), System.Drawing.FontStyle), System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.Lbl_License_View_Attachment.ForeColor = System.Drawing.Color.Blue
-        Me.Lbl_License_View_Attachment.Location = New System.Drawing.Point(632, 4)
-        Me.Lbl_License_View_Attachment.Name = "Lbl_License_View_Attachment"
-        Me.Lbl_License_View_Attachment.Size = New System.Drawing.Size(130, 20)
-        Me.Lbl_License_View_Attachment.TabIndex = 240
-        Me.Lbl_License_View_Attachment.Text = "View Attachment"
-        '
         'Grp_License
         '
+        Me.Grp_License.Controls.Add(Me.Lbl_License_View_Attachment)
         Me.Grp_License.Controls.Add(Me.Btn_License_AttachFile)
         Me.Grp_License.Controls.Add(Me.Txt_License_Attachment)
         Me.Grp_License.Controls.Add(Me.Label16)
@@ -1082,12 +1080,24 @@ Partial Class FRM_EMP_UPDATE_REC
         Me.Grp_License.Controls.Add(Me.Txt_License_Expiry)
         Me.Grp_License.Enabled = False
         Me.Grp_License.ForeColor = System.Drawing.Color.Blue
-        Me.Grp_License.Location = New System.Drawing.Point(25, 295)
+        Me.Grp_License.Location = New System.Drawing.Point(219, 381)
         Me.Grp_License.Name = "Grp_License"
         Me.Grp_License.Size = New System.Drawing.Size(737, 226)
         Me.Grp_License.TabIndex = 230
         Me.Grp_License.TabStop = False
         Me.Grp_License.Text = "License Information"
+        '
+        'Lbl_License_View_Attachment
+        '
+        Me.Lbl_License_View_Attachment.AutoSize = True
+        Me.Lbl_License_View_Attachment.Cursor = System.Windows.Forms.Cursors.Hand
+        Me.Lbl_License_View_Attachment.Font = New System.Drawing.Font("Microsoft Sans Serif", 12.0!, CType((System.Drawing.FontStyle.Italic Or System.Drawing.FontStyle.Underline), System.Drawing.FontStyle), System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.Lbl_License_View_Attachment.ForeColor = System.Drawing.Color.Blue
+        Me.Lbl_License_View_Attachment.Location = New System.Drawing.Point(580, 22)
+        Me.Lbl_License_View_Attachment.Name = "Lbl_License_View_Attachment"
+        Me.Lbl_License_View_Attachment.Size = New System.Drawing.Size(130, 20)
+        Me.Lbl_License_View_Attachment.TabIndex = 240
+        Me.Lbl_License_View_Attachment.Text = "View Attachment"
         '
         'Btn_License_AttachFile
         '
@@ -1200,9 +1210,9 @@ Partial Class FRM_EMP_UPDATE_REC
         '
         Me.Btn_License_Delete.Enabled = False
         Me.Btn_License_Delete.Font = New System.Drawing.Font("Microsoft Sans Serif", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.Btn_License_Delete.Location = New System.Drawing.Point(355, 546)
+        Me.Btn_License_Delete.Location = New System.Drawing.Point(26, 115)
         Me.Btn_License_Delete.Name = "Btn_License_Delete"
-        Me.Btn_License_Delete.Size = New System.Drawing.Size(134, 34)
+        Me.Btn_License_Delete.Size = New System.Drawing.Size(169, 34)
         Me.Btn_License_Delete.TabIndex = 221
         Me.Btn_License_Delete.Text = "Delete"
         Me.Btn_License_Delete.UseVisualStyleBackColor = True
@@ -1211,9 +1221,9 @@ Partial Class FRM_EMP_UPDATE_REC
         '
         Me.Btn_License_Edit.Enabled = False
         Me.Btn_License_Edit.Font = New System.Drawing.Font("Microsoft Sans Serif", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.Btn_License_Edit.Location = New System.Drawing.Point(206, 546)
+        Me.Btn_License_Edit.Location = New System.Drawing.Point(26, 75)
         Me.Btn_License_Edit.Name = "Btn_License_Edit"
-        Me.Btn_License_Edit.Size = New System.Drawing.Size(134, 34)
+        Me.Btn_License_Edit.Size = New System.Drawing.Size(169, 34)
         Me.Btn_License_Edit.TabIndex = 220
         Me.Btn_License_Edit.Text = "Edit"
         Me.Btn_License_Edit.UseVisualStyleBackColor = True
@@ -1221,20 +1231,20 @@ Partial Class FRM_EMP_UPDATE_REC
         'Btn_License_NEW
         '
         Me.Btn_License_NEW.Font = New System.Drawing.Font("Microsoft Sans Serif", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.Btn_License_NEW.Location = New System.Drawing.Point(60, 546)
+        Me.Btn_License_NEW.Location = New System.Drawing.Point(26, 35)
         Me.Btn_License_NEW.Name = "Btn_License_NEW"
-        Me.Btn_License_NEW.Size = New System.Drawing.Size(134, 34)
+        Me.Btn_License_NEW.Size = New System.Drawing.Size(169, 34)
         Me.Btn_License_NEW.TabIndex = 217
         Me.Btn_License_NEW.Text = "New"
         Me.Btn_License_NEW.UseVisualStyleBackColor = True
         '
         'PictureBox6
         '
-        Me.PictureBox6.BackColor = System.Drawing.Color.Teal
+        Me.PictureBox6.BackColor = System.Drawing.Color.FromArgb(CType(CType(255, Byte), Integer), CType(CType(192, Byte), Integer), CType(CType(128, Byte), Integer))
         Me.PictureBox6.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle
-        Me.PictureBox6.Location = New System.Drawing.Point(25, 527)
+        Me.PictureBox6.Location = New System.Drawing.Point(8, 9)
         Me.PictureBox6.Name = "PictureBox6"
-        Me.PictureBox6.Size = New System.Drawing.Size(737, 69)
+        Me.PictureBox6.Size = New System.Drawing.Size(205, 598)
         Me.PictureBox6.TabIndex = 218
         Me.PictureBox6.TabStop = False
         '
@@ -1246,9 +1256,9 @@ Partial Class FRM_EMP_UPDATE_REC
         Me.LV_License_Record.FullRowSelect = True
         Me.LV_License_Record.GridLines = True
         Me.LV_License_Record.HideSelection = False
-        Me.LV_License_Record.Location = New System.Drawing.Point(25, 27)
+        Me.LV_License_Record.Location = New System.Drawing.Point(219, 18)
         Me.LV_License_Record.Name = "LV_License_Record"
-        Me.LV_License_Record.Size = New System.Drawing.Size(737, 262)
+        Me.LV_License_Record.Size = New System.Drawing.Size(737, 357)
         Me.LV_License_Record.Sorting = System.Windows.Forms.SortOrder.Ascending
         Me.LV_License_Record.TabIndex = 214
         Me.LV_License_Record.UseCompatibleStateImageBehavior = False
@@ -1284,6 +1294,8 @@ Partial Class FRM_EMP_UPDATE_REC
         'Tab_Client
         '
         Me.Tab_Client.BackColor = System.Drawing.Color.FromArgb(CType(CType(255, Byte), Integer), CType(CType(192, Byte), Integer), CType(CType(128, Byte), Integer))
+        Me.Tab_Client.Controls.Add(Me.Label33)
+        Me.Tab_Client.Controls.Add(Me.Label32)
         Me.Tab_Client.Controls.Add(Me.Btn_Client_Add)
         Me.Tab_Client.Controls.Add(Me.Btn_Client_Edit)
         Me.Tab_Client.Controls.Add(Me.Grp_Client_Info)
@@ -1294,16 +1306,38 @@ Partial Class FRM_EMP_UPDATE_REC
         Me.Tab_Client.Location = New System.Drawing.Point(4, 32)
         Me.Tab_Client.Name = "Tab_Client"
         Me.Tab_Client.Padding = New System.Windows.Forms.Padding(3)
-        Me.Tab_Client.Size = New System.Drawing.Size(789, 647)
+        Me.Tab_Client.Size = New System.Drawing.Size(1290, 743)
         Me.Tab_Client.TabIndex = 6
         Me.Tab_Client.Text = "Client Change"
+        '
+        'Label33
+        '
+        Me.Label33.Font = New System.Drawing.Font("Microsoft Sans Serif", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.Label33.ForeColor = System.Drawing.Color.Gray
+        Me.Label33.Location = New System.Drawing.Point(968, 6)
+        Me.Label33.Name = "Label33"
+        Me.Label33.Size = New System.Drawing.Size(246, 25)
+        Me.Label33.TabIndex = 183
+        Me.Label33.Text = "ATTENTION:"
+        Me.Label33.Visible = False
+        '
+        'Label32
+        '
+        Me.Label32.Font = New System.Drawing.Font("Microsoft Sans Serif", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.Label32.ForeColor = System.Drawing.Color.Gray
+        Me.Label32.Location = New System.Drawing.Point(968, 45)
+        Me.Label32.Name = "Label32"
+        Me.Label32.Size = New System.Drawing.Size(215, 380)
+        Me.Label32.TabIndex = 182
+        Me.Label32.Text = resources.GetString("Label32.Text")
+        Me.Label32.Visible = False
         '
         'Btn_Client_Add
         '
         Me.Btn_Client_Add.Font = New System.Drawing.Font("Microsoft Sans Serif", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.Btn_Client_Add.Location = New System.Drawing.Point(354, 549)
+        Me.Btn_Client_Add.Location = New System.Drawing.Point(22, 25)
         Me.Btn_Client_Add.Name = "Btn_Client_Add"
-        Me.Btn_Client_Add.Size = New System.Drawing.Size(120, 34)
+        Me.Btn_Client_Add.Size = New System.Drawing.Size(173, 34)
         Me.Btn_Client_Add.TabIndex = 180
         Me.Btn_Client_Add.Text = "Add"
         Me.Btn_Client_Add.UseVisualStyleBackColor = True
@@ -1312,9 +1346,9 @@ Partial Class FRM_EMP_UPDATE_REC
         '
         Me.Btn_Client_Edit.Enabled = False
         Me.Btn_Client_Edit.Font = New System.Drawing.Font("Microsoft Sans Serif", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.Btn_Client_Edit.Location = New System.Drawing.Point(480, 549)
+        Me.Btn_Client_Edit.Location = New System.Drawing.Point(22, 65)
         Me.Btn_Client_Edit.Name = "Btn_Client_Edit"
-        Me.Btn_Client_Edit.Size = New System.Drawing.Size(120, 34)
+        Me.Btn_Client_Edit.Size = New System.Drawing.Size(173, 34)
         Me.Btn_Client_Edit.TabIndex = 179
         Me.Btn_Client_Edit.Text = "Edit"
         Me.Btn_Client_Edit.UseVisualStyleBackColor = True
@@ -1340,7 +1374,7 @@ Partial Class FRM_EMP_UPDATE_REC
         Me.Grp_Client_Info.Controls.Add(Me.Lbl_ClientName)
         Me.Grp_Client_Info.Enabled = False
         Me.Grp_Client_Info.ForeColor = System.Drawing.Color.Blue
-        Me.Grp_Client_Info.Location = New System.Drawing.Point(23, 285)
+        Me.Grp_Client_Info.Location = New System.Drawing.Point(217, 375)
         Me.Grp_Client_Info.Name = "Grp_Client_Info"
         Me.Grp_Client_Info.Size = New System.Drawing.Size(735, 229)
         Me.Grp_Client_Info.TabIndex = 178
@@ -1535,9 +1569,9 @@ Partial Class FRM_EMP_UPDATE_REC
         '
         Me.Btn_Client_Delete.Enabled = False
         Me.Btn_Client_Delete.Font = New System.Drawing.Font("Microsoft Sans Serif", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.Btn_Client_Delete.Location = New System.Drawing.Point(606, 549)
+        Me.Btn_Client_Delete.Location = New System.Drawing.Point(22, 105)
         Me.Btn_Client_Delete.Name = "Btn_Client_Delete"
-        Me.Btn_Client_Delete.Size = New System.Drawing.Size(120, 34)
+        Me.Btn_Client_Delete.Size = New System.Drawing.Size(173, 34)
         Me.Btn_Client_Delete.TabIndex = 177
         Me.Btn_Client_Delete.Text = "Delete"
         Me.Btn_Client_Delete.UseVisualStyleBackColor = True
@@ -1546,7 +1580,7 @@ Partial Class FRM_EMP_UPDATE_REC
         '
         Me.Btn_Client_Change.Enabled = False
         Me.Btn_Client_Change.Font = New System.Drawing.Font("Microsoft Sans Serif", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.Btn_Client_Change.Location = New System.Drawing.Point(38, 549)
+        Me.Btn_Client_Change.Location = New System.Drawing.Point(22, 549)
         Me.Btn_Client_Change.Name = "Btn_Client_Change"
         Me.Btn_Client_Change.Size = New System.Drawing.Size(173, 34)
         Me.Btn_Client_Change.TabIndex = 172
@@ -1562,9 +1596,9 @@ Partial Class FRM_EMP_UPDATE_REC
         Me.LV_Client_History.FullRowSelect = True
         Me.LV_Client_History.GridLines = True
         Me.LV_Client_History.HideSelection = False
-        Me.LV_Client_History.Location = New System.Drawing.Point(23, 22)
+        Me.LV_Client_History.Location = New System.Drawing.Point(217, 6)
         Me.LV_Client_History.Name = "LV_Client_History"
-        Me.LV_Client_History.Size = New System.Drawing.Size(735, 257)
+        Me.LV_Client_History.Size = New System.Drawing.Size(735, 363)
         Me.LV_Client_History.TabIndex = 156
         Me.LV_Client_History.UseCompatibleStateImageBehavior = False
         Me.LV_Client_History.View = System.Windows.Forms.View.Details
@@ -1601,17 +1635,19 @@ Partial Class FRM_EMP_UPDATE_REC
         '
         'PictureBox9
         '
-        Me.PictureBox9.BackColor = System.Drawing.Color.Teal
+        Me.PictureBox9.BackColor = System.Drawing.Color.FromArgb(CType(CType(255, Byte), Integer), CType(CType(192, Byte), Integer), CType(CType(128, Byte), Integer))
         Me.PictureBox9.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle
-        Me.PictureBox9.Location = New System.Drawing.Point(23, 530)
+        Me.PictureBox9.Location = New System.Drawing.Point(6, 6)
         Me.PictureBox9.Name = "PictureBox9"
-        Me.PictureBox9.Size = New System.Drawing.Size(735, 69)
+        Me.PictureBox9.Size = New System.Drawing.Size(205, 598)
         Me.PictureBox9.TabIndex = 173
         Me.PictureBox9.TabStop = False
         '
         'TabPage6
         '
         Me.TabPage6.BackColor = System.Drawing.Color.FromArgb(CType(CType(255, Byte), Integer), CType(CType(192, Byte), Integer), CType(CType(128, Byte), Integer))
+        Me.TabPage6.Controls.Add(Me.Label36)
+        Me.TabPage6.Controls.Add(Me.Label34)
         Me.TabPage6.Controls.Add(Me.Btn_UpRemarks)
         Me.TabPage6.Controls.Add(Me.LV_Status_History)
         Me.TabPage6.Controls.Add(Me.Btn_Separation_Update)
@@ -1623,17 +1659,43 @@ Partial Class FRM_EMP_UPDATE_REC
         Me.TabPage6.Controls.Add(Me.Txt_ChangeStatus_Remark)
         Me.TabPage6.Controls.Add(Me.Cmb_Separation)
         Me.TabPage6.Controls.Add(Me.Label19)
+        Me.TabPage6.Controls.Add(Me.PictureBox1)
         Me.TabPage6.Location = New System.Drawing.Point(4, 32)
         Me.TabPage6.Name = "TabPage6"
         Me.TabPage6.Padding = New System.Windows.Forms.Padding(3)
-        Me.TabPage6.Size = New System.Drawing.Size(793, 647)
+        Me.TabPage6.Size = New System.Drawing.Size(1290, 743)
         Me.TabPage6.TabIndex = 5
         Me.TabPage6.Text = "Employment Status"
+        '
+        'Label36
+        '
+        Me.Label36.BackColor = System.Drawing.Color.FromArgb(CType(CType(255, Byte), Integer), CType(CType(192, Byte), Integer), CType(CType(128, Byte), Integer))
+        Me.Label36.Font = New System.Drawing.Font("Verdana", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.Label36.ForeColor = System.Drawing.Color.FromArgb(CType(CType(64, Byte), Integer), CType(CType(64, Byte), Integer), CType(CType(64, Byte), Integer))
+        Me.Label36.Location = New System.Drawing.Point(21, 368)
+        Me.Label36.Name = "Label36"
+        Me.Label36.Size = New System.Drawing.Size(176, 211)
+        Me.Label36.TabIndex = 171
+        Me.Label36.Text = "When adding new remarks, do not delete or overwrite the existing remarks. Always " &
+    "preserve the previous remarks and append the new remarks to maintain a complete " &
+    "history of records."
+        '
+        'Label34
+        '
+        Me.Label34.AutoSize = True
+        Me.Label34.BackColor = System.Drawing.Color.FromArgb(CType(CType(255, Byte), Integer), CType(CType(192, Byte), Integer), CType(CType(128, Byte), Integer))
+        Me.Label34.Font = New System.Drawing.Font("Verdana", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.Label34.ForeColor = System.Drawing.Color.Black
+        Me.Label34.Location = New System.Drawing.Point(21, 333)
+        Me.Label34.Name = "Label34"
+        Me.Label34.Size = New System.Drawing.Size(54, 18)
+        Me.Label34.TabIndex = 170
+        Me.Label34.Text = "Note:"
         '
         'Btn_UpRemarks
         '
         Me.Btn_UpRemarks.Font = New System.Drawing.Font("Microsoft Sans Serif", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.Btn_UpRemarks.Location = New System.Drawing.Point(50, 437)
+        Me.Btn_UpRemarks.Location = New System.Drawing.Point(243, 546)
         Me.Btn_UpRemarks.Name = "Btn_UpRemarks"
         Me.Btn_UpRemarks.Size = New System.Drawing.Size(657, 34)
         Me.Btn_UpRemarks.TabIndex = 168
@@ -1648,10 +1710,10 @@ Partial Class FRM_EMP_UPDATE_REC
         Me.LV_Status_History.FullRowSelect = True
         Me.LV_Status_History.GridLines = True
         Me.LV_Status_History.HideSelection = False
-        Me.LV_Status_History.Location = New System.Drawing.Point(31, 30)
+        Me.LV_Status_History.Location = New System.Drawing.Point(217, 6)
         Me.LV_Status_History.MultiSelect = False
         Me.LV_Status_History.Name = "LV_Status_History"
-        Me.LV_Status_History.Size = New System.Drawing.Size(715, 222)
+        Me.LV_Status_History.Size = New System.Drawing.Size(773, 356)
         Me.LV_Status_History.TabIndex = 167
         Me.LV_Status_History.UseCompatibleStateImageBehavior = False
         Me.LV_Status_History.View = System.Windows.Forms.View.Details
@@ -1684,7 +1746,7 @@ Partial Class FRM_EMP_UPDATE_REC
         'Btn_Separation_Update
         '
         Me.Btn_Separation_Update.Font = New System.Drawing.Font("Microsoft Sans Serif", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.Btn_Separation_Update.Location = New System.Drawing.Point(523, 531)
+        Me.Btn_Separation_Update.Location = New System.Drawing.Point(24, 28)
         Me.Btn_Separation_Update.Name = "Btn_Separation_Update"
         Me.Btn_Separation_Update.Size = New System.Drawing.Size(173, 34)
         Me.Btn_Separation_Update.TabIndex = 165
@@ -1693,11 +1755,11 @@ Partial Class FRM_EMP_UPDATE_REC
         '
         'PictureBox7
         '
-        Me.PictureBox7.BackColor = System.Drawing.Color.Teal
+        Me.PictureBox7.BackColor = System.Drawing.Color.FromArgb(CType(CType(255, Byte), Integer), CType(CType(192, Byte), Integer), CType(CType(128, Byte), Integer))
         Me.PictureBox7.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle
-        Me.PictureBox7.Location = New System.Drawing.Point(50, 515)
+        Me.PictureBox7.Location = New System.Drawing.Point(6, 6)
         Me.PictureBox7.Name = "PictureBox7"
-        Me.PictureBox7.Size = New System.Drawing.Size(671, 69)
+        Me.PictureBox7.Size = New System.Drawing.Size(205, 598)
         Me.PictureBox7.TabIndex = 164
         Me.PictureBox7.TabStop = False
         '
@@ -1705,7 +1767,7 @@ Partial Class FRM_EMP_UPDATE_REC
         '
         Me.Txt_StatusChange_Date.Enabled = False
         Me.Txt_StatusChange_Date.Font = New System.Drawing.Font("Microsoft Sans Serif", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.Txt_StatusChange_Date.Location = New System.Drawing.Point(497, 276)
+        Me.Txt_StatusChange_Date.Location = New System.Drawing.Point(690, 385)
         Me.Txt_StatusChange_Date.Name = "Txt_StatusChange_Date"
         Me.Txt_StatusChange_Date.Size = New System.Drawing.Size(185, 26)
         Me.Txt_StatusChange_Date.TabIndex = 163
@@ -1715,7 +1777,7 @@ Partial Class FRM_EMP_UPDATE_REC
         '
         Me.DP_Sepa_day.CalendarFont = New System.Drawing.Font("Microsoft Sans Serif", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.DP_Sepa_day.Font = New System.Drawing.Font("Microsoft Sans Serif", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.DP_Sepa_day.Location = New System.Drawing.Point(686, 276)
+        Me.DP_Sepa_day.Location = New System.Drawing.Point(879, 385)
         Me.DP_Sepa_day.Name = "DP_Sepa_day"
         Me.DP_Sepa_day.Size = New System.Drawing.Size(17, 26)
         Me.DP_Sepa_day.TabIndex = 162
@@ -1726,7 +1788,7 @@ Partial Class FRM_EMP_UPDATE_REC
         Me.Label17.BackColor = System.Drawing.Color.FromArgb(CType(CType(255, Byte), Integer), CType(CType(192, Byte), Integer), CType(CType(128, Byte), Integer))
         Me.Label17.Font = New System.Drawing.Font("Verdana", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.Label17.ForeColor = System.Drawing.Color.Black
-        Me.Label17.Location = New System.Drawing.Point(349, 280)
+        Me.Label17.Location = New System.Drawing.Point(542, 389)
         Me.Label17.Name = "Label17"
         Me.Label17.Size = New System.Drawing.Size(142, 18)
         Me.Label17.TabIndex = 161
@@ -1738,7 +1800,7 @@ Partial Class FRM_EMP_UPDATE_REC
         Me.Label18.BackColor = System.Drawing.Color.FromArgb(CType(CType(255, Byte), Integer), CType(CType(192, Byte), Integer), CType(CType(128, Byte), Integer))
         Me.Label18.Font = New System.Drawing.Font("Verdana", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.Label18.ForeColor = System.Drawing.Color.Black
-        Me.Label18.Location = New System.Drawing.Point(47, 336)
+        Me.Label18.Location = New System.Drawing.Point(240, 445)
         Me.Label18.Name = "Label18"
         Me.Label18.Size = New System.Drawing.Size(78, 18)
         Me.Label18.TabIndex = 160
@@ -1747,7 +1809,7 @@ Partial Class FRM_EMP_UPDATE_REC
         'Txt_ChangeStatus_Remark
         '
         Me.Txt_ChangeStatus_Remark.Font = New System.Drawing.Font("Microsoft Sans Serif", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.Txt_ChangeStatus_Remark.Location = New System.Drawing.Point(50, 369)
+        Me.Txt_ChangeStatus_Remark.Location = New System.Drawing.Point(243, 478)
         Me.Txt_ChangeStatus_Remark.Multiline = True
         Me.Txt_ChangeStatus_Remark.Name = "Txt_ChangeStatus_Remark"
         Me.Txt_ChangeStatus_Remark.Size = New System.Drawing.Size(657, 62)
@@ -1759,7 +1821,7 @@ Partial Class FRM_EMP_UPDATE_REC
         Me.Cmb_Separation.Font = New System.Drawing.Font("Microsoft Sans Serif", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.Cmb_Separation.FormattingEnabled = True
         Me.Cmb_Separation.Items.AddRange(New Object() {"Active", "Resigned", "Terminated", "Finished Contract", "AWOL", "Floating", "Terminated"})
-        Me.Cmb_Separation.Location = New System.Drawing.Point(169, 276)
+        Me.Cmb_Separation.Location = New System.Drawing.Point(362, 385)
         Me.Cmb_Separation.Name = "Cmb_Separation"
         Me.Cmb_Separation.Size = New System.Drawing.Size(150, 28)
         Me.Cmb_Separation.TabIndex = 156
@@ -1770,16 +1832,26 @@ Partial Class FRM_EMP_UPDATE_REC
         Me.Label19.BackColor = System.Drawing.Color.FromArgb(CType(CType(255, Byte), Integer), CType(CType(192, Byte), Integer), CType(CType(128, Byte), Integer))
         Me.Label19.Font = New System.Drawing.Font("Verdana", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.Label19.ForeColor = System.Drawing.Color.Black
-        Me.Label19.Location = New System.Drawing.Point(47, 280)
+        Me.Label19.Location = New System.Drawing.Point(240, 389)
         Me.Label19.Name = "Label19"
         Me.Label19.Size = New System.Drawing.Size(101, 18)
         Me.Label19.TabIndex = 157
         Me.Label19.Text = "Set Status:"
         '
+        'PictureBox1
+        '
+        Me.PictureBox1.BackColor = System.Drawing.Color.FromArgb(CType(CType(255, Byte), Integer), CType(CType(192, Byte), Integer), CType(CType(128, Byte), Integer))
+        Me.PictureBox1.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle
+        Me.PictureBox1.Location = New System.Drawing.Point(217, 368)
+        Me.PictureBox1.Name = "PictureBox1"
+        Me.PictureBox1.Size = New System.Drawing.Size(773, 236)
+        Me.PictureBox1.TabIndex = 169
+        Me.PictureBox1.TabStop = False
+        '
         'Lbl_Employee_ID
         '
         Me.Lbl_Employee_ID.AutoSize = True
-        Me.Lbl_Employee_ID.BackColor = System.Drawing.Color.Black
+        Me.Lbl_Employee_ID.BackColor = System.Drawing.Color.Gray
         Me.Lbl_Employee_ID.Font = New System.Drawing.Font("Microsoft Sans Serif", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.Lbl_Employee_ID.ForeColor = System.Drawing.Color.Yellow
         Me.Lbl_Employee_ID.Location = New System.Drawing.Point(288, 47)
@@ -1791,7 +1863,7 @@ Partial Class FRM_EMP_UPDATE_REC
         'Label21
         '
         Me.Label21.AutoSize = True
-        Me.Label21.BackColor = System.Drawing.Color.Black
+        Me.Label21.BackColor = System.Drawing.Color.Gray
         Me.Label21.Font = New System.Drawing.Font("Verdana", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.Label21.ForeColor = System.Drawing.Color.White
         Me.Label21.Location = New System.Drawing.Point(151, 47)
@@ -1803,7 +1875,7 @@ Partial Class FRM_EMP_UPDATE_REC
         'Lbl_Employee_Name
         '
         Me.Lbl_Employee_Name.AutoSize = True
-        Me.Lbl_Employee_Name.BackColor = System.Drawing.Color.Black
+        Me.Lbl_Employee_Name.BackColor = System.Drawing.Color.Gray
         Me.Lbl_Employee_Name.Font = New System.Drawing.Font("Verdana", 14.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.Lbl_Employee_Name.ForeColor = System.Drawing.Color.Yellow
         Me.Lbl_Employee_Name.Location = New System.Drawing.Point(288, 76)
@@ -1815,7 +1887,7 @@ Partial Class FRM_EMP_UPDATE_REC
         'Label23
         '
         Me.Label23.AutoSize = True
-        Me.Label23.BackColor = System.Drawing.Color.Black
+        Me.Label23.BackColor = System.Drawing.Color.Gray
         Me.Label23.Font = New System.Drawing.Font("Verdana", 14.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.Label23.ForeColor = System.Drawing.Color.White
         Me.Label23.Location = New System.Drawing.Point(150, 76)
@@ -1831,11 +1903,37 @@ Partial Class FRM_EMP_UPDATE_REC
         'Panel1
         '
         Me.Panel1.BackColor = System.Drawing.Color.Maroon
+        Me.Panel1.Controls.Add(Me.Label28)
+        Me.Panel1.Controls.Add(Me.Label31)
         Me.Panel1.Dock = System.Windows.Forms.DockStyle.Top
         Me.Panel1.Location = New System.Drawing.Point(0, 0)
         Me.Panel1.Name = "Panel1"
-        Me.Panel1.Size = New System.Drawing.Size(1071, 41)
+        Me.Panel1.Size = New System.Drawing.Size(1527, 85)
         Me.Panel1.TabIndex = 75
+        '
+        'Label28
+        '
+        Me.Label28.AutoSize = True
+        Me.Label28.BackColor = System.Drawing.Color.Maroon
+        Me.Label28.Font = New System.Drawing.Font("Verdana", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.Label28.ForeColor = System.Drawing.Color.White
+        Me.Label28.Location = New System.Drawing.Point(35, 48)
+        Me.Label28.Name = "Label28"
+        Me.Label28.Size = New System.Drawing.Size(338, 16)
+        Me.Label28.TabIndex = 166
+        Me.Label28.Text = "Manage Security Guard's Information and Records"
+        '
+        'Label31
+        '
+        Me.Label31.AutoSize = True
+        Me.Label31.BackColor = System.Drawing.Color.Maroon
+        Me.Label31.Font = New System.Drawing.Font("Verdana", 18.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.Label31.ForeColor = System.Drawing.Color.White
+        Me.Label31.Location = New System.Drawing.Point(33, 19)
+        Me.Label31.Name = "Label31"
+        Me.Label31.Size = New System.Drawing.Size(429, 29)
+        Me.Label31.TabIndex = 165
+        Me.Label31.Text = "SECURITY GUARDS MANAGEMENT"
         '
         'Panel2
         '
@@ -1848,9 +1946,9 @@ Partial Class FRM_EMP_UPDATE_REC
         Me.Panel2.Controls.Add(Me.Btn_Medical_Records)
         Me.Panel2.Controls.Add(Me.Btn_Leave_Filing)
         Me.Panel2.Dock = System.Windows.Forms.DockStyle.Left
-        Me.Panel2.Location = New System.Drawing.Point(0, 41)
+        Me.Panel2.Location = New System.Drawing.Point(0, 85)
         Me.Panel2.Name = "Panel2"
-        Me.Panel2.Size = New System.Drawing.Size(230, 819)
+        Me.Panel2.Size = New System.Drawing.Size(230, 871)
         Me.Panel2.TabIndex = 76
         '
         'Btn_Selected_Button
@@ -1865,7 +1963,7 @@ Partial Class FRM_EMP_UPDATE_REC
         Me.Btn_Selected_Button.IconFont = FontAwesome.Sharp.IconFont.[Auto]
         Me.Btn_Selected_Button.IconSize = 60
         Me.Btn_Selected_Button.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft
-        Me.Btn_Selected_Button.Location = New System.Drawing.Point(12, 38)
+        Me.Btn_Selected_Button.Location = New System.Drawing.Point(12, 20)
         Me.Btn_Selected_Button.Name = "Btn_Selected_Button"
         Me.Btn_Selected_Button.Size = New System.Drawing.Size(202, 73)
         Me.Btn_Selected_Button.TabIndex = 42
@@ -1882,7 +1980,7 @@ Partial Class FRM_EMP_UPDATE_REC
         Me.Btn_Employment_Status.IconFont = FontAwesome.Sharp.IconFont.[Auto]
         Me.Btn_Employment_Status.IconSize = 60
         Me.Btn_Employment_Status.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft
-        Me.Btn_Employment_Status.Location = New System.Drawing.Point(3, 698)
+        Me.Btn_Employment_Status.Location = New System.Drawing.Point(3, 703)
         Me.Btn_Employment_Status.Name = "Btn_Employment_Status"
         Me.Btn_Employment_Status.Size = New System.Drawing.Size(224, 73)
         Me.Btn_Employment_Status.TabIndex = 41
@@ -1899,7 +1997,7 @@ Partial Class FRM_EMP_UPDATE_REC
         Me.Btn_Personel_Movement.IconFont = FontAwesome.Sharp.IconFont.[Auto]
         Me.Btn_Personel_Movement.IconSize = 60
         Me.Btn_Personel_Movement.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft
-        Me.Btn_Personel_Movement.Location = New System.Drawing.Point(3, 625)
+        Me.Btn_Personel_Movement.Location = New System.Drawing.Point(3, 630)
         Me.Btn_Personel_Movement.Name = "Btn_Personel_Movement"
         Me.Btn_Personel_Movement.Size = New System.Drawing.Size(224, 73)
         Me.Btn_Personel_Movement.TabIndex = 40
@@ -1916,7 +2014,7 @@ Partial Class FRM_EMP_UPDATE_REC
         Me.Btn_Security_License.IconFont = FontAwesome.Sharp.IconFont.[Auto]
         Me.Btn_Security_License.IconSize = 60
         Me.Btn_Security_License.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft
-        Me.Btn_Security_License.Location = New System.Drawing.Point(3, 552)
+        Me.Btn_Security_License.Location = New System.Drawing.Point(3, 557)
         Me.Btn_Security_License.Name = "Btn_Security_License"
         Me.Btn_Security_License.Size = New System.Drawing.Size(224, 73)
         Me.Btn_Security_License.TabIndex = 39
@@ -1933,7 +2031,7 @@ Partial Class FRM_EMP_UPDATE_REC
         Me.Btn_Insurance.IconFont = FontAwesome.Sharp.IconFont.[Auto]
         Me.Btn_Insurance.IconSize = 60
         Me.Btn_Insurance.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft
-        Me.Btn_Insurance.Location = New System.Drawing.Point(3, 479)
+        Me.Btn_Insurance.Location = New System.Drawing.Point(3, 484)
         Me.Btn_Insurance.Name = "Btn_Insurance"
         Me.Btn_Insurance.Size = New System.Drawing.Size(224, 73)
         Me.Btn_Insurance.TabIndex = 38
@@ -1951,7 +2049,7 @@ Partial Class FRM_EMP_UPDATE_REC
         Me.Btn_Medical_Records.IconFont = FontAwesome.Sharp.IconFont.[Auto]
         Me.Btn_Medical_Records.IconSize = 60
         Me.Btn_Medical_Records.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft
-        Me.Btn_Medical_Records.Location = New System.Drawing.Point(3, 406)
+        Me.Btn_Medical_Records.Location = New System.Drawing.Point(3, 411)
         Me.Btn_Medical_Records.Name = "Btn_Medical_Records"
         Me.Btn_Medical_Records.Size = New System.Drawing.Size(224, 73)
         Me.Btn_Medical_Records.TabIndex = 37
@@ -1968,7 +2066,7 @@ Partial Class FRM_EMP_UPDATE_REC
         Me.Btn_Leave_Filing.IconFont = FontAwesome.Sharp.IconFont.[Auto]
         Me.Btn_Leave_Filing.IconSize = 60
         Me.Btn_Leave_Filing.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft
-        Me.Btn_Leave_Filing.Location = New System.Drawing.Point(3, 333)
+        Me.Btn_Leave_Filing.Location = New System.Drawing.Point(3, 338)
         Me.Btn_Leave_Filing.Name = "Btn_Leave_Filing"
         Me.Btn_Leave_Filing.Size = New System.Drawing.Size(224, 73)
         Me.Btn_Leave_Filing.TabIndex = 36
@@ -1979,16 +2077,16 @@ Partial Class FRM_EMP_UPDATE_REC
         '
         'Panel3
         '
-        Me.Panel3.BackColor = System.Drawing.Color.Black
+        Me.Panel3.BackColor = System.Drawing.Color.Gray
         Me.Panel3.Controls.Add(Me.Pic_Employee_Photo)
         Me.Panel3.Controls.Add(Me.Label21)
         Me.Panel3.Controls.Add(Me.Label23)
         Me.Panel3.Controls.Add(Me.Lbl_Employee_Name)
         Me.Panel3.Controls.Add(Me.Lbl_Employee_ID)
         Me.Panel3.Dock = System.Windows.Forms.DockStyle.Top
-        Me.Panel3.Location = New System.Drawing.Point(230, 41)
+        Me.Panel3.Location = New System.Drawing.Point(230, 85)
         Me.Panel3.Name = "Panel3"
-        Me.Panel3.Size = New System.Drawing.Size(841, 99)
+        Me.Panel3.Size = New System.Drawing.Size(1297, 136)
         Me.Panel3.TabIndex = 77
         '
         'Pic_Employee_Photo
@@ -2006,16 +2104,16 @@ Partial Class FRM_EMP_UPDATE_REC
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
-        Me.BackColor = System.Drawing.Color.Black
-        Me.ClientSize = New System.Drawing.Size(1071, 860)
+        Me.BackColor = System.Drawing.Color.FromArgb(CType(CType(255, Byte), Integer), CType(CType(192, Byte), Integer), CType(CType(128, Byte), Integer))
+        Me.ClientSize = New System.Drawing.Size(1527, 956)
         Me.Controls.Add(Me.Panel3)
         Me.Controls.Add(Me.Panel2)
         Me.Controls.Add(Me.Panel1)
         Me.Controls.Add(Me.Tab_Employee_Transactions)
-        Me.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedToolWindow
         Me.Name = "FRM_EMP_UPDATE_REC"
         Me.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen
         Me.Text = "Employee Records Management"
+        Me.WindowState = System.Windows.Forms.FormWindowState.Maximized
         Me.Tab_Employee_Transactions.ResumeLayout(False)
         Me.Tab_Leave_Filing.ResumeLayout(False)
         Me.Grp_Leave_Info.ResumeLayout(False)
@@ -2031,7 +2129,6 @@ Partial Class FRM_EMP_UPDATE_REC
         Me.Grp_Insurance_Info.ResumeLayout(False)
         Me.Grp_Insurance_Info.PerformLayout()
         Me.TabPage4.ResumeLayout(False)
-        Me.TabPage4.PerformLayout()
         Me.Grp_License.ResumeLayout(False)
         Me.Grp_License.PerformLayout()
         CType(Me.PictureBox6, System.ComponentModel.ISupportInitialize).EndInit()
@@ -2042,6 +2139,9 @@ Partial Class FRM_EMP_UPDATE_REC
         Me.TabPage6.ResumeLayout(False)
         Me.TabPage6.PerformLayout()
         CType(Me.PictureBox7, System.ComponentModel.ISupportInitialize).EndInit()
+        CType(Me.PictureBox1, System.ComponentModel.ISupportInitialize).EndInit()
+        Me.Panel1.ResumeLayout(False)
+        Me.Panel1.PerformLayout()
         Me.Panel2.ResumeLayout(False)
         Me.Panel3.ResumeLayout(False)
         Me.Panel3.PerformLayout()
@@ -2216,4 +2316,11 @@ Partial Class FRM_EMP_UPDATE_REC
     Friend WithEvents Pic_Employee_Photo As PictureBox
     Friend WithEvents Btn_UpRemarks As Button
     Friend WithEvents LV_Status_History As ListView
+    Friend WithEvents Label28 As Label
+    Friend WithEvents Label31 As Label
+    Friend WithEvents Label33 As Label
+    Friend WithEvents Label32 As Label
+    Friend WithEvents PictureBox1 As PictureBox
+    Friend WithEvents Label36 As Label
+    Friend WithEvents Label34 As Label
 End Class

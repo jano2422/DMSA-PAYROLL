@@ -685,6 +685,7 @@ Module Mod_FRM_EMP_REG
 
 
     Public Sub Show_Employee_List()
+
         Dim dt As DataTable = GetEmployeeList()
 
         With FRM_EMP_REG.LV_Employee_List
@@ -753,9 +754,9 @@ Module Mod_FRM_EMP_REG
 "        GROUP BY EMPLOYEE_ID) AS X " &
 "    ON D.EMPLOYEE_ID = X.EMPLOYEE_ID AND D.ID = X.MaxID) " &
 "ON B.EMPLOYEE_ID = D.EMPLOYEE_ID) " &
-"LEFT JOIN TBL_CLIENT_SUB AS E ON D.SUB_CLIENT_ID = E.SUB_CLIENT_ID " &
-"WHERE B.EMPLOYMENT_STATUS = 'Active' " &
-"ORDER BY A.LAST_NAME ASC;"
+"LEFT JOIN TBL_CLIENT_SUB AS E ON D.SUB_CLIENT_ID = E.SUB_CLIENT_ID ORDER BY A.LAST_NAME ASC;"
+            '"WHERE B.EMPLOYMENT_STATUS = 'Active' " &
+
 
 
             Using da As New OleDb.OleDbDataAdapter(SQL, Mod_GlobalVariables.GlobalVariables.GlobalCon)

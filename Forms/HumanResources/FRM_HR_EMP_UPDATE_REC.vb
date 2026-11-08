@@ -638,8 +638,20 @@
     Private Sub Btn_Client_Delete_Click(sender As Object, e As EventArgs) Handles Btn_Client_Delete.Click
         If Btn_Client_Delete.Text = "Delete" Then
 
-            MsgBox("Only Administrator can delete records.", vbExclamation, "Delete not allowed")
-            Exit Sub
+            Dim response As String
+            response = InputBox("Enter Administrator's password", vbExclamation + vbOKCancel, "Only an Administrator can delete")
+
+            If response.Trim() <> "" Then
+                If response = "admin@kodogen" Then
+                    ' proceed with the code below
+                    ' Delete is allowed ( be careful when deleting )
+                Else
+                    MsgBox("Password provided is not acceptable!", vbExclamation, "Call your administrator")
+                End If
+            Else
+                MessageBox.Show("No input entered.", "Notice")
+                Exit Sub
+            End If
 
             ' Control: 08-Feb-26 --> Do not allow delete when there is only one record left. The target employee will be removed from the Employee List since it is requiring a record from Client Transfer table
             If Me.LV_Client_History.Items.Count = 1 Then
@@ -985,6 +997,7 @@
 
     End Sub
 
+    Private Sub Label34_Click(sender As Object, e As EventArgs) Handles Label34.Click
 
-
+    End Sub
 End Class

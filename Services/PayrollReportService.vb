@@ -1582,7 +1582,8 @@ Public Module PayrollReportService
                 ElseIf address.RowNumber <> 2 OrElse address.ColumnNumber <> 1 Then
                     Continue For
                 End If
-                TryAddCompanyLogo(sheet, header, If(isPayslip, 2, 4), If(isPayslip, 24, 56))
+                Dim isPayrollReportHeader = sheet.Name = "PAYROLL SHEET" OrElse sheet.Name = "CLASSIFICATION DETAIL" OrElse sheet.Name = "DTR_Hours"
+                TryAddCompanyLogo(sheet, header, If(isPayslip, 2, 4), If(isPayslip, 48, If(isPayrollReportHeader, 96, 56)))
             Next
         Next
     End Sub
@@ -1635,15 +1636,22 @@ Public Module PayrollReportService
                     Dim gap = If(headerRowCount = 2, 4, 8)
                     Dim anchorColumn = If(headerRowCount = 2, firstColumn - 1, firstColumn)
                     Dim reservedWidth = If(headerRowCount = 2, VisibleColumnPixels(sheet, anchorColumn, digitWidth), 0)
-                    Dim offsetX = Math.Max(4, reservedWidth + CInt(Math.Floor((headerWidth - textWidth) / 2)) - picture.Width - gap)
+                    Dim leftAdjustment = If(headerRowCount = 2, 8, If(sheet.Name = "PAYROLL SHEET" OrElse sheet.Name = "CLASSIFICATION DETAIL" OrElse sheet.Name = "DTR_Hours", 24, 0))
+                    Dim offsetX = Math.Max(4, reservedWidth + CInt(Math.Floor((headerWidth - textWidth) / 2)) - picture.Width - gap - leftAdjustment)
                     Dim offsetY = Math.Max(0, CInt(Math.Round((headerHeight - picture.Height) / 2)))
+                    Dim pictureRow = firstRow
+                    If headerRowCount = 4 AndAlso picture.Height > headerHeight Then
+                        pictureRow = firstRow - 1
+                        Dim availableHeight = sheet.Row(pictureRow).Height * 96.0 / 72.0 + headerHeight
+                        offsetY = CInt(Math.Max(0, Math.Round(availableHeight - picture.Height)))
+                    End If
                     While anchorColumn < lastColumn
                         Dim columnWidth = VisibleColumnPixels(sheet, anchorColumn, digitWidth)
                         If columnWidth > offsetX Then Exit While
                         offsetX -= columnWidth
                         anchorColumn += 1
                     End While
-                    picture.MoveTo(sheet.Cell(firstRow, anchorColumn), offsetX, offsetY)
+                    picture.MoveTo(sheet.Cell(pictureRow, anchorColumn), offsetX, offsetY)
                 End Using
             End Using
         Catch
